@@ -14,8 +14,8 @@ for (const locale of LOCALES) {
       await expect(page.locator('main h1')).toBeVisible();
       for (const detail of [
         'MRRAMOS INMUEBLES SL (sociedad limitada incorporated in Spain)',
-        'CIF/NIF: {CIF_MRRAMOS}',
-        'Registered address: {DOMICILIO_MRRAMOS}',
+        'CIF/NIF: B75763383',
+        'Registered address / domicilio fiscal: C/ San Miguel 13, Bajo B, 11001 Cádiz (Spain)',
         'info@easyrender.ai',
       ]) {
         await expect(page.locator('main')).toContainText(detail);
