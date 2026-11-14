@@ -13,36 +13,38 @@ for (const locale of LOCALES) {
       await expect(page.locator('html')).toHaveAttribute('lang', HTML_LANG[locale]);
       await expect(page.locator('main h1')).toBeVisible();
       for (const detail of [
-        'Smithii LTD (Company Limited by Shares, RAK Digital Assets Oasis, Government of Ras Al Khaimah, UAE)',
-        'Company Registration No. 01010192, Business Licence No. 07010192',
-        'Office A, RAK DAO Business Centre, RAK BANK ROC Office, Ground Floor, Al Rifaa, Sheikh Mohammed Bin Zayed Road, Ras Al Khaimah, United Arab Emirates, PO Box 30099',
-        'info@smithii.io',
+        'MRRAMOS INMUEBLES SL (sociedad limitada incorporated in Spain)',
+        'CIF/NIF: B75763383',
+        'Registered address / domicilio fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (Spain)',
+        'info@easyrender.ai',
       ]) {
         await expect(page.locator('main')).toContainText(detail);
       }
+      await expect(page.locator('main')).not.toContainText('Smithii');
       await expect(page.locator('main')).not.toContainText(/\[[A-Z][A-Z _/-]*\]/);
       if (kind === 'privacy') {
-        for (const detail of ['UAE Personal Data Protection Law', 'EU GDPR', 'UK GDPR']) {
+        for (const detail of ['LOPDGDD', 'EU GDPR', 'UK GDPR']) {
           await expect(page.locator('main')).toContainText(detail);
         }
         await expect(page.locator('#legal-transfers + p')).toContainText(
           'UK International Data Transfer Agreement or UK Addendum',
         );
         await expect(page.locator('#legal-rights + p')).toContainText(
-          'Information Commissioner’s Office (ICO)',
+          'Agencia Española de Protección de Datos (AEPD)',
+        );
+        await expect(page.locator('#legal-rights + p')).not.toContainText(
+          'Information Commissioner',
         );
       } else {
         await expect(page.locator('main')).toContainText(
-          'Easy Render is a product operated by Smithii LTD',
+          'Easy Render is a product operated by MRRAMOS INMUEBLES SL',
         );
         const law = page.locator('#legal-law + p');
-        await expect(law).toContainText('UAE federal law');
-        await expect(law).toContainText('RAK Digital Assets Oasis Free Zone regulations');
-        await expect(law).toContainText(
-          'courts of Ras Al Khaimah, United Arab Emirates, have exclusive jurisdiction',
-        );
+        await expect(law).toContainText('Spanish law');
+        await expect(law).toContainText('courts of Spain have jurisdiction');
         await expect(law).toContainText('mandatory protections');
-        await expect(law).not.toContainText('Spanish law');
+        await expect(law).not.toContainText('UAE federal law');
+        await expect(law).not.toContainText('Ras Al Khaimah');
       }
       await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `${base}${path}`);
       await expect(page.locator('link[hreflang="pt-PT"]')).toHaveAttribute(

@@ -1,3 +1,4 @@
+import { createTranslator } from 'next-intl';
 import { describe, expect, it } from 'vitest';
 import { LOCALES } from '@/i18n/config';
 import de from '@/messages/de.json';
@@ -62,5 +63,24 @@ describe('the message files', () => {
   it('keeps pt in European Portuguese', () => {
     const text = JSON.stringify(pt);
     expect(text).not.toMatch(/\bvocê\b|\bcelular\b|\bbaixar\b|\bcadastr/i);
+  });
+
+  it.each(LOCALES)('%s names MRRAMOS INMUEBLES SL with its CIF and fiscal address', (locale) => {
+    const t = createTranslator({ locale, messages: MESSAGES[locale], namespace: 'Legal' });
+    expect(t('operator.name')).toContain('MRRAMOS INMUEBLES SL');
+    expect(t('operator.taxId')).toBe('CIF/NIF: B75763383');
+    expect(t('operator.address')).toBe(
+      'Registered address / domicilio fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (Spain)',
+    );
+    expect(t('operator.contact')).toBe('Contact email: info@easyrender.ai');
+    expect(t('terms.intro')).toContain('operated by MRRAMOS INMUEBLES SL');
+    expect(t('terms.sections.law.body')).toContain('governed by Spanish law');
+    expect(t('terms.sections.law.body')).toContain('courts of Spain');
+    expect(t('privacy.sections.rights.body')).toContain(
+      'Agencia Española de Protección de Datos (AEPD)',
+    );
+    const legal = JSON.stringify(MESSAGES[locale].Legal);
+    expect(legal).not.toMatch(/Smithii|smithii\.io|Ras Al Khaimah|\bUAE\b|\bPDPL\b|\(ICO\)/);
+    expect(legal).not.toMatch(/CIF_MRRAMOS|DOMICILIO_MRRAMOS|registered office/i);
   });
 });
