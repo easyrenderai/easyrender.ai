@@ -15,7 +15,7 @@ for (const locale of LOCALES) {
       for (const detail of [
         'MRRAMOS INMUEBLES SL (sociedad limitada incorporated in Spain)',
         'CIF/NIF: B75763383',
-        'Registered address / domicilio fiscal: C/ San Miguel 13, Bajo B, 11001 Cádiz (Spain)',
+        'Registered address / domicilio fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (Spain)',
         'info@easyrender.ai',
       ]) {
         await expect(page.locator('main')).toContainText(detail);

@@ -70,7 +70,7 @@ describe('the message files', () => {
     expect(t('operator.name')).toContain('MRRAMOS INMUEBLES SL');
     expect(t('operator.taxId')).toBe('CIF/NIF: B75763383');
     expect(t('operator.address')).toBe(
-      'Registered address / domicilio fiscal: C/ San Miguel 13, Bajo B, 11001 Cádiz (Spain)',
+      'Registered address / domicilio fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (Spain)',
     );
     expect(t('operator.contact')).toBe('Contact email: info@easyrender.ai');
     expect(t('terms.intro')).toContain('operated by MRRAMOS INMUEBLES SL');
