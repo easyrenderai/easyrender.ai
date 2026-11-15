@@ -6,6 +6,14 @@ unchanged; the contract version does not introduce a `/v1` prefix. This document
 implementation in this repository. A deployment must include the corresponding changes before
 clients can use new routes or tools. Clients should tolerate additional response fields.
 
+## Executable examples
+
+Run the complete authenticated workflow with the dependency-free
+[Python and TypeScript REST examples](../examples/rest/README.md): one upload, an idempotent
+preview, live quote and balance, an explicitly authorized credit ceiling, bounded polling and a
+private GLB download. Preview-only is the default. Their local smoke tests use a fake server and
+never call a paid provider. Optional receipts measure the current invocation, not full job latency.
+
 ## Authentication, privacy and capabilities
 
 Send `Authorization: Bearer <key>` from a trusted server or the MCP client's secure credential
@@ -150,6 +158,8 @@ Malformed cursor/limit/status returns 400. Listing does not advance jobs; poll a
 observe an active job. Use the list to recover an ID after a lost response when necessary.
 
 `GET /api/renders/{id}` returns the current view. `POST .../{id}/render` starts the paid 3D build;
+its optional JSON `{maxCredits}` sets a non-negative safe-integer ceiling enforced in the debit
+transaction. Send the authorized ceiling even though omission remains supported for older clients;
 `POST .../{id}/sheet` starts the paid sheet and `POST .../{id}/sheet/redraw` accepts `{note}` for a
 paid revision. `PATCH .../{id}` accepts `{isPublic}`. `GET .../{id}/model` serves textured GLB
 (`model/gltf-binary`); optional `?download=1` requests a download. `/preview`, `/source` and `/qr` serve the corresponding assets. The preview endpoint serves the

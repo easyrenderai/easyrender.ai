@@ -11,7 +11,39 @@ export const POST = (request: Request, { params }: RouteContext<'/api/renders/[i
     const { id } = await params;
     const actor = await resolveActor(request.headers, 'spend');
     if (!actor.userId) throw new AppError('Sign up to render in 3D', 401, 'unauthorized');
-    return NextResponse.json(toView(await startBuild(id, actor)));
+    let received = 0;
+    const bounded = request.body?.pipeThrough(
+      new TransformStream<Uint8Array, Uint8Array>({
+        transform(chunk, controller) {
+          received += chunk.byteLength;
+          if (received > 4096) throw new AppError('Build request exceeds 4 KiB', 413, 'too_large');
+          controller.enqueue(chunk);
+        },
+      }),
+    );
+    const text = bounded ? await new Response(bounded).text() : '';
+    let maxCredits: number | undefined;
+    if (text.trim()) {
+      let body: unknown;
+      try {
+        body = JSON.parse(text);
+      } catch {
+        throw new AppError('Send a JSON object with optional maxCredits', 400, 'bad_body');
+      }
+      if (!body || typeof body !== 'object' || Array.isArray(body))
+        throw new AppError('Send a JSON object with optional maxCredits', 400, 'bad_body');
+      const value = (body as Record<string, unknown>).maxCredits;
+      if (value !== undefined) {
+        if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0)
+          throw new AppError(
+            'maxCredits must be a non-negative safe integer',
+            400,
+            'bad_max_credits',
+          );
+        maxCredits = value;
+      }
+    }
+    return NextResponse.json(toView(await startBuild(id, { ...actor, maxCredits })));
   });
 
 export const OPTIONS = apiOptions;
