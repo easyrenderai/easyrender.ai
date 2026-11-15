@@ -683,7 +683,10 @@
     "errors": {
       "expired": "Your session expired. Sign in again to create a key.",
       "create": "Could not create the key. Try again.",
-      "revoke": "Could not revoke the key. It is still active; try again."
+      "revoke": "Could not revoke the key. It is still active; try again.",
+      "scopes": "Seleziona almeno un’autorizzazione.",
+      "creditLimit": "Inserisci un limite di crediti intero e non negativo, oppure lascia il campo vuoto.",
+      "expiresAt": "Scegli una data e un’ora future valide, oppure lascia il campo vuoto."
     },
     "connect": {
       "title": "Connect your agent",
@@ -703,7 +706,32 @@
       "neverUsed": "Never used",
       "created": "created {date}",
       "lastUsed": "last used {date}",
-      "revoke": "Revoke {name}"
+      "revoke": "Revoke {name}",
+      "nameLabel": "Nome della chiave",
+      "advanced": "Autorizzazioni e limiti",
+      "permissions": "Azioni consentite",
+      "scopes": {
+        "read": "Lettura",
+        "write": "Scrittura",
+        "spend": "Spesa",
+        "share": "Condivisione"
+      },
+      "scopeDescriptions": {
+        "read": "Consultare risorse, prezzi e download.",
+        "write": "Caricare foto, creare anteprime e modificare i materiali.",
+        "spend": "Avviare generazioni a pagamento usando i tuoi crediti.",
+        "share": "Pubblicare rendering e condividere modelli del catalogo."
+      },
+      "creditLimit": "Limite totale di crediti",
+      "unlimited": "Illimitato",
+      "creditLimitHelp": "Un campo vuoto significa nessun limite. Zero impedisce le spese. I rimborsi restituiscono crediti al saldo, ma non ripristinano il limite di questa chiave.",
+      "expiresAt": "Scadenza (facoltativa)",
+      "expiresAtHelp": "Data e ora locali. Lascia vuoto per non impostare una scadenza.",
+      "expired": "Scaduta",
+      "noExpiry": "Nessuna scadenza",
+      "expiryDate": "Scade il {date}",
+      "spentUnlimited": "{spent} crediti spesi · senza limite",
+      "spentLimit": "{spent} crediti spesi su {limit}"
     }
   },
   "Account": {

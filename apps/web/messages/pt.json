@@ -683,7 +683,10 @@
     "errors": {
       "expired": "Your session expired. Sign in again to create a key.",
       "create": "Could not create the key. Try again.",
-      "revoke": "Could not revoke the key. It is still active; try again."
+      "revoke": "Could not revoke the key. It is still active; try again.",
+      "scopes": "Seleciona pelo menos uma permissão.",
+      "creditLimit": "Introduz um limite inteiro de créditos, igual ou superior a zero, ou deixa o campo vazio.",
+      "expiresAt": "Escolhe uma data e hora futuras válidas, ou deixa o campo vazio."
     },
     "connect": {
       "title": "Connect your agent",
@@ -703,7 +706,32 @@
       "neverUsed": "Never used",
       "created": "created {date}",
       "lastUsed": "last used {date}",
-      "revoke": "Revoke {name}"
+      "revoke": "Revoke {name}",
+      "nameLabel": "Nome da chave",
+      "advanced": "Permissões e limites",
+      "permissions": "Ações permitidas",
+      "scopes": {
+        "read": "Leitura",
+        "write": "Escrita",
+        "spend": "Gastos",
+        "share": "Partilha"
+      },
+      "scopeDescriptions": {
+        "read": "Consultar recursos, preços e transferências.",
+        "write": "Carregar fotografias, criar pré-visualizações e editar materiais.",
+        "spend": "Iniciar gerações pagas com os teus créditos.",
+        "share": "Publicar renders e partilhar modelos do catálogo."
+      },
+      "creditLimit": "Limite total de créditos",
+      "unlimited": "Sem limite",
+      "creditLimitHelp": "Vazio significa sem limite. Zero impede gastos. Os reembolsos devolvem créditos ao saldo, mas não repõem o limite desta chave.",
+      "expiresAt": "Validade (opcional)",
+      "expiresAtHelp": "Data e hora locais. Deixa vazio para que a chave não expire.",
+      "expired": "Expirada",
+      "noExpiry": "Sem prazo de validade",
+      "expiryDate": "Expira a {date}",
+      "spentUnlimited": "{spent} créditos gastos · sem limite",
+      "spentLimit": "{spent} de {limit} créditos gastos"
     }
   },
   "Account": {

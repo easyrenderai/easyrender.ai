@@ -683,7 +683,10 @@
     "errors": {
       "expired": "Your session expired. Sign in again to create a key.",
       "create": "Could not create the key. Try again.",
-      "revoke": "Could not revoke the key. It is still active; try again."
+      "revoke": "Could not revoke the key. It is still active; try again.",
+      "scopes": "Sélectionnez au moins une autorisation.",
+      "creditLimit": "Saisissez une limite de crédits entière, supérieure ou égale à zéro, ou laissez le champ vide.",
+      "expiresAt": "Choisissez une date et une heure valides dans le futur, ou laissez le champ vide."
     },
     "connect": {
       "title": "Connect your agent",
@@ -703,7 +706,32 @@
       "neverUsed": "Never used",
       "created": "created {date}",
       "lastUsed": "last used {date}",
-      "revoke": "Revoke {name}"
+      "revoke": "Revoke {name}",
+      "nameLabel": "Nom de la clé",
+      "advanced": "Autorisations et limites",
+      "permissions": "Actions autorisées",
+      "scopes": {
+        "read": "Lecture",
+        "write": "Écriture",
+        "spend": "Dépenses",
+        "share": "Partage"
+      },
+      "scopeDescriptions": {
+        "read": "Consulter les ressources, les tarifs et les téléchargements.",
+        "write": "Importer des photos, créer des aperçus et modifier les matériaux.",
+        "spend": "Lancer des générations payantes avec vos crédits.",
+        "share": "Publier des rendus et partager les modèles du catalogue."
+      },
+      "creditLimit": "Limite de crédits sur toute la durée de vie",
+      "unlimited": "Illimitée",
+      "creditLimitHelp": "Un champ vide signifie aucune limite. Zéro bloque les dépenses. Les remboursements recréditent votre solde, mais ne rétablissent pas la limite de cette clé.",
+      "expiresAt": "Expiration (facultative)",
+      "expiresAtHelp": "Date et heure locales. Laissez le champ vide pour une clé sans expiration.",
+      "expired": "Expirée",
+      "noExpiry": "Sans expiration",
+      "expiryDate": "Expire le {date}",
+      "spentUnlimited": "{spent} crédits dépensés · sans limite",
+      "spentLimit": "{spent} crédits dépensés sur {limit}"
     }
   },
   "Account": {
