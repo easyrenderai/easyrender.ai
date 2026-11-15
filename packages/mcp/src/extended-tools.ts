@@ -117,7 +117,7 @@ export function registerExtendedTools(server: McpServer, actor: Actor & { userId
         renders: z.array(z.object(renderSchema)),
         next_cursor: z.string().nullable(),
       },
-      annotations: reads,
+      annotations: { ...reads, readOnlyHint: true },
     },
     (input) =>
       forActor(actor, 'read', async () => {
