@@ -4,13 +4,13 @@ import { JsonLd } from '@/lib/seo/jsonld';
 import { compareIndexGraph, compareIndexMetadata } from '@/lib/seo/pages';
 
 // The English comparisons hub. Published and indexable (Jorge, 11-nov-2026).
-export const generateMetadata = (): Metadata => compareIndexMetadata();
+export const generateMetadata = (): Promise<Metadata> => compareIndexMetadata('en');
 
-export default function CompareIndexPage() {
+export default async function CompareIndexPage() {
   return (
     <>
-      <JsonLd graph={compareIndexGraph()} />
-      <CompareIndexView />
+      <JsonLd graph={await compareIndexGraph('en')} />
+      <CompareIndexView locale="en" />
     </>
   );
 }

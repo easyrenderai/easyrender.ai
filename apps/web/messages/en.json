@@ -1197,6 +1197,11 @@
         "button": "Upload a photo"
       },
       "related": "Keep reading"
+    },
+    "comparisons": {
+      "title": "Comparisons",
+      "description": "Side-by-side looks at 3D modeling methods and tools, for when a guide is not enough to choose.",
+      "read": "Read the comparison"
     }
   },
   "Models": {

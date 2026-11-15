@@ -43,6 +43,70 @@ export const photoVsPhotogrammetry = defineDiagram(
       ],
       needs: 'Needs',
     },
+    fr: {
+      lanes: [
+        {
+          heading: 'Photogrammétrie',
+          input: 'L’objet devant toi',
+          steps: [
+            { title: '20 à plus de 100 photos qui se chevauchent', note: 'Prises tout autour' },
+            {
+              title: 'Le logiciel relie les points entre photos',
+              note: 'Chaque surface vue sur 2 prises ou plus',
+            },
+            { title: 'Chaque surface a été vue', note: 'Vrai détail, là où l’appareil est passé' },
+          ],
+        },
+        {
+          heading: 'Image vers 3D',
+          input: 'Une photo, même celle d’un fournisseur',
+          steps: [
+            { title: '1 photo d’un côté', note: 'Nette, fond uni' },
+            {
+              title: 'Les faces absentes sont déduites de la photo',
+              note: 'Contrôle-les dans l’aperçu',
+            },
+            { title: 'Contrôle l’arrière dans l’aperçu', note: 'La photo ne montrait pas ce côté' },
+          ],
+        },
+      ],
+      needs: 'Il faut',
+    },
+    it: {
+      lanes: [
+        {
+          heading: 'Fotogrammetria',
+          input: 'L’oggetto davanti a te',
+          steps: [
+            { title: 'Da 20 a oltre 100 foto sovrapposte', note: 'Scattate tutto intorno' },
+            {
+              title: 'Il software unisce i punti tra le foto',
+              note: 'Ogni superficie da 2 scatti o più',
+            },
+            {
+              title: 'Ogni superficie è stata vista',
+              note: 'Dettaglio reale, dove è passata la fotocamera',
+            },
+          ],
+        },
+        {
+          heading: 'Da immagine a 3D',
+          input: 'Una foto, anche quella del fornitore',
+          steps: [
+            { title: '1 foto di un lato', note: 'Nitida, sfondo uniforme' },
+            {
+              title: 'I lati assenti si deducono dalla foto',
+              note: 'Controllali nell’anteprima',
+            },
+            {
+              title: 'Controlla il retro nell’anteprima',
+              note: 'La foto non mostrava quel lato',
+            },
+          ],
+        },
+      ],
+      needs: 'Serve',
+    },
   },
   function PhotoVsPhotogrammetry({ t }) {
     const icons = [
@@ -93,6 +157,42 @@ export const imageTo3dPipeline = defineDiagram(
       preview: 'Preview',
       build: 'Model',
       loop: 'Looks wrong at step 3: change the photo, not the settings.',
+    },
+    fr: {
+      steps: [
+        { tag: '1', title: 'Une photo', note: 'L’objet entier, de trois-quarts' },
+        { tag: '2', title: 'Planche de vues', note: 'L’objet dessiné sous plusieurs côtés' },
+        {
+          tag: '3',
+          title: 'Tu la contrôles',
+          note: 'Arrière, côtés et dessus, absents de la photo',
+        },
+        { tag: '4', title: 'Construction du modèle', note: 'Maillage texturé tiré de ces vues' },
+        { tag: '5', title: 'GLB et USDZ', note: 'Web et Android, iPhone et iPad' },
+      ],
+      preview: 'Aperçu',
+      build: 'Modèle',
+      loop: 'Erreur à l’étape 3 : change la photo, pas les réglages.',
+    },
+    it: {
+      steps: [
+        { tag: '1', title: 'Una foto', note: 'L’oggetto intero, di tre quarti' },
+        { tag: '2', title: 'Tavola delle angolazioni', note: 'L’oggetto disegnato da più lati' },
+        {
+          tag: '3',
+          title: 'La controlli tu',
+          note: 'Retro, lati e sopra, assenti dalla foto',
+        },
+        {
+          tag: '4',
+          title: 'Costruzione del modello',
+          note: 'Mesh con texture ricavata da quelle viste',
+        },
+        { tag: '5', title: 'GLB e USDZ', note: 'Web e Android, iPhone e iPad' },
+      ],
+      preview: 'Anteprima',
+      build: 'Modello',
+      loop: 'Errore al passo 3: cambia la foto, non le impostazioni.',
     },
   },
   function ImageTo3dPipeline({ t }) {

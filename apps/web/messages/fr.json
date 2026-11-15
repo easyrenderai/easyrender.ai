@@ -1197,6 +1197,11 @@
         "button": "Upload a photo"
       },
       "related": "À lire ensuite"
+    },
+    "comparisons": {
+      "title": "Comparatifs",
+      "description": "Méthodes et outils de modélisation 3D côte à côte, quand un guide ne suffit pas pour choisir.",
+      "read": "Lire le comparatif"
     }
   },
   "Models": {

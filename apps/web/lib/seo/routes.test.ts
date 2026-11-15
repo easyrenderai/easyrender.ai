@@ -67,20 +67,21 @@ describe('the route registry', () => {
       it: '/it',
       pt: '/pt',
     });
-    // Homes and legal information are live; other pages still wait for localized copy.
+    // Homes, legal pages, guides and comparisons are live. Other marketing pages still
+    // wait for reviewed copy.
     for (const locale of ['de', 'fr', 'it', 'pt'] as const) {
       for (const key of ROUTE_KEYS) {
-        if (['home', 'cookies', 'privacy', 'terms', 'pricing'].includes(key)) continue;
+        if (['home', 'cookies', 'privacy', 'terms', 'pricing', 'blog', 'compare'].includes(key))
+          continue;
         expect(isPublished(key, locale), `${key}/${locale}`).toBe(false);
       }
     }
   });
 
   it('hides the path of an unpublished language', () => {
-    expect(livePaths('blog')).toEqual({ en: '/learn', es: '/es/guias' });
-    // English comparisons are published; the other locales wait for reviewed copy.
+    expect(livePaths('blog')).toEqual(ROUTES.blog.paths);
     expect(isPublished('compare', 'en')).toBe(true);
-    expect(livePaths('compare')).toEqual({ en: '/compare' });
+    expect(livePaths('compare')).toEqual(ROUTES.compare.paths);
     // Pricing is now open in every supported locale.
     expect(livePaths('pricing')).toEqual(ROUTES.pricing.paths);
   });

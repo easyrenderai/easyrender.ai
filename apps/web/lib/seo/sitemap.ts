@@ -6,7 +6,7 @@ import {
   modifiedDate,
   postLivePaths,
 } from '@/lib/blog/posts';
-import { isComparePublished, listComparePages } from '@/lib/compare/pages';
+import { compareLivePaths, isComparePublished, listComparePages } from '@/lib/compare/pages';
 import { hasPublishedRuns } from '@/lib/evals';
 import {
   type ChangeFrequency,
@@ -52,14 +52,15 @@ export function localeEntries(locale: Locale, now: Date = new Date()): SitemapEn
       // The guides index changes when its newest guide does.
       ...(posts[0] ? { lastModified: modifiedDate(posts[0]) } : {}),
     });
-    // Individual comparisons live under /compare/{slug}, like guides under /learn/{slug}.
-    if (key === 'compare' && isComparePublished() && locale === 'en') {
-      for (const page of listComparePages()) {
+    // Individual comparisons live under the locale hub, like guides under /learn/{slug}.
+    // Alternates are only the translations that exist, so a missing file is never listed.
+    if (key === 'compare' && isComparePublished(locale)) {
+      for (const page of listComparePages(locale)) {
         entries.push({
           path: page.path,
           changeFrequency: 'monthly',
           priority: 0.6,
-          alternates: { en: page.path },
+          alternates: compareLivePaths(page.group),
           ...(page.updated ? { lastModified: page.updated } : {}),
         });
       }

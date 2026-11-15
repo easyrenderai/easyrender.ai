@@ -100,9 +100,42 @@ const PAGE_LABELS: Record<string, { title: string; note: string }> = {
   },
   [ROUTES.blog.paths.en]: { title: 'Guides', note: 'Guides on photos, 3D files and formats.' },
   [ROUTES.blog.paths.es]: { title: 'Guías', note: 'Guías en español.' },
+  [ROUTES.blog.paths.de]: {
+    title: 'Ratgeber',
+    note: 'Ratgeber zu Fotos, 3D-Dateien und Formaten.',
+  },
+  [ROUTES.blog.paths.fr]: {
+    title: 'Guides',
+    note: 'Guides sur les photos, les fichiers 3D et les formats.',
+  },
+  [ROUTES.blog.paths.it]: { title: 'Guide', note: 'Guide su foto, file 3D e formati.' },
+  [ROUTES.blog.paths.pt]: {
+    title: 'Guias',
+    note: 'Guias sobre fotografias, ficheiros 3D e formatos.',
+  },
   [ROUTES.compare.paths.en]: {
-    title: COMPARE_INDEX.title,
-    note: COMPARE_INDEX.description,
+    title: COMPARE_INDEX.en.title,
+    note: COMPARE_INDEX.en.description,
+  },
+  [ROUTES.compare.paths.es]: {
+    title: COMPARE_INDEX.es.title,
+    note: COMPARE_INDEX.es.description,
+  },
+  [ROUTES.compare.paths.de]: {
+    title: COMPARE_INDEX.de.title,
+    note: COMPARE_INDEX.de.description,
+  },
+  [ROUTES.compare.paths.fr]: {
+    title: COMPARE_INDEX.fr.title,
+    note: COMPARE_INDEX.fr.description,
+  },
+  [ROUTES.compare.paths.it]: {
+    title: COMPARE_INDEX.it.title,
+    note: COMPARE_INDEX.it.description,
+  },
+  [ROUTES.compare.paths.pt]: {
+    title: COMPARE_INDEX.pt.title,
+    note: COMPARE_INDEX.pt.description,
   },
 };
 
@@ -140,7 +173,7 @@ function indexableLinks(now: Date): { pages: Link[]; guides: Link[] } {
     const posts = new Map<string, BlogPost>(
       listPosts(locale, now).map((post) => [post.path, post]),
     );
-    const compares = new Map(listComparePages().map((page) => [page.path, page]));
+    const compares = new Map(listComparePages(locale).map((page) => [page.path, page]));
     for (const entry of localeEntries(locale, now)) {
       const post = posts.get(entry.path);
       if (post) {

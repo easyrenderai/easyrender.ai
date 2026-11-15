@@ -24,6 +24,27 @@ export const methodDecisionTree = defineDiagram(
         photogrammetry: { title: 'Photogrammetry', note: '20 to 100+ photos' },
       },
     },
+    de: {
+      questions: [
+        'Gibt es das Objekt schon?',
+        'Steht es vor dir?',
+        'Groß und einfach, oder detailliert?',
+      ],
+      no: 'Nein',
+      yes: 'Ja',
+      onlyPhoto: 'Nein, nur ein Foto',
+      large: 'Groß, einfach',
+      detailed: 'Detaillierte Fläche',
+      methods: {
+        software: { title: 'Im Programm modellieren', note: 'Oder eine 3D-Fachkraft beauftragen' },
+        ai: {
+          title: 'KI aus einem Foto',
+          note: 'Prüfe die Rückseite. Eine Fachkraft, wenn es exakt sein muss',
+        },
+        lidar: { title: 'LiDAR am Handy', note: 'Ein Sofa, ein Schrank' },
+        photogrammetry: { title: 'Photogrammetrie', note: '20 bis über 100 Fotos' },
+      },
+    },
   },
   function MethodDecisionTree({ t }) {
     // A ladder: each question has one answer that ends at a method (left) and one that leads on
@@ -74,6 +95,10 @@ export const photogrammetryRings = defineDiagram(
     en: {
       rings: ['High', 'Middle', 'Low'],
       overlap: ['Next photo: about 70%', 'of the view is shared'],
+    },
+    de: {
+      rings: ['Oben', 'Mitte', 'Unten'],
+      overlap: ['Nächstes Foto: etwa 70 %', 'der Ansicht überlappen sich'],
     },
   },
   function PhotogrammetryRings({ t }) {
@@ -148,6 +173,13 @@ export const blockoutSideTable = defineDiagram(
         ['Block out', 'boxes, cylinders'],
         ['Bevel', 'the edges'],
         ['Materials,', 'export GLB'],
+      ],
+    },
+    de: {
+      stages: [
+        ['Blockout', 'Kästen, Zylinder'],
+        ['Kanten', 'abrunden'],
+        ['Materialien,', 'GLB exportieren'],
       ],
     },
   },

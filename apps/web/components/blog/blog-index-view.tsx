@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n/config';
 import { listPosts } from '@/lib/blog/posts';
-import { listComparePages } from '@/lib/compare/pages';
+import { compareHref, listComparePages } from '@/lib/compare/pages';
 import { isPublished, ROUTES } from '@/lib/seo/routes';
 import { FeaturedPostCard, PostCard } from './post-card';
 
@@ -14,7 +14,7 @@ import { FeaturedPostCard, PostCard } from './post-card';
 export async function BlogIndexView({ locale }: { locale: Locale }) {
   const t = await getTranslations('Blog');
   const [latest, ...rest] = listPosts(locale);
-  const comparisons = isPublished('compare', locale) ? listComparePages() : [];
+  const comparisons = isPublished('compare', locale) ? listComparePages(locale) : [];
 
   return (
     <div className="mx-auto max-w-6xl px-4 pt-10 pb-20 sm:px-6 sm:pt-14 sm:pb-28">
@@ -78,16 +78,15 @@ export async function BlogIndexView({ locale }: { locale: Locale }) {
             id="comparisons"
             className="font-mono text-xs uppercase tracking-widest text-muted-foreground"
           >
-            Comparisons
+            {t('comparisons.title')}
           </h2>
           <p className="mt-4 max-w-2xl text-muted-foreground text-pretty">
-            Side-by-side looks at 3D modeling methods and tools, for when a guide is not enough to
-            choose.
+            {t('comparisons.description')}
           </p>
           <ul className="mt-8 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {comparisons.map((page) => (
               <li key={page.slug}>
-                <Link href={page.path} className="group block">
+                <Link href={compareHref(page.locale, page.slug)} className="group block">
                   <h3 className="font-medium tracking-tight text-balance group-hover:underline">
                     {page.title}
                   </h3>

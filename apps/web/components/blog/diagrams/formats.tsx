@@ -41,6 +41,19 @@ export const glbAnatomy = defineDiagram(
       gltfFiles: ['clay-vase.gltf', 'clay-vase.bin', 'texture.webp'],
       gltfNote: 'Three files that only work while they stay together.',
     },
+    fr: {
+      file: 'clay-vase.glb',
+      parts: {
+        json: { title: 'Bloc JSON', note: 'Scène, maillage, matériau : la description' },
+        indices: { title: 'Triangles', note: 'Les sommets qui forment chaque face' },
+        vertices: { title: 'Sommets', note: 'Positions et coordonnées de texture' },
+        texture: { title: 'Texture', note: 'Une image WebP de 1 024 px' },
+      },
+      bin: 'Bloc BIN : les données binaires',
+      gltf: 'Le même modèle en glTF',
+      gltfFiles: ['clay-vase.gltf', 'clay-vase.bin', 'texture.webp'],
+      gltfNote: 'Trois fichiers qui ne fonctionnent qu’ensemble.',
+    },
   },
   function GlbAnatomy({ t }) {
     const parts = [
@@ -110,6 +123,16 @@ export const usdzAnatomy = defineDiagram(
       images: { title: 'Texture images', note: 'PNG or JPEG files the layer points to' },
       read: 'Nothing to unpack: the device reads each file straight out of the archive.',
     },
+    de: {
+      file: 'side-table.usdz',
+      zip: 'ZIP-Archiv, ohne Kompression gespeichert',
+      layer: {
+        title: 'USD-Ebene',
+        note: '.usdc (binär) oder .usda (Text): Mesh, Materialien, Größe in der Datei',
+      },
+      images: { title: 'Texturbilder', note: 'PNG- oder JPEG-Dateien, auf die die Ebene zeigt' },
+      read: 'Nichts zu entpacken: das Gerät liest jede Datei direkt aus dem Archiv.',
+    },
   },
   function UsdzAnatomy({ t }) {
     return (
@@ -151,6 +174,25 @@ export const quickLookPath = defineDiagram(
       ],
       size: 'AR uses the size stored in the file. A model made from a photo has no measured size.',
       android: 'Android does not open USDZ: it shows the GLB in Scene Viewer instead.',
+    },
+    de: {
+      routes: [
+        {
+          title: 'Eine Webseite in Safari',
+          note: 'Link mit rel="ar" um ein Vorschaubild; Safari setzt ein AR-Symbol',
+        },
+        {
+          title: 'Eine Datei in Nachrichten, Mail oder Dateien',
+          note: 'Tippe den .usdz-Anhang an',
+        },
+      ],
+      quickLook: 'AR Quick Look',
+      views: [
+        { title: 'Objektansicht', note: 'Mit einem Finger drehen' },
+        { title: 'AR-Ansicht', note: 'Kamera an, auf den Boden tippen' },
+      ],
+      size: 'AR nutzt die Größe in der Datei. Ein Modell aus einem Foto hat keine gemessene Größe.',
+      android: 'Android öffnet kein USDZ: es zeigt das GLB im Scene Viewer.',
     },
   },
   function QuickLookPath({ t }) {

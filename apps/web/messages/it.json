@@ -1197,6 +1197,11 @@
         "button": "Upload a photo"
       },
       "related": "Continua a leggere"
+    },
+    "comparisons": {
+      "title": "Confronti",
+      "description": "Metodi e strumenti di modellazione 3D affiancati, quando una guida non basta per scegliere.",
+      "read": "Leggi il confronto"
     }
   },
   "Models": {
