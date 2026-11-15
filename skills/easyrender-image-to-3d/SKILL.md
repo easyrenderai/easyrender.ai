@@ -78,7 +78,8 @@ consult [the workflow examples](references/workflows.md).
 - For multiple photos, create and track individual renders. Start sequentially; keep an item → ID
   → status → reserved/spent credits record and an aggregate ceiling. Reserve uncertain paid calls
   against the budget until resolved. Do not describe this as a native batch API or exceed preview
-  limits. Do not retry failed paid items unless the approved budget also covers those retries.
+  limits. Do not retry failed paid items without both explicit retry authorization and sufficient
+  remaining budget.
 
 ## Deliver an honest result
 

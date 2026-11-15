@@ -69,7 +69,9 @@ already reflects whether the render can reuse a final sheet. `credits` accounts 
 spent on this render; don't subtract a sheet cost again or count prior spend as a new debit.
 
 Consult live values; do not hard-code a credit amount or currency conversion in this skill.
-Plans may vary by account, and an AI client can charge separately. The `buy` URL is a destination
+Plans may vary by account, and an AI client can charge separately. If the user sets a ceiling
+in money, use an explicitly agreed current conversion in that currency or ask for a credit
+ceiling; do not infer it from a default advertised rate or an unrelated subscription price. The `buy` URL is a destination
 for the user to review, not authorization to purchase. The server bills/refunds; the skill cannot
 prevent all concurrent account spend, cancel a job or grant a refund. Recheck the budget before
 each paid call and count unresolved attempts against the cap.
