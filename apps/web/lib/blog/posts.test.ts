@@ -110,7 +110,7 @@ describe('what a post carries besides its text', () => {
     for (const entry of posts) {
       expect({ slug: entry.slug, author: entry.author }).toEqual({
         slug: entry.slug,
-        author: { name: 'Jorge Rodríguez', type: 'Person' },
+        author: { name: 'Jorge Rodríguez', type: 'Person', url: '/authors/jorge-rodriguez' },
       });
     }
   });

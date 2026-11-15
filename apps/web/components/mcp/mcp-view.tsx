@@ -7,6 +7,7 @@ import { IntegrationResult } from '@/components/integrations/result';
 import { Pricing, Section } from '@/components/landing';
 import { McpSkill } from '@/components/mcp/mcp-skill';
 import { McpSetup } from '@/components/mcp-setup';
+import { ResourceLinks } from '@/components/resource-links';
 import { StudioHero } from '@/components/studio/hero';
 import { StudioClosing, StudioCompatibility } from '@/components/studio/proof';
 import { StudioShell } from '@/components/studio/shell';
@@ -172,6 +173,7 @@ export async function McpView({ locale }: { locale: Locale }) {
           ))}
         </div>
       </Section>
+      <ResourceLinks locale={locale} context="mcp" />
       <StudioClosing title={t('closing.title')} label={t('closing.cta')} href={accountHref} />
     </StudioShell>
   );

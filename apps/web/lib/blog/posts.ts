@@ -198,7 +198,15 @@ export function parsePost(
   const authorType = AUTHOR_TYPES[(data.authorType ?? 'organization').toLowerCase()];
   if (!authorType) return { error: `invalid authorType "${data.authorType}"` };
   const author: BlogAuthor = data.author
-    ? { name: data.author, type: authorType, ...(data.authorUrl ? { url: data.authorUrl } : {}) }
+    ? {
+        name: data.author,
+        type: authorType,
+        ...(data.authorUrl
+          ? { url: data.authorUrl }
+          : data.author === 'Jorge Rodríguez' && authorType === 'Person'
+            ? { url: ROUTES.author.paths[locale] }
+            : {}),
+      }
     : DEFAULT_AUTHOR;
 
   return {

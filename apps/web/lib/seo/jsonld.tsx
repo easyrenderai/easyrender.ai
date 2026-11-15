@@ -1,4 +1,9 @@
-import { type PricingVariant, PUBLIC_PLAN_IDS, pricingFor } from '@easyrender/harness';
+import {
+  type ChargeCurrency,
+  displayPricing,
+  type PricingVariant,
+  PUBLIC_PLAN_IDS,
+} from '@easyrender/harness';
 import { HTML_LANG, type Locale } from '@/i18n/config';
 import { ROUTES } from './routes';
 import { absoluteUrl, OG_IMAGE, OG_IMAGE_SIZE, SITE_NAME, SITE_URL } from './site';
@@ -13,14 +18,14 @@ const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 const SOFTWARE_ID = `${SITE_URL}/#software`;
 
-// No logo and no sameAs: the site has neither a logo file nor a confirmed social profile, and a
-// structured-data property pointing at a 404 is worse than a missing one.
 export function organization(): Thing {
   return {
     '@type': 'Organization',
     '@id': ORGANIZATION_ID,
     name: SITE_NAME,
     url: SITE_URL,
+    logo: absoluteUrl('/icon.svg'),
+    sameAs: ['https://github.com/easyrenderai'],
   };
 }
 
@@ -43,8 +48,9 @@ export function softwareApplication(
   locale: Locale,
   description: string,
   variant: PricingVariant = 'control',
+  currency: ChargeCurrency = 'usd',
 ): Thing {
-  const { creditUsd: CREDIT_USD, payg: PAYG, plans: SUBSCRIPTION_PLANS } = pricingFor(variant);
+  const { creditPrice, payg: PAYG, plans: SUBSCRIPTION_PLANS } = displayPricing(variant, currency);
   return {
     '@type': 'SoftwareApplication',
     '@id': SOFTWARE_ID,
@@ -59,18 +65,18 @@ export function softwareApplication(
       {
         '@type': 'Offer',
         name: 'Pay as you go',
-        price: (PAYG.min * CREDIT_USD).toFixed(2),
-        priceCurrency: 'USD',
-        description: `From ${PAYG.min} credits at $${CREDIT_USD.toFixed(2)} each. Credits never expire.`,
-        url: absoluteUrl(ROUTES.pricing.paths.en),
+        price: (PAYG.min * creditPrice).toFixed(2),
+        priceCurrency: currency.toUpperCase(),
+        description: `${PAYG.min} credits.`,
+        url: absoluteUrl(ROUTES.pricing.paths[locale]),
       },
       ...PUBLIC_PLAN_IDS.map((id) => ({
         '@type': 'Offer',
         name: SUBSCRIPTION_PLANS[id].label,
         price: (SUBSCRIPTION_PLANS[id].priceCents / 100).toFixed(2),
-        priceCurrency: 'USD',
+        priceCurrency: currency.toUpperCase(),
         description: `${SUBSCRIPTION_PLANS[id].monthlyCredits} credits every month.`,
-        url: absoluteUrl(ROUTES.pricing.paths.en),
+        url: absoluteUrl(ROUTES.pricing.paths[locale]),
       })),
     ],
   };

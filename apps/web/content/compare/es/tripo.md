@@ -4,6 +4,7 @@ group: compare-tripo
 title: Alternativa a Tripo para fotos de producto
 description: Alternativa a Tripo para pasar una foto de producto a modelo 3D: entradas, coste en créditos y formatos con fuentes, y a quién le conviene cada uno.
 date: 2026-11-15
+updated: 2026-11-15
 keyword: tripo
 author: Jorge Rodríguez
 authorType: person
@@ -15,6 +16,16 @@ Si buscas una alternativa a Tripo para una sola foto de producto, easyrender dib
 Tripo abarca más: texto, una imagen o varias vistas como entrada, texturas PBR (materiales definidos por propiedades como el color, la metalicidad y la rugosidad), mallas de cuadriláteros, rigging, animación y conversión de formatos. Elige según lo que tienes y para qué quieres el modelo.
 
 <!-- IMAGE PENDING: ilustración EN del taburete de ratán (mitad mimbre trenzado, mitad malla de arcilla y alambre). Pie: «Ilustración, no es un resultado de easyrender». -->
+
+## Prueba real de Tripo Studio con nuestra foto del sillón
+
+El 15 de noviembre de 2026 subimos la [foto pública de nuestro sillón](/showcase/armchair.jpg) a Tripo Studio. Seleccionamos H3.1 Best Quality, Geometry & Texture, con 8K y Generate in Parts desactivados. La interfaz indicó 55 créditos, consumidos del saldo existente; no contratamos ningún plan.
+
+El modelo apareció en el visor de Studio, que indicó 1.836.704 caras triangulares y 998.795 vértices. Al intentar exportar en GLB con la textura actual de 4K, esta cuenta recibió una petición de pasar a un plan de pago. No descargamos el archivo ni medimos su peso, compatibilidad externa o carga en móvil.
+
+Esta prueba corresponde a Studio, no a los precios de API de la tabla siguiente. No generamos simultáneamente un modelo con el flujo actual de easyrender, por lo que no es una comparación controlada de calidad o velocidad. El [sillón de muestra de easyrender](/showcase/armchair.glb) es un resultado histórico con otros ajustes.
+
+Antes de elegir un flujo gratuito, comprueba el acceso a las exportaciones además de los créditos de generación. Una prueba no permite concluir qué herramienta produce mejores muebles. La comparación completa necesita archivos descargables, versiones y ajustes registrados, repeticiones y el mismo criterio de aceptación para ambas herramientas.
 
 ## ¿En qué se diferencian Tripo y easyrender?
 

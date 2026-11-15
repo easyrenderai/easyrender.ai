@@ -4,7 +4,7 @@ group: 3d-models-for-ecommerce
 title: "3D for ecommerce: how stores get 3D models"
 description: "3D for ecommerce: what a 3D product model adds, which files a store needs (GLB and USDZ), four ways to get one, and the limits to know first."
 date: 2026-11-13
-updated: 2026-11-11
+updated: 2026-11-15
 author: Jorge Rodríguez
 authorType: person
 keyword: 3d for ecommerce
@@ -14,6 +14,26 @@ cta: Pick one piece with depth, an armchair or a sideboard, and check every angl
 3D for ecommerce means giving a product a 3D model, usually a GLB or USDZ file, that shoppers can spin on screen and, on a phone, place in their room with AR. Stores get these models in four ways: from a 3D artist, from the manufacturer's CAD files, by scanning the product, or with AI from a single photo.
 
 ![Illustration of a brown leather loafer beside its shoe box, the front of the loafer in real leather and the heel in matte grey clay with a white wireframe mesh, on a dark background](/blog/illustrations/3d-models-for-ecommerce/hero.webp "Illustration, not an easyrender result: a loafer drawn half as leather, half as a clay-and-wireframe mesh, next to its box.")
+
+## From one furniture photo to Shopify product media
+
+Use this repeatable workflow for one product before starting a batch. These instructions follow [Shopify's product-media documentation](https://help.shopify.com/en/manual/products/product-media/add-media); they are not a report of a completed store deployment.
+
+1. Choose a sharp three-quarter photo showing the whole piece, including its feet. Keep the original product dimensions separately.
+2. Upload it to easyrender and inspect the available preview. Check the back, leg count and open spaces before building the full model.
+3. Download the GLB. Rotate the finished file and compare visible details with your source photo; reject an incorrect model even if generation succeeded.
+4. In Shopify, open Products, select the product, then add the GLB in Media using Upload new. Wait for processing.
+5. Check that your theme supports 3D media. Open the actual storefront on mobile and desktop, and verify texture, rotation and loading. Test AR separately on a compatible phone.
+
+You can inspect our existing [armchair GLB](/showcase/armchair.glb) before generating your own. It contains 25,879 triangles and occupies 622,804 bytes, measured from that file on 15 November 2026. This is a downloadable sample, not evidence that your theme or every generated model will behave identically.
+
+## Budget by usable model, not by successful job
+
+Record each attempt, credits charged, refunds and whether the output passed your product check. Divide the net credits consumed by the number of models you accepted. A technically successful model with the wrong back or legs belongs in the cost, but not in the accepted-model count.
+
+The standard complete generation is {{renderCredits}} credits; use the [current pricing](/pricing) for your currency and plan. Editing and additional operations can have separate quotes. If no model passes, report the spend and zero accepted models rather than claiming a cost per usable model.
+
+For automation, the [REST API guide](/image-to-3d-api) includes executable Python and TypeScript examples with status polling. The [MCP integration](/mcp) exposes the same workflow to agents. Start with one reviewed product, then batch the inputs that pass your acceptance check.
 
 ## What does a 3D model add to a product page?
 

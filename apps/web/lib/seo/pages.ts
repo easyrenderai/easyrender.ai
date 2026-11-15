@@ -30,6 +30,38 @@ import { absoluteUrl } from './site';
 // The head and the structured data of every indexable page, in one place, so the home in English
 // and the home in Spanish are built the same way and only the words differ.
 
+export async function authorMetadata(locale: Locale): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'Author' });
+  return pageMetadata({
+    locale,
+    path: ROUTES.author.paths[locale],
+    title: t('metaTitle'),
+    description: t('bio'),
+    alternates: livePaths('author'),
+  });
+}
+
+export async function authorGraph(locale: Locale) {
+  const t = await getTranslations({ locale, namespace: 'Author' });
+  const url = absoluteUrl(ROUTES.author.paths[locale]);
+  return [
+    organization(),
+    {
+      '@type': 'ProfilePage',
+      '@id': url,
+      url,
+      mainEntity: {
+        '@type': 'Person',
+        '@id': `${url}#person`,
+        name: 'Jorge Rodríguez',
+        url,
+        description: t('bio'),
+        affiliation: { '@id': `${absoluteUrl('/')}/#organization` },
+      },
+    },
+  ];
+}
+
 export async function legalMetadata(kind: 'privacy' | 'terms', locale: Locale): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: `Legal.${kind}` });
   return pageMetadata({
@@ -38,6 +70,17 @@ export async function legalMetadata(kind: 'privacy' | 'terms', locale: Locale): 
     title: t('metaTitle'),
     description: t('metaDescription'),
     alternates: livePaths(kind),
+  });
+}
+
+export async function cookiesMetadata(locale: Locale): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'Analytics' });
+  return pageMetadata({
+    locale,
+    path: ROUTES.cookies.paths[locale],
+    title: t('metaTitle'),
+    description: t('metaDescription'),
+    alternates: livePaths('cookies'),
   });
 }
 
@@ -59,11 +102,12 @@ export async function homeGraph(locale: Locale) {
     getTranslations({ locale, namespace: 'Home.meta' }),
     faqItems(),
   ]);
+  const pricing = await currentPricing();
   return [
     organization(),
     website(locale),
     webPage(locale, ROUTES.home.paths[locale], t('title'), t('description')),
-    softwareApplication(locale, t('description'), (await currentPricing()).variant),
+    softwareApplication(locale, t('description'), pricing.variant, pricing.currency),
     faqPage(items),
   ];
 }
@@ -110,7 +154,7 @@ export async function pricingGraph(locale: Locale) {
   return [
     organization(),
     webPage(locale, ROUTES.pricing.paths[locale], t('metaTitle'), description),
-    softwareApplication(locale, description, pricing.variant),
+    softwareApplication(locale, description, pricing.variant, pricing.currency),
     breadcrumbList([
       { name: t('home'), path: ROUTES.home.paths[locale] },
       { name: t('breadcrumb'), path: ROUTES.pricing.paths[locale] },

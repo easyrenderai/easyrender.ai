@@ -1,10 +1,4 @@
-import {
-  BUILD_MODEL,
-  FINAL_SHEET_MODEL,
-  RENDER_CREDITS,
-  SHEET_CREDITS,
-  SHEET_MODEL,
-} from '@easyrender/harness';
+import { BUILD_MODEL, FINAL_SHEET_MODEL, RENDER_CREDITS, SHEET_MODEL } from '@easyrender/harness';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
@@ -32,11 +26,9 @@ const modelId = (path: string) => path.replace('/models/', '').replace('/predict
 export async function ModelsView({ locale }: { locale: Locale }) {
   const t = await getTranslations('Models');
   const { creditPrice, currency } = await currentPricing();
-  const buildCredits = RENDER_CREDITS - SHEET_CREDITS;
-
   const rows = [
-    { key: 'sheet', credits: SHEET_CREDITS },
-    { key: 'build', credits: buildCredits },
+    { key: 'sheet', credits: 0 },
+    { key: 'build', credits: RENDER_CREDITS },
     { key: 'total', credits: RENDER_CREDITS, isTotal: true },
   ] as const;
 

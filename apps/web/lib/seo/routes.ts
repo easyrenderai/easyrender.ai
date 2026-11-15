@@ -30,6 +30,19 @@ export type RouteEntry = {
 };
 
 export const ROUTES = {
+  author: {
+    paths: {
+      en: '/authors/jorge-rodriguez',
+      es: '/es/autores/jorge-rodriguez',
+      de: '/de/autoren/jorge-rodriguez',
+      fr: '/fr/auteurs/jorge-rodriguez',
+      it: '/it/autori/jorge-rodriguez',
+      pt: '/pt/autores/jorge-rodriguez',
+    },
+    published: LOCALES,
+    priority: 0.4,
+    changeFrequency: 'monthly',
+  },
   home: {
     paths: { en: '/', es: '/es', de: '/de', fr: '/fr', it: '/it', pt: '/pt' },
     // All six homes, pricing and legal pages are public. Other translated marketing pages
