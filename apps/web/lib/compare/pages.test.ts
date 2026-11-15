@@ -7,6 +7,7 @@ import { heroSource, parseBlocks } from '@/lib/blog/markdown';
 import { llmsFullTxt, llmsTxt } from '@/lib/seo/llms';
 import { isNoindexPath } from '@/lib/seo/noindex';
 import { postTitle } from '@/lib/seo/pages';
+import { ROUTES } from '@/lib/seo/routes';
 import { localeSitemapXml } from '@/lib/seo/sitemap';
 import {
   COMPARE_INDEX,
@@ -45,9 +46,9 @@ describe('the published comparisons', () => {
     expect(isComparePublished()).toBe(true);
     expect(isCompareInReview()).toBe(false);
     expect(listComparePages()).toHaveLength(5);
-    expect(COMPARE_INDEX.title.length).toBeLessThanOrEqual(60);
-    expect(postTitle(COMPARE_INDEX.title).length).toBeLessThanOrEqual(60);
-    expect(COMPARE_INDEX.description.length).toBeLessThanOrEqual(160);
+    expect(COMPARE_INDEX.en.title.length).toBeLessThanOrEqual(60);
+    expect(postTitle(COMPARE_INDEX.en.title).length).toBeLessThanOrEqual(60);
+    expect(COMPARE_INDEX.en.description.length).toBeLessThanOrEqual(160);
     for (const slug of REVIEW_SLUGS) expect(getComparePage(slug)?.path).toBe(`/compare/${slug}`);
     expect(getComparePage('does-not-exist')).toBeNull();
   });
@@ -134,7 +135,7 @@ describe('once they are published', () => {
     for (const page of pages) expect(isNoindexPath(page.path), page.path).toBe(false);
   });
 
-  it('appear in the English sitemap and in llms.txt, and nowhere else', () => {
+  it('appear in every language’s sitemap, with hreflang only where that file exists', () => {
     const english = [localeSitemapXml('en'), llmsTxt(), llmsFullTxt()].join('\n');
     expect(english).toContain('/compare<');
     expect(english).toMatch(/https:\/\/easyrender\.ai\/compare['"\s<]/);
@@ -142,7 +143,12 @@ describe('once they are published', () => {
       expect(english, page.path).toContain(page.path);
     }
     for (const locale of LOCALES.filter((item) => item !== 'en')) {
-      expect(localeSitemapXml(locale)).not.toMatch(/\/compare\b/);
+      const xml = localeSitemapXml(locale);
+      expect(xml, locale).toContain(
+        `<loc>https://easyrender.ai${ROUTES.compare.paths[locale]}</loc>`,
+      );
+      // The English hub is an alternate of the localized hub, not a second canonical.
+      expect(xml, locale).toContain('hreflang="en" href="https://easyrender.ai/compare"');
     }
   });
 

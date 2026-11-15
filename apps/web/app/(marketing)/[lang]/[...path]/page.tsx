@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { ApiView } from '@/components/api-landing/api-view';
 import { BlogIndexView } from '@/components/blog/blog-index-view';
 import { BlogPostView } from '@/components/blog/blog-post-view';
+import { CompareIndexView } from '@/components/compare/compare-index-view';
+import { CompareView } from '@/components/compare/compare-view';
 import { CookiesPage } from '@/components/cookies-page';
 import { EvalsView } from '@/components/evals/evals-view';
 import { LegalPage } from '@/components/legal-page';
@@ -11,12 +13,17 @@ import { ModelsView } from '@/components/models/models-view';
 import { PricingView } from '@/components/pricing/pricing-view';
 import { isRoutableLocale, type Locale } from '@/i18n/config';
 import { type BlogPost, getPost } from '@/lib/blog/posts';
+import { type ComparePage, getComparePage } from '@/lib/compare/pages';
 import { JsonLd } from '@/lib/seo/jsonld';
 import {
   apiGraph,
   apiMetadata,
   blogIndexGraph,
   blogIndexMetadata,
+  compareIndexGraph,
+  compareIndexMetadata,
+  comparePageGraph,
+  comparePageMetadata,
   evalsGraph,
   evalsMetadata,
   legalMetadata,
@@ -41,6 +48,8 @@ import { isPublished, ROUTES } from '@/lib/seo/routes';
 type Match =
   | { kind: 'blogIndex'; locale: Locale }
   | { kind: 'post'; post: BlogPost }
+  | { kind: 'compareIndex'; locale: Locale }
+  | { kind: 'comparison'; page: ComparePage }
   | { kind: 'pricing'; locale: Locale }
   | { kind: 'api'; locale: Locale }
   | { kind: 'mcp'; locale: Locale }
@@ -76,6 +85,16 @@ function resolve(lang: string, segments: string[]): Match {
     return { kind: 'evals', locale };
   }
 
+  if (isPublished('compare', locale)) {
+    const hub = ROUTES.compare.paths[locale];
+    if (path === hub) return { kind: 'compareIndex', locale };
+    if (path.startsWith(`${hub}/`)) {
+      const slug = path.slice(hub.length + 1);
+      const page = slug.includes('/') ? null : getComparePage(slug, locale);
+      if (page) return { kind: 'comparison', page };
+    }
+  }
+
   if (isPublished('blog', locale)) {
     const hub = ROUTES.blog.paths[locale];
     if (path === hub) return { kind: 'blogIndex', locale };
@@ -98,6 +117,8 @@ export async function generateMetadata({
     return legalMetadata(match.kind, match.locale);
   if (match.kind === 'post') return postMetadata(match.post);
   if (match.kind === 'blogIndex') return blogIndexMetadata(match.locale);
+  if (match.kind === 'comparison') return comparePageMetadata(match.page);
+  if (match.kind === 'compareIndex') return compareIndexMetadata(match.locale);
   if (match.kind === 'pricing') return pricingMetadata(match.locale);
   if (match.kind === 'api') return apiMetadata(match.locale);
   if (match.kind === 'mcp') return mcpMetadata(match.locale);
@@ -129,6 +150,22 @@ export default async function LocalePage({ params }: PageProps<'/[lang]/[...path
       <>
         <JsonLd graph={await postGraph(match.post)} />
         <BlogPostView post={match.post} />
+      </>
+    );
+  }
+  if (match.kind === 'compareIndex') {
+    return (
+      <>
+        <JsonLd graph={await compareIndexGraph(match.locale)} />
+        <CompareIndexView locale={match.locale} />
+      </>
+    );
+  }
+  if (match.kind === 'comparison') {
+    return (
+      <>
+        <JsonLd graph={await comparePageGraph(match.page)} />
+        <CompareView page={match.page} />
       </>
     );
   }

@@ -104,6 +104,32 @@ export const vintageShotList = defineDiagram(
       ],
       note: 'Shot 8 is the one that heads off a dispute after delivery.',
     },
+    de: {
+      shots: [
+        { picto: 'front', title: 'Front' },
+        { picto: 'threeQuarter', title: 'Dreiviertel' },
+        { picto: 'side', title: 'Seite' },
+        { picto: 'back', title: 'Rückseite' },
+        { picto: 'drawer', title: 'Jede Schublade innen' },
+        { picto: 'label', title: 'Etikett oder Stempel' },
+        { picto: 'joint', title: 'Verbindungen, Reparaturen' },
+        { picto: 'flaw', title: 'Jeder Mangel, nah', isKey: true },
+      ],
+      note: 'Aufnahme 8 verhindert einen Streit nach der Lieferung.',
+    },
+    fr: {
+      shots: [
+        { picto: 'front', title: 'Face' },
+        { picto: 'threeQuarter', title: 'Trois-quarts' },
+        { picto: 'side', title: 'Profil' },
+        { picto: 'back', title: 'Arrière' },
+        { picto: 'drawer', title: 'Chaque tiroir, dedans' },
+        { picto: 'label', title: 'Étiquette ou estampille' },
+        { picto: 'joint', title: 'Assemblages, réparations' },
+        { picto: 'flaw', title: 'Chaque défaut, de près', isKey: true },
+      ],
+      note: 'La vue 8 évite un litige après la livraison.',
+    },
   },
   function VintageShotList({ t }) {
     return (
@@ -148,6 +174,34 @@ export const listingTitle = defineDiagram(
       weakNote: 'No maker, material, style or era: nothing a buyer searches for.',
       goodLabel: 'Found',
       weakLabel: 'Missed',
+    },
+    de: {
+      good: [
+        { word: 'Thonet', part: 'Hersteller' },
+        { word: 'Bugholzstuhl', part: 'Gegenstand' },
+        { word: '214,', part: 'Modell' },
+        { word: 'Buche, Wiener Geflecht', part: 'Material' },
+        { word: '1960er', part: 'Epoche' },
+      ],
+      weak: 'Schöner alter Stuhl',
+      weakNote:
+        'Kein Hersteller, kein Material, kein Stil, keine Epoche: nichts, wonach ein Käufer sucht.',
+      goodLabel: 'Gefunden',
+      weakLabel: 'Verfehlt',
+    },
+    fr: {
+      good: [
+        { word: 'Chaise', part: 'Objet' },
+        { word: 'bistrot', part: 'Style' },
+        { word: 'Baumann', part: 'Fabricant' },
+        { word: 'en hêtre courbé,', part: 'Matière' },
+        { word: 'années 60', part: 'Époque' },
+      ],
+      weak: 'Jolie chaise ancienne',
+      weakNote:
+        'Ni fabricant, ni matière, ni style, ni époque : rien de ce que cherche un acheteur.',
+      goodLabel: 'Trouvé',
+      weakLabel: 'Manqué',
     },
   },
   function ListingTitle({ t }) {

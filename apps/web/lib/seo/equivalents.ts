@@ -1,6 +1,7 @@
 import type { Locale } from '@/i18n/config';
 import { postLivePaths, readPosts } from '@/lib/blog/posts';
-import { livePaths, ROUTE_KEYS, ROUTES } from './routes';
+import { compareLivePaths, readComparePages } from '@/lib/compare/pages';
+import { isPublished, livePaths, ROUTE_KEYS, ROUTES } from './routes';
 
 export type Equivalent = { locale: Locale; path: string };
 
@@ -20,13 +21,16 @@ export function equivalentPaths(pathname: string, now: Date = new Date()): Equiv
   const post = findPost(path, now);
   if (post) return toList(postLivePaths(post, now));
 
+  const comparison = findComparison(path);
+  if (comparison) return toList(compareLivePaths(comparison));
+
   return toList(livePaths('home'));
 }
 
 /**
  * What the language picker in the header lists. The page's own equivalents when it has at least
- * two, otherwise the homes, with this page kept for its own language: /compare is English only, and
- * the picker must not vanish there.
+ * two, otherwise the homes, with this page kept for its own language so the picker does not
+ * vanish on a page that has no translation yet.
  */
 export function pickerPaths(pathname: string, now: Date = new Date()): Equivalent[] {
   const own = equivalentPaths(pathname, now);
@@ -43,6 +47,20 @@ function findPost(path: string, now: Date): string | null {
     const slug = path.slice(ROUTES.blog.paths[locale].length + 1);
     const match = readPosts(locale).find((post) => post.slug === slug);
     if (match && Date.parse(match.date) <= now.getTime()) return match.group;
+  }
+  return null;
+}
+
+/** The comparison group whose URL this is, in any language that publishes the file. */
+function findComparison(path: string): string | null {
+  for (const locale of Object.keys(ROUTES.compare.paths) as Locale[]) {
+    if (!isPublished('compare', locale)) continue;
+    const hub = ROUTES.compare.paths[locale];
+    if (!path.startsWith(`${hub}/`)) continue;
+    const slug = path.slice(hub.length + 1);
+    if (!slug || slug.includes('/')) continue;
+    const match = readComparePages(locale).find((page) => page.slug === slug);
+    if (match) return match.group;
   }
   return null;
 }

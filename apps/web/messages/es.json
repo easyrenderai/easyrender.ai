@@ -1197,6 +1197,11 @@
         "button": "Subir una foto"
       },
       "related": "Sigue leyendo"
+    },
+    "comparisons": {
+      "title": "Comparativas",
+      "description": "Métodos y herramientas de modelado 3D, uno al lado del otro, para cuando una guía no basta para elegir.",
+      "read": "Leer la comparativa"
     }
   },
   "Models": {

@@ -23,6 +23,43 @@ export const storeFiles = defineDiagram(
       ],
       shopify: 'Shopify takes both files as product media.',
     },
+    de: {
+      model: 'Ein Produktmodell',
+      files: [
+        {
+          name: 'GLB',
+          places: [
+            { title: 'Produktseite, jeder Browser', note: 'In einem Viewer wie model-viewer' },
+            { title: 'AR auf Android', note: 'Google Scene Viewer' },
+          ],
+        },
+        {
+          name: 'USDZ',
+          places: [{ title: 'AR auf iPhone und iPad', note: 'Apple AR Quick Look' }],
+        },
+      ],
+      shopify: 'Shopify nimmt beide Dateien als Produktmedien.',
+    },
+    fr: {
+      model: 'Un modèle produit',
+      files: [
+        {
+          name: 'GLB',
+          places: [
+            {
+              title: 'Fiche produit, tout navigateur',
+              note: 'Dans une visionneuse comme model-viewer',
+            },
+            { title: 'AR sur Android', note: 'Google Scene Viewer' },
+          ],
+        },
+        {
+          name: 'USDZ',
+          places: [{ title: 'AR sur iPhone et iPad', note: 'Apple AR Quick Look' }],
+        },
+      ],
+      shopify: 'Shopify accepte les deux fichiers comme médias produit.',
+    },
   },
   function StoreFiles({ t }) {
     const icons = [[Globe, Smartphone], [Tablet]];
@@ -62,6 +99,20 @@ export const sideboardPhotoPick = defineDiagram(
         { title: 'Front', note: ['No depth:', 'none in', 'the photo'] },
         { title: 'Three-quarter', note: ['Front and', 'end panel:', 'use this one'] },
         { title: 'Close-up', note: ['A handle,', 'not the', 'whole piece'] },
+      ],
+    },
+    de: {
+      shots: [
+        { title: 'Front', note: ['Keine Tiefe', 'auf dem', 'Foto'] },
+        { title: 'Dreiviertel', note: ['Front und', 'Seite:', 'nimm dieses'] },
+        { title: 'Nah', note: ['Ein Griff,', 'nicht das', 'ganze Stück'] },
+      ],
+    },
+    fr: {
+      shots: [
+        { title: 'Face', note: ['Aucune', 'profondeur', 'sur la photo'] },
+        { title: 'Trois-quarts', note: ['Face et', 'côté :', 'prends celle-ci'] },
+        { title: 'Gros plan', note: ['Une poignée,', 'pas le', 'meuble entier'] },
       ],
     },
   },

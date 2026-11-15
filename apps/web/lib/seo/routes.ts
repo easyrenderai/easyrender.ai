@@ -7,8 +7,8 @@ import { absoluteUrl } from './site';
 // `published` is not rendered, not linked and not listed.
 //
 // Slugs come from canales/04-seo/ARQUITECTURA-SEO.md table 1.1 and equivalencias-hreflang.csv.
-// They are provisional for de/fr/it/pt until the native reviewer signs them off, which is also
-// why those locales are unpublished: the slug can still change without breaking a live URL.
+// Guides and comparisons are open in every language that has reviewed copy. A locale missing
+// from `published` is not rendered, not linked and not listed.
 
 export type ChangeFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
@@ -47,7 +47,7 @@ export const ROUTES = {
       it: '/it/guide',
       pt: '/pt/guias',
     },
-    published: ['en', 'es'],
+    published: ['en', 'es', 'de', 'fr', 'it', 'pt'],
     priority: 0.7,
     changeFrequency: 'daily',
   },
@@ -123,9 +123,9 @@ export const ROUTES = {
   },
   // Declared so the slugs are agreed and reserved. Adding a locale here without a page under
   // app/ would 404, so each one lands with its route.
-  // English comparisons are published and indexable (Jorge, 11-nov-2026): /compare and
-  // /compare/{slug} answer 200, appear in the sitemap and llms.txt, and may be linked from
-  // the guides. Other locales wait for reviewed copy.
+  // Comparisons are published in every language that has reviewed copy: /compare and
+  // /compare/{slug} in English, and the native hub plus slug everywhere else. A locale
+  // with no file for a slug 404s. Hreflang only lists the versions that exist.
   compare: {
     paths: {
       en: '/compare',
@@ -135,7 +135,7 @@ export const ROUTES = {
       it: '/it/confronti',
       pt: '/pt/comparacoes',
     },
-    published: ['en'],
+    published: ['en', 'es', 'de', 'fr', 'it', 'pt'],
     priority: 0.6,
     changeFrequency: 'monthly',
   },

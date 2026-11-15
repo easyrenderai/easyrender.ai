@@ -32,8 +32,11 @@ function TocList({ entries }: { entries: TocEntry[] }) {
  * from the content file or from the Blog strings it shares with the guides.
  */
 export async function CompareView({ page }: { page: ComparePage }) {
-  const [t, format] = await Promise.all([getTranslations('Blog'), getFormatter()]);
-  const home = ROUTES.home.paths.en;
+  const [t, format] = await Promise.all([
+    getTranslations({ locale: page.locale, namespace: 'Blog' }),
+    getFormatter({ locale: page.locale }),
+  ]);
+  const home = ROUTES.home.paths[page.locale];
   const toc = tocOf(page.body);
 
   return (
@@ -47,8 +50,8 @@ export async function CompareView({ page }: { page: ComparePage }) {
           </li>
           <li aria-hidden>/</li>
           <li className="shrink-0">
-            <Link href={ROUTES.compare.paths.en} className="hover:text-foreground">
-              Comparisons
+            <Link href={ROUTES.compare.paths[page.locale]} className="hover:text-foreground">
+              {t('comparisons.title')}
             </Link>
           </li>
           <li aria-hidden>/</li>
@@ -70,13 +73,21 @@ export async function CompareView({ page }: { page: ComparePage }) {
           <p className="mt-6 max-w-3xl text-lg leading-relaxed text-muted-foreground text-pretty sm:text-xl">
             {page.description}
           </p>
-          {page.updated && (
-            <p className="mt-8 border-t pt-5 text-sm text-muted-foreground tabular-nums">
-              <time dateTime={page.updated}>
-                {t('post.updated', {
-                  date: format.dateTime(new Date(`${page.updated}T00:00:00Z`), DATE_FORMAT),
-                })}
-              </time>
+          {(page.author || page.updated) && (
+            <p className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 border-t pt-5 text-sm text-muted-foreground tabular-nums">
+              {page.author && (
+                <span className="font-medium text-foreground">
+                  {t('post.by', { author: page.author.name })}
+                </span>
+              )}
+              {page.author && page.updated && <span aria-hidden>·</span>}
+              {page.updated && (
+                <time dateTime={page.updated}>
+                  {t('post.updated', {
+                    date: format.dateTime(new Date(`${page.updated}T00:00:00Z`), DATE_FORMAT),
+                  })}
+                </time>
+              )}
             </p>
           )}
         </header>
@@ -96,7 +107,11 @@ export async function CompareView({ page }: { page: ComparePage }) {
             )}
 
             <div className="text-base leading-7 sm:text-lg sm:leading-8 [&>*:first-child]:mt-0 [&>:not([data-wide])]:max-w-xl">
-              <Markdown source={page.body} isLive={isLiveBlogLink('en')} locale="en" />
+              <Markdown
+                source={page.body}
+                isLive={isLiveBlogLink(page.locale)}
+                locale={page.locale}
+              />
             </div>
 
             <aside className="mt-20 max-w-xl rounded-2xl border bg-muted/40 p-6 sm:p-10">

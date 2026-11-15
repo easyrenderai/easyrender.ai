@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { DIAGRAMS } from '@/components/blog/diagrams';
+import { LOCALES } from '@/i18n/config';
 import { postTitle } from '@/lib/seo/pages';
 import { BLOG_DIAGRAMS, parseImage } from './images';
 import { readPosts } from './posts';
@@ -158,6 +159,22 @@ describe('across the guides', () => {
       .filter(([, guides]) => guides.size > 1)
       .map(([src, guides]) => `${src}: ${[...guides].sort().join(', ')}`);
     expect(shared).toEqual([]);
+  });
+});
+
+describe('diagrams in every language', () => {
+  const translated = LOCALES.flatMap((locale) => readPosts(locale));
+
+  it('draws each diagram with words in the guide’s language', () => {
+    for (const post of translated) {
+      for (const line of post.body.split('\n')) {
+        const media = parseImage(line);
+        if (!media?.diagram) continue;
+        const diagram = DIAGRAMS[media.diagram];
+        expect(diagram, `${post.locale}/${media.src}`).toBeDefined();
+        expect(diagram?.locales, `${post.locale}/${media.src}`).toContain(post.locale);
+      }
+    }
   });
 });
 

@@ -7,7 +7,7 @@ import { comparePageGraph, comparePageMetadata } from '@/lib/seo/pages';
 
 // An English comparison page, published and indexable (Jorge, 11-nov-2026): canonical and
 // Open Graph in the head, FAQ structured data when the page has an accordion, and a place
-// in the sitemap and llms.txt. Other locales are not open yet.
+// in the sitemap and llms.txt. The other languages are served from /[lang]/[...path].
 export async function generateMetadata({
   params,
 }: PageProps<'/compare/[slug]'>): Promise<Metadata> {
@@ -22,7 +22,7 @@ export default async function ComparePageRoute({ params }: PageProps<'/compare/[
   if (!page) notFound();
   return (
     <>
-      <JsonLd graph={comparePageGraph(page)} />
+      <JsonLd graph={await comparePageGraph(page)} />
       <CompareView page={page} />
     </>
   );

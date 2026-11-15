@@ -14,6 +14,24 @@ export const windowLightSetup = defineDiagram(
       ceiling: 'Ceiling lights off',
       bounce: 'bounce',
     },
+    de: {
+      window: ['Fenster,', 'ohne direkte Sonne'],
+      board: ['Weiße', 'Schaumstoffplatte'],
+      product: 'Produkt',
+      camera: ['Handy auf dem Stativ', 'auf halber Höhe'],
+      angle: '45°',
+      ceiling: 'Deckenlicht aus',
+      bounce: 'Aufheller',
+    },
+    fr: {
+      window: ['Fenêtre,', 'sans soleil direct'],
+      board: ['Carton plume', 'blanc'],
+      product: 'Produit',
+      camera: ['Téléphone sur trépied', 'à mi-hauteur'],
+      angle: '45°',
+      ceiling: 'Plafonnier éteint',
+      bounce: 'rebond',
+    },
   },
   function WindowLightSetup({ t }) {
     // Product centred at (300, 190). The window sits front-left of it, 45 degrees off the axis
@@ -148,6 +166,16 @@ export const cameraHeight = defineDiagram(
       high: ['Standing height:', 'short and squat'],
       floor: 'Floor',
     },
+    de: {
+      level: ['Halbe Höhe:', 'echte Proportionen'],
+      high: ['Augenhöhe:', 'kurz und gedrungen'],
+      floor: 'Boden',
+    },
+    fr: {
+      level: ['À mi-hauteur :', 'vraies proportions'],
+      high: ['Debout :', 'court et trapu'],
+      floor: 'Sol',
+    },
   },
   function CameraHeight({ t }) {
     return (
@@ -200,6 +228,14 @@ export const lensDistance = defineDiagram(
     en: {
       close: ['1x lens, close', 'Front legs look longer'],
       far: ['2x or 3x, back', 'Legs look even'],
+    },
+    de: {
+      close: ['Objektiv 1x, nah', 'Vordere Beine länger'],
+      far: ['2x oder 3x, weiter', 'Beine wirken gleich'],
+    },
+    fr: {
+      close: ['Objectif 1x, de près', 'Pieds avant allongés'],
+      far: ['2x ou 3x, en retrait', 'Pieds réguliers'],
     },
   },
   function LensDistance({ t }) {

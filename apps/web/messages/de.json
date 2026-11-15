@@ -1197,6 +1197,11 @@
         "button": "Upload a photo"
       },
       "related": "Lies weiter"
+    },
+    "comparisons": {
+      "title": "Vergleiche",
+      "description": "Methoden und Werkzeuge des 3D-Modellierens nebeneinander, wenn ein Ratgeber zum Entscheiden nicht reicht.",
+      "read": "Vergleich lesen"
     }
   },
   "Models": {
