@@ -1,4 +1,3 @@
-import { LayoutDashboard } from 'lucide-react';
 import { connection } from 'next/server';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { BrandMark } from '@/components/brand-mark';
@@ -58,28 +57,20 @@ export async function SiteHeader() {
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <LocaleSwitcher />
-          {user ? (
-            <>
-              <Button size="sm" asChild>
-                <Link href="/dashboard">
-                  <LayoutDashboard />
-                  {t('dashboard')}
-                </Link>
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
-                <Link href="/sign-in">{t('signIn')}</Link>
-              </Button>
-              <HeaderConnect
-                locale={locale as Locale}
-                connect={t('connect')}
-                suffix={t('connectSuffix')}
-                apiLabel={apiT('headerCta')}
-              />
-            </>
+          {!user && (
+            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
+              <Link href="/sign-in">{t('signIn')}</Link>
+            </Button>
           )}
+          <HeaderConnect
+            locale={locale as Locale}
+            connect={t('connect')}
+            suffix={t('connectSuffix')}
+            apiLabel={apiT('headerCta')}
+            uploadLabel={t('upload')}
+            dashboardLabel={t('dashboard')}
+            isSignedIn={Boolean(user)}
+          />
           <SiteMenu openLabel={t('menuOpen')} closeLabel={t('menuClose')}>
             <nav aria-label={t('sections')} className="flex flex-col">
               {nav.map((item) => (
