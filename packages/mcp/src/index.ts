@@ -6,6 +6,7 @@ import {
   fetchRemoteImage,
   getCreditQuote,
   getRender,
+  getUploadedImage,
   reportError,
   startBuild,
   toView,
@@ -120,10 +121,13 @@ export function createMcpServer(actor: Actor & { userId: string }) {
     {
       title: 'Create render preview',
       description:
-        'Create a preview from one product photo. Supply exactly one image_url or image_base64. Inline photos must be at most ' +
+        'Create a preview from one product photo. Supply exactly one upload_id, image_url or image_base64. Upload larger local photos with authenticated POST /api/uploads (multipart image), then pass its id as upload_id. Inline photos must be at most ' +
         MAX_INLINE_IMAGE_BYTES +
         ' decoded bytes; URL photos may be up to 4 MiB. Poll get_render, inspect hasSheet, and approve the pending cost before render_3d. Asset links require the same authentication for private renders.',
       inputSchema: {
+        upload_id: idSchema
+          .optional()
+          .describe('Owner-scoped upload id from POST /api/uploads; expires after one hour'),
         image_url: z
           .string()
           .url()
@@ -146,27 +150,34 @@ export function createMcpServer(actor: Actor & { userId: string }) {
         openWorldHint: true,
       },
     },
-    ({ image_url, image_base64, content_type, prompt }) =>
+    ({ upload_id, image_url, image_base64, content_type, prompt }) =>
       run(async () => {
-        if (Number(Boolean(image_url)) + Number(Boolean(image_base64)) !== 1)
+        if (
+          Number(Boolean(upload_id)) +
+            Number(Boolean(image_url)) +
+            Number(Boolean(image_base64)) !==
+          1
+        )
           throw new AppError(
-            'Supply exactly one image_url or image_base64',
+            'Supply exactly one upload_id, image_url or image_base64',
             400,
             'invalid_image_input',
           );
-        if (image_url && content_type)
+        if ((image_url || upload_id) && content_type)
           throw new AppError(
             'content_type is only used with image_base64',
             400,
             'invalid_image_input',
           );
         let image: { bytes: Uint8Array; contentType: string };
-        if (image_url) image = await fetchRemoteImage(image_url);
+        if (upload_id) image = await getUploadedImage(upload_id, actor);
+        else if (image_url) image = await fetchRemoteImage(image_url);
         else {
           if (
             !content_type ||
             !image_base64 ||
-            !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(image_base64)
+            image_base64.length % 4 !== 0 ||
+            !/^[A-Za-z0-9+/]*={0,2}$/.test(image_base64)
           )
             throw new AppError(
               'Supply canonical base64 and its content_type',

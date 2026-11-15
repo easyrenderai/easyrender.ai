@@ -7,6 +7,7 @@ const core = vi.hoisted(() => ({
   getRender: vi.fn(),
   startBuild: vi.fn(),
   fetchRemoteImage: vi.fn(),
+  getUploadedImage: vi.fn(),
   getBalance: vi.fn(async () => 500),
   buyerCurrency: vi.fn(async () => 'eur'),
   getTopupPricing: vi.fn(async () => ({ currency: 'eur', plan: null, creditPrice: 0.01 })),
@@ -135,6 +136,34 @@ describe('MCP protocol contract', () => {
     expect(result.isError).not.toBe(true);
     expect(core.fetchRemoteImage).toHaveBeenCalledWith('https://cdn.example.com/photo.jpg');
   });
+  it('accepts an owner-scoped upload reference without sending the photo through JSON', async () => {
+    core.getUploadedImage.mockResolvedValue({
+      bytes: new Uint8Array([1]),
+      contentType: 'image/png',
+    });
+    core.createDraft.mockResolvedValue(render);
+    const response = await (await connect()).callTool({
+      name: 'create_render',
+      arguments: { upload_id: 'upload1' },
+    });
+    expect(response.isError).not.toBe(true);
+    expect(core.getUploadedImage).toHaveBeenCalledWith(
+      'upload1',
+      expect.objectContaining({ userId: 'u1' }),
+    );
+  });
+  it('rejects an inline image above its documented decoded limit', async () => {
+    const { MAX_INLINE_IMAGE_BYTES } = await import('./index');
+    const response = await (await connect()).callTool({
+      name: 'create_render',
+      arguments: {
+        image_base64: Buffer.alloc(MAX_INLINE_IMAGE_BYTES + 1).toString('base64'),
+        content_type: 'image/jpeg',
+      },
+    });
+    expect(response.isError).toBe(true);
+    expect(core.createDraft).not.toHaveBeenCalled();
+  });
   it.each([
     {
       image_url: 'https://cdn.example.com/photo.jpg',
@@ -144,6 +173,8 @@ describe('MCP protocol contract', () => {
     { image_base64: 'not base64!!', content_type: 'image/jpeg' },
     { image_base64: 'YQ==' },
     {},
+    { upload_id: 'u1', image_base64: 'YQ==', content_type: 'image/jpeg' },
+    { upload_id: 'u1', image_url: 'https://cdn.example.com/photo.jpg' },
   ])('rejects ambiguous or invalid image arguments without creating a render', async (args) => {
     const result = await (await connect()).callTool({ name: 'create_render', arguments: args });
     expect(result.isError).toBe(true);
