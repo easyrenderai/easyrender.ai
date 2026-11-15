@@ -19,6 +19,7 @@ const state = vi.hoisted(() => ({
     expiresAt: new Date(Date.now() + 86400000),
     revokedAt: null as Date | null,
   },
+  hasDbFailure: false,
   rows: new Map<string, Record<string, unknown>>(),
   sent: vi.fn(),
 }));
@@ -28,8 +29,16 @@ vi.mock('./google-measurement', () => ({
 }));
 vi.mock('@easyrender/db', () => ({
   db: () => ({
-    purchase: { findUnique: async () => state.purchase },
-    googleCheckout: { findFirst: async () => state.checkout },
+    purchase: {
+      findUnique: async () => {
+        if (state.hasDbFailure) throw new Error('fixture database failure');
+        return state.purchase;
+      },
+    },
+    googleCheckout: {
+      findFirst: async () => state.checkout,
+      findUnique: async () => state.checkout,
+    },
     googlePurchaseDelivery: {
       upsert: async ({ create }: { create: Record<string, unknown> }) => {
         if (!state.rows.has(String(create.purchaseId)))
@@ -49,11 +58,15 @@ vi.mock('@easyrender/db', () => ({
         where,
         data,
       }: {
-        where: { purchaseId: string };
+        where: { purchaseId: string; leaseToken?: string };
         data: Record<string, unknown>;
       }) => {
         const r = state.rows.get(where.purchaseId);
-        if (!r || r.deliveredAt || r.leaseUntil) return { count: 0 };
+        if (
+          !r ||
+          (where.leaseToken ? r.leaseToken !== where.leaseToken : r.deliveredAt || r.leaseUntil)
+        )
+          return { count: 0 };
         Object.assign(r, data);
         return { count: 1 };
       },
@@ -61,17 +74,20 @@ vi.mock('@easyrender/db', () => ({
         where,
         data,
       }: {
-        where: { purchaseId: string };
+        where: { purchaseId: string; leaseToken?: string };
         data: Record<string, unknown>;
       }) => Object.assign(state.rows.get(where.purchaseId) ?? {}, data),
     },
   }),
 }));
 
+vi.mock('./report', () => ({ reportError: vi.fn() }));
+
 import { enqueueGooglePurchase, flushGooglePurchases } from './google-outbox';
 
 beforeEach(() => {
   state.rows.clear();
+  state.hasDbFailure = false;
   state.sent.mockReset();
   state.sent.mockResolvedValue('delivered');
   state.purchase.status = 'paid';
@@ -110,4 +126,9 @@ it('retains failed deliveries with a retry time and honors revocation before del
   await flushGooglePurchases();
   expect(state.rows.get('p1')?.lastError).toBe('revoked');
   expect(state.sent).toHaveBeenCalledTimes(1);
+});
+
+it('an analytics enqueue outage does not reject an already committed payment', async () => {
+  state.hasDbFailure = true;
+  await expect(enqueueGooglePurchase('p1')).resolves.toBeUndefined();
 });

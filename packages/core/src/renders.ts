@@ -31,7 +31,7 @@ import {
   sheetRequest,
   UPSCALE_CREDITS,
 } from '@easyrender/harness';
-import { captureRender, deferAnalytics } from './analytics';
+import { captureRender } from './analytics';
 import { type Attribution, classifyCountry, normalizeAttribution } from './attribution';
 import { config } from './config';
 import { grantCreditsInTransaction, spendCreditsInTransaction } from './credits';
@@ -302,7 +302,7 @@ export async function createDraft(input: {
     });
     render = await db().render.findUniqueOrThrow({ where: { id: render.id } });
     if (!sourceSaved || !config.sheetEnabled()) return render;
-    captureRender('preview_start', render, {
+    await captureRender('preview_start', render, {
       input_type: render.source === 'web' ? 'upload' : 'api',
       entry_path: render.landing_path,
       is_logged_in: Boolean(render.userId),
@@ -395,7 +395,7 @@ async function fail(id: string, error: unknown, expected?: Pick<Render, 'status'
     return true;
   });
   if (!changed || (render.status === 'drafting' && render.sheetKey)) return;
-  captureRender(
+  await captureRender(
     render.status === 'drafting' ? 'preview_failed' : 'render_failed',
     render,
     render.status === 'drafting'
@@ -459,10 +459,12 @@ export async function advance(id: string): Promise<Render | null> {
       if (!quality.ok)
         throw new TerminalRenderError(`sheet rejected (${quality.code}): ${quality.message}`);
       const sheetKey = await putFile('sheets/sheet.png', sheet, 'image/png');
+      const previewCompletedAt = render.previewCompletedAt ?? (render.sheetKey ? null : new Date());
       const { count } = await db().render.updateMany({
         where: renderStage(render),
         data: {
           status: 'preview_ready',
+          previewCompletedAt,
           sheetKey,
           quality: withQuality(render, {
             draftSheet: { ...quality.measures, warnings: quality.warnings },
@@ -475,7 +477,7 @@ export async function advance(id: string): Promise<Render | null> {
       const isRedraw = Boolean(render.sheetKey);
       const duration = Date.now() - render.createdAt.getTime();
       if (!isRedraw)
-        deferAnalytics(async () => {
+        try {
           const used = await db().render.count({
             where: {
               createdAt: { gte: new Date(Date.now() - DAY_MS) },
@@ -487,11 +489,18 @@ export async function advance(id: string): Promise<Render | null> {
               ],
             },
           });
-          captureRender('preview_ready', render, {
-            duration_ms: duration,
-            free_previews_left_today: Math.max(0, config.freePreviewsPerDay() - used),
-          });
-        });
+          await captureRender(
+            'preview_ready',
+            render,
+            {
+              duration_ms: duration,
+              free_previews_left_today: Math.max(0, config.freePreviewsPerDay() - used),
+            },
+            { occurredAt: previewCompletedAt ?? undefined },
+          );
+        } catch {
+          reportError(new Error('Unable to record preview analytics'), { component: 'analytics' });
+        }
     }
 
     // A paid build redraws the sheet with the final model first; when it is done, the 3D build starts.
@@ -571,23 +580,29 @@ export async function advance(id: string): Promise<Render | null> {
       if (!quality.ok)
         throw new TerminalRenderError(`model rejected (${quality.code}): ${quality.message}`);
       const glbKey = await putFile('models/model.glb', glb, 'model/gltf-binary');
+      const completedAt = render.completedAt ?? new Date();
       const { count } = await db().render.updateMany({
         where: renderStage(render),
         data: {
           status: 'ready',
-          completedAt: render.completedAt ?? new Date(),
+          completedAt,
           glbKey,
           quality: withQuality(render, { glb: quality.measures }),
           costUsd: { increment: buildCostUsd(prediction.metrics?.predict_time) },
         },
       });
       if (count)
-        captureRender('render_ready', render, {
-          model_id: id,
-          duration_ms: Date.now() - (render.buildClaimedAt ?? render.updatedAt).getTime(),
-          in_public_gallery: render.isPublic,
-          formats: 'glb,usdz',
-        });
+        await captureRender(
+          'render_ready',
+          render,
+          {
+            model_id: id,
+            duration_ms: Date.now() - (render.buildClaimedAt ?? render.updatedAt).getTime(),
+            in_public_gallery: render.isPublic,
+            formats: 'glb,usdz',
+          },
+          { occurredAt: completedAt },
+        );
     }
   } catch (error) {
     const current = await db().render.findUnique({ where: { id }, select: { status: true } });
@@ -668,7 +683,7 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
   });
   if (!claimed) return (await db().render.findUnique({ where: { id } })) as Render;
 
-  captureRender(
+  await captureRender(
     'render_start',
     { ...render, userId: actor.userId, credits: alreadyPaid + owed },
     { model_id: id, credits_spent: owed },
@@ -787,7 +802,7 @@ export async function startSheet(id: string, actor: Actor): Promise<Render> {
   });
   if (!claimed) return (await db().render.findUnique({ where: { id } })) as Render;
 
-  captureRender(
+  await captureRender(
     'preview_start',
     { ...render, userId: actor.userId },
     {

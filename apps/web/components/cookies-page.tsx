@@ -7,12 +7,14 @@ export async function CookiesPage() {
       <h1 className="text-2xl font-semibold">{t('title')}</h1>
       <p className="text-sm text-muted-foreground">{t('intro')}</p>
       <dl className="space-y-5 text-sm">
-        {(['anon', 'consent', 'ga', 'posthog', 'attribution'] as const).map((key) => (
-          <div key={key}>
-            <dt className="font-medium">{t(`${key}Title`)}</dt>
-            <dd className="mt-1 text-muted-foreground">{t(key)}</dd>
-          </div>
-        ))}
+        {(['anon', 'consent', 'ga', 'advertising', 'posthog', 'attribution'] as const).map(
+          (key) => (
+            <div key={key}>
+              <dt className="font-medium">{t(`${key}Title`)}</dt>
+              <dd className="mt-1 text-muted-foreground">{t(key)}</dd>
+            </div>
+          ),
+        )}
       </dl>
       <h2 className="text-lg font-medium">{t('change')}</h2>
       <p className="text-sm text-muted-foreground">{t('withdraw')}</p>

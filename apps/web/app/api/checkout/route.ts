@@ -3,11 +3,15 @@ import {
   createCheckoutDetails,
   isGoogleMeasurementConfigured,
   parseGoogleContext,
+  reportError,
 } from '@easyrender/core';
 import { db } from '@easyrender/db';
 import { NextResponse } from 'next/server';
 import { resolveActor } from '@/lib/actor';
-import { allowsServerMeasurement } from '@/lib/analytics/measurement-consent';
+import {
+  allowsServerAdvertisingMeasurement,
+  allowsServerMeasurement,
+} from '@/lib/analytics/measurement-consent';
 import { handle } from '@/lib/http';
 
 export const POST = (request: Request) =>
@@ -35,14 +39,22 @@ export const POST = (request: Request) =>
       isGoogleMeasurementConfigured() &&
       body.googleAnalytics?.measurementId === process.env.GA_MEASUREMENT_ID
     ) {
-      await db().googleCheckout.create({
-        data: {
-          id: details.sessionId,
-          userId,
-          ...context,
-          expiresAt: new Date(Date.now() + 72 * 60 * 60 * 1000),
-        },
-      });
+      try {
+        await db().googleCheckout.create({
+          data: {
+            id: details.sessionId,
+            userId,
+            ...context,
+            adMeasurementAllowed: allowsServerAdvertisingMeasurement(request.headers),
+            expiresAt: new Date(Date.now() + 72 * 60 * 60 * 1000),
+          },
+        });
+      } catch {
+        // Checkout already exists. Optional measurement must not prevent the user paying.
+        reportError(new Error('Unable to persist optional checkout measurement'), {
+          component: 'analytics',
+        });
+      }
     }
     return NextResponse.json({ url: details.url, analytics: details.analytics });
   });

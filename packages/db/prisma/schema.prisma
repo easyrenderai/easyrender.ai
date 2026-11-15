@@ -41,6 +41,7 @@ model User {
   ledger    CreditLedger[]
   purchases Purchase[]
   googleCheckouts GoogleCheckout[]
+  posthogDeliveries PosthogDelivery[]
   apiKeys   ApiKey[]
   catalogItems CatalogItem[]
   shopifyShops ShopifyShop[]
@@ -173,6 +174,7 @@ model Render {
   updatedAt         DateTime     @updatedAt
   // Immutable successful GLB completion; null for historical rows with no observed time.
   completedAt       DateTime?
+  previewCompletedAt DateTime?
   edits             RenderEdit[]
 
   @@unique([requestScope, requestKey])
@@ -180,6 +182,8 @@ model Render {
   @@index([anonId, createdAt])
   @@index([ipHash, createdAt])
   @@index([isPublic, status, createdAt])
+  @@index([completedAt, id])
+  @@index([previewCompletedAt, id])
 }
 
 // What the owner did to a render after the free preview, newest last: the angle sheet drawn, a
@@ -336,7 +340,9 @@ model Purchase {
   status          String   @default("pending")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  paidAt          DateTime?
   googleDelivery GooglePurchaseDelivery?
+  @@index([paidAt, id])
 }
 
 model ImageUpload {
@@ -438,6 +444,7 @@ model GoogleCheckout {
   user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
   clientId    String
   sessionId   String
+  adMeasurementAllowed Boolean @default(false)
   invoiceId   String? @unique
   createdAt   DateTime @default(now())
   expiresAt   DateTime
@@ -455,7 +462,48 @@ model GooglePurchaseDelivery {
   attempts    Int @default(0)
   nextAttemptAt DateTime @default(now())
   leaseUntil  DateTime?
+  leaseToken  String?
   deliveredAt DateTime?
   lastError   String?
   @@index([deliveredAt, nextAttemptAt])
+}
+
+// Business events are immutable after enqueue; no emails, prompts or source URLs are stored.
+model PosthogDelivery {
+  id            String @id
+  userId        String?
+  user          User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event         String
+  distinctId    String
+  subjectId     String @default("")
+  alias         String?
+  properties    Json
+  occurredAt    DateTime
+  createdAt     DateTime @default(now())
+  attempts      Int @default(0)
+  nextAttemptAt DateTime @default(now())
+  leaseUntil    DateTime?
+  leaseToken    String?
+  deliveredAt   DateTime?
+  deadAt        DateTime?
+  lastError     String?
+  @@index([deliveredAt, deadAt, nextAttemptAt])
+  @@index([event, subjectId])
+  @@index([userId])
+}
+
+model AdvertisingSpend {
+  id           String @id @default(cuid())
+  date         DateTime @db.Date
+  platform     String @default("google_ads")
+  accountId    String
+  campaignId   String
+  campaignName String
+  currency     String
+  costCents    Int
+  clicks       Int
+  impressions  Int
+  importedAt   DateTime @default(now())
+  @@unique([platform, accountId, campaignId, date, currency])
+  @@index([date])
 }

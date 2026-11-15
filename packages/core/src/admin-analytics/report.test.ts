@@ -15,6 +15,9 @@ const traffic: Traffic = {
 const snapshot: Snapshot = {
   users: [],
   renders: [],
+  viewSets: [],
+  upscales: [],
+  adSpend: [],
   purchases: [],
   ledger: [],
   keys: [],
@@ -72,6 +75,7 @@ describe('admin reports observed output', () => {
           status: 'paid',
           createdAt: at,
           updatedAt: at,
+          paidAt: null,
         },
       ],
       ledger: [
@@ -197,6 +201,7 @@ describe('admin reports observed output', () => {
           source: 'web',
           isPublic: true,
           completedAt: null,
+          previewCompletedAt: null,
           createdAt: new Date('2026-11-01T00:00:00Z'),
           updatedAt: new Date('2026-11-01T00:02:00Z'),
         },
@@ -229,4 +234,182 @@ it('retains traffic-only campaigns and previous-only chart buckets', () => {
       .find((c) => c.key === 'incomeUsage')
       ?.rows.some((r) => r.previousRevenue === 10 && r.revenue === 0),
   ).toBe(true);
+});
+
+describe('paid acquisition accounting regressions', () => {
+  const at = new Date('2026-11-01T00:00:00Z');
+  const model = (
+    fields: Partial<Snapshot['renders'][number]> = {},
+  ): Snapshot['renders'][number] => ({
+    id: 'model',
+    userId: 'u',
+    anonId: null,
+    status: 'ready',
+    sheetKey: 'sheet',
+    glbKey: 'glb',
+    credits: 64,
+    costUsd: 2,
+    error: null,
+    source: 'api',
+    isPublic: false,
+    createdAt: at,
+    completedAt: new Date('2026-11-01T00:10:00Z'),
+    previewCompletedAt: at,
+    updatedAt: new Date('2026-12-01'),
+    ...fields,
+  });
+  const user = {
+    id: 'u',
+    email: 'fixture@example.test',
+    createdAt: at,
+    subscriptionPlan: null,
+    subscriptionStatus: null,
+    stripeCustomerId: null,
+  };
+  it('classifies every job refund as returned credits, never promotional credits', () => {
+    const s = {
+      ...snapshot,
+      ledger: [
+        'render_failed',
+        'product_views_failed',
+        'product_view_polish_failed',
+        'upscale_failed',
+        'signup',
+      ].map((reason) => ({ userId: 'u', reason, delta: 100, purchaseId: null, createdAt: at })),
+    };
+    const r = buildReport('overview', s, range, databaseFinance(s), traffic);
+    expect(r.metrics.find((m) => m.key === 'free')?.value).toBe(100);
+    expect(r.metrics.find((m) => m.key === 'returned')?.value).toBe(400);
+  });
+  it('keeps renamed and subsequently failed models in historical activation with immutable durations', () => {
+    const s = { ...snapshot, users: [user], renders: [model({ status: 'failed', glbKey: null })] };
+    const overview = buildReport('overview', s, range, databaseFinance(s), traffic);
+    expect(overview.metrics.find((m) => m.key === 'activatedModel')?.value).toBe(1);
+    const product = buildReport('product', s, range, databaseFinance(s), traffic);
+    expect(product.metrics.find((m) => m.key === 'models')?.value).toBe(1);
+    expect(product.metrics.find((m) => m.key === 'generationMedian')?.value).toBe(10);
+  });
+  it('does not invent historical model completions from mutable dates or completions after the cutoff', () => {
+    const s = {
+      ...snapshot,
+      users: [user],
+      renders: [
+        model({ completedAt: null }),
+        model({ id: 'future', completedAt: new Date('2026-12-01') }),
+        model({ id: 'invalid', completedAt: new Date('2026-10-01') }),
+      ],
+    };
+    const report = buildReport('overview', s, range, databaseFinance(s), traffic);
+    expect(report.metrics.find((m) => m.key === 'activatedModel')?.value).toBe(0);
+    const product = buildReport('product', s, range, databaseFinance(s), traffic);
+    expect(product.metrics.find((m) => m.key === 'models')?.value).toBe(0);
+    expect(product.metrics.find((m) => m.key === 'generationMedian')?.value).toBeNull();
+  });
+  it('includes distinct render, view-set and upscale cost cohorts without copying reused sheets', () => {
+    const s: Snapshot = {
+      ...snapshot,
+      renders: [model()],
+      viewSets: [{ id: 'views', userId: 'u', costUsd: 3, createdAt: at }],
+      upscales: [
+        { id: 'upscale', userId: 'u', costUsd: 1, createdAt: at },
+        { id: 'old', userId: 'u', costUsd: 9, createdAt: new Date('2026-01-01') },
+      ],
+    };
+    const r = buildReport('overview', s, range, databaseFinance(s), traffic);
+    expect(r.metrics.find((m) => m.key === 'providerCost')).toMatchObject({
+      value: 6,
+      quality: 'proxy',
+    });
+    const product = buildReport('product', s, range, databaseFinance(s), traffic);
+    // Model-unit cost must not divide unrelated image-service spend by 3D output count.
+    expect(product.metrics.find((m) => m.key === 'costModel')?.value).toBe(2);
+  });
+  it('keeps all refund-dependent net metrics unknown when Stripe reconciliation is unavailable', () => {
+    const finance: Finance = {
+      isStripe: false,
+      payments: [payment({})],
+      refunds: [],
+      subscriptions: [],
+    };
+    const report = buildReport('revenue', snapshot, range, finance, traffic);
+    for (const key of ['net', 'arpu', 'arppu', 'margin'])
+      expect(report.metrics.find((m) => m.key === key)?.value).toBeNull();
+    expect(report.tables.find((t) => t.key === 'products')?.rows[0].net).toBeNull();
+    expect(report.metrics.find((m) => m.key === 'gross')?.value).toBe(10);
+  });
+});
+
+it('uses immutable payment time for delayed paid purchases instead of checkout creation', () => {
+  const s: Snapshot = {
+    ...snapshot,
+    purchases: [
+      {
+        id: 'delayed',
+        userId: 'u',
+        packId: 'payg',
+        credits: 1000,
+        amountCents: 1000,
+        currency: 'USD',
+        status: 'paid',
+        createdAt: new Date('2026-10-01'),
+        updatedAt: new Date('2026-12-01'),
+        paidAt: new Date('2026-11-01'),
+      },
+    ],
+  };
+  const finance = databaseFinance(s);
+  expect(finance.payments[0].at).toBe('2026-11-01T00:00:00.000Z');
+  expect(
+    buildReport('overview', s, range, finance, traffic).metrics.find((m) => m.key === 'gross')
+      ?.value,
+  ).toBe(10);
+});
+
+it('uses immutable preview completion for sheet history and excludes future/undated previews', () => {
+  const at = new Date('2026-11-01');
+  const s: Snapshot = {
+    ...snapshot,
+    users: [
+      {
+        id: 'u',
+        email: 'u@example.test',
+        createdAt: at,
+        subscriptionPlan: null,
+        subscriptionStatus: null,
+        stripeCustomerId: null,
+      },
+    ],
+    renders: [
+      {
+        id: 'r',
+        userId: 'u',
+        anonId: null,
+        status: 'preview_ready',
+        sheetKey: 'sheet',
+        glbKey: null,
+        credits: 0,
+        costUsd: 0,
+        error: null,
+        source: 'web',
+        isPublic: false,
+        createdAt: at,
+        completedAt: null,
+        previewCompletedAt: new Date('2026-11-02'),
+        updatedAt: new Date('2026-12-01'),
+      },
+    ],
+  };
+  expect(
+    buildReport('funnel', s, range, databaseFinance(s), traffic).metrics.find(
+      (m) => m.key === 'timeSheet',
+    )?.value,
+  ).toBe(1440);
+  for (const previewCompletedAt of [null, new Date('2026-12-01')]) {
+    const pending = { ...s, renders: s.renders.map((r) => ({ ...r, previewCompletedAt })) };
+    expect(
+      buildReport('overview', pending, range, databaseFinance(pending), traffic).metrics.find(
+        (m) => m.key === 'activatedSheet',
+      )?.value,
+    ).toBe(0);
+  }
 });

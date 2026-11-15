@@ -56,3 +56,14 @@ it('retries transport failures safely and never embeds the secret in returned er
     'purchase-1',
   );
 });
+
+it('uses only recorded advertising permission and immutable paid time, never personalization', () => {
+  const paidAt = new Date('2026-11-12T10:00:00Z');
+  const result = googlePurchasePayload(
+    { ...purchase, paidAt },
+    { ...checkout, adMeasurementAllowed: true },
+  );
+  expect(result.consent).toEqual({ ad_user_data: 'GRANTED', ad_personalization: 'DENIED' });
+  expect(result.timestamp_micros).toBe(paidAt.getTime() * 1000);
+  expect(parseGoogleContext({ ...checkout, adMeasurementAllowed: true }, true)).toEqual(checkout);
+});
