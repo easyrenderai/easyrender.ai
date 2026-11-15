@@ -59,6 +59,12 @@ jobs:
         run: |
           bun run --cwd packages/db db:push
           bun run test
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Python and TypeScript API examples
+        run: python3 examples/rest/test_smoke.py
 
   schema:
     name: Schema change
