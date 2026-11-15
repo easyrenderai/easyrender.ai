@@ -4,15 +4,24 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "env": { "EXPO_PUBLIC_API_URL": "https://easyrender.ai" }
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://easyrender.ai",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://1785255c12cd535f8921f40f47124959@o4512412852551680.ingest.de.sentry.io/4512436161347665"
+      }
     },
     "preview": {
       "distribution": "internal",
-      "env": { "EXPO_PUBLIC_API_URL": "https://easyrender.ai" }
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://easyrender.ai",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://1785255c12cd535f8921f40f47124959@o4512412852551680.ingest.de.sentry.io/4512436161347665"
+      }
     },
     "production": {
       "autoIncrement": true,
-      "env": { "EXPO_PUBLIC_API_URL": "https://easyrender.ai" }
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://easyrender.ai",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://1785255c12cd535f8921f40f47124959@o4512412852551680.ingest.de.sentry.io/4512436161347665"
+      }
     }
   },
   "submit": { "production": {} }
