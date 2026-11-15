@@ -1,6 +1,8 @@
 // Demo renders made with the easyrender harness (TRELLIS) during testing. They seed the public
 // gallery until real users publish their own, and power the floating model in the hero.
 // Titles and prompts are the English source; translations live under `Showcase` in messages/.
+import { versionedPublicModel } from '@/lib/public-models';
+
 export type ShowcaseSlug =
   | 'swivel-chair'
   | 'coffee-table'
@@ -37,7 +39,7 @@ const item = (
   prompt,
   photo: `/showcase/${slug}.jpg`,
   angles: angles ? `/showcase/${slug}-angles.jpg` : null,
-  model: `/showcase/${slug}.glb`,
+  model: versionedPublicModel(`/showcase/${slug}.glb`),
   category,
   dimensions,
   engine: angles ? 'TRELLIS + angle sheet' : 'TRELLIS',

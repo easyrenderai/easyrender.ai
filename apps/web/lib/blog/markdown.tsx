@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { versionedPublicModel } from '@/lib/public-models';
 import { cn } from '@/lib/utils';
 import { isFaqHeading } from './faq';
 import { blogImageLayout, parseImage } from './images';
@@ -280,7 +281,7 @@ function Figure({
         </div>
       ) : media.type === 'model' ? (
         <BlogModel
-          src={media.src}
+          src={versionedPublicModel(media.src)}
           alt={media.alt}
           poster={{ src: media.poster, width: media.width, height: media.height }}
           orbit={media.orbit}

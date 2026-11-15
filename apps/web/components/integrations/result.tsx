@@ -5,6 +5,18 @@ import { Section } from '@/components/landing';
 import { ModelViewer } from '@/components/model-viewer';
 import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
+import { SHOWCASE } from '@/lib/showcase';
+
+function armchairSample() {
+  const entry = SHOWCASE.find((item) => item.slug === 'armchair');
+  const angles = entry?.angles;
+  if (!entry || angles == null) {
+    throw new Error('The armchair showcase is missing its angle sheet');
+  }
+  return { model: entry.model, photo: entry.photo, angles };
+}
+
+const sample = armchairSample();
 
 /** Existing harness showcase assets, not a simulated customer run or a generated UI screenshot. */
 export async function IntegrationResult({ locale }: { locale: Locale }) {
@@ -17,14 +29,14 @@ export async function IntegrationResult({ locale }: { locale: Locale }) {
             <div className="relative aspect-square bg-muted/30">
               {step === 'model' ? (
                 <ModelViewer
-                  src="/showcase/armchair.glb"
+                  src={sample.model}
                   alt={t('model.alt')}
                   interactive
                   autoRotate={false}
                 />
               ) : (
                 <Image
-                  src={`/showcase/armchair${step === 'angles' ? '-angles' : ''}.jpg`}
+                  src={step === 'angles' ? sample.angles : sample.photo}
                   alt={t(`${step}.alt`)}
                   fill
                   sizes="(max-width: 767px) 100vw, 33vw"
@@ -46,7 +58,7 @@ export async function IntegrationResult({ locale }: { locale: Locale }) {
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
         <p className="max-w-2xl text-xs leading-relaxed text-muted-foreground">{t('note')}</p>
         <Button variant="outline" asChild>
-          <a href="/showcase/armchair.glb" download="easyrender-sample-armchair.glb">
+          <a href={sample.model} download="easyrender-sample-armchair.glb">
             <Download aria-hidden="true" /> {t('download')}
           </a>
         </Button>

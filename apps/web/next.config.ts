@@ -47,8 +47,9 @@ const nextConfig: NextConfig = {
       },
       // The studio models, photos and showcase files in public/ are served with max-age=0 by
       // default, so every visit revalidated megabytes of GLB. Their names carry no content hash,
-      // so they get a day of freshness and a week of stale-while-revalidate, not `immutable`:
-      // a replaced file shows up within a day.
+      // so they get a day of freshness and a week of stale-while-revalidate, not `immutable`.
+      // A browser can keep painting the previous bytes through that window. When a GLB is
+      // replaced, bump PUBLIC_MODEL_VERSION in lib/public-models.ts so the page requests a new URL.
       ...STATIC_MEDIA_PATHS.map((source) => ({
         source,
         headers: [
