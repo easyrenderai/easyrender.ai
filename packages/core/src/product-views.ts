@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { db, type ProductView, type ViewSet } from '@easyrender/db';
+import { db, type Prisma, type ProductView, type ViewSet } from '@easyrender/db';
 import {
   BUILD_FROM_VIEWS_CREDITS,
   betterView,
@@ -45,6 +45,7 @@ import { AppError, notFound } from './errors';
 import {
   type Actor,
   assertAuthorizedCredits,
+  assertGenerationConcurrency,
   extension,
   IMAGE_TYPES,
   lockRenderActor,
@@ -91,8 +92,36 @@ const storedQa = (view: Pick<ProductView, 'qa'>): StoredQa => {
 const contentTypeOf = (key: string) =>
   key.endsWith('.png') ? 'image/png' : key.endsWith('.webp') ? 'image/webp' : 'image/jpeg';
 
-const addCost = (id: string, usd: number) =>
-  db().viewSet.update({ where: { id }, data: { costUsd: { increment: usd } } });
+// Every asynchronous worker writes only the exact revision it read. The timestamp advances
+// monotonically, including two transitions that happen within the same millisecond.
+const viewSnapshot = (view: ProductView) => ({
+  id: view.id,
+  status: view.status,
+  predictionId: view.predictionId,
+  updatedAt: view.updatedAt,
+  polishes: view.polishes,
+  attempts: view.attempts,
+  version: view.version,
+});
+async function transitionView(
+  view: ProductView,
+  data: Prisma.ProductViewUpdateManyMutationInput,
+  costUsd = 0,
+): Promise<ProductView | null> {
+  return db().$transaction(async (tx) => {
+    const { count } = await tx.productView.updateMany({
+      where: viewSnapshot(view),
+      data: { ...data, updatedAt: new Date(Math.max(Date.now(), view.updatedAt.getTime() + 1)) },
+    });
+    if (!count) return null;
+    if (costUsd)
+      await tx.viewSet.update({
+        where: { id: view.setId },
+        data: { costUsd: { increment: costUsd } },
+      });
+    return tx.productView.findUniqueOrThrow({ where: { id: view.id } });
+  });
+}
 
 const owns = (set: Pick<ViewSet, 'userId'>, actor: Actor) =>
   Boolean(actor.userId) && set.userId === actor.userId;
@@ -125,8 +154,13 @@ async function startSheet(set: ViewSet): Promise<void> {
   );
   const prediction = await client.start(request.path, request.body, webhook(set.id));
   try {
-    await db().viewSet.update({
-      where: { id: set.id },
+    await db().viewSet.updateMany({
+      where: {
+        id: set.id,
+        status: 'drafting',
+        sheetPredictionId: set.sheetPredictionId,
+        updatedAt: set.updatedAt,
+      },
       data: { sourceUrl, sheetPredictionId: prediction.id },
     });
   } catch (error) {
@@ -139,14 +173,14 @@ async function startSheet(set: ViewSet): Promise<void> {
 }
 
 // A set that cannot get a sheet is refunded in full. Once the sheet exists nothing fails the set.
-async function failSet(id: string, error: unknown) {
+async function failSet(id: string, error: unknown, expected?: Pick<ViewSet, 'updatedAt'>) {
   const message = error instanceof Error ? error.message : String(error);
   reportError(error, { viewSetId: id, stage: 'product_views' });
   const set = await db().viewSet.findUnique({ where: { id } });
   if (!set) return;
   await db().$transaction(async (tx) => {
     const { count } = await tx.viewSet.updateMany({
-      where: { id, status: 'drafting', updatedAt: set.updatedAt },
+      where: { id, status: 'drafting', updatedAt: expected?.updatedAt ?? set.updatedAt },
       data: { status: 'failed', error: message.slice(0, 500) },
     });
     if (!count) return;
@@ -190,6 +224,7 @@ export async function createViewSet(input: {
   const set = await db().$transaction(async (tx) => {
     await lockRenderActor(tx, actor);
     assertAuthorizedCredits(PRODUCT_VIEWS_CREDITS, actor);
+    await assertGenerationConcurrency(actor, tx);
     const set = await tx.viewSet.create({
       data: {
         id,
@@ -240,7 +275,7 @@ export async function advanceViewSet(id: string): Promise<ViewSetWithViews | nul
       set.status === 'drafting' &&
       (error instanceof TerminalViewSetError || Date.now() - set.updatedAt.getTime() > SET_STALE_MS)
     )
-      await failSet(id, error);
+      await failSet(id, error, set);
     else reportError(error, { viewSetId: id, stage: 'product_views' });
   }
   return loadSet(id);
@@ -276,7 +311,12 @@ async function advanceSheet(set: ViewSetWithViews) {
     // One automatic redraw of the whole sheet before the set is given up on.
     if (set.sheetAttempts < MAX_SHEET_ATTEMPTS) {
       const { count } = await db().viewSet.updateMany({
-        where: { id: set.id, status: 'drafting', sheetPredictionId: set.sheetPredictionId },
+        where: {
+          id: set.id,
+          status: 'drafting',
+          sheetPredictionId: set.sheetPredictionId,
+          updatedAt: set.updatedAt,
+        },
         data: {
           sheetPredictionId: null,
           sheetAttempts: { increment: 1 },
@@ -285,7 +325,8 @@ async function advanceSheet(set: ViewSetWithViews) {
             : {}),
         },
       });
-      if (count === 1) await startSheet(set);
+      if (count === 1)
+        await startSheet(await db().viewSet.findUniqueOrThrow({ where: { id: set.id } }));
       return;
     }
     throw new TerminalViewSetError(problem);
@@ -293,7 +334,12 @@ async function advanceSheet(set: ViewSetWithViews) {
 
   const sheetKey = await putFile('views/sheet.png', sheet, 'image/png');
   const { count } = await db().viewSet.updateMany({
-    where: { id: set.id, status: 'drafting', sheetPredictionId: set.sheetPredictionId },
+    where: {
+      id: set.id,
+      status: 'drafting',
+      sheetPredictionId: set.sheetPredictionId,
+      updatedAt: set.updatedAt,
+    },
     data: {
       status: 'processing',
       sheetKey,
@@ -358,7 +404,11 @@ async function advanceViews(set: ViewSetWithViews) {
     set.sheetKey &&
     Date.now() - set.updatedAt.getTime() > VIEW_STALE_MS
   ) {
-    await db().viewSet.update({ where: { id: set.id }, data: { error: null } });
+    const { count } = await db().viewSet.updateMany({
+      where: { id: set.id, status: 'processing', updatedAt: set.updatedAt },
+      data: { error: null },
+    });
+    if (!count) return;
     await seedViews(set, await getFile(set.sheetKey));
     return;
   }
@@ -376,14 +426,21 @@ async function advanceViews(set: ViewSetWithViews) {
 
 // The set is ready when every view is.
 async function refreshSetStatus(id: string) {
-  const open = await db().productView.count({ where: { setId: id, status: { not: 'ready' } } });
-  const total = await db().productView.count({ where: { setId: id } });
-  if (open === 0 && total === VIEWS.length) {
-    await db().viewSet.updateMany({
-      where: { id, status: 'processing' },
-      data: { status: 'ready' },
-    });
-  }
+  const owner = await db().viewSet.findUnique({ where: { id }, select: { userId: true } });
+  if (!owner) return;
+  await db().$transaction(async (tx) => {
+    await lockRenderActor(tx, { userId: owner.userId });
+    const set = await tx.viewSet.findUnique({ where: { id } });
+    if (set?.status !== 'processing') return;
+    const open = await tx.productView.count({ where: { setId: id, status: { not: 'ready' } } });
+    const total = await tx.productView.count({ where: { setId: id } });
+    if (open === 0 && total === VIEWS.length) {
+      await tx.viewSet.updateMany({
+        where: { id, status: 'processing', updatedAt: set.updatedAt },
+        data: { status: 'ready' },
+      });
+    }
+  });
 }
 
 async function advanceView(set: ViewSetWithViews, view: ProductView) {
@@ -407,7 +464,7 @@ async function advanceView(set: ViewSetWithViews, view: ProductView) {
       return;
     }
     const url = prediction.status === 'succeeded' ? sheetOutputUrl(prediction.output) : null;
-    if (view.status === 'upscaling') await finishUpscale(set, view, url);
+    if (view.status === 'upscaling') await finishUpscale(view, url);
     else if (view.status === 'drawing') await finishRedraw(set, view, url);
   } catch (error) {
     if (Date.now() - view.updatedAt.getTime() > VIEW_STALE_MS) await settleFromBest(set, view);
@@ -421,24 +478,18 @@ async function advanceView(set: ViewSetWithViews, view: ProductView) {
 
 // The upscaled picture is finished on the canvas. A failed upscale is not a failed view: the
 // drawn picture is finished instead (it is enlarged by the canvas fit, just not by the model).
-async function finishUpscale(set: ViewSetWithViews, view: ProductView, url: string | null) {
+async function finishUpscale(view: ProductView, url: string | null) {
   const bytes = url ? await download(url) : await getFile(view.rawKey as string);
-  await finalize(view, bytes);
-  if (url) await addCost(set.id, ENLARGE_MODEL.costUsd);
+  await finalize(view, bytes, url ? ENLARGE_MODEL.costUsd : 0);
 }
 
-async function finalize(view: ProductView, bytes: Uint8Array) {
+async function finalize(view: ProductView, bytes: Uint8Array, costUsd = 0) {
   const key = await putFile('views/view.jpg', await finishView(bytes), 'image/jpeg');
-  await db().productView.updateMany({
-    where: { id: view.id, polishes: view.polishes, status: { in: ['drawing', 'upscaling'] } },
-    data: {
-      status: 'ready',
-      key,
-      predictionId: null,
-      isPolishing: false,
-      version: { increment: 1 },
-    },
-  });
+  await transitionView(
+    view,
+    { status: 'ready', key, predictionId: null, isPolishing: false, version: { increment: 1 } },
+    costUsd,
+  );
 }
 
 // What a redraw gave back: kept when it passes, drawn once more when it does not, and when the
@@ -447,75 +498,61 @@ async function finishRedraw(set: ViewSetWithViews, view: ProductView, url: strin
   const limits = (await harness()).limits;
   const candidate = url ? await download(url) : null;
   const previous = storedQa(view);
-
   if (!candidate) {
-    // The model gave nothing back.
     if (view.attempts < limits.viewMaxRetries) {
-      await db().productView.update({
-        where: { id: view.id },
-        data: { attempts: { increment: 1 }, predictionId: null },
-      });
-      return startRedraw(set, { ...view, attempts: view.attempts + 1 }, previous.problems);
+      const next = await transitionView(view, { attempts: { increment: 1 }, predictionId: null });
+      if (next) await startRedraw(set, next, previous.problems);
+      return;
     }
     if (view.isPolishing) return revertPolish(set, view);
-    await db().productView.update({
-      where: { id: view.id },
-      data: { status: 'upscaling', predictionId: null },
-    });
-    return startUpscale(set, view);
+    const next = await transitionView(view, { status: 'upscaling', predictionId: null });
+    if (next) await startUpscale(set, next);
+    return;
   }
-
   const check = await checkView(
     candidate,
     await measureObject(await getFile(set.sourceKey)),
     limits,
   );
   const qa = { ...check.measures, problems: check.problems };
-
   if (!check.ok && view.attempts < limits.viewMaxRetries) {
-    // Try again, telling the model what was wrong. The better picture so far is kept meanwhile.
     const isBetter =
       betterView({ problems: check.problems, sharpness: check.measures.sharpness }, previous) ===
       'a';
-    await db().productView.update({
-      where: { id: view.id },
-      data: {
+    const next = await transitionView(
+      view,
+      {
         attempts: { increment: 1 },
         predictionId: null,
         ...(isBetter ? { rawKey: await putFile('views/raw.png', candidate, 'image/png'), qa } : {}),
       },
-    });
-    await addCost(set.id, SHEET_MODEL.costUsd);
-    return startRedraw(set, { ...view, attempts: view.attempts + 1 }, check.problems);
+      SHEET_MODEL.costUsd,
+    );
+    if (next) await startRedraw(set, next, check.problems);
+    return;
   }
-
-  // Out of tries, or it passed. A polish the owner asked for always wins; an automatic retry
-  // only replaces the first drawing when it is no worse.
   const isKept =
     view.isPolishing ||
     check.ok ||
     betterView({ problems: check.problems, sharpness: check.measures.sharpness }, previous) === 'a';
-  if (isKept) {
-    const rawKey = await putFile('views/raw.png', candidate, 'image/png');
-    const next = { ...view, rawKey };
-    await db().productView.update({
-      where: { id: view.id },
-      data: { rawKey, qa, status: 'upscaling', predictionId: null },
-    });
-    await addCost(set.id, SHEET_MODEL.costUsd);
-    return startUpscale(set, next);
-  }
-  await db().productView.update({
-    where: { id: view.id },
-    data: { status: 'upscaling', predictionId: null },
-  });
-  await addCost(set.id, SHEET_MODEL.costUsd);
-  return startUpscale(set, view);
+  const next = await transitionView(
+    view,
+    {
+      status: 'upscaling',
+      predictionId: null,
+      ...(isKept ? { rawKey: await putFile('views/raw.png', candidate, 'image/png'), qa } : {}),
+    },
+    SHEET_MODEL.costUsd,
+  );
+  if (next) await startUpscale(set, next);
 }
 
 // Draws one view again: after a failed check (from the photo and what was wrong), or as the
 // owner's polish (from the photo, the current view and their note).
 async function startRedraw(set: ViewSetWithViews, view: ProductView, problems: ViewProblem[]) {
+  const claimed = await transitionView(view, { predictionId: null });
+  if (!claimed) return;
+  view = claimed;
   let hasStarted = false;
   try {
     const client = replicate();
@@ -544,10 +581,7 @@ async function startRedraw(set: ViewSetWithViews, view: ProductView, problems: V
     );
     const prediction = await client.start(request.path, request.body, webhook(set.id));
     hasStarted = true;
-    await db().productView.update({
-      where: { id: view.id },
-      data: { status: 'drawing', predictionId: prediction.id },
-    });
+    await transitionView(view, { status: 'drawing', predictionId: prediction.id });
   } catch (error) {
     reportError(error, { viewSetId: set.id, view: view.view, stage: 'product_view_redraw_start' });
     if (hasStarted || (error instanceof ProviderRequestError && error.isAmbiguous)) return;
@@ -558,6 +592,9 @@ async function startRedraw(set: ViewSetWithViews, view: ProductView, problems: V
 
 // Upscales the drawn view; any problem on the way finishes it without the model instead.
 async function startUpscale(set: ViewSetWithViews, view: ProductView) {
+  const claimed = await transitionView(view, { predictionId: null });
+  if (!claimed) return;
+  view = claimed;
   let hasStarted = false;
   const raw = await getFile(view.rawKey as string);
   try {
@@ -567,10 +604,7 @@ async function startUpscale(set: ViewSetWithViews, view: ProductView) {
     const request = enlargeRequest(imageUrl);
     const prediction = await client.start(request.path, request.body, webhook(set.id));
     hasStarted = true;
-    await db().productView.update({
-      where: { id: view.id },
-      data: { status: 'upscaling', predictionId: prediction.id },
-    });
+    await transitionView(view, { status: 'upscaling', predictionId: prediction.id });
   } catch (error) {
     reportError(error, { viewSetId: set.id, view: view.view, stage: 'product_view_upscale_start' });
     if (hasStarted || (error instanceof ProviderRequestError && error.isAmbiguous)) return;
@@ -590,7 +624,9 @@ async function revertPolish(set: ViewSetWithViews, view: ProductView) {
     const { count } = await tx.productView.updateMany({
       where: {
         id: view.id,
-        status: { in: ['drawing', 'upscaling'] },
+        status: view.status,
+        updatedAt: view.updatedAt,
+        predictionId: view.predictionId,
         isPolishing: true,
         polishes: view.polishes,
       },
@@ -631,6 +667,9 @@ export async function polishView(
 
   const claimed = await db().$transaction(async (tx) => {
     await lockRenderActor(tx, actor);
+    const current = await tx.productView.findUnique({ where: { id: view.id } });
+    if (current?.status !== 'ready' || current.polishes !== view.polishes) return null;
+    await assertGenerationConcurrency(actor, tx);
     const { count } = await tx.productView.updateMany({
       where: { id: view.id, status: 'ready', polishes: view.polishes },
       data: {

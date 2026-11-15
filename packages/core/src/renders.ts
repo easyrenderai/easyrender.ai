@@ -164,16 +164,22 @@ export async function lockRenderActor(tx: Prisma.TransactionClient, actor: Actor
   }
 }
 
-async function assertConcurrency(actor: Actor, tx: Prisma.TransactionClient) {
+export async function assertGenerationConcurrency(actor: Actor, tx: Prisma.TransactionClient) {
   const owner = actor.userId
     ? { userId: actor.userId }
     : actor.anonId
       ? { anonId: actor.anonId }
       : { ipHash: actor.ipHash ?? '' };
-  const active = await tx.render.count({
-    where: { ...owner, status: { in: ['drafting', 'rendering'] } },
-  });
-  if (active >= MAX_ACTIVE_RENDERS) {
+  const [renders, viewSets, upscales] = await Promise.all([
+    tx.render.count({ where: { ...owner, status: { in: ['drafting', 'rendering'] } } }),
+    actor.userId
+      ? tx.viewSet.count({
+          where: { userId: actor.userId, status: { in: ['drafting', 'processing'] } },
+        })
+      : 0,
+    actor.userId ? tx.upscale.count({ where: { userId: actor.userId, status: 'processing' } }) : 0,
+  ]);
+  if (renders + viewSets + upscales >= MAX_ACTIVE_RENDERS) {
     throw new AppError(
       'Too many active generations. Wait for one to finish.',
       429,
@@ -258,7 +264,7 @@ export async function createDraft(input: {
     const existing = await findReplay(tx);
     if (existing) return { render: existing, isNew: false };
     await assertPreviewAllowance(input.actor, tx);
-    await assertConcurrency(input.actor, tx);
+    await assertGenerationConcurrency(input.actor, tx);
     const render = await tx.render.create({
       data: {
         ...(input.attribution ??
@@ -287,11 +293,12 @@ export async function createDraft(input: {
   const ext = extension(input.contentType);
   try {
     const sourceKey = await putFile(`sources/source.${ext}`, input.bytes, input.contentType);
-    render = await db().render.update({
-      where: { id: render.id },
+    const { count: sourceSaved } = await db().render.updateMany({
+      where: { ...renderStage(render), sourceKey: 'pending:' },
       data: { sourceKey, status: config.sheetEnabled() ? 'drafting' : 'preview_ready' },
     });
-    if (!config.sheetEnabled()) return render;
+    render = await db().render.findUniqueOrThrow({ where: { id: render.id } });
+    if (!sourceSaved || !config.sheetEnabled()) return render;
     captureRender('preview_start', render, {
       input_type: render.source === 'web' ? 'upload' : 'api',
       entry_path: render.landing_path,
@@ -313,10 +320,7 @@ export async function createDraft(input: {
       request.body,
       config.webhookUrl(`/api/webhooks/replicate?render=${render.id}`),
     );
-    return await db().render.update({
-      where: { id: render.id },
-      data: { sourceUrl, sheetPredictionId: prediction.id },
-    });
+    return await persistStartedPrediction(render, { sourceUrl, sheetPredictionId: prediction.id });
   } catch (error) {
     if (error instanceof ProviderRequestError && error.isAmbiguous) {
       reportError(error, { renderId: render.id, stage: 'preview_start_uncertain' });
@@ -327,7 +331,35 @@ export async function createDraft(input: {
   }
 }
 
-async function fail(id: string, error: unknown) {
+// Fence a generation, while allowing unrelated visibility/metadata edits to coexist.
+// In particular, drafting is reused by paid redraws and is not a unique generation identity.
+function renderStage(render: Render) {
+  return {
+    id: render.id,
+    status: render.status,
+    sheetRedraws: render.sheetRedraws,
+    sheetPredictionId: render.sheetPredictionId,
+    finalSheetPredictionId: render.finalSheetPredictionId,
+    buildPredictionId: render.buildPredictionId,
+    buildClaimedAt: render.buildClaimedAt,
+  };
+}
+
+async function persistStartedPrediction(
+  render: Render,
+  data: Prisma.RenderUpdateManyMutationInput,
+) {
+  try {
+    await db().render.updateMany({ where: renderStage(render), data });
+    return await db().render.findUniqueOrThrow({ where: { id: render.id } });
+  } catch (error) {
+    reportError(error, { renderId: render.id, stage: 'prediction_start_persistence' });
+    // The provider accepted the job. A storage outage must not refund it or authorize a duplicate.
+    throw new ProviderRequestError('Provider accepted the job but its id could not be saved', true);
+  }
+}
+
+async function fail(id: string, error: unknown, expected?: Pick<Render, 'status' | 'updatedAt'>) {
   const message = error instanceof Error ? error.message : String(error);
   reportError(error, { renderId: id, stage: 'render' });
   const render = await db().render.findUnique({ where: { id } });
@@ -337,7 +369,11 @@ async function fail(id: string, error: unknown) {
   const changed = await db().$transaction(async (tx) => {
     const isRedraw = render.status === 'drafting' && Boolean(render.sheetKey);
     const { count } = await tx.render.updateMany({
-      where: { id, status: render.status, updatedAt: render.updatedAt },
+      where: {
+        id,
+        status: expected?.status ?? render.status,
+        updatedAt: expected?.updatedAt ?? render.updatedAt,
+      },
       data: isRedraw
         ? { status: 'preview_ready', error: null }
         : { status: 'failed', error: message.slice(0, 500) },
@@ -421,7 +457,7 @@ export async function advance(id: string): Promise<Render | null> {
         throw new TerminalRenderError(`sheet rejected (${quality.code}): ${quality.message}`);
       const sheetKey = await putFile('sheets/sheet.png', sheet, 'image/png');
       const { count } = await db().render.updateMany({
-        where: { id, status: 'drafting' },
+        where: renderStage(render),
         data: {
           status: 'preview_ready',
           sheetKey,
@@ -491,10 +527,11 @@ export async function advance(id: string): Promise<Render | null> {
         ? await putFile('sheets/sheet.png', finalSheet, 'image/png')
         : null;
       // Only the call that wins this claim starts the build, so webhook and polling cannot both.
+      const claimedAt = new Date();
       const { count } = await db().render.updateMany({
-        where: { id, status: 'rendering', buildPredictionId: null, buildClaimedAt: null },
+        where: { ...renderStage(render), buildPredictionId: null, buildClaimedAt: null },
         data: {
-          buildClaimedAt: new Date(),
+          buildClaimedAt: claimedAt,
           quality: withQuality(
             render,
             finalMeasures
@@ -509,8 +546,10 @@ export async function advance(id: string): Promise<Render | null> {
       if (count === 0) return db().render.findUnique({ where: { id } });
       const sheetForBuild = finalSheet ?? (render.sheetKey ? await getFile(render.sheetKey) : null);
       const started = await startThreeD(id, render.sourceKey, sheetForBuild);
-      await db().render.update({ where: { id }, data: { buildPredictionId: started.id } });
-      return db().render.findUnique({ where: { id } });
+      return persistStartedPrediction(
+        { ...render, buildClaimedAt: claimedAt },
+        { buildPredictionId: started.id },
+      );
     }
 
     if (render.status === 'rendering' && render.buildPredictionId) {
@@ -530,7 +569,7 @@ export async function advance(id: string): Promise<Render | null> {
         throw new TerminalRenderError(`model rejected (${quality.code}): ${quality.message}`);
       const glbKey = await putFile('models/model.glb', glb, 'model/gltf-binary');
       const { count } = await db().render.updateMany({
-        where: { id, status: 'rendering' },
+        where: renderStage(render),
         data: {
           status: 'ready',
           glbKey,
@@ -552,7 +591,7 @@ export async function advance(id: string): Promise<Render | null> {
       (error instanceof TerminalRenderError || stale) &&
       (current?.status === 'drafting' || current?.status === 'rendering')
     ) {
-      await fail(id, error);
+      await fail(id, error, render);
     } else {
       reportError(error, { renderId: id, stage: 'render_poll_retryable' });
     }
@@ -605,7 +644,7 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
     alreadyPaid = current.credits;
     owed = Math.max(0, buildTotal(current) - alreadyPaid);
     assertAuthorizedCredits(owed, actor);
-    await assertConcurrency(actor, tx);
+    await assertGenerationConcurrency(actor, tx);
     const { count } = await tx.render.updateMany({
       where: { id, status: 'preview_ready' },
       data: { status: 'rendering', userId: actor.userId, credits: alreadyPaid + owed },
@@ -620,6 +659,7 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
       renderId: id,
     });
     await tx.renderEdit.create({ data: { renderId: id, kind: 'build', credits: owed } });
+    render = await tx.render.findUniqueOrThrow({ where: { id } });
     return true;
   });
   if (!claimed) return (await db().render.findUnique({ where: { id } })) as Render;
@@ -659,17 +699,14 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
         reportError(error, { renderId: id, stage: 'final_sheet_start' });
       }
       if (prediction) {
-        return await db().render.update({
-          where: { id },
-          data: { finalSheetPredictionId: prediction.id },
-        });
+        return await persistStartedPrediction(render, { finalSheetPredictionId: prediction.id });
       }
     }
     const sheet = render.sheetKey ? await getFile(render.sheetKey) : null;
     const prediction = await startThreeD(id, render.sourceKey, sheet);
-    return await db().render.update({
-      where: { id },
-      data: { buildPredictionId: prediction.id, buildClaimedAt: new Date() },
+    return await persistStartedPrediction(render, {
+      buildPredictionId: prediction.id,
+      buildClaimedAt: new Date(),
     });
   } catch (error) {
     if (error instanceof ProviderRequestError && error.isAmbiguous) {
@@ -725,13 +762,13 @@ export async function startSheet(id: string, actor: Actor): Promise<Render> {
     await lockRenderActor(tx, actor);
     // Check state after the lock: an identical concurrent request is an idempotent read.
     const current = await tx.render.findUnique({ where: { id } });
-    if (current?.status !== 'preview_ready') return false;
-    await assertConcurrency(actor, tx);
+    if (current?.status !== 'preview_ready') return null;
+    await assertGenerationConcurrency(actor, tx);
     const { count } = await tx.render.updateMany({
       where: { id, status: 'preview_ready', sheetKey: null, sheetPredictionId: null },
       data: { status: 'drafting', userId: actor.userId, credits: SHEET_CREDITS },
     });
-    if (!count) return false;
+    if (!count) return null;
     assertAuthorizedCredits(SHEET_CREDITS, actor);
     await spendCreditsInTransaction(tx, {
       userId: actor.userId as string,
@@ -742,7 +779,7 @@ export async function startSheet(id: string, actor: Actor): Promise<Render> {
       renderId: id,
     });
     await tx.renderEdit.create({ data: { renderId: id, kind: 'sheet', credits: SHEET_CREDITS } });
-    return true;
+    return tx.render.findUniqueOrThrow({ where: { id } });
   });
   if (!claimed) return (await db().render.findUnique({ where: { id } })) as Render;
 
@@ -756,13 +793,13 @@ export async function startSheet(id: string, actor: Actor): Promise<Render> {
     },
   );
   try {
-    return await startSheetPrediction(render);
+    return await startSheetPrediction(claimed);
   } catch (error) {
     if (error instanceof ProviderRequestError && error.isAmbiguous) {
       reportError(error, { renderId: id, stage: 'render_start_uncertain' });
       return (await db().render.findUnique({ where: { id } })) as Render;
     }
-    await fail(id, error);
+    await fail(id, error, claimed);
     throw new AppError(
       'Could not start the angle sheet. Your credits were refunded.',
       502,
@@ -796,10 +833,7 @@ async function startSheetPrediction(render: Render): Promise<Render> {
     request.body,
     config.webhookUrl(`/api/webhooks/replicate?render=${render.id}`),
   );
-  return db().render.update({
-    where: { id: render.id },
-    data: { sourceUrl, sheetPredictionId: prediction.id },
-  });
+  return persistStartedPrediction(render, { sourceUrl, sheetPredictionId: prediction.id });
 }
 
 // Redraws the angle sheet of a preview, steered by what the owner says is wrong with it. It costs
@@ -817,12 +851,12 @@ export async function redrawSheet(id: string, actor: Actor, note: string): Promi
     throw new AppError('This render has no angle sheet to redraw', 409, 'bad_state');
   }
 
-  const isClaimed = await db().$transaction(async (tx) => {
+  const claimed = await db().$transaction(async (tx) => {
     await lockRenderActor(tx, actor);
     // Check state after the lock: an identical concurrent request is an idempotent read.
     const current = await tx.render.findUnique({ where: { id } });
-    if (current?.status !== 'preview_ready') return false;
-    await assertConcurrency(actor, tx);
+    if (current?.status !== 'preview_ready') return null;
+    await assertGenerationConcurrency(actor, tx);
     const { count } = await tx.render.updateMany({
       where: {
         id,
@@ -839,7 +873,7 @@ export async function redrawSheet(id: string, actor: Actor, note: string): Promi
         hasFinalSheet: false,
       },
     });
-    if (!count) return false;
+    if (!count) return null;
     assertAuthorizedCredits(SHEET_CREDITS, actor);
     await spendCreditsInTransaction(tx, {
       userId: actor.userId as string,
@@ -852,10 +886,9 @@ export async function redrawSheet(id: string, actor: Actor, note: string): Promi
     await tx.renderEdit.create({
       data: { renderId: id, kind: 'sheet_redraw', note: fix, credits: SHEET_CREDITS },
     });
-    return true;
+    return tx.render.findUniqueOrThrow({ where: { id } });
   });
-  if (!isClaimed) return (await db().render.findUnique({ where: { id } })) as Render;
-  const claimed = { ...render, status: 'drafting' as const, sheetNote: fix };
+  if (!claimed) return (await db().render.findUnique({ where: { id } })) as Render;
 
   try {
     return await startSheetPrediction(claimed);
@@ -864,7 +897,7 @@ export async function redrawSheet(id: string, actor: Actor, note: string): Promi
       reportError(error, { renderId: id, stage: 'render_start_uncertain' });
       return (await db().render.findUnique({ where: { id } })) as Render;
     }
-    await fail(id, error);
+    await fail(id, error, claimed);
     throw new AppError(
       'Could not redraw the angle sheet. Your credits were refunded.',
       502,

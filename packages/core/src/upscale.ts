@@ -15,7 +15,12 @@ import sharp from 'sharp';
 import { config } from './config';
 import { grantCreditsInTransaction, spendCreditsInTransaction } from './credits';
 import { AppError, notFound } from './errors';
-import { type Actor, assertAuthorizedCredits, lockRenderActor } from './renders';
+import {
+  type Actor,
+  assertAuthorizedCredits,
+  assertGenerationConcurrency,
+  lockRenderActor,
+} from './renders';
 import { reportError } from './report';
 import { getFile, putFile } from './storage';
 
@@ -147,6 +152,7 @@ export async function startUpscale(target: UpscaleTarget, actor: Actor): Promise
     });
     if (existing) return { row: existing, isNew: false };
     assertAuthorizedCredits(UPSCALE_CREDITS, actor);
+    await assertGenerationConcurrency(actor, tx);
     const row = await tx.upscale.create({
       data: {
         userId,
@@ -179,10 +185,16 @@ export async function startUpscale(target: UpscaleTarget, actor: Actor): Promise
     const request = enlargeRequest(imageUrl);
     const prediction = await client.start(request.path, request.body, webhook(row.id));
     hasStarted = true;
-    return await db().upscale.update({
-      where: { id: row.id },
+    await db().upscale.updateMany({
+      where: {
+        id: row.id,
+        status: 'processing',
+        predictionId: row.predictionId,
+        updatedAt: row.updatedAt,
+      },
       data: { predictionId: prediction.id },
     });
+    return await db().upscale.findUniqueOrThrow({ where: { id: row.id } });
   } catch (error) {
     reportError(error, { upscaleId: row.id, stage: 'upscale_start' });
     if (hasStarted || (error instanceof ProviderRequestError && error.isAmbiguous)) return row;
@@ -198,7 +210,7 @@ export async function startUpscale(target: UpscaleTarget, actor: Actor): Promise
 async function failUpscale(row: Upscale): Promise<Upscale> {
   await db().$transaction(async (tx) => {
     const { count } = await tx.upscale.updateMany({
-      where: { id: row.id, status: 'processing' },
+      where: { id: row.id, status: 'processing', updatedAt: row.updatedAt },
       data: { status: 'failed', predictionId: null },
     });
     if (!count) return;
@@ -234,7 +246,12 @@ export async function advanceUpscale(id: string): Promise<Upscale | null> {
       .toBuffer({ resolveWithObject: true });
     const key = await putFile('upscales/upscale.jpg', new Uint8Array(larger.data), 'image/jpeg');
     await db().upscale.updateMany({
-      where: { id: row.id, status: 'processing', predictionId: row.predictionId },
+      where: {
+        id: row.id,
+        status: 'processing',
+        predictionId: row.predictionId,
+        updatedAt: row.updatedAt,
+      },
       data: {
         status: 'ready',
         predictionId: null,
