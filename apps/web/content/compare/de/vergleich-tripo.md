@@ -102,7 +102,7 @@ Dokumentierte Formate sind keine kostenlosen Downloads in jedem Plan. Tripo biet
 
 Nimm ein schwieriges Katalogstück. Prüfe Umriss, Teile, Rückseite und Material. Lade die Datei herunter und öffne sie. Teile alle Ausgaben inklusive Ausschuss und Nacharbeit durch die brauchbaren Modelle. Auf einer Produktseite muss das Ergebnis dein Produkt zeigen, nicht nur gut aussehen.
 
-Siehe auch [Alternativen zu Meshy](/de/vergleich/vergleich-meshy) und [3D-Modelle erstellen](/de/ratgeber/3d-modell-erstellen).
+Siehe auch [Alternativen zu Meshy](/de/vergleich/vergleich-meshy) und [3D-Modelle für Onlineshops](/de/ratgeber/3d-modelle-fuer-onlineshops).
 
 ## FAQ
 

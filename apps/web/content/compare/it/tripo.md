@@ -101,7 +101,7 @@ Sono formati documentati, non download gratuiti in ogni piano. Tripo ne offre al
 
 Scegli un pezzo difficile del catalogo. Controlla sagoma, componenti, retro e materiale; scarica e apri il file. Dividi tutta la spesa, inclusi scarti e correzioni, per i modelli utilizzabili. Per una scheda prodotto, il risultato deve essere ancora il tuo prodotto.
 
-Vedi anche le [alternative a Meshy](/it/confronti/meshy) e [come fare un modello 3D](/it/guide/come-creare-un-modello-3d).
+Vedi anche le [alternative a Meshy](/it/confronti/meshy) e [creare un modello 3D da foto](/it/guide/creare-un-modello-3d-da-foto).
 
 ## FAQ
 

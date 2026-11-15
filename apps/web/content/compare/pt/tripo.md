@@ -102,7 +102,7 @@ Formatos documentados não significam downloads grátis em todos os planos. Trip
 
 Escolha uma peça difícil do catálogo. Verifique silhueta, peças, costas e material; descarregue e abra o ficheiro. Divida toda a despesa, incluindo descartes e correções, pelos modelos utilizáveis. Numa ficha de produto, o resultado tem de continuar a ser o seu produto.
 
-Veja também as [alternativas ao Meshy](/pt/comparacoes/meshy) e [como fazer um modelo 3D](/pt/guias/como-criar-um-modelo-3d).
+Veja também as [alternativas ao Meshy](/pt/comparacoes/meshy) e [modelos 3D para ecommerce](/pt/guias/modelos-3d-para-ecommerce).
 
 ## Perguntas frequentes
 

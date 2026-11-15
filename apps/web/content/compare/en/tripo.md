@@ -102,7 +102,7 @@ These are documented formats, not a promise of free downloads on every plan. Tri
 
 Choose a difficult item from your catalogue. Inspect its silhouette, parts, back and material, then download and open the file. Divide all spending, including discarded attempts and corrections, by the models you would use. For a product page, the result must still be your product, beyond looking attractive in a viewer.
 
-Also see [alternatives to Meshy](/compare/meshy) and [how to make a 3D model](/learn/how-to-make-a-3d-model).
+Also see [alternatives to Meshy](/compare/meshy) and [3D models for ecommerce](/learn/3d-models-for-ecommerce).
 
 ## Details of our Tripo trial
 
