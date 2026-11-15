@@ -93,7 +93,7 @@ Bild-zu-3D-Werkzeuge wie Meshy, Tripo und easyrender starten mit einem einzigen 
 
 Fazit: der Weg für einen Katalog aus Lieferantenfotos. Feine Logos, offenes Geflecht und eine Seite, die das Foto nie gezeigt hat, lassen sich aus einem Bild schwerer ablesen. Jeden Weg mit seinen Voraussetzungen und Schwächen beschreibt [3D-Modell erstellen](/de/ratgeber/3d-modell-erstellen).
 
-Ob du jemanden beauftragst oder mit einem Foto startest, vergleicht [3D-Modellierer oder KI](/de/vergleich/3d-modellierer-oder-ki). Zwei der Werkzeuge stellen [Meshy](/de/vergleich/meshy) und [Tripo](/de/vergleich/tripo) genauer vor.
+Ob du jemanden beauftragst oder mit einem Foto startest, vergleicht [3D-Modellierer oder KI](/de/vergleich/vergleich-3d-modellierer-oder-ki). Zwei der Werkzeuge stellen [Meshy](/de/vergleich/vergleich-meshy) und [Tripo](/de/vergleich/vergleich-tripo) genauer vor.
 
 ## 3D-Modelle für Möbelshops: Wo fängst du an?
 

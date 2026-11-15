@@ -72,7 +72,7 @@ RealityScan beginnt nach 20 Bildern mit der Verarbeitung und verarbeitet bis zu 
 
 RealityScan und Polycam erledigen das am Handy, das quelloffene [Meshroom](https://alicevision.org/) am Rechner. Echte Oberflächendetails hält das Verfahren gut fest. Schlichte weiße Flächen, Glas und poliertes Metall sind dabei schwierig, weil es sichtbare Struktur braucht, um ein Foto dem nächsten zuzuordnen.
 
-Wann sich dieser Aufwand lohnt, zeigt [Photogrammetrie-Software oder KI mit einem Foto](/de/vergleich/photogrammetrie-software).
+Wann sich dieser Aufwand lohnt, zeigt [Photogrammetrie-Software oder KI mit einem Foto](/de/vergleich/vergleich-photogrammetrie-software).
 
 ## Methode 3: LiDAR-Scan mit dem Handy
 
@@ -93,7 +93,7 @@ Das Grundprinzip ist bei diesen Werkzeugen ähnlich: ein scharfes Foto des ganze
 
 easyrender ist eines dieser Werkzeuge. Es zeichnet zuerst kostenlos ein Blatt mit neun Ansichten, acht rund um das Objekt in 45-Grad-Schritten und eine von oben, und baut dann aus diesen Ansichten das Modell. Ein fertiges Modell kostet {{renderCredits}} Credits ({{renderPrice}}). [Foto hochladen](/de)
 
-Es modelliert ein Objekt nach dem anderen, etwa Möbel, Deko und Gebäudefassaden. Meshy und Tripo machen aus Bildern ebenfalls 3D-Modelle und bieten dazu Text-zu-3D, jeweils mit eigenen Preisen. Genauer vorgestellt werden sie in [Alternative zu Meshy AI](/de/vergleich/meshy) und [Alternative zu Tripo AI](/de/vergleich/tripo).
+Es modelliert ein Objekt nach dem anderen, etwa Möbel, Deko und Gebäudefassaden. Meshy und Tripo machen aus Bildern ebenfalls 3D-Modelle und bieten dazu Text-zu-3D, jeweils mit eigenen Preisen. Genauer vorgestellt werden sie in [Alternative zu Meshy AI](/de/vergleich/vergleich-meshy) und [Alternative zu Tripo AI](/de/vergleich/vergleich-tripo).
 
 Um Werkzeuge zu vergleichen, schick dasselbe Foto durch zwei davon und beurteile fünf Dinge nebeneinander:
 
@@ -115,7 +115,7 @@ Ein gutes Briefing erspart das meiste Hin und Her. Das gehört hinein:
 - Das Budget: 30.000 bis 50.000 Dreiecke, Texturen bis 2048 Pixel und so wenige Materialien, wie das Stück zulässt.
 - Die Quelldatei, etwa die .blend, damit du später Änderungen machen kannst.
 
-Auf Freelance-Plattformen wie Fiverr und Upwork findest du Modellierer für Produkte. Lass dir ein Probemodell oder ein früheres Modell aus derselben Kategorie zeigen, bevor du einen ganzen Katalog vergibst. Kosten, Zeit und wann du beauftragst statt mit einem Foto zu starten, stehen in [3D-Modellierer oder KI](/de/vergleich/3d-modellierer-oder-ki).
+Auf Freelance-Plattformen wie Fiverr und Upwork findest du Modellierer für Produkte. Lass dir ein Probemodell oder ein früheres Modell aus derselben Kategorie zeigen, bevor du einen ganzen Katalog vergibst. Kosten, Zeit und wann du beauftragst statt mit einem Foto zu starten, stehen in [3D-Modellierer oder KI](/de/vergleich/vergleich-3d-modellierer-oder-ki).
 
 ## Was kostet ein 3D-Modell?
 

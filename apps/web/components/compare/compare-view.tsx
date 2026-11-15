@@ -2,6 +2,7 @@ import { ArrowRight, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { DATE_FORMAT } from '@/components/blog/post-card';
+import { ResourceLinks } from '@/components/resource-links';
 import { Button } from '@/components/ui/button';
 import { Markdown, type TocEntry, tocOf } from '@/lib/blog/markdown';
 import { isLiveBlogLink, readingMinutes } from '@/lib/blog/posts';
@@ -75,11 +76,19 @@ export async function CompareView({ page }: { page: ComparePage }) {
           </p>
           {(page.author || page.updated) && (
             <p className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 border-t pt-5 text-sm text-muted-foreground tabular-nums">
-              {page.author && (
-                <span className="font-medium text-foreground">
-                  {t('post.by', { author: page.author.name })}
-                </span>
-              )}
+              {page.author &&
+                (page.author.url ? (
+                  <Link
+                    href={page.author.url}
+                    className="font-medium text-foreground underline underline-offset-4"
+                  >
+                    {t('post.by', { author: page.author.name })}
+                  </Link>
+                ) : (
+                  <span className="font-medium text-foreground">
+                    {t('post.by', { author: page.author.name })}
+                  </span>
+                ))}
               {page.author && page.updated && <span aria-hidden>·</span>}
               {page.updated && (
                 <time dateTime={page.updated}>
@@ -142,6 +151,7 @@ export async function CompareView({ page }: { page: ComparePage }) {
           )}
         </div>
       </article>
+      <ResourceLinks locale={page.locale} context="article" />
     </div>
   );
 }

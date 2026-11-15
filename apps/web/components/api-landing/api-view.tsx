@@ -6,6 +6,7 @@ import { IntegrationCosts } from '@/components/integrations/costs';
 import { IntegrationLink } from '@/components/integrations/link';
 import { IntegrationResult } from '@/components/integrations/result';
 import { Pricing, Section } from '@/components/landing';
+import { ResourceLinks } from '@/components/resource-links';
 import { StudioHero } from '@/components/studio/hero';
 import { StudioClosing, StudioCompatibility } from '@/components/studio/proof';
 import { StudioShell } from '@/components/studio/shell';
@@ -183,6 +184,7 @@ export async function ApiView({ locale }: { locale: Locale }) {
           ))}
         </div>
       </Section>
+      <ResourceLinks locale={locale} context="api" />
       <StudioClosing title={t('closing.title')} label={t('closing.cta')} href={accountHref} />
     </StudioShell>
   );

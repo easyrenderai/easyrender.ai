@@ -75,7 +75,7 @@ export async function Pricing() {
       <PricingExposure variant={pricing.variant} subject={pricing.subject} />
       <div className="mb-6 flex flex-wrap items-center gap-3">
         <Button asChild>
-          <Link href="#try">{t('tryFree')}</Link>
+          <Link href={`${ROUTES.home.paths[locale as Locale]}#try`}>{t('tryFree')}</Link>
         </Button>
         <p className="text-sm text-muted-foreground">{t('noCard')}</p>
       </div>

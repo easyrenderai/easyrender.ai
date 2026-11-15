@@ -18,6 +18,7 @@ import {
   SIGNAL_MIN_SIGNUPS,
   type View,
 } from './helpers';
+import { organicLandingTable } from './organic';
 
 export type Payment = {
   id: string;
@@ -646,6 +647,9 @@ export function buildReport(
       view.notes.push('attributionMissing');
       return view;
     }
+    view.tables.push(
+      organicLandingTable(s.users, s.attribution, s.renders, finance.payments, range),
+    );
     const dimensions = [
       'channel',
       'utm_source',

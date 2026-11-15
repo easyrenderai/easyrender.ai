@@ -49,10 +49,12 @@
       "cookies": "Cookies y analítica",
       "api": "API REST",
       "privacy": "Política de privacidad",
-      "terms": "Términos del servicio"
+      "terms": "Términos del servicio",
+      "editorial": "Equipo editorial",
+      "comparisons": "Comparativas"
     },
     "copyright": "© 2026 easyrender. Con la tecnología de Genfeed.",
-    "pricesNote": "Precios en USD. Los créditos no caducan."
+    "pricesNote": "Consulta la moneda y el total antes de pagar. Los créditos no caducan."
   },
   "Home": {
     "connect": {
@@ -1297,10 +1299,10 @@
       "step": "Paso",
       "credits": "Créditos",
       "price": "Precio",
-      "sheet": "Hoja borrador",
-      "build": "Hoja final y construcción 3D, con el borrador ya hecho",
-      "total": "Render 3D completo, borrador incluido",
-      "note": "El borrador es gratis como vista previa diaria. Un crédito cuesta {unit} y no caduca. Si un paso falla, se devuelven sus créditos."
+      "sheet": "Vista previa inicial (dentro de tu cupo)",
+      "build": "Hoja de ángulos final y modelo 3D con textura",
+      "total": "Proceso completo de foto a 3D",
+      "note": "La vista previa inicial no gasta créditos dentro de tu cupo. La generación de pago incluye la hoja final y el modelo 3D. Editar o reutilizar una hoja final puede tener otro coste: consulta los créditos de cada acción. Un crédito cuesta {unit}. Las generaciones fallidas devuelven los créditos."
     },
     "change": {
       "title": "Qué puede cambiar",
@@ -1381,7 +1383,9 @@
     "attributionTitle": "Atribución del primer contacto",
     "attribution": "Los parámetros de campaña y la página de origen se mantienen en memoria y se guardan al crear una previsualización o cuenta. Las sesiones con Google Analytics permitido también conservan temporalmente estos campos en el almacenamiento de sesión, como se explica arriba. No guardamos identificadores de clic publicitario. Los eventos operativos del servidor son independientes de la medición opcional de Google.",
     "change": "Cambia tu elección",
-    "withdraw": "Rechazar detiene Google Analytics opcional, elimina sus cookies y el almacenamiento de sesión er_campaign, y solicita cancelar la medición de compras pendiente en el servidor para tu cuenta con sesión iniciada. GPC bloquea Google Analytics opcional. PostHog sin cookies y los eventos operativos de servidor siguen activos. Este control no retira los datos ya enviados."
+    "withdraw": "Rechazar detiene Google Analytics opcional, elimina sus cookies y el almacenamiento de sesión er_campaign, y solicita cancelar la medición de compras pendiente en el servidor para tu cuenta con sesión iniciada. GPC bloquea Google Analytics opcional. PostHog sin cookies y los eventos operativos de servidor siguen activos. Este control no retira los datos ya enviados.",
+    "metaTitle": "Cookies y analítica · easyrender",
+    "metaDescription": "Cómo utiliza easyrender las cookies y la analítica, qué datos recoge y cómo cambiar tus preferencias de consentimiento."
   },
   "Ar": {
     "metaTitle": "Míralo en tu casa",
@@ -1689,7 +1693,12 @@
       "developerActivationCoverage": "Los éxitos históricos sin fecha excluyen esa cuenta/canal de las tasas y tiempos medidos; aparecen por separado. Las cohortes recientes tienen menos tiempo de observación. Se miden generaciones 3D, no visitas, claves emitidas, conexiones, descargas ni usos solo de fotos de producto. El canal histórico de creación puede estar incompleto.",
       "api": "API",
       "mcp": "MCP",
-      "web": "Web"
+      "web": "Web",
+      "organicLandings": "SEO: resultados por página de entrada",
+      "previewAccounts": "Cuentas con preview (estado actual)",
+      "cohortPayers": "Nuevas cuentas que pagaron",
+      "repeatPayers": "Cuentas con dos pagos",
+      "organicCohortDefinition": "Solo cuentas de búsqueda orgánica registradas en el periodo, con resultados hasta su fin. Modelos: completedAt verificable; las generaciones antiguas sin fecha se muestran aparte. Preview: estado actual de la ficha, sin fecha de finalización inmutable. Pagos positivos observados en la fuente financiera, deduplicados; no representan ingresos netos. No equivale a una conversión visita-registro ni a una secuencia obligatoria de pasos. Las cohortes recientes tienen menos tiempo de observación."
     }
   },
   "McpLanding": {
@@ -2163,5 +2172,18 @@
     "unlimited": "{spent, number} créditos gastados · sin límite",
     "limited": "{spent, number} / {limit, number} gastados · {remaining, number} disponibles",
     "grossCap": "El límite cuenta todos los cargos de esta clave. Los reembolsos restauran el saldo de la cuenta, pero no el límite de la clave."
+  },
+  "Author": {
+    "metaTitle": "Jorge Rodríguez | Autor de easyrender",
+    "bio": "Jorge Rodríguez escribe las guías de easyrender sobre fotos de producto, archivos 3D y flujos de ecommerce.",
+    "methodTitle": "Cómo revisamos",
+    "method": "Las guías enlazan las fuentes de las afirmaciones técnicas. Distinguimos las funciones documentadas de los resultados de pruebas reales. Una comparativa reproducible indica imagen de entrada, versión del modelo, ajustes, fecha y limitaciones.",
+    "disclosure": "Este contenido lo publica easyrender, que vende el producto descrito. Las comparativas no son recomendaciones independientes. Los precios y la disponibilidad pueden cambiar; consulta al proveedor enlazado antes de comprar.",
+    "guides": "Guías de Jorge",
+    "comparisons": "Comparativas"
+  },
+  "Resources": {
+    "title": "Elige el siguiente paso",
+    "description": "Prepara una foto, compara flujos de trabajo y aprende a utilizar el archivo 3D."
   }
 }

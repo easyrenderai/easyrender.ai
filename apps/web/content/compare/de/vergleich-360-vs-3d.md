@@ -43,7 +43,7 @@ Es gibt vier Wege: einen 3D-Artist, die CAD-Daten des Herstellers, einen Scan od
 
 Der Weg über ein Foto braucht nur ein gutes Bild, keine Aufnahmeserie am Drehteller. Bei easyrender lädst du ein Foto schräg von vorn hoch, prüfst ein kostenloses Ansichtsblatt des Stücks von allen Seiten und gibst {{renderCredits}} Credits ({{renderPrice}}) nur aus, wenn es stimmt. Du lädst eine GLB- und eine USDZ-Datei herunter.
 
-Willst du lieber jemanden beauftragen, zeigt [3D-Modellierer oder KI](/de/vergleich/3d-modellierer-oder-ki), was ein Artist kostet.
+Willst du lieber jemanden beauftragen, zeigt [3D-Modellierer oder KI](/de/vergleich/vergleich-3d-modellierer-oder-ki), was ein Artist kostet.
 
 ## Wo wird was angezeigt?
 

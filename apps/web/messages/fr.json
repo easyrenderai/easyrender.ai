@@ -49,10 +49,12 @@
       "cookies": "Cookies et statistiques",
       "api": "REST API",
       "privacy": "Politique de confidentialité",
-      "terms": "Conditions d’utilisation"
+      "terms": "Conditions d’utilisation",
+      "editorial": "Équipe éditoriale",
+      "comparisons": "Comparatifs"
     },
     "copyright": "© 2026 easyrender. Avec la technologie de Genfeed.",
-    "pricesNote": "Prix en USD. Les crédits n'expirent pas."
+    "pricesNote": "Vérifie la devise et le total avant de payer. Les crédits n’expirent pas."
   },
   "Home": {
     "connect": {
@@ -1223,30 +1225,30 @@
   },
   "Blog": {
     "index": {
-      "metaTitle": "Guides: turning photos into 3D models · easyrender",
-      "metaDescription": "How to turn a photo into a 3D model, which files you get, and what easyrender can and cannot model. Written by the people building it.",
+      "metaTitle": "Guides : transformer une photo en modèle 3D · easyrender",
+      "metaDescription": "Comment passer de la photo au modèle 3D, quels fichiers récupérer et quelles limites connaître. Les guides de l’équipe easyrender.",
       "title": "Guides",
       "headline": "Tout ce qu'on apprend en transformant des photos en 3D",
-      "description": "How to turn a photo into a 3D model, which files you get, and what easyrender can and cannot model.",
-      "empty": "The first guides are being written. Nothing is published yet.",
-      "readMore": "Read the guide",
+      "description": "Comment transformer une photo en modèle 3D, quels fichiers récupérer et ce qu’easyrender peut modéliser.",
+      "empty": "Les premiers guides sont en cours de rédaction. Aucun n’est encore publié.",
+      "readMore": "Lire le guide",
       "latest": "Le dernier guide",
       "more": "Autres guides"
     },
     "breadcrumb": {
-      "home": "Home"
+      "home": "Accueil"
     },
     "post": {
       "by": "Par {author}",
-      "published": "Published {date}",
-      "updated": "Updated {date}",
+      "published": "Publié le {date}",
+      "updated": "Mis à jour le {date}",
       "readingTime": "{minutes} min de lecture",
       "toc": "Sur cette page",
-      "backToIndex": "All guides",
+      "backToIndex": "Tous les guides",
       "modelHint": "Glisse pour tourner",
       "cta": {
-        "title": "Try it with one photo",
-        "button": "Upload a photo"
+        "title": "Essaie avec une photo",
+        "button": "Importer une photo"
       },
       "related": "À lire ensuite"
     },
@@ -1381,7 +1383,9 @@
     "attributionTitle": "Attribution du premier contact",
     "attribution": "Les paramètres de campagne et la page d’origine restent en mémoire et sont enregistrés lors de la création d’un aperçu ou d’un compte. Lorsque Google Analytics est autorisé, ces champs sont aussi conservés temporairement dans le stockage de session, comme indiqué ci-dessus. Aucun identifiant de clic publicitaire n’est stocké. Les événements opérationnels du serveur sont indépendants de la mesure Google facultative.",
     "change": "Change ton choix",
-    "withdraw": "Refuser arrête Google Analytics facultatif, supprime ses cookies et le stockage de session er_campaign, et demande l’annulation des mesures d’achat en attente sur le serveur pour votre compte connecté. GPC bloque Google Analytics facultatif. PostHog sans cookies et les événements opérationnels serveur restent actifs. Ce contrôle ne retire pas les données déjà envoyées."
+    "withdraw": "Refuser arrête Google Analytics facultatif, supprime ses cookies et le stockage de session er_campaign, et demande l’annulation des mesures d’achat en attente sur le serveur pour votre compte connecté. GPC bloque Google Analytics facultatif. PostHog sans cookies et les événements opérationnels serveur restent actifs. Ce contrôle ne retire pas les données déjà envoyées.",
+    "metaTitle": "Cookies et mesure d’audience · easyrender",
+    "metaDescription": "Comment easyrender utilise les cookies et la mesure d’audience, quelles données sont collectées et comment modifier tes choix."
   },
   "Ar": {
     "metaTitle": "Voir chez vous",
@@ -1689,7 +1693,12 @@
       "developerActivationCoverage": "Les réussites historiques sans date excluent ce compte/canal des taux et délais mesurés ; elles sont présentées séparément. Les cohortes récentes ont moins de recul. Il s’agit de générations 3D, pas de visites, clés émises, connexions, téléchargements ou usages limités aux photos produit. Le canal de création historique peut être incomplet.",
       "api": "API",
       "mcp": "MCP",
-      "web": "Web"
+      "web": "Web",
+      "organicLandings": "Organic search outcomes by landing page",
+      "previewAccounts": "Accounts with preview (current state)",
+      "cohortPayers": "Signup cohort payers",
+      "repeatPayers": "Accounts with two payments",
+      "organicCohortDefinition": "Organic-search accounts signed up within the period, with outcomes before its end. Models use recorded completedAt; undated legacy successes are separate. Preview is current stored sheet state, without an immutable completion time. Positive payments are deduplicated observations from the financial source, not net revenue. This is not visit-to-signup conversion or a required sequence of steps. Recent cohorts have less observation time."
     }
   },
   "McpLanding": {
@@ -2163,5 +2172,18 @@
     "unlimited": "{spent, number} crédits dépensés · sans plafond",
     "limited": "{spent, number} / {limit, number} dépensés · {remaining, number} restants",
     "grossCap": "Le plafond compte tous les débits de cette clé. Les remboursements rétablissent le solde du compte, mais pas le plafond de la clé."
+  },
+  "Author": {
+    "metaTitle": "Jorge Rodríguez | Auteur chez easyrender",
+    "bio": "Jorge Rodríguez rédige les guides easyrender sur les photos de produits, les fichiers 3D et les usages e-commerce.",
+    "methodTitle": "Notre méthode",
+    "method": "Les affirmations techniques renvoient à leurs sources. Nous distinguons les fonctions documentées des résultats de tests pratiques. Un comparatif reproductible précise l’image source, la version du modèle, les réglages, la date et les limites.",
+    "disclosure": "Ces contenus sont publiés par easyrender, qui commercialise le produit présenté. Les comparatifs ne sont pas des recommandations indépendantes. Les prix et la disponibilité peuvent changer ; consultez le fournisseur avant tout achat.",
+    "guides": "Guides de Jorge",
+    "comparisons": "Comparatifs"
+  },
+  "Resources": {
+    "title": "Choisissez la suite",
+    "description": "Préparez une photo, comparez les méthodes et apprenez à utiliser le fichier 3D."
   }
 }

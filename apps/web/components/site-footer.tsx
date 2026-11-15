@@ -14,6 +14,8 @@ const COLUMNS = [
       { hash: '#how-it-works', key: 'howItWorks' },
       { hash: '#try', key: 'try' },
       { route: 'blog', key: 'guides' },
+      { route: 'compare', key: 'comparisons' },
+      { route: 'author', key: 'editorial' },
       { href: '/hub', key: 'hub' },
       { href: '/explore', key: 'gallery' },
       { route: 'pricing', key: 'pricing' },

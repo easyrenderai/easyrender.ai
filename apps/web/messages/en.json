@@ -49,10 +49,12 @@
       "cookies": "Cookies and analytics",
       "api": "REST API",
       "privacy": "Privacy Policy",
-      "terms": "Terms of Service"
+      "terms": "Terms of Service",
+      "editorial": "Editorial team",
+      "comparisons": "Comparisons"
     },
     "copyright": "© 2026 easyrender. Powered by Genfeed.",
-    "pricesNote": "Prices in USD. Credits never expire."
+    "pricesNote": "Check the currency and total at checkout. Credits never expire."
   },
   "Home": {
     "connect": {
@@ -1297,10 +1299,10 @@
       "step": "Step",
       "credits": "Credits",
       "price": "Price",
-      "sheet": "Draft sheet",
-      "build": "Final sheet and 3D build, once the draft exists",
-      "total": "Full 3D render, draft included",
-      "note": "The draft is free as a daily preview. A credit costs {unit} and never expires. If a step fails, its credits are refunded."
+      "sheet": "Initial preview (within your allowance)",
+      "build": "Final angle sheet and textured 3D model",
+      "total": "Full photo-to-3D workflow",
+      "note": "The initial preview spends no credits within your allowance. The paid build includes the final angle sheet and 3D model. Editing or reusing an existing final sheet can have a different cost: check the action’s credit quote. A credit costs {unit}. Failed builds refund their credits."
     },
     "change": {
       "title": "What can change",
@@ -1381,7 +1383,9 @@
     "attributionTitle": "First-touch attribution",
     "attribution": "Campaign parameters and the referring page are kept in memory and stored with a preview or account when created. Allowed Google Analytics sessions also retain these fields temporarily in session storage, as described above. No advertising click IDs are stored. Operational server funnel events are independent of optional Google measurement.",
     "change": "Change your choice",
-    "withdraw": "Reject stops optional Google Analytics, removes its cookies and er_campaign session storage, and requests cancellation of pending server purchase measurement for your signed-in account. GPC blocks optional Google Analytics. Cookieless PostHog and operational server events remain active. Data already sent is not withdrawn by this control."
+    "withdraw": "Reject stops optional Google Analytics, removes its cookies and er_campaign session storage, and requests cancellation of pending server purchase measurement for your signed-in account. GPC blocks optional Google Analytics. Cookieless PostHog and operational server events remain active. Data already sent is not withdrawn by this control.",
+    "metaTitle": "Cookies and analytics · easyrender",
+    "metaDescription": "How easyrender uses cookies and analytics, which data is collected, and how to change your consent choices."
   },
   "Ar": {
     "metaTitle": "View in your room",
@@ -1689,7 +1693,12 @@
       "developerActivationCoverage": "Undated historical successes exclude that account/channel from measured rates and timing; they are shown separately. Recent cohorts have less observation time. These are 3D generations, not visits, issued keys, connections, downloads or packshot-only uses. Historical creation-channel labels may be incomplete.",
       "api": "API",
       "mcp": "MCP",
-      "web": "Web"
+      "web": "Web",
+      "organicLandings": "Organic search outcomes by landing page",
+      "previewAccounts": "Accounts with preview (current state)",
+      "cohortPayers": "Signup cohort payers",
+      "repeatPayers": "Accounts with two payments",
+      "organicCohortDefinition": "Organic-search accounts signed up within the period, with outcomes before its end. Models use recorded completedAt; undated legacy successes are separate. Preview is current stored sheet state, without an immutable completion time. Positive payments are deduplicated observations from the financial source, not net revenue. This is not visit-to-signup conversion or a required sequence of steps. Recent cohorts have less observation time."
     }
   },
   "McpLanding": {
@@ -2163,5 +2172,18 @@
     "unlimited": "{spent, number} credits spent · no cap",
     "limited": "{spent, number} / {limit, number} spent · {remaining, number} remaining",
     "grossCap": "The cap counts total debits for this key. Refunds restore the wallet balance, but do not restore the key cap."
+  },
+  "Author": {
+    "metaTitle": "Jorge Rodríguez | easyrender author",
+    "bio": "Jorge Rodríguez writes easyrender guides about product photos, 3D files and ecommerce workflows.",
+    "methodTitle": "How we review",
+    "method": "Guides link to the sources behind technical claims. Documented features and hands-on results are identified separately. A reproducible comparison records its input, model version, settings, date and limitations.",
+    "disclosure": "This content is published by easyrender, which sells the product discussed. A comparison is not an independent endorsement. Prices and availability can change; check the linked provider before buying.",
+    "guides": "Guides by Jorge",
+    "comparisons": "Comparisons"
+  },
+  "Resources": {
+    "title": "Choose your next step",
+    "description": "Learn how to prepare a photo, compare workflows and use the resulting 3D file."
   }
 }

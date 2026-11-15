@@ -4,6 +4,7 @@ group: 3d-models-for-ecommerce
 title: "Modelos 3D para ecommerce: cómo conseguirlos"
 description: Qué aporta un modelo 3D de producto, qué archivos necesita una tienda (GLB y USDZ), cuatro formas de conseguirlo y los límites que conviene saber antes.
 date: 2026-11-15
+updated: 2026-11-15
 keyword: modelo 3d para ecommerce
 author: Jorge Rodríguez
 authorType: person
@@ -15,6 +16,26 @@ Un modelo 3D para ecommerce es un archivo, normalmente GLB o USDZ, que el compra
 Las tiendas los consiguen de cuatro maneras: con un artista 3D, a partir de los archivos CAD del fabricante, escaneando el producto o con IA a partir de una sola foto.
 
 <!-- IMAGE PENDING: ilustración EN del mocasín y su caja (mitad cuero, mitad malla 3D). Pie: «Ilustración, no es un resultado de easyrender». -->
+
+## De una foto de mueble a la ficha de Shopify
+
+Prueba el flujo con un producto antes de procesar un catálogo. Estos pasos siguen la [documentación de archivos de producto de Shopify](https://help.shopify.com/en/manual/products/product-media/add-media); no describen una publicación que hayamos probado en una tienda real.
+
+1. Elige una foto nítida de tres cuartos con la pieza entera, incluidas las patas. Conserva por separado las medidas reales del producto.
+2. Súbela a easyrender y revisa la preview disponible. Comprueba la parte trasera, las patas y los huecos antes de generar el modelo completo.
+3. Descarga el GLB. Gíralo y compara los detalles visibles con la foto original; descarta un modelo incorrecto aunque la generación haya terminado sin errores.
+4. En Shopify, entra en Productos, selecciona el producto y añade el GLB en Multimedia con la opción de subir un archivo nuevo. Espera a que termine el procesamiento.
+5. Comprueba que el tema admite contenido 3D. Abre la tienda en móvil y escritorio y revisa textura, giro y carga. Prueba la realidad aumentada por separado en un teléfono compatible.
+
+Puedes examinar nuestro [GLB del sillón](/showcase/armchair.glb) antes de generar el tuyo. Contiene 25.879 triángulos y ocupa 622.804 bytes, medidos sobre ese archivo el 15 de noviembre de 2026. Es una muestra descargable, no una garantía de que tu tema o cualquier modelo generado se comporte igual.
+
+## Calcula el coste por modelo utilizable
+
+Registra cada intento, los créditos cobrados, los reembolsos y si el resultado supera la revisión del producto. Divide los créditos netos consumidos entre los modelos aceptados. Un modelo generado sin errores pero con las patas incorrectas cuenta como coste, no como resultado aceptado.
+
+La generación completa estándar cuesta {{renderCredits}} créditos; consulta los [precios actuales](/es/precios) para tu moneda y plan. Las ediciones y otras operaciones pueden tener presupuestos separados. Si no aceptas ningún modelo, indica el gasto y cero modelos utilizables, sin calcular un coste por modelo.
+
+Para automatizarlo, la [guía REST API](/es/api-imagen-a-3d) incluye ejemplos ejecutables en Python y TypeScript con consulta de estado. La [integración MCP](/es/mcp) permite usar el flujo desde agentes. Revisa primero un producto y después procesa los que superen el control de calidad.
 
 ## ¿Qué aporta un modelo 3D a una ficha de producto?
 

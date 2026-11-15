@@ -169,7 +169,7 @@ const CONTENT_ROOT = join(process.cwd(), 'content', 'blog');
 
 /** Where a post lives, given its locale and slug. */
 export const postPath = (locale: Locale, slug: string): string =>
-  `${ROUTES.blog.paths[locale]}/${slug}`;
+  `${ROUTES.blog.paths[locale]}/${encodeURIComponent(slug)}`;
 
 const isoDate = (value: string): string | null => {
   const date = new Date(/^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00Z` : value);
@@ -198,7 +198,15 @@ export function parsePost(
   const authorType = AUTHOR_TYPES[(data.authorType ?? 'organization').toLowerCase()];
   if (!authorType) return { error: `invalid authorType "${data.authorType}"` };
   const author: BlogAuthor = data.author
-    ? { name: data.author, type: authorType, ...(data.authorUrl ? { url: data.authorUrl } : {}) }
+    ? {
+        name: data.author,
+        type: authorType,
+        ...(data.authorUrl
+          ? { url: data.authorUrl }
+          : data.author === 'Jorge Rodríguez' && authorType === 'Person'
+            ? { url: ROUTES.author.paths[locale] }
+            : {}),
+      }
     : DEFAULT_AUTHOR;
 
   return {

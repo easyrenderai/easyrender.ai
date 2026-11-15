@@ -49,10 +49,12 @@
       "cookies": "Cookie e analisi",
       "api": "REST API",
       "privacy": "Informativa sulla privacy",
-      "terms": "Termini di servizio"
+      "terms": "Termini di servizio",
+      "editorial": "Redazione",
+      "comparisons": "Confronti"
     },
     "copyright": "© 2026 easyrender. Tecnologia Genfeed.",
-    "pricesNote": "Prezzi in USD. I crediti non scadono."
+    "pricesNote": "Controlla valuta e totale prima di pagare. I crediti non scadono."
   },
   "Home": {
     "connect": {
@@ -1223,13 +1225,13 @@
   },
   "Blog": {
     "index": {
-      "metaTitle": "Guides: turning photos into 3D models · easyrender",
-      "metaDescription": "How to turn a photo into a 3D model, which files you get, and what easyrender can and cannot model. Written by the people building it.",
-      "title": "Guides",
+      "metaTitle": "Guide: da una foto a un modello 3D · easyrender",
+      "metaDescription": "Come trasformare una foto in un modello 3D, quali file scaricare e quali limiti conoscere. Guide del team easyrender.",
+      "title": "Guide",
       "headline": "Tutto quello che impariamo trasformando foto in 3D",
-      "description": "How to turn a photo into a 3D model, which files you get, and what easyrender can and cannot model.",
-      "empty": "The first guides are being written. Nothing is published yet.",
-      "readMore": "Read the guide",
+      "description": "Come trasformare una foto in un modello 3D, quali file ricevi e cosa può modellare easyrender.",
+      "empty": "Stiamo scrivendo le prime guide. Non ce ne sono ancora di pubblicate.",
+      "readMore": "Leggi la guida",
       "latest": "La guida più recente",
       "more": "Altre guide"
     },
@@ -1238,15 +1240,15 @@
     },
     "post": {
       "by": "Di {author}",
-      "published": "Published {date}",
-      "updated": "Updated {date}",
+      "published": "Pubblicato il {date}",
+      "updated": "Aggiornato il {date}",
       "readingTime": "{minutes} min di lettura",
       "toc": "In questa pagina",
-      "backToIndex": "All guides",
+      "backToIndex": "Tutte le guide",
       "modelHint": "Trascina per ruotare",
       "cta": {
-        "title": "Try it with one photo",
-        "button": "Upload a photo"
+        "title": "Prova con una foto",
+        "button": "Carica una foto"
       },
       "related": "Continua a leggere"
     },
@@ -1381,7 +1383,9 @@
     "attributionTitle": "Attribuzione del primo contatto",
     "attribution": "I parametri della campagna e la pagina di provenienza restano in memoria e vengono salvati alla creazione di un’anteprima o di un account. Se Google Analytics è consentito, questi campi restano anche temporaneamente nello spazio di sessione, come indicato sopra. Non salviamo identificativi dei clic pubblicitari. Gli eventi operativi del server sono indipendenti dalla misurazione Google facoltativa.",
     "change": "Cambia la tua scelta",
-    "withdraw": "Rifiuta interrompe Google Analytics facoltativo, elimina i suoi cookie e lo spazio di sessione er_campaign e richiede l’annullamento delle misurazioni degli acquisti ancora in attesa sul server per il tuo account connesso. GPC blocca Google Analytics facoltativo. PostHog senza cookie e gli eventi operativi del server restano attivi. Questo controllo non ritira i dati già inviati."
+    "withdraw": "Rifiuta interrompe Google Analytics facoltativo, elimina i suoi cookie e lo spazio di sessione er_campaign e richiede l’annullamento delle misurazioni degli acquisti ancora in attesa sul server per il tuo account connesso. GPC blocca Google Analytics facoltativo. PostHog senza cookie e gli eventi operativi del server restano attivi. Questo controllo non ritira i dati già inviati.",
+    "metaTitle": "Cookie e analisi · easyrender",
+    "metaDescription": "Come easyrender usa cookie e analisi, quali dati raccoglie e come modificare le preferenze di consenso."
   },
   "Ar": {
     "metaTitle": "Guardalo a casa tua",
@@ -1689,7 +1693,12 @@
       "developerActivationCoverage": "I successi storici senza data escludono quell’account/canale da tassi e tempi misurati; sono mostrati separatamente. Le coorti recenti hanno meno tempo di osservazione. Sono generazioni 3D, non visite, chiavi emesse, connessioni, download o utilizzi limitati alle foto prodotto. Il canale storico di creazione può essere incompleto.",
       "api": "API",
       "mcp": "MCP",
-      "web": "Web"
+      "web": "Web",
+      "organicLandings": "Organic search outcomes by landing page",
+      "previewAccounts": "Accounts with preview (current state)",
+      "cohortPayers": "Signup cohort payers",
+      "repeatPayers": "Accounts with two payments",
+      "organicCohortDefinition": "Organic-search accounts signed up within the period, with outcomes before its end. Models use recorded completedAt; undated legacy successes are separate. Preview is current stored sheet state, without an immutable completion time. Positive payments are deduplicated observations from the financial source, not net revenue. This is not visit-to-signup conversion or a required sequence of steps. Recent cohorts have less observation time."
     }
   },
   "McpLanding": {
@@ -2163,5 +2172,18 @@
     "unlimited": "{spent, number} crediti spesi · senza limite",
     "limited": "{spent, number} / {limit, number} spesi · {remaining, number} rimanenti",
     "grossCap": "Il limite conta tutti gli addebiti di questa chiave. I rimborsi ripristinano il saldo dell’account, ma non il limite della chiave."
+  },
+  "Author": {
+    "metaTitle": "Jorge Rodríguez | Autore di easyrender",
+    "bio": "Jorge Rodríguez scrive le guide easyrender su foto di prodotto, file 3D e flussi di lavoro per ecommerce.",
+    "methodTitle": "Il nostro metodo",
+    "method": "Le affermazioni tecniche rimandano alle fonti. Le funzioni documentate sono distinte dai risultati delle prove pratiche. Un confronto riproducibile indica immagine iniziale, versione del modello, impostazioni, data e limiti.",
+    "disclosure": "Questi contenuti sono pubblicati da easyrender, che vende il prodotto descritto. I confronti non sono raccomandazioni indipendenti. Prezzi e disponibilità possono cambiare; verifica sul sito del fornitore prima di acquistare.",
+    "guides": "Guide di Jorge",
+    "comparisons": "Confronti"
+  },
+  "Resources": {
+    "title": "Scegli il prossimo passo",
+    "description": "Prepara una foto, confronta i flussi di lavoro e scopri come usare il file 3D."
   }
 }

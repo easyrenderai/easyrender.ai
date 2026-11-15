@@ -21,6 +21,7 @@ describe('the per-language sitemaps', () => {
     const paths = (locale: (typeof LOCALES)[number]) =>
       localeEntries(locale, BEFORE_GUIDES).map((entry) => entry.path);
     expect(paths('en')).toEqual([
+      '/authors/jorge-rodriguez',
       '/',
       '/pricing',
       '/mcp',
@@ -37,6 +38,7 @@ describe('the per-language sitemaps', () => {
       '/cookies',
     ]);
     expect(paths('es')).toEqual([
+      '/es/autores/jorge-rodriguez',
       '/es',
       '/es/precios',
       '/es/mcp',
@@ -68,6 +70,7 @@ describe('the per-language sitemaps', () => {
     for (const locale of ['de', 'fr', 'it', 'pt'] as const) {
       const hub = ROUTES.compare.paths[locale];
       expect(paths(locale), locale).toEqual([
+        ROUTES.author.paths[locale],
         `/${locale}`,
         ROUTES.pricing.paths[locale],
         hub,

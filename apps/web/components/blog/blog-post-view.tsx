@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
+import { ResourceLinks } from '@/components/resource-links';
 import { Button } from '@/components/ui/button';
 import { Markdown, type TocEntry, tocOf } from '@/lib/blog/markdown';
 import {
@@ -72,9 +73,18 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
             {post.description}
           </p>
           <p className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 border-t pt-5 text-sm text-muted-foreground tabular-nums">
-            <span className="font-medium text-foreground">
-              {t('post.by', { author: post.author.name })}
-            </span>
+            {post.author.url ? (
+              <Link
+                href={post.author.url}
+                className="font-medium text-foreground underline underline-offset-4"
+              >
+                {t('post.by', { author: post.author.name })}
+              </Link>
+            ) : (
+              <span className="font-medium text-foreground">
+                {t('post.by', { author: post.author.name })}
+              </span>
+            )}
             <span aria-hidden>·</span>
             <time dateTime={post.date}>
               {t('post.published', { date: format.dateTime(new Date(post.date), DATE_FORMAT) })}
@@ -141,6 +151,7 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
           )}
         </div>
       </article>
+      <ResourceLinks locale={post.locale} context="article" />
 
       {related.length > 0 && (
         <section aria-labelledby="related-guides" className="mt-24 border-t pt-10">

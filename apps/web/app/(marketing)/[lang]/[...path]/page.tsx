@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ApiView } from '@/components/api-landing/api-view';
+import { AuthorView } from '@/components/author-view';
 import { BlogIndexView } from '@/components/blog/blog-index-view';
 import { BlogPostView } from '@/components/blog/blog-post-view';
 import { CompareIndexView } from '@/components/compare/compare-index-view';
@@ -18,12 +19,15 @@ import { JsonLd } from '@/lib/seo/jsonld';
 import {
   apiGraph,
   apiMetadata,
+  authorGraph,
+  authorMetadata,
   blogIndexGraph,
   blogIndexMetadata,
   compareIndexGraph,
   compareIndexMetadata,
   comparePageGraph,
   comparePageMetadata,
+  cookiesMetadata,
   evalsGraph,
   evalsMetadata,
   legalMetadata,
@@ -46,6 +50,7 @@ import { isPublished, ROUTES } from '@/lib/seo/routes';
 // through to notFound, which is the safe direction.
 
 type Match =
+  | { kind: 'author'; locale: Locale }
   | { kind: 'blogIndex'; locale: Locale }
   | { kind: 'post'; post: BlogPost }
   | { kind: 'compareIndex'; locale: Locale }
@@ -56,12 +61,19 @@ type Match =
   | { kind: 'models'; locale: Locale }
   | { kind: 'evals'; locale: Locale }
   | { kind: 'privacy' | 'terms'; locale: Locale }
+  | { kind: 'cookies'; locale: Locale }
   | { kind: 'none' };
 
 function resolve(lang: string, segments: string[]): Match {
   if (!isRoutableLocale(lang) || lang === 'en') return { kind: 'none' };
   const locale: Locale = lang;
   const path = `/${[locale, ...segments].join('/')}`;
+
+  if (isPublished('author', locale) && path === ROUTES.author.paths[locale])
+    return { kind: 'author', locale };
+
+  if (isPublished('cookies', locale) && path === ROUTES.cookies.paths[locale])
+    return { kind: 'cookies', locale };
 
   for (const kind of ['privacy', 'terms'] as const) {
     if (isPublished(kind, locale) && path === ROUTES[kind].paths[locale]) {
@@ -113,6 +125,8 @@ export async function generateMetadata({
 }: PageProps<'/[lang]/[...path]'>): Promise<Metadata> {
   const { lang, path } = await params;
   const match = resolve(lang, path);
+  if (match.kind === 'author') return authorMetadata(match.locale);
+  if (match.kind === 'cookies') return cookiesMetadata(match.locale);
   if (match.kind === 'privacy' || match.kind === 'terms')
     return legalMetadata(match.kind, match.locale);
   if (match.kind === 'post') return postMetadata(match.post);
@@ -130,8 +144,14 @@ export async function generateMetadata({
 export default async function LocalePage({ params }: PageProps<'/[lang]/[...path]'>) {
   const { lang, path } = await params;
   const match = resolve(lang, path);
-  if (isRoutableLocale(lang) && `/${lang}/${path.join('/')}` === ROUTES.cookies.paths[lang])
-    return <CookiesPage />;
+  if (match.kind === 'author')
+    return (
+      <>
+        <JsonLd graph={await authorGraph(match.locale)} />
+        <AuthorView locale={match.locale} />
+      </>
+    );
+  if (match.kind === 'cookies') return <CookiesPage />;
 
   if (match.kind === 'privacy' || match.kind === 'terms') {
     return <LegalPage kind={match.kind} locale={match.locale} />;

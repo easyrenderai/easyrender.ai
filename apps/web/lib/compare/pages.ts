@@ -137,7 +137,11 @@ export function parseComparePage(
     author = {
       name: data.author,
       type: authorType,
-      ...(data.authorUrl ? { url: data.authorUrl } : {}),
+      ...(data.authorUrl
+        ? { url: data.authorUrl }
+        : data.author === 'Jorge Rodríguez' && authorType === 'Person'
+          ? { url: ROUTES.author.paths[locale] }
+          : {}),
     };
   }
   return {

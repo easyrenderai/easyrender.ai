@@ -71,7 +71,11 @@ describe('the route registry', () => {
     // wait for reviewed copy.
     for (const locale of ['de', 'fr', 'it', 'pt'] as const) {
       for (const key of ROUTE_KEYS) {
-        if (['home', 'cookies', 'privacy', 'terms', 'pricing', 'blog', 'compare'].includes(key))
+        if (
+          ['home', 'cookies', 'privacy', 'terms', 'pricing', 'blog', 'compare', 'author'].includes(
+            key,
+          )
+        )
           continue;
         expect(isPublished(key, locale), `${key}/${locale}`).toBe(false);
       }

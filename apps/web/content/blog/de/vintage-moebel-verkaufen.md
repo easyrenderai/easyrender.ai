@@ -129,7 +129,7 @@ Nutz das Modell also für Form und Proportion und die Nahaufnahmen als Beleg fü
 
 Marktplätze haben eigene Regeln für 3D-Dateien. In der Praxis schickst du einen Link, wenn jemand nach mehr Ansichten fragt, oder legst die GLB-Datei in deinem eigenen Shopify-Shop als Produktmedium ab. Die Wege zu einem Modell stehen in [3D-Modell erstellen](/de/ratgeber/3d-modell-erstellen), was ein Shop damit macht, in [3D-Modell für den Onlineshop](/de/ratgeber/3d-modelle-fuer-onlineshops).
 
-Ob du einen Modellierer beauftragst oder mit einem Foto startest, vergleicht [3D-Modellierer oder KI](/de/vergleich/3d-modellierer-oder-ki).
+Ob du einen Modellierer beauftragst oder mit einem Foto startest, vergleicht [3D-Modellierer oder KI](/de/vergleich/vergleich-3d-modellierer-oder-ki).
 
 easyrender gibt jedem fertigen Modell in der öffentlichen Galerie eine Seite, die du per Link teilen kannst. Modelle sind standardmäßig öffentlich. Der Link funktioniert nur, solange das Modell in der Galerie steht. Blendest du es aus, funktioniert der Link nicht mehr. Schick ihn in deiner Antwort an den Käufer mit, neben den Nahaufnahmen und deinen gemessenen Maßen, die im Inserat bleiben.
 
