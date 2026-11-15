@@ -64,7 +64,9 @@ jobs:
           node-version: 24
           package-manager-cache: false
       - name: Python and TypeScript API examples
-        run: python3 examples/rest/test_smoke.py
+        run: |
+          bunx tsc -p examples/rest/tsconfig.json
+          python3 examples/rest/test_smoke.py
 
   schema:
     name: Schema change
