@@ -43,6 +43,7 @@ export async function IntegrationResult({ locale, kind }: { locale: Locale; kind
                   alt={t(`${step}.alt`)}
                   fill
                   sizes="(max-width: 767px) 100vw, 33vw"
+                  quality={85}
                   className="object-contain"
                 />
               )}

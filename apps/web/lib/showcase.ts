@@ -37,7 +37,7 @@ const item = (
   slug,
   title,
   prompt,
-  photo: `/showcase/${slug}.jpg`,
+  photo: versionedPublicModel(`/showcase/${slug}.jpg`),
   angles: angles ? `/showcase/${slug}-angles.jpg` : null,
   model: versionedPublicModel(`/showcase/${slug}.glb`),
   category,

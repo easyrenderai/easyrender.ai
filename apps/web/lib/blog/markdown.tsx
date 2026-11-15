@@ -292,7 +292,7 @@ function Figure({
         // picture is lazy, except the illustration under the first paragraph, which is near the
         // top of every guide and often its largest paint, so it is preloaded.
         <Image
-          src={media.src}
+          src={versionedPublicModel(media.src)}
           alt={media.alt}
           width={media.width}
           height={media.height}
