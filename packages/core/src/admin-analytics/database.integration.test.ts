@@ -32,9 +32,35 @@ describe.skipIf(!url)('read-only analytics against Postgres', () => {
     expect(view.tables).toHaveLength(0);
   });
   it('loads deployed attribution without changing schema', async () => {
-    const columns = await attributionColumns();
-    const s = await loadDatabase(true, [], columns);
-    expect(s.columns).toEqual(columns);
-    if (columns.user) expect(s.attribution.length).toBe(s.users.length);
+    const id = `analytics-${crypto.randomUUID()}`;
+    await db().user.create({
+      data: {
+        id,
+        name: 'Attribution fixture',
+        email: `${id}@example.invalid`,
+        utm_campaign: 'integration-check',
+        utm_source: 'test',
+      },
+    });
+    try {
+      const columns = await attributionColumns();
+      const s = await loadDatabase(true, [], columns);
+      expect(s.columns).toEqual(columns);
+      expect(columns.user).toBe(true);
+      // Other suites insert/delete their own users concurrently. Verify our stable fixture,
+      // not equality between two global queries made at different instants.
+      expect(s.users.find((user) => user.id === id)?.email).toBe(`${id}@example.invalid`);
+      expect(s.attribution.find((user) => user.id === id)).toMatchObject({
+        utm_campaign: 'integration-check',
+        utm_source: 'test',
+      });
+      expect(await attributionColumns()).toEqual(columns);
+      expect(await db().user.findUnique({ where: { id } })).toMatchObject({
+        utm_campaign: 'integration-check',
+        utm_source: 'test',
+      });
+    } finally {
+      await db().user.delete({ where: { id } });
+    }
   });
 });
