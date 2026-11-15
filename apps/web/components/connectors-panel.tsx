@@ -4,6 +4,7 @@ import type { ApiKeyScope } from '@easyrender/core';
 import { KeyRound, Trash2 } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { type FormEvent, useId, useState } from 'react';
+import { ConnectionCheck } from '@/components/connection-check';
 import { McpSetup } from '@/components/mcp-setup';
 import {
   Accordion,
@@ -127,6 +128,7 @@ export function ConnectorsPanel({ initial, mcpUrl }: { initial: KeyRow[]; mcpUrl
             </Button>
           )}
           <McpSetup url={mcpUrl} apiKey={created} />
+          <ConnectionCheck apiKey={created} />
         </CardContent>
       </Card>
 
