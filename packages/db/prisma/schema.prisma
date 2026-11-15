@@ -328,6 +328,27 @@ model Purchase {
   googleDelivery GooglePurchaseDelivery?
 }
 
+model ImageUpload {
+  id          String   @id @default(cuid())
+  userId      String
+  sourceKey   String
+  contentType String
+  size        Int
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([expiresAt])
+}
+
+model ApiRateWindow {
+  id        String   @id
+  count     Int      @default(1)
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
 model ApiKey {
   id         String    @id @default(cuid())
   userId     String

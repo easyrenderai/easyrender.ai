@@ -1,5 +1,6 @@
 export * from './analytics';
 export * from './api-keys';
+export * from './api-limits';
 export * from './billing';
 export * from './catalog';
 export * from './config';
@@ -21,4 +22,5 @@ export * from './shopify-app';
 export * from './signup-attribution';
 export * from './signup-receipt';
 export * from './storage';
+export * from './uploads';
 export * from './upscale';
