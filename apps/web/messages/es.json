@@ -1717,7 +1717,7 @@
       "exampleLabel": "Ejemplo de petición a tu agente conectado",
       "prompt": "Convierte esta foto de producto en un modelo 3D. Enséñame primero la vista previa y el coste en créditos. Espera mi aprobación antes de generar el GLB. Cuando esté listo, descarga el modelo.",
       "exampleNote": "Flujo ilustrativo. Usa tu propia foto; la vista previa y el modelo se generan cuando ejecutas las herramientas.",
-      "toolsLabel": "Cuatro herramientas, un flujo",
+      "toolsLabel": "Flujo principal de foto a 3D",
       "tools": {
         "create_render": "Inicia la hoja de ángulos a partir de una foto.",
         "get_render": "Consulta el progreso y obtiene los enlaces al resultado.",
@@ -1745,7 +1745,7 @@
         },
         "input": {
           "q": "¿Puede mi agente usar una foto local?",
-          "a": "create_render acepta una URL HTTPS pública o los datos de la imagen en base64. Para una foto local, tu cliente debe poder leer y enviar el archivo en base64. Se admiten JPEG, PNG y WebP de hasta 4 MB."
+          "a": "create_render acepta una sola fuente de imagen: una URL HTTPS pública, datos base64 sin prefijo o un upload_id de una subida autenticada. Para una foto local, tu cliente debe poder subir o codificar el archivo. Se admiten JPEG, PNG y WebP. Las imágenes por URL o subida pueden ocupar hasta 4 MiB; en base64, el límite es de 3 MiB menos 16 KiB de datos de imagen decodificados. El upload_id caduca al cabo de una hora."
         },
         "payment": {
           "q": "¿Cuándo se gastan los créditos?",

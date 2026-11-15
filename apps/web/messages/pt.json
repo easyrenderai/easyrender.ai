@@ -1717,7 +1717,7 @@
       "exampleLabel": "Example request to your connected agent",
       "prompt": "Turn this product photo into a 3D model. Show me the preview and the credit cost first. Wait for my approval before building the GLB. Once it is ready, download the model.",
       "exampleNote": "Illustrative workflow. Use your own photo; the preview and model are generated when you run the tools.",
-      "toolsLabel": "Four tools, one workflow",
+      "toolsLabel": "O fluxo principal da fotografia ao 3D",
       "tools": {
         "create_render": "Start the angle-sheet preview from a photo.",
         "get_render": "Check progress and retrieve the result links.",
@@ -1745,7 +1745,7 @@
         },
         "input": {
           "q": "Can my agent use a local photo?",
-          "a": "create_render accepts a public HTTPS image URL or base64 image data. For a local photo, your client needs to read and send the file as base64. Supported types are JPEG, PNG and WebP, up to 4 MB."
+          "a": "create_render aceita uma única origem da imagem: um URL HTTPS público, dados base64 sem prefixo ou um upload_id de um carregamento autenticado. Para uma fotografia local, o cliente tem de conseguir carregar ou codificar o ficheiro. São suportados JPEG, PNG e WebP. As imagens por URL ou carregamento podem ter até 4 MiB; em base64, o limite é de 3 MiB menos 16 KiB de dados de imagem descodificados. O upload_id expira ao fim de uma hora."
         },
         "payment": {
           "q": "When are credits spent?",
