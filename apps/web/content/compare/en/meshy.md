@@ -21,6 +21,24 @@ The textured result appeared in the viewer, which reported 868,902 triangle face
 
 This is one observed Workspace workflow, not a controlled quality or speed benchmark. We did not run a simultaneous generation with the current easyrender pipeline. Our [existing armchair GLB](/showcase/armchair.glb) is a historical sample with different settings. Free generation credits and permission to download the resulting model are separate checks; the format list below does not promise a free export.
 
+## A downloadable Meshy result through Higgsfield
+
+We also ran the same photo through Higgsfield's Meshy 7 Image to 3D on 15 November 2026. This was a separate generation, not an export of the Meshy Workspace result above. We used Standard mode, remeshing with a 30,000-triangle target, textures on and PBR, rigging and animation off. It consumed 38 Higgsfield credits from a promotional balance on an existing Ultra account; we made no new purchase. This does not establish availability on a free Higgsfield account, and Higgsfield credits are not Meshy or easyrender credits.
+
+| Downloaded result    | Measurement                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| File                 | GLB, 2,824,116 bytes (2.82 MB)                                                       |
+| Geometry             | 27,415 triangles; 26,795 vertices                                                    |
+| Material and texture | One material; one embedded 2,048 × 2,048 JPEG texture                                |
+| glTF validation      | Khronos glTF Validator 2.0.0-dev.3.10: 0 errors, 0 warnings, 1 informational message |
+| External viewer      | Loaded with its texture and rotated in the model-viewer editor in desktop Chrome     |
+
+The command took about 163 seconds, including upload, processing and polling every 10 seconds. This is one observed end-to-end wait, not a server execution time or a speed ranking. We have not tested this file in Shopify, on a physical phone or in AR. Passing file validation does not establish fidelity to the real chair.
+
+![Downloaded Meshy GLB displayed from the side in the model-viewer editor](/benchmarks/2026-11-15/meshy-viewer.jpg "Actual Meshy 7 output through Higgsfield, opened in an external viewer on 15 November 2026.")
+
+The [measurement record](/benchmarks/2026-11-15/measurements.json) includes the input and output SHA-256 hashes, settings and validation results. Our historical easyrender sample uses different settings and texture compression, so its smaller file is not evidence that the current pipeline is better or faster. See the separate [Tripo trial](/compare/tripo) for another run with the same input.
+
 ## How do Meshy and easyrender compare?
 
 Both are AI image-to-3D tools. They differ in what goes in, how you pay and what comes out. Prices are as listed in November 2026.

@@ -1,0 +1,366 @@
+{
+  "date": "2026-11-15",
+  "author": "Jorge Rodríguez",
+  "publisher": "easyrender.ai",
+  "study_type": "Single-run workflow observations; not a controlled quality or speed benchmark",
+  "input": {
+    "url": "https://easyrender.ai/showcase/armchair.jpg",
+    "bytes": 329714,
+    "sha256": "463b67ad2e912d5a37d65f35993bd72d2ba6d1a0cb381f5081e20bdef79f48f6"
+  },
+  "method": {
+    "attempts_per_model": 1,
+    "timing": "CLI invocation to completed result, including request overhead and 10-second status polling; Meshy invocation also includes upload. Not provider execution time.",
+    "validation": "Khronos glTF Validator 2.0.0-dev.3.10 on the original downloaded GLBs, without modifying or optimizing them.",
+    "viewer": "modelviewer.dev/editor in desktop Chrome; texture display and camera rotation checked.",
+    "billing": "Promotional credits on an existing Higgsfield Ultra account; no new purchase. Higgsfield credit units are not interchangeable with other providers.",
+    "limitations": [
+      "No simultaneous generation through the current easyrender pipeline.",
+      "Different provider settings, material options and texture compression; no quality or speed winner.",
+      "No live Shopify upload, physical-phone, AR or mobile network performance test.",
+      "Format validation is not a product-fidelity assessment."
+    ]
+  },
+  "runs": [
+    {
+      "provider": "Higgsfield",
+      "model": "Meshy 7 Image to 3D",
+      "model_identifier": "meshy_v7_image_to_3d",
+      "status": "completed",
+      "parameters": {
+        "animation_action_id": 92,
+        "enable_animation": false,
+        "enable_pbr": false,
+        "enable_rigging": false,
+        "enable_safety_checker": true,
+        "model_type": "standard",
+        "pose_mode": "",
+        "rigging_height_meters": 1.7,
+        "should_remesh": true,
+        "should_texture": true,
+        "symmetry_mode": "auto",
+        "target_polycount": 30000,
+        "topology": "triangle",
+        "ultra_mode": false
+      },
+      "quoted_and_balance_confirmed_higgsfield_credits": 38,
+      "timing": {
+        "started_at": "2026-11-15T21:16:36.243312+00:00",
+        "finished_at": "2026-11-15T21:19:19.346445+00:00",
+        "elapsed_seconds": 163.1
+      },
+      "output": {
+        "file": "meshy-higgsfield-armchair.glb",
+        "bytes": 2824116,
+        "sha256": "0b867498b5e190c1612faa109b1b423759057e676e29da9fa40c98ff75cf82ad",
+        "meshes": 1,
+        "materials": 1,
+        "textures": 1,
+        "images": 1,
+        "primitives": [
+          {
+            "mode": 4,
+            "vertices": 26795,
+            "indices": 82245
+          }
+        ],
+        "triangles": 27415,
+        "extensionsRequired": [],
+        "validator": {
+          "uri": "meshy-higgsfield-armchair.glb",
+          "mimeType": "model/gltf-binary",
+          "validatorVersion": "2.0.0-dev.3.10",
+          "validatedAt": "2026-11-15T21:19:41.265Z",
+          "issues": {
+            "numErrors": 0,
+            "numWarnings": 0,
+            "numInfos": 1,
+            "numHints": 0,
+            "messages": [
+              {
+                "code": "NODE_MATRIX_DEFAULT",
+                "message": "Do not specify default transform matrix.",
+                "severity": 2,
+                "pointer": "/nodes/0/matrix"
+              }
+            ],
+            "truncated": false
+          },
+          "info": {
+            "version": "2.0",
+            "generator": "pygltflib@v1.16.5",
+            "resources": [
+              {
+                "pointer": "/buffers/0",
+                "mimeType": "application/gltf-buffer",
+                "storage": "glb",
+                "byteLength": 2822304
+              },
+              {
+                "pointer": "/images/0",
+                "mimeType": "image/jpeg",
+                "storage": "buffer-view",
+                "image": {
+                  "width": 2048,
+                  "height": 2048,
+                  "format": "rgb",
+                  "bits": 8
+                }
+              }
+            ],
+            "animationCount": 0,
+            "materialCount": 1,
+            "hasMorphTargets": false,
+            "hasSkins": false,
+            "hasTextures": true,
+            "hasDefaultScene": true,
+            "drawCallCount": 1,
+            "totalVertexCount": 26795,
+            "totalTriangleCount": 27415,
+            "maxUVs": 1,
+            "maxInfluences": 0,
+            "maxAttributes": 3
+          }
+        }
+      },
+      "screenshot": "/benchmarks/2026-11-15/meshy-viewer.jpg"
+    },
+    {
+      "provider": "Higgsfield",
+      "model": "Tripo H3.1 Image to 3D",
+      "model_identifier": "tripo_h3_1_image_to_3d",
+      "status": "completed",
+      "parameters": {
+        "auto_size": false,
+        "face_limit": 30000,
+        "geometry_quality": "standard",
+        "orientation": "default",
+        "pbr": true,
+        "quad": false,
+        "seed": null,
+        "texture": true,
+        "texture_alignment": "original_image",
+        "texture_quality": "standard",
+        "texture_seed": null
+      },
+      "quoted_and_balance_confirmed_higgsfield_credits": 9,
+      "timing": {
+        "started_at": "2026-11-15T21:18:40.165434+00:00",
+        "finished_at": "2026-11-15T21:25:50.974941+00:00",
+        "elapsed_seconds": 430.8
+      },
+      "output": {
+        "file": "tripo-higgsfield-armchair.glb",
+        "bytes": 3846052,
+        "sha256": "3a875669531ae7fffa9272d0a3b6a8e4b6bb0ee4764282bc9e9fa784bd3ae04c",
+        "meshes": 1,
+        "materials": 1,
+        "textures": 3,
+        "images": 3,
+        "primitives": [
+          {
+            "mode": 4,
+            "vertices": 17176,
+            "indices": 81201
+          }
+        ],
+        "triangles": 27067,
+        "extensionsRequired": [],
+        "validator": {
+          "uri": "tripo-higgsfield-armchair.glb",
+          "mimeType": "model/gltf-binary",
+          "validatorVersion": "2.0.0-dev.3.10",
+          "validatedAt": "2026-11-15T21:26:41.421Z",
+          "issues": {
+            "numErrors": 0,
+            "numWarnings": 1,
+            "numInfos": 0,
+            "numHints": 4,
+            "messages": [
+              {
+                "code": "BUFFER_VIEW_TARGET_MISSING",
+                "message": "bufferView.target should be set for vertex or index data.",
+                "severity": 3,
+                "pointer": "/meshes/0/primitives/0/attributes/POSITION"
+              },
+              {
+                "code": "BUFFER_VIEW_TARGET_MISSING",
+                "message": "bufferView.target should be set for vertex or index data.",
+                "severity": 3,
+                "pointer": "/meshes/0/primitives/0/attributes/NORMAL"
+              },
+              {
+                "code": "BUFFER_VIEW_TARGET_MISSING",
+                "message": "bufferView.target should be set for vertex or index data.",
+                "severity": 3,
+                "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+              },
+              {
+                "code": "BUFFER_VIEW_TARGET_MISSING",
+                "message": "bufferView.target should be set for vertex or index data.",
+                "severity": 3,
+                "pointer": "/meshes/0/primitives/0/indices"
+              },
+              {
+                "code": "MESH_PRIMITIVE_GENERATED_TANGENT_SPACE",
+                "message": "Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+                "severity": 1,
+                "pointer": "/meshes/0/primitives/0/material"
+              }
+            ],
+            "truncated": false
+          },
+          "info": {
+            "version": "2.0",
+            "generator": "https://tripo3d.ai",
+            "resources": [
+              {
+                "pointer": "/buffers/0",
+                "mimeType": "application/gltf-buffer",
+                "storage": "glb",
+                "byteLength": 3843920
+              },
+              {
+                "pointer": "/images/0",
+                "mimeType": "image/jpeg",
+                "storage": "buffer-view",
+                "image": {
+                  "width": 2048,
+                  "height": 2048,
+                  "format": "rgb",
+                  "bits": 8
+                }
+              },
+              {
+                "pointer": "/images/1",
+                "mimeType": "image/jpeg",
+                "storage": "buffer-view",
+                "image": {
+                  "width": 2048,
+                  "height": 2048,
+                  "format": "rgb",
+                  "bits": 8
+                }
+              },
+              {
+                "pointer": "/images/2",
+                "mimeType": "image/png",
+                "storage": "buffer-view",
+                "image": {
+                  "width": 2048,
+                  "height": 2048,
+                  "format": "rgb",
+                  "primaries": "srgb",
+                  "transfer": "srgb",
+                  "bits": 8
+                }
+              }
+            ],
+            "animationCount": 0,
+            "materialCount": 1,
+            "hasMorphTargets": false,
+            "hasSkins": false,
+            "hasTextures": true,
+            "hasDefaultScene": true,
+            "drawCallCount": 1,
+            "totalVertexCount": 17176,
+            "totalTriangleCount": 27067,
+            "maxUVs": 1,
+            "maxInfluences": 0,
+            "maxAttributes": 3
+          }
+        }
+      },
+      "screenshot": "/benchmarks/2026-11-15/tripo-viewer.jpg"
+    }
+  ],
+  "historical_easyrender_reference": {
+    "is_current_pipeline_run": false,
+    "url": "https://easyrender.ai/showcase/armchair.glb",
+    "note": "Existing showcase output with other generation settings and WebP texture compression; not a controlled baseline.",
+    "measurement": {
+      "file": "armchair.glb",
+      "bytes": 622804,
+      "sha256": "9f45d90d3b86957bd5c37c67b26022b4a274eb7389dca2e85c647d1681efdd1b",
+      "meshes": 1,
+      "materials": 1,
+      "textures": 2,
+      "images": 2,
+      "primitives": [
+        {
+          "mode": 4,
+          "vertices": 16183,
+          "indices": 77637
+        }
+      ],
+      "triangles": 25879,
+      "extensionsRequired": ["EXT_texture_webp"],
+      "validator": {
+        "uri": "armchair.glb",
+        "mimeType": "model/gltf-binary",
+        "validatorVersion": "2.0.0-dev.3.10",
+        "validatedAt": "2026-11-15T21:19:31.813Z",
+        "issues": {
+          "numErrors": 0,
+          "numWarnings": 0,
+          "numInfos": 0,
+          "numHints": 0,
+          "messages": [],
+          "truncated": false
+        },
+        "info": {
+          "version": "2.0",
+          "generator": "glTF-Transform v4.5.1",
+          "extensionsUsed": ["EXT_texture_webp"],
+          "extensionsRequired": ["EXT_texture_webp"],
+          "resources": [
+            {
+              "pointer": "/buffers/0",
+              "mimeType": "application/gltf-buffer",
+              "storage": "glb",
+              "byteLength": 621172
+            },
+            {
+              "pointer": "/images/0",
+              "mimeType": "image/webp",
+              "storage": "buffer-view",
+              "image": {
+                "width": 1024,
+                "height": 1024,
+                "format": "rgb",
+                "primaries": "srgb",
+                "transfer": "srgb",
+                "bits": 8
+              }
+            },
+            {
+              "pointer": "/images/1",
+              "mimeType": "image/webp",
+              "storage": "buffer-view",
+              "image": {
+                "width": 512,
+                "height": 512,
+                "format": "rgb",
+                "primaries": "srgb",
+                "transfer": "srgb",
+                "bits": 8
+              }
+            }
+          ],
+          "animationCount": 0,
+          "materialCount": 1,
+          "hasMorphTargets": false,
+          "hasSkins": false,
+          "hasTextures": true,
+          "hasDefaultScene": true,
+          "drawCallCount": 1,
+          "totalVertexCount": 16183,
+          "totalTriangleCount": 25879,
+          "maxUVs": 1,
+          "maxInfluences": 0,
+          "maxAttributes": 2
+        }
+      }
+    }
+  }
+}

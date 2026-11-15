@@ -71,6 +71,9 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   '/compare/illustrations/photogrammetry-software/hero.webp': { width: 1280, height: 720 },
   '/compare/illustrations/meshy/hero.webp': { width: 1280, height: 720 },
   '/compare/illustrations/tripo/hero.webp': { width: 1280, height: 720 },
+  // Unedited screenshots of downloaded competitor GLBs in an external viewer.
+  '/benchmarks/2026-11-15/meshy-viewer.jpg': { width: 1512, height: 750 },
+  '/benchmarks/2026-11-15/tripo-viewer.jpg': { width: 1512, height: 750 },
 };
 
 // Illustrations in the house style, Style A2: a dark, technical 3D render of one object, half in

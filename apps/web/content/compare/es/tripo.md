@@ -27,6 +27,26 @@ Esta prueba corresponde a Studio, no a los precios de API de la tabla siguiente.
 
 Antes de elegir un flujo gratuito, comprueba el acceso a las exportaciones además de los créditos de generación. Una prueba no permite concluir qué herramienta produce mejores muebles. La comparación completa necesita archivos descargables, versiones y ajustes registrados, repeticiones y el mismo criterio de aceptación para ambas herramientas.
 
+## Un resultado de Tripo descargable a través de Higgsfield
+
+Ese mismo día pasamos la misma foto por Tripo H3.1 Image to 3D en Higgsfield. Fue una generación independiente con calidad Standard, no la exportación del resultado Best Quality de Studio anterior. Seleccionamos geometría y textura Standard, límite de 30.000 caras, texturas y PBR activados y salida en cuadriláteros desactivada. Consumió 9 créditos de Higgsfield de un saldo promocional en una cuenta Ultra existente; no hicimos ninguna compra nueva. Esto no demuestra acceso desde un plan gratuito, y ese cargo no es un precio de la API ni de Studio de Tripo.
+
+| Resultado descargado | Medición                                                                               |
+| -------------------- | -------------------------------------------------------------------------------------- |
+| Archivo              | GLB, 3.846.052 bytes (3,85 MB)                                                         |
+| Geometría            | 27.067 triángulos; 17.176 vértices                                                     |
+| Material y texturas  | Un material; tres texturas incrustadas de 2.048 × 2.048 (dos JPEG y una PNG)           |
+| Validación glTF      | Khronos glTF Validator 2.0.0-dev.3.10: 0 errores, 1 advertencia y 4 sugerencias        |
+| Visor externo        | Cargó con texturas y pudimos girarlo en el editor model-viewer en Chrome de escritorio |
+
+La advertencia corresponde a un material con mapa de normales sin tangentes guardadas en la malla: el visor debe calcular ese espacio de tangentes y el resultado puede variar entre implementaciones. No impidió mostrar el modelo en este visor de escritorio. Las cuatro sugerencias corresponden a metadatos de destino ausentes en los buffer views. Son observaciones del formato del archivo, no un veredicto sobre la calidad de Tripo.
+
+El comando tardó unos 431 segundos, incluyendo envío, procesamiento y consultas de estado cada 10 segundos; la imagen de entrada ya estaba subida. Es una espera observada, no el tiempo de ejecución del proveedor ni una clasificación de velocidad. No hemos probado este archivo en Shopify, en un móvil físico ni en realidad aumentada.
+
+![GLB descargado de Tripo abierto en el editor model-viewer](/benchmarks/2026-11-15/tripo-viewer.jpg "Resultado real de Tripo H3.1 a través de Higgsfield, abierto en un visor externo el 15 de noviembre de 2026.")
+
+El [registro de mediciones](/benchmarks/2026-11-15/measurements.json) incluye las huellas SHA-256 de entrada y salida, los ajustes y el informe de validación. La [prueba de Meshy](/es/comparativas/meshy) usó la misma foto con otros ajustes de materiales. Nuestra muestra de easyrender es histórica y tiene texturas WebP comprimidas. Ninguna de estas pruebas aisladas demuestra qué producto actual es mejor, más rápido o más barato por modelo aprovechable.
+
 ## ¿En qué se diferencian Tripo y easyrender?
 
 Las dos son herramientas de imagen a 3D con IA. La tabla pone sus datos públicos uno al lado del otro, tal como figuraban en noviembre de 2026. Las cifras de Tripo salen de su plataforma para desarrolladores, porque su página de precios para usuarios no nos cargó.
