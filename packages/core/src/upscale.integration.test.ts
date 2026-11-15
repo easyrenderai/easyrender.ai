@@ -17,11 +17,17 @@ const fake = vi.hoisted(() => ({
   uploads: [] as { bytes: Uint8Array; type: string }[],
   next: [] as string[],
   larger: new Uint8Array(),
+  hasDownloadFailure: false,
+  startGate: null as Promise<void> | null,
+  onStart: null as (() => void) | null,
 }));
 
 vi.mock('@easyrender/harness', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@easyrender/harness')>()),
-  download: async (url: string) => fake.outputs.get(url) ?? new Uint8Array(),
+  download: async (url: string) => {
+    if (fake.hasDownloadFailure) throw new Error('temporary download outage');
+    return fake.outputs.get(url) ?? new Uint8Array();
+  },
   createReplicate: () => ({
     upload: async (bytes: Uint8Array, _name: string, type: string) => {
       fake.uploads.push({ bytes, type });
@@ -33,6 +39,8 @@ vi.mock('@easyrender/harness', async (importOriginal) => ({
       const status = fake.next.shift() ?? 'succeeded';
       fake.statuses.set(id, status);
       if (status === 'succeeded') fake.outputs.set(`https://replicate.test/out/${id}`, fake.larger);
+      fake.onStart?.();
+      if (fake.startGate) await fake.startGate;
       return { id };
     },
     get: async (id: string) => ({
@@ -84,6 +92,9 @@ describe.skipIf(!url)('upscale (needs TEST_DATABASE_URL)', () => {
   };
 
   beforeEach(async () => {
+    fake.hasDownloadFailure = false;
+    fake.startGate = null;
+    fake.onStart = null;
     fake.files.clear();
     fake.outputs.clear();
     fake.statuses.clear();
@@ -96,6 +107,91 @@ describe.skipIf(!url)('upscale (needs TEST_DATABASE_URL)', () => {
 
   afterAll(async () => {
     await db().$disconnect();
+  });
+
+  it('reserves one charge and provider job for simultaneous requests for the same picture', async () => {
+    const { startUpscale } = await load();
+    const userId = await newUser(UPSCALE_CREDITS * 5);
+    const { set } = await readyView(userId);
+    const rows = await Promise.all(
+      Array.from({ length: 4 }, () =>
+        startUpscale({ kind: 'view', viewSetId: set.id, view: 'front' }, { userId }),
+      ),
+    );
+    expect(new Set(rows.map((row) => row.id)).size).toBe(1);
+    expect(await balance(userId)).toBe(UPSCALE_CREDITS * 4);
+    expect(fake.starts).toHaveLength(1);
+  });
+
+  it('retains the paid prediction when downloading a finished image fails temporarily', async () => {
+    const { startUpscale, getUpscale } = await load();
+    const userId = await newUser(UPSCALE_CREDITS);
+    const { set } = await readyView(userId);
+    const row = await startUpscale({ kind: 'view', viewSetId: set.id, view: 'front' }, { userId });
+    fake.hasDownloadFailure = true;
+    expect((await getUpscale(row.id, { userId })).status).toBe('processing');
+    expect((await db().upscale.findUniqueOrThrow({ where: { id: row.id } })).predictionId).toBe(
+      row.predictionId,
+    );
+    expect(await balance(userId)).toBe(0);
+    fake.hasDownloadFailure = false;
+    expect((await getUpscale(row.id, { userId })).status).toBe('ready');
+  });
+
+  it('rolls back a terminal failure when its refund cannot be credited and retries safely', async () => {
+    const { startUpscale, getUpscale } = await load();
+    const userId = await newUser(UPSCALE_CREDITS);
+    const { set } = await readyView(userId);
+    fake.next = ['failed'];
+    const row = await startUpscale({ kind: 'view', viewSetId: set.id, view: 'front' }, { userId });
+    await db().user.update({ where: { id: userId }, data: { credits: 2_147_483_647 } });
+    await getUpscale(row.id, { userId }).catch(() => undefined);
+    expect((await db().upscale.findUniqueOrThrow({ where: { id: row.id } })).status).toBe(
+      'processing',
+    );
+    await db().user.update({ where: { id: userId }, data: { credits: 0 } });
+    expect((await getUpscale(row.id, { userId })).status).toBe('failed');
+    expect(await balance(userId)).toBe(UPSCALE_CREDITS);
+  });
+
+  it('refuses a new paid upscale when the owner already has five active render jobs', async () => {
+    const { startUpscale } = await load();
+    const userId = await newUser(UPSCALE_CREDITS);
+    const { set } = await readyView(userId);
+    await db().render.createMany({
+      data: Array.from({ length: 5 }, () => ({
+        userId,
+        sourceKey: 'fake:source',
+        status: 'rendering' as const,
+      })),
+    });
+    await expect(
+      startUpscale({ kind: 'view', viewSetId: set.id, view: 'front' }, { userId }),
+    ).rejects.toMatchObject({ status: 429, code: 'concurrent_limit' });
+    expect(await balance(userId)).toBe(UPSCALE_CREDITS);
+    expect(await db().upscale.count({ where: { userId } })).toBe(0);
+  });
+
+  it('does not attach a late provider start to an already failed upscale', async () => {
+    const { startUpscale } = await load();
+    const userId = await newUser(UPSCALE_CREDITS);
+    const { set } = await readyView(userId);
+    let release: () => void = () => {};
+    fake.startGate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const starting = new Promise<void>((resolve) => {
+      fake.onStart = resolve;
+    });
+    const oldStart = startUpscale({ kind: 'view', viewSetId: set.id, view: 'front' }, { userId });
+    await starting;
+    const row = await db().upscale.findFirstOrThrow({ where: { userId } });
+    await db().upscale.update({
+      where: { id: row.id },
+      data: { status: 'failed', predictionId: null },
+    });
+    release();
+    expect(await oldStart).toMatchObject({ status: 'failed', predictionId: null });
   });
 
   it('charges once, sends the picture to the upscaler and stores a larger JPEG', async () => {

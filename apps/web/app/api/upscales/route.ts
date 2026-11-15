@@ -7,7 +7,7 @@ import {
 } from '@easyrender/core';
 import { NextResponse } from 'next/server';
 import { resolveActor } from '@/lib/actor';
-import { handle } from '@/lib/http';
+import { apiHandle, apiOptions } from '@/lib/api-http';
 
 export const maxDuration = 60;
 
@@ -15,8 +15,8 @@ export const maxDuration = 60;
 // Spends the upscale price once, refunded if it fails. Asking again for the same picture returns
 // the earlier enlargement and charges nothing.
 export const POST = (request: Request) =>
-  handle(async () => {
-    const actor = await resolveActor(request.headers);
+  apiHandle(request, async () => {
+    const actor = await resolveActor(request.headers, 'spend');
     if (!actor.userId) throw new AppError('Sign in to upscale', 401, 'unauthorized');
     const body = await request.json().catch(() => null);
     const row = await startUpscale(getUpscaleTarget(body), actor);
@@ -25,7 +25,7 @@ export const POST = (request: Request) =>
 
 // ?renderId= or ?viewSetId=: the owner's enlargements of that render or views set.
 export const GET = (request: Request) =>
-  handle(async () => {
+  apiHandle(request, async () => {
     const actor = await resolveActor(request.headers);
     if (!actor.userId) throw new AppError('Sign in to see your upscales', 401, 'unauthorized');
     const params = new URL(request.url).searchParams;
@@ -38,3 +38,5 @@ export const GET = (request: Request) =>
       { headers: { 'cache-control': 'no-store' } },
     );
   });
+
+export const OPTIONS = apiOptions;

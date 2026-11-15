@@ -683,7 +683,10 @@
     "errors": {
       "expired": "Your session expired. Sign in again to create a key.",
       "create": "Could not create the key. Try again.",
-      "revoke": "Could not revoke the key. It is still active; try again."
+      "revoke": "Could not revoke the key. It is still active; try again.",
+      "scopes": "Select at least one permission.",
+      "creditLimit": "Enter a whole, non-negative credit limit, or leave it blank.",
+      "expiresAt": "Choose a valid future date and time, or leave it blank."
     },
     "connect": {
       "title": "Connect your agent",
@@ -703,7 +706,32 @@
       "neverUsed": "Never used",
       "created": "created {date}",
       "lastUsed": "last used {date}",
-      "revoke": "Revoke {name}"
+      "revoke": "Revoke {name}",
+      "nameLabel": "Key name",
+      "advanced": "Permissions and limits",
+      "permissions": "Allowed actions",
+      "scopes": {
+        "read": "Read",
+        "write": "Write",
+        "spend": "Spend",
+        "share": "Share"
+      },
+      "scopeDescriptions": {
+        "read": "View resources, quotes and downloads.",
+        "write": "Upload photos, create previews and edit materials.",
+        "spend": "Start paid generations using your credits.",
+        "share": "Publish renders and share catalog models."
+      },
+      "creditLimit": "Lifetime credit limit",
+      "unlimited": "Unlimited",
+      "creditLimitHelp": "Blank means unlimited. Zero blocks spending. Refunds return credits to your wallet but do not reset this key’s limit.",
+      "expiresAt": "Expiry (optional)",
+      "expiresAtHelp": "Your local date and time. Leave blank for no expiry.",
+      "expired": "Expired",
+      "noExpiry": "No expiry",
+      "expiryDate": "Expires {date}",
+      "spentUnlimited": "{spent} credits spent · unlimited",
+      "spentLimit": "{spent} of {limit} credits spent"
     }
   },
   "Account": {
@@ -1689,7 +1717,7 @@
       "exampleLabel": "Example request to your connected agent",
       "prompt": "Turn this product photo into a 3D model. Show me the preview and the credit cost first. Wait for my approval before building the GLB. Once it is ready, download the model.",
       "exampleNote": "Illustrative workflow. Use your own photo; the preview and model are generated when you run the tools.",
-      "toolsLabel": "Four tools, one workflow",
+      "toolsLabel": "Core photo-to-3D workflow",
       "tools": {
         "create_render": "Start the angle-sheet preview from a photo.",
         "get_render": "Check progress and retrieve the result links.",
@@ -1717,7 +1745,7 @@
         },
         "input": {
           "q": "Can my agent use a local photo?",
-          "a": "create_render accepts a public HTTPS image URL or base64 image data. For a local photo, your client needs to read and send the file as base64. Supported types are JPEG, PNG and WebP, up to 4 MB."
+          "a": "create_render accepts exactly one image source: a public HTTPS URL, raw base64 data, or an upload_id from an authenticated upload. For a local photo, your client must be able to upload or encode the file. JPEG, PNG and WebP are supported. URL and upload inputs allow up to 4 MiB; inline base64 is limited to 3 MiB minus 16 KiB of decoded image data. An upload_id expires after one hour."
         },
         "payment": {
           "q": "When are credits spent?",

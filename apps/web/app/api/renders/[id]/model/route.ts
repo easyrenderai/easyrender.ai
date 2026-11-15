@@ -1,6 +1,7 @@
 import {
   canAccess,
   getFile,
+  getFileStream,
   getRender,
   isListed,
   isShared,
@@ -8,12 +9,12 @@ import {
   servedModel,
 } from '@easyrender/core';
 import { resolveActor } from '@/lib/actor';
-import { handle } from '@/lib/http';
+import { apiHandle, apiOptions } from '@/lib/api-http';
 
 export const maxDuration = 60;
 
 export const GET = (request: Request, { params }: RouteContext<'/api/renders/[id]/model'>) =>
-  handle(async () => {
+  apiHandle(request, async () => {
     const { id } = await params;
     const actor = await resolveActor(request.headers);
     const render = await getRender(id, actor);
@@ -21,10 +22,12 @@ export const GET = (request: Request, { params }: RouteContext<'/api/renders/[id
     // Owners download their model; anyone can view a render that is in the public gallery.
     const owner = canAccess(render, actor) && Boolean(actor.userId);
     if (!owner && !isListed(render) && !isShared(render)) throw notFound();
-    const bytes = servedModel(render, await getFile(render.glbKey));
     const isEdited = Array.isArray(render.materialEdits) && render.materialEdits.length > 0;
+    const body = isEdited
+      ? servedModel(render, await getFile(render.glbKey))
+      : await getFileStream(render.glbKey);
     const download = new URL(request.url).searchParams.get('download') === '1';
-    return new Response(bytes as BodyInit, {
+    return new Response(body as BodyInit, {
       headers: {
         'content-type': 'model/gltf-binary',
         // An edited model must show the edit at once, so it is revalidated instead of cached.
@@ -41,3 +44,5 @@ export const GET = (request: Request, { params }: RouteContext<'/api/renders/[id
       },
     });
   });
+
+export const OPTIONS = apiOptions;

@@ -63,9 +63,10 @@ run('credits and generation billing (real database)', () => {
     });
 
   beforeEach(() => {
+    process.env.FREE_PREVIEWS_PER_DAY = '2';
     replicate.fail = false;
     replicate.upload.mockReset().mockResolvedValue('https://replicate.test/file');
-    replicate.start.mockReset().mockResolvedValue({ id: `pred_${Math.random()}` });
+    replicate.start.mockReset().mockImplementation(async () => ({ id: `pred_${Math.random()}` }));
     replicate.get.mockReset();
     replicate.download.mockReset().mockResolvedValue(new Uint8Array([9, 9, 9]));
     replicate.checkSheet
@@ -76,6 +77,298 @@ run('credits and generation billing (real database)', () => {
 
   afterAll(async () => {
     await db().$disconnect();
+  });
+
+  it('keeps a failed refund recoverable and never claims the credits were returned early', async () => {
+    const { renders } = await load();
+    const userId = await newUser(2_147_483_640);
+    const render = await newRender(userId, {
+      status: 'rendering',
+      credits: RENDER_CREDITS,
+      buildPredictionId: `refund-fault-${userId}`,
+    });
+    replicate.get.mockResolvedValue({ status: 'failed', error: 'provider failed' });
+    // PostgreSQL rejects this balance increment: the status change must roll back with it.
+    await expect(renders.advance(render.id)).rejects.toThrow();
+    expect((await db().render.findUniqueOrThrow({ where: { id: render.id } })).status).toBe(
+      'rendering',
+    );
+    expect(
+      await db().creditLedger.count({ where: { idempotencyKey: `refund:${render.id}` } }),
+    ).toBe(0);
+    await db().user.update({ where: { id: userId }, data: { credits: 0 } });
+    expect((await renders.advance(render.id))?.status).toBe('failed');
+    expect(await balance(userId)).toBe(RENDER_CREDITS);
+    await renders.advance(render.id);
+    expect(await balance(userId)).toBe(RENDER_CREDITS);
+  });
+
+  it('keeps a provider read outage retryable instead of refunding a running job', async () => {
+    const { renders } = await load();
+    const userId = await newUser(0);
+    const render = await newRender(userId, {
+      status: 'rendering',
+      credits: RENDER_CREDITS,
+      buildPredictionId: `read-outage-${userId}`,
+    });
+    replicate.get.mockRejectedValueOnce(new Error('temporary connection failure'));
+    expect((await renders.advance(render.id))?.status).toBe('rendering');
+    expect(await balance(userId)).toBe(0);
+    replicate.get.mockResolvedValue({ status: 'processing' });
+    expect((await renders.advance(render.id))?.status).toBe('rendering');
+  });
+
+  it('recovers a paid build lost before starting even when its old preview has a prediction', async () => {
+    const { renders } = await load();
+    const userId = await newUser(0);
+    const render = await newRender(userId, {
+      status: 'rendering',
+      credits: RENDER_CREDITS,
+      sheetPredictionId: `old-sheet-${userId}`,
+      updatedAt: new Date(Date.now() - 46 * 60 * 1000),
+    });
+    expect((await renders.advance(render.id))?.status).toBe('failed');
+    expect(await balance(userId)).toBe(RENDER_CREDITS);
+  });
+
+  it('does not start a second paid prediction when the final-sheet POST outcome is unknown', async () => {
+    const { renders } = await load();
+    const { ProviderRequestError } = await import('@easyrender/harness');
+    const userId = await newUser(RENDER_CREDITS);
+    const render = await newRender(userId, { sheetKey: 'fake:preview.png' });
+    replicate.start.mockRejectedValueOnce(new ProviderRequestError('response lost', true));
+    expect((await renders.startBuild(render.id, { userId })).status).toBe('rendering');
+    expect((await renders.startBuild(render.id, { userId })).status).toBe('rendering');
+    expect(await balance(userId)).toBe(0);
+    expect(replicate.start).toHaveBeenCalledTimes(1);
+  });
+
+  it('enforces the per-call credit ceiling inside the paid build claim', async () => {
+    const { renders } = await load();
+    const userId = await newUser(1000);
+    const render = await newRender(userId);
+    await expect(renders.startBuild(render.id, { userId, maxCredits: 0 })).rejects.toMatchObject({
+      status: 409,
+      code: 'budget_exceeded',
+    });
+    expect(await balance(userId)).toBe(1000);
+    expect((await db().render.findUniqueOrThrow({ where: { id: render.id } })).status).toBe(
+      'preview_ready',
+    );
+  });
+
+  it('does not let an old preview failure refund a newer paid build stage', async () => {
+    const { renders } = await load();
+    const userId = await newUser(0);
+    const render = await newRender(userId, {
+      status: 'drafting',
+      sheetPredictionId: `old-${userId}`,
+    });
+    let beginRead: () => void = () => {};
+    const readStarted = new Promise<void>((resolve) => {
+      beginRead = resolve;
+    });
+    let finishRead: (prediction: { status: string; error: string }) => void = () => {};
+    replicate.get.mockImplementationOnce(() => {
+      beginRead();
+      return new Promise((resolve) => {
+        finishRead = resolve;
+      });
+    });
+    const oldPoll = renders.advance(render.id);
+    await readStarted;
+    await db().render.update({
+      where: { id: render.id },
+      data: {
+        status: 'rendering',
+        credits: RENDER_CREDITS,
+        buildPredictionId: `new-${userId}`,
+      },
+    });
+    finishRead({ status: 'failed', error: 'old preview failed' });
+    expect((await oldPoll)?.status).toBe('rendering');
+    expect(await balance(userId)).toBe(0);
+    expect(
+      await db().creditLedger.count({ where: { idempotencyKey: `refund:${render.id}` } }),
+    ).toBe(0);
+  });
+
+  it('does not let an old successful preview replace a newly paid redraw', async () => {
+    const { renders } = await load();
+    const userId = await newUser(1000);
+    const render = await newRender(userId, {
+      status: 'drafting',
+      sheetPredictionId: `old-sheet-${userId}`,
+    });
+    let didRead: () => void = () => {};
+    const readStarted = new Promise<void>((resolve) => {
+      didRead = resolve;
+    });
+    let resume: (value: Uint8Array) => void = () => {};
+    replicate.get.mockResolvedValue({ status: 'succeeded', output: 'https://r.test/sheet.png' });
+    replicate.download.mockImplementationOnce(() => {
+      didRead();
+      return new Promise<Uint8Array>((resolve) => {
+        resume = resolve;
+      });
+    });
+    const oldPoll = renders.advance(render.id);
+    await readStarted;
+    await renders.advance(render.id);
+    replicate.start.mockResolvedValueOnce({ id: `new-redraw-${userId}` });
+    await renders.redrawSheet(render.id, { userId }, 'Correct the handle');
+    resume(new Uint8Array([9, 9, 9]));
+    const result = await oldPoll;
+    expect(result).toMatchObject({
+      status: 'drafting',
+      sheetPredictionId: `new-redraw-${userId}`,
+      sheetRedraws: 1,
+    });
+    expect(await balance(userId)).toBe(1000 - SHEET_CREDITS);
+  });
+
+  it('does not persist an old sheet start over a newer paid redraw', async () => {
+    const { renders } = await load();
+    const userId = await newUser(1000);
+    const render = await newRender(userId);
+    let didStart: () => void = () => {};
+    const startPending = new Promise<void>((resolve) => {
+      didStart = resolve;
+    });
+    let resume: (value: { id: string }) => void = () => {};
+    replicate.start.mockImplementationOnce(() => {
+      didStart();
+      return new Promise<{ id: string }>((resolve) => {
+        resume = resolve;
+      });
+    });
+    const oldStart = renders.startSheet(render.id, { userId });
+    await startPending;
+    // Another worker finished the first sheet before the original start request returned.
+    await db().render.update({
+      where: { id: render.id },
+      data: { status: 'preview_ready', sheetKey: 'fake:old.png' },
+    });
+    replicate.start.mockResolvedValueOnce({ id: `new-redraw-${userId}` });
+    await renders.redrawSheet(render.id, { userId }, 'Correct the handle');
+    resume({ id: `old-start-${userId}` });
+    expect(await oldStart).toMatchObject({
+      status: 'drafting',
+      sheetPredictionId: `new-redraw-${userId}`,
+      sheetRedraws: 1,
+    });
+    expect(await balance(userId)).toBe(1000 - 2 * SHEET_CREDITS);
+  });
+
+  it('keeps an accepted provider job reserved when saving its id fails', async () => {
+    const { renders } = await load();
+    const userId = await newUser(1000);
+    const render = await newRender(userId);
+    let restore: () => void = () => {};
+    replicate.start.mockImplementationOnce(async () => {
+      const write = vi
+        .spyOn(db().render, 'updateMany')
+        .mockRejectedValueOnce(new Error('temporary database outage'));
+      restore = () => write.mockRestore();
+      return { id: `accepted-${userId}` };
+    });
+    try {
+      expect(await renders.startBuild(render.id, { userId })).toMatchObject({
+        status: 'rendering',
+        buildPredictionId: null,
+      });
+      expect(await balance(userId)).toBe(1000 - RENDER_CREDITS);
+      expect(
+        await db().creditLedger.count({ where: { idempotencyKey: `refund:${render.id}` } }),
+      ).toBe(0);
+    } finally {
+      restore();
+    }
+  });
+
+  it('shares the active-generation cap with paid view sets and upscales', async () => {
+    const { renders } = await load();
+    const userId = await newUser(1000);
+    await db().viewSet.createMany({
+      data: Array.from({ length: renders.MAX_ACTIVE_RENDERS }, () => ({
+        userId,
+        sourceKey: 'fake:photo',
+        status: 'drafting' as const,
+      })),
+    });
+    const next = await newRender(userId);
+    await expect(renders.startBuild(next.id, { userId })).rejects.toMatchObject({
+      status: 429,
+      code: 'concurrent_limit',
+    });
+    expect(await balance(userId)).toBe(1000);
+  });
+
+  it('caps concurrent paid builds without taking credits for a refused request', async () => {
+    const { renders } = await load();
+    const userId = await newUser(1000);
+    for (let index = 0; index < renders.MAX_ACTIVE_RENDERS; index++) {
+      await newRender(userId, { status: 'rendering' });
+    }
+    const next = await newRender(userId);
+    await expect(renders.startBuild(next.id, { userId })).rejects.toMatchObject({
+      status: 429,
+      code: 'concurrent_limit',
+    });
+    expect(await balance(userId)).toBe(1000);
+    expect((await db().render.findUniqueOrThrow({ where: { id: next.id } })).status).toBe(
+      'preview_ready',
+    );
+  });
+
+  it('paginates only the caller library without advancing jobs or skipping tied timestamps', async () => {
+    const { renders } = await load();
+    const userId = await newUser(0);
+    const other = await newUser(0);
+    const createdAt = new Date('2026-01-01T00:00:00Z');
+    const own = await Promise.all(
+      Array.from({ length: 5 }, () => newRender(userId, { status: 'drafting', createdAt })),
+    );
+    await newRender(other, { status: 'drafting', createdAt });
+    const first = await renders.listRenderPage(userId, { limit: 2, status: 'drafting' });
+    const second = await renders.listRenderPage(userId, {
+      limit: 2,
+      status: 'drafting',
+      cursor: first.nextCursor ?? undefined,
+    });
+    const third = await renders.listRenderPage(userId, {
+      limit: 2,
+      status: 'drafting',
+      cursor: second.nextCursor ?? undefined,
+    });
+    expect(
+      [...first.renders, ...second.renders, ...third.renders].map((row) => row.id).sort(),
+    ).toEqual(own.map((row) => row.id).sort());
+    expect(third.nextCursor).toBeNull();
+    expect(replicate.get).not.toHaveBeenCalled();
+    await expect(renders.listRenderPage(userId, { cursor: 'invalid' })).rejects.toMatchObject({
+      status: 400,
+      code: 'bad_cursor',
+    });
+    await expect(renders.listRenderPage(userId, { limit: 101 })).rejects.toMatchObject({
+      status: 400,
+      code: 'bad_limit',
+    });
+  });
+
+  it('shares a durable polling cooldown without postponing the job deadline', async () => {
+    const { renders } = await load();
+    const userId = await newUser(0);
+    const created = await newRender(userId, {
+      status: 'rendering',
+      buildPredictionId: `poll-${userId}`,
+    });
+    replicate.get.mockResolvedValue({ status: 'processing' });
+    await Promise.all(Array.from({ length: 5 }, () => renders.getRender(created.id, { userId })));
+    expect(replicate.get).toHaveBeenCalledTimes(1);
+    const stored = await db().render.findUniqueOrThrow({ where: { id: created.id } });
+    expect(stored.updatedAt).toEqual(created.updatedAt);
+    expect(stored.pollAfter?.getTime()).toBeGreaterThan(Date.now());
   });
 
   it('never lets concurrent spends take the balance below zero', async () => {
@@ -808,6 +1101,59 @@ run('credits and generation billing (real database)', () => {
         ]),
       );
     };
+
+    it('keeps API and MCP generations private while preserving the web default', async () => {
+      const { renders } = await load();
+      const bytes = photo();
+      for (const source of ['api', 'mcp', 'web'] as const) {
+        const userId = await newUser(0);
+        const render = await renders.createDraft({
+          actor: { userId },
+          bytes,
+          contentType: 'image/png',
+          source,
+        });
+        expect(render.isPublic).toBe(source === 'web');
+      }
+    });
+
+    it('reserves one render for concurrent identical idempotent requests and rejects changed content', async () => {
+      const { renders } = await load();
+      const userId = await newUser(0);
+      const input = {
+        actor: { userId },
+        bytes: photo(),
+        contentType: 'image/png',
+        source: 'api' as const,
+        idempotencyKey: 'photo-1',
+      };
+      const results = await Promise.all(
+        Array.from({ length: 4 }, () => renders.createDraft(input)),
+      );
+      expect(new Set(results.map((render) => render.id)).size).toBe(1);
+      expect(await db().render.count({ where: { userId } })).toBe(1);
+      await expect(
+        renders.createDraft({ ...input, prompt: 'different product' }),
+      ).rejects.toMatchObject({ status: 409, code: 'idempotency_conflict' });
+    });
+
+    it('atomically enforces the daily allowance across simultaneous preview requests', async () => {
+      const { renders } = await load();
+      const userId = await newUser(0);
+      const bytes = photo();
+      const results = await Promise.allSettled(
+        Array.from({ length: 8 }, () =>
+          renders.createDraft({
+            actor: { userId },
+            bytes,
+            contentType: 'image/png',
+            source: 'api',
+          }),
+        ),
+      );
+      expect(results.filter((result) => result.status === 'fulfilled')).toHaveLength(2);
+      expect(await db().render.count({ where: { userId } })).toBe(2);
+    });
 
     it('stores what the guardrails measured on the photo and the draft sheet', async () => {
       const { renders } = await load();

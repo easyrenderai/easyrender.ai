@@ -7,14 +7,20 @@ import {
   enlargeRequest,
   imageSide,
   isSettled,
+  ProviderRequestError,
   sheetOutputUrl,
   UPSCALE_CREDITS,
 } from '@easyrender/harness';
 import sharp from 'sharp';
 import { config } from './config';
-import { grantCredits, spendCredits } from './credits';
+import { grantCreditsInTransaction, spendCreditsInTransaction } from './credits';
 import { AppError, notFound } from './errors';
-import type { Actor } from './renders';
+import {
+  type Actor,
+  assertAuthorizedCredits,
+  assertGenerationConcurrency,
+  lockRenderActor,
+} from './renders';
 import { reportError } from './report';
 import { getFile, putFile } from './storage';
 
@@ -133,29 +139,44 @@ export async function startUpscale(target: UpscaleTarget, actor: Actor): Promise
     throw new AppError('This picture is already large enough to print', 409, 'already_large');
   }
 
-  const row = await db().upscale.create({
-    data: {
-      userId,
-      kind: target.kind,
-      ...source.where,
-      sourceKey: source.key,
-      scale,
-      credits: UPSCALE_CREDITS,
-    },
-  });
-  try {
-    await spendCredits({
+  const reservation = await db().$transaction(async (tx) => {
+    await lockRenderActor(tx, actor);
+    const existing = await tx.upscale.findFirst({
+      where: {
+        userId,
+        kind: target.kind,
+        sourceKey: source.key,
+        status: { in: ['processing', 'ready'] },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    if (existing) return { row: existing, isNew: false };
+    assertAuthorizedCredits(UPSCALE_CREDITS, actor);
+    await assertGenerationConcurrency(actor, tx);
+    const row = await tx.upscale.create({
+      data: {
+        userId,
+        kind: target.kind,
+        ...source.where,
+        sourceKey: source.key,
+        scale,
+        credits: UPSCALE_CREDITS,
+      },
+    });
+    await spendCreditsInTransaction(tx, {
+      apiKeyId: actor.apiKeyId,
       userId,
       amount: UPSCALE_CREDITS,
       key: `upscale:${row.id}`,
       reason: 'upscale',
       renderId: source.where.renderId,
     });
-  } catch (error) {
-    await db().upscale.delete({ where: { id: row.id } });
-    throw error;
-  }
+    return { row, isNew: true };
+  });
+  const { row } = reservation;
+  if (!reservation.isNew) return row;
 
+  let hasStarted = false;
   try {
     const client = replicate();
     // Sent as a high-quality JPEG: a 2K PNG can be larger than the upscaler accepts.
@@ -163,12 +184,20 @@ export async function startUpscale(target: UpscaleTarget, actor: Actor): Promise
     const imageUrl = await client.upload(new Uint8Array(jpeg), 'picture.jpg', 'image/jpeg');
     const request = enlargeRequest(imageUrl);
     const prediction = await client.start(request.path, request.body, webhook(row.id));
-    return await db().upscale.update({
-      where: { id: row.id },
+    hasStarted = true;
+    await db().upscale.updateMany({
+      where: {
+        id: row.id,
+        status: 'processing',
+        predictionId: row.predictionId,
+        updatedAt: row.updatedAt,
+      },
       data: { predictionId: prediction.id },
     });
+    return await db().upscale.findUniqueOrThrow({ where: { id: row.id } });
   } catch (error) {
     reportError(error, { upscaleId: row.id, stage: 'upscale_start' });
+    if (hasStarted || (error instanceof ProviderRequestError && error.isAmbiguous)) return row;
     await failUpscale(row);
     throw new AppError(
       'Could not upscale this picture. Your credits were refunded.',
@@ -179,19 +208,20 @@ export async function startUpscale(target: UpscaleTarget, actor: Actor): Promise
 }
 
 async function failUpscale(row: Upscale): Promise<Upscale> {
-  const { count } = await db().upscale.updateMany({
-    where: { id: row.id, status: 'processing' },
-    data: { status: 'failed', predictionId: null },
-  });
-  if (count > 0) {
-    await grantCredits({
+  await db().$transaction(async (tx) => {
+    const { count } = await tx.upscale.updateMany({
+      where: { id: row.id, status: 'processing', updatedAt: row.updatedAt },
+      data: { status: 'failed', predictionId: null },
+    });
+    if (!count) return;
+    await grantCreditsInTransaction(tx, {
       userId: row.userId,
       amount: row.credits,
       key: `refund:upscale:${row.id}`,
       reason: 'upscale_failed',
       renderId: row.renderId ?? undefined,
     });
-  }
+  });
   return (await db().upscale.findUnique({ where: { id: row.id } })) ?? row;
 }
 
@@ -199,41 +229,42 @@ async function failUpscale(row: Upscale): Promise<Upscale> {
 // never trusted), stores the larger picture, or refunds when there is none.
 export async function advanceUpscale(id: string): Promise<Upscale | null> {
   const row = await db().upscale.findUnique({ where: { id } });
-  if (!row || row.status !== 'processing') return row;
+  if (row?.status !== 'processing') return row;
   if (!row.predictionId) {
     return Date.now() - row.updatedAt.getTime() > STALE_MS ? failUpscale(row) : row;
   }
-  const prediction = await replicate().get(row.predictionId);
-  if (!isSettled(prediction.status)) {
-    return Date.now() - row.updatedAt.getTime() > STALE_MS ? failUpscale(row) : row;
-  }
-  // Only the call that clears the prediction id handles its result.
-  const { count } = await db().upscale.updateMany({
-    where: { id: row.id, status: 'processing', predictionId: row.predictionId },
-    data: { predictionId: null },
-  });
-  if (count === 0) return db().upscale.findUnique({ where: { id } });
-
-  const url = prediction.status === 'succeeded' ? sheetOutputUrl(prediction.output) : null;
-  if (!url) return failUpscale(row);
   try {
+    const prediction = await replicate().get(row.predictionId);
+    if (!isSettled(prediction.status)) {
+      return Date.now() - row.updatedAt.getTime() > STALE_MS ? failUpscale(row) : row;
+    }
+    const url = prediction.status === 'succeeded' ? sheetOutputUrl(prediction.output) : null;
+    if (!url) return failUpscale(row);
+    // Keep the provider id until the result is durably saved; transient download/storage failures retry.
     const larger = await sharp(await download(url))
       .jpeg({ quality: 95, chromaSubsampling: '4:4:4' })
       .toBuffer({ resolveWithObject: true });
     const key = await putFile('upscales/upscale.jpg', new Uint8Array(larger.data), 'image/jpeg');
-    return await db().upscale.update({
-      where: { id: row.id },
+    await db().upscale.updateMany({
+      where: {
+        id: row.id,
+        status: 'processing',
+        predictionId: row.predictionId,
+        updatedAt: row.updatedAt,
+      },
       data: {
         status: 'ready',
+        predictionId: null,
         key,
         width: larger.info.width,
         height: larger.info.height,
         costUsd: ENLARGE_MODEL.costUsd,
       },
     });
+    return db().upscale.findUnique({ where: { id } });
   } catch (error) {
-    reportError(error, { upscaleId: row.id, stage: 'upscale_finish' });
-    return failUpscale(row);
+    reportError(error, { upscaleId: row.id, stage: 'upscale_retryable' });
+    return Date.now() - row.updatedAt.getTime() > STALE_MS ? failUpscale(row) : row;
   }
 }
 

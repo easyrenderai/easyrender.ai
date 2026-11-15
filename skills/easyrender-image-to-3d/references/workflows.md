@@ -36,8 +36,10 @@ User: “The request for render `r_example` timed out. Finish it.”
 
 Query that exact ID. If it is `rendering`, keep polling. If `ready` with a model, return the
 existing output. If `preview_ready`, show the current pending debit and use a previous applicable
-spending authorization or obtain one before building. If no ID was returned by creation, direct
-the user to their library to recover it; don't invent a lookup tool or submit another photo blindly.
+spending authorization or obtain one before building. Pass `max_credits` within that authorization.
+If no ID was returned by creation, retry the same input with the original `idempotency_key` or use
+paginated `list_renders` to recover it. On older servers without those capabilities, use the account
+library. Never submit another photo blindly or automatically replay an uncertain paid operation.
 
 ## Approximate geometry is unsuitable
 

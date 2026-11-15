@@ -1,6 +1,6 @@
 import { getViewImage } from '@easyrender/core';
 import { resolveActor } from '@/lib/actor';
-import { handle } from '@/lib/http';
+import { apiHandle, apiOptions } from '@/lib/api-http';
 
 export const maxDuration = 60;
 
@@ -9,7 +9,7 @@ export const GET = (
   request: Request,
   { params }: RouteContext<'/api/product-views/[id]/views/[view]'>,
 ) =>
-  handle(async () => {
+  apiHandle(request, async () => {
     const { id, view } = await params;
     const { bytes, filename } = await getViewImage(id, view, await resolveActor(request.headers));
     const isDownload = new URL(request.url).searchParams.get('download') === '1';
@@ -21,3 +21,5 @@ export const GET = (
       },
     });
   });
+
+export const OPTIONS = apiOptions;

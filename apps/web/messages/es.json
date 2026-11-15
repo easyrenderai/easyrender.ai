@@ -683,7 +683,10 @@
     "errors": {
       "expired": "Tu sesión ha caducado. Vuelve a iniciar sesión para crear una clave.",
       "create": "No se pudo crear la clave. Vuelve a intentarlo.",
-      "revoke": "No se pudo revocar la clave. Sigue activa; vuelve a intentarlo."
+      "revoke": "No se pudo revocar la clave. Sigue activa; vuelve a intentarlo.",
+      "scopes": "Selecciona al menos un permiso.",
+      "creditLimit": "Introduce un límite entero de créditos, igual o mayor que cero, o déjalo vacío.",
+      "expiresAt": "Elige una fecha y hora futuras válidas, o deja el campo vacío."
     },
     "connect": {
       "title": "Conecta tu agente",
@@ -703,7 +706,32 @@
       "neverUsed": "Sin usar",
       "created": "creada el {date}",
       "lastUsed": "último uso el {date}",
-      "revoke": "Revocar {name}"
+      "revoke": "Revocar {name}",
+      "nameLabel": "Nombre de la clave",
+      "advanced": "Permisos y límites",
+      "permissions": "Acciones permitidas",
+      "scopes": {
+        "read": "Lectura",
+        "write": "Escritura",
+        "spend": "Gasto",
+        "share": "Compartir"
+      },
+      "scopeDescriptions": {
+        "read": "Consultar recursos, precios y descargas.",
+        "write": "Subir fotos, crear vistas previas y editar materiales.",
+        "spend": "Iniciar generaciones de pago con tus créditos.",
+        "share": "Publicar renders y compartir modelos del catálogo."
+      },
+      "creditLimit": "Límite total de créditos",
+      "unlimited": "Sin límite",
+      "creditLimitHelp": "Vacío significa sin límite. Cero impide gastar. Los reembolsos devuelven créditos al saldo, pero no restablecen el límite de esta clave.",
+      "expiresAt": "Caducidad (opcional)",
+      "expiresAtHelp": "Fecha y hora locales. Déjalo vacío para que no caduque.",
+      "expired": "Caducada",
+      "noExpiry": "Sin caducidad",
+      "expiryDate": "Caduca el {date}",
+      "spentUnlimited": "{spent} créditos gastados · sin límite",
+      "spentLimit": "{spent} de {limit} créditos gastados"
     }
   },
   "Account": {
@@ -1689,7 +1717,7 @@
       "exampleLabel": "Ejemplo de petición a tu agente conectado",
       "prompt": "Convierte esta foto de producto en un modelo 3D. Enséñame primero la vista previa y el coste en créditos. Espera mi aprobación antes de generar el GLB. Cuando esté listo, descarga el modelo.",
       "exampleNote": "Flujo ilustrativo. Usa tu propia foto; la vista previa y el modelo se generan cuando ejecutas las herramientas.",
-      "toolsLabel": "Cuatro herramientas, un flujo",
+      "toolsLabel": "Flujo principal de foto a 3D",
       "tools": {
         "create_render": "Inicia la hoja de ángulos a partir de una foto.",
         "get_render": "Consulta el progreso y obtiene los enlaces al resultado.",
@@ -1717,7 +1745,7 @@
         },
         "input": {
           "q": "¿Puede mi agente usar una foto local?",
-          "a": "create_render acepta una URL HTTPS pública o los datos de la imagen en base64. Para una foto local, tu cliente debe poder leer y enviar el archivo en base64. Se admiten JPEG, PNG y WebP de hasta 4 MB."
+          "a": "create_render acepta una sola fuente de imagen: una URL HTTPS pública, datos base64 sin prefijo o un upload_id de una subida autenticada. Para una foto local, tu cliente debe poder subir o codificar el archivo. Se admiten JPEG, PNG y WebP. Las imágenes por URL o subida pueden ocupar hasta 4 MiB; en base64, el límite es de 3 MiB menos 16 KiB de datos de imagen decodificados. El upload_id caduca al cabo de una hora."
         },
         "payment": {
           "q": "¿Cuándo se gastan los créditos?",

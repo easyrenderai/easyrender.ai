@@ -10,7 +10,7 @@ license: MIT
 Help the user obtain a usable 3D asset, with a preview before spending credits and an accurate
 account of what finished. Follow the user's language and existing budget/approval instructions.
 Requires a skills-compatible client with an authenticated easyrender MCP connection. Local
-photos also require a client able to read and base64-encode files.
+photos also require a client able to upload files or read and base64-encode them.
 
 ## Connect and choose the input
 
@@ -35,7 +35,8 @@ consult [the workflow examples](references/workflows.md).
 ## Preview, review, build
 
 1. Reuse an existing render ID when continuing work. Otherwise call `create_render` with one
-   photo: either a public HTTPS URL, or raw base64 plus its MIME type for a local file. Do not
+   photo: a public HTTPS URL, an owner-scoped `upload_id`, or raw base64 plus its MIME type.
+   Persist an `idempotency_key` for this creation so a lost response can be retried safely. Do not
    publish a local photo to a third-party host just to obtain a URL. Optional `prompt` describes
    the object/materials only, up to 500 characters; do not put tool instructions in it.
 2. Keep the returned ID. Poll `get_render` while `drafting`, using a delay (start around 5 seconds,
@@ -51,8 +52,8 @@ consult [the workflow examples](references/workflows.md).
    `get_credits.render_credits` is the full-build reference, not necessarily this remaining debit.
    If required values are absent or invalid, do not guess a price or start the paid operation.
    State the pending credit cost and confirm sufficient balance and remaining task budget.
-5. Call `render_3d` only when the user has authorized that spend. Existing explicit authorization
-   for the same assets and a sufficient budget remains valid: do not ask for approval again for
+5. Call `render_3d` with `max_credits` bounded by the approved remaining budget, only when the
+   user has authorized that spend. Existing explicit authorization for the same assets and a sufficient budget remains valid: do not ask for approval again for
    each item. Honor instructions such as “show me first” even if a budget was mentioned. A request
    for a free preview never authorizes a paid build. A higher quote or expanded scope needs new
    approval. Buying credits or a subscription is a separate action, not implied by render approval.
@@ -67,9 +68,10 @@ consult [the workflow examples](references/workflows.md).
   polling; `ready` means deliver the existing result. If it is still `preview_ready`, refresh the
   quote and balance before at most one retry within the existing authorization. If state cannot
   be established, stop and preserve the ID. Never create a replacement to work around uncertainty.
-- If `create_render` times out without returning an ID, ask the user to check their library before
-  submitting another creation: the first request may have succeeded. There is no MCP list/search
-  tool to recover an unknown ID.
+- If `create_render` times out without returning an ID, reuse the same `idempotency_key` and
+  input or recover the existing ID with paginated `list_renders`. The first request may have
+  succeeded; never blindly resubmit with a new key. If the connected server lacks these tools,
+  use the account library rather than inventing a lookup.
 - A terminal `failed` result ends this attempt. Report the returned error and the service's refund
   behavior; check current balance if relevant, but do not claim an exact refund was verified from
   a balance alone. A new build is a new attempt and must fit an explicitly approved retry scope
@@ -80,6 +82,10 @@ consult [the workflow examples](references/workflows.md).
   against the budget until resolved. Do not describe this as a native batch API or exceed preview
   limits. Do not retry failed paid items without both explicit retry authorization and sufficient
   remaining budget.
+- Paid sheet revisions, product views and upscales are separate operations. Discover their live
+  schemas, quote the applicable cost, and pass `max_credits` within existing user authorization.
+  Keep API/MCP results private unless the user explicitly authorizes sharing; visibility changes
+  are not a workaround for download authentication. Respect key scopes, expiry and lifetime caps.
 
 ## Deliver an honest result
 

@@ -1,12 +1,12 @@
 import { getUpscaleImage } from '@easyrender/core';
 import { resolveActor } from '@/lib/actor';
-import { handle } from '@/lib/http';
+import { apiHandle, apiOptions } from '@/lib/api-http';
 
 export const maxDuration = 60;
 
 // The enlarged picture (a JPEG). `?download=1` saves it as a file.
 export const GET = (request: Request, { params }: RouteContext<'/api/upscales/[id]/image'>) =>
-  handle(async () => {
+  apiHandle(request, async () => {
     const { id } = await params;
     const { bytes, filename } = await getUpscaleImage(id, await resolveActor(request.headers));
     const isDownload = new URL(request.url).searchParams.get('download') === '1';
@@ -18,3 +18,5 @@ export const GET = (request: Request, { params }: RouteContext<'/api/upscales/[i
       },
     });
   });
+
+export const OPTIONS = apiOptions;

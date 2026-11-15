@@ -1,12 +1,12 @@
 import { config, getRender } from '@easyrender/core';
 import QRCode from 'qrcode';
 import { resolveActor } from '@/lib/actor';
-import { handle } from '@/lib/http';
+import { apiHandle, apiOptions } from '@/lib/api-http';
 
 // An SVG QR code that opens the render's AR page on a phone, for a store to print or show on a
 // product page. Anyone who may see the render may fetch it.
 export const GET = (request: Request, { params }: RouteContext<'/api/renders/[id]/qr'>) =>
-  handle(async () => {
+  apiHandle(request, async () => {
     const { id } = await params;
     const render = await getRender(id, await resolveActor(request.headers));
     const svg = await QRCode.toString(`${config.appUrl()}/ar/${render.id}`, {
@@ -22,3 +22,5 @@ export const GET = (request: Request, { params }: RouteContext<'/api/renders/[id
       },
     });
   });
+
+export const OPTIONS = apiOptions;

@@ -683,7 +683,10 @@
     "errors": {
       "expired": "Your session expired. Sign in again to create a key.",
       "create": "Could not create the key. Try again.",
-      "revoke": "Could not revoke the key. It is still active; try again."
+      "revoke": "Could not revoke the key. It is still active; try again.",
+      "scopes": "Seleziona almeno un’autorizzazione.",
+      "creditLimit": "Inserisci un limite di crediti intero e non negativo, oppure lascia il campo vuoto.",
+      "expiresAt": "Scegli una data e un’ora future valide, oppure lascia il campo vuoto."
     },
     "connect": {
       "title": "Connect your agent",
@@ -703,7 +706,32 @@
       "neverUsed": "Never used",
       "created": "created {date}",
       "lastUsed": "last used {date}",
-      "revoke": "Revoke {name}"
+      "revoke": "Revoke {name}",
+      "nameLabel": "Nome della chiave",
+      "advanced": "Autorizzazioni e limiti",
+      "permissions": "Azioni consentite",
+      "scopes": {
+        "read": "Lettura",
+        "write": "Scrittura",
+        "spend": "Spesa",
+        "share": "Condivisione"
+      },
+      "scopeDescriptions": {
+        "read": "Consultare risorse, prezzi e download.",
+        "write": "Caricare foto, creare anteprime e modificare i materiali.",
+        "spend": "Avviare generazioni a pagamento usando i tuoi crediti.",
+        "share": "Pubblicare rendering e condividere modelli del catalogo."
+      },
+      "creditLimit": "Limite totale di crediti",
+      "unlimited": "Illimitato",
+      "creditLimitHelp": "Un campo vuoto significa nessun limite. Zero impedisce le spese. I rimborsi restituiscono crediti al saldo, ma non ripristinano il limite di questa chiave.",
+      "expiresAt": "Scadenza (facoltativa)",
+      "expiresAtHelp": "Data e ora locali. Lascia vuoto per non impostare una scadenza.",
+      "expired": "Scaduta",
+      "noExpiry": "Nessuna scadenza",
+      "expiryDate": "Scade il {date}",
+      "spentUnlimited": "{spent} crediti spesi · senza limite",
+      "spentLimit": "{spent} crediti spesi su {limit}"
     }
   },
   "Account": {
@@ -1689,7 +1717,7 @@
       "exampleLabel": "Example request to your connected agent",
       "prompt": "Turn this product photo into a 3D model. Show me the preview and the credit cost first. Wait for my approval before building the GLB. Once it is ready, download the model.",
       "exampleNote": "Illustrative workflow. Use your own photo; the preview and model are generated when you run the tools.",
-      "toolsLabel": "Four tools, one workflow",
+      "toolsLabel": "Il flusso principale dalla foto al 3D",
       "tools": {
         "create_render": "Start the angle-sheet preview from a photo.",
         "get_render": "Check progress and retrieve the result links.",
@@ -1717,7 +1745,7 @@
         },
         "input": {
           "q": "Can my agent use a local photo?",
-          "a": "create_render accepts a public HTTPS image URL or base64 image data. For a local photo, your client needs to read and send the file as base64. Supported types are JPEG, PNG and WebP, up to 4 MB."
+          "a": "create_render accetta una sola fonte dell’immagine: un URL HTTPS pubblico, dati base64 senza prefisso o un upload_id ottenuto da un caricamento autenticato. Per una foto locale, il client deve poter caricare o codificare il file. Sono supportati JPEG, PNG e WebP. Le immagini tramite URL o caricamento possono arrivare a 4 MiB; per i dati base64 inviati direttamente, il limite è di 3 MiB meno 16 KiB dopo la decodifica. Un upload_id scade dopo un’ora."
         },
         "payment": {
           "q": "When are credits spent?",

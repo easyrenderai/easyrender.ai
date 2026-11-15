@@ -158,7 +158,7 @@ function summary(): string[] {
     '- Downloads: GLB and USDZ.',
     '- Augmented reality (see the model in your room from a phone) is coming soon.',
     '- Limits: one object at a time, not whole interior rooms. The model keeps shape and materials, not real-world measurements or scale.',
-    '- Finished models appear in a public gallery by default.',
+    '- Web-created models appear in the public gallery by default. New API and MCP renders are private unless explicitly shared.',
     '- For agents: easyrender is also an MCP server, so Claude, Cursor, VS Code and other MCP clients can create models with an API key.',
     '',
   ];
@@ -174,6 +174,7 @@ function forAgentsSection(): string[] {
     '- [Official MCP Registry entry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.easyrenderai/easyrender): io.github.easyrenderai/easyrender.',
     `- [REST API (English)](${absoluteUrl(ROUTES.api.paths.en)}): image-to-3D API overview.`,
     `- [REST API (Spanish)](${absoluteUrl(ROUTES.api.paths.es)}): image-to-3D API overview in Spanish.`,
+    `- [REST OpenAPI contract](${absoluteUrl('/api/openapi.json')}): versioned request, response, authentication and capability schemas.`,
     '- [Agent skill on GitHub](https://github.com/easyrenderai/easyrender-image-to-3d): installation and usage.',
     '- [Agent skill on skills.sh](https://www.skills.sh/easyrenderai/easyrender-image-to-3d/easyrender-image-to-3d): skill listing.',
     '- [Agent skill on ClawHub](https://clawhub.ai/jorgerl02/skills/easyrender-image-to-3d): skill listing.',

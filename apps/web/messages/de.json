@@ -683,7 +683,10 @@
     "errors": {
       "expired": "Your session expired. Sign in again to create a key.",
       "create": "Could not create the key. Try again.",
-      "revoke": "Could not revoke the key. It is still active; try again."
+      "revoke": "Could not revoke the key. It is still active; try again.",
+      "scopes": "Wähle mindestens eine Berechtigung aus.",
+      "creditLimit": "Gib eine ganze Zahl ab null als Credit-Limit ein oder lass das Feld leer.",
+      "expiresAt": "Wähle ein gültiges Datum mit Uhrzeit in der Zukunft oder lass das Feld leer."
     },
     "connect": {
       "title": "Connect your agent",
@@ -703,7 +706,32 @@
       "neverUsed": "Never used",
       "created": "created {date}",
       "lastUsed": "last used {date}",
-      "revoke": "Revoke {name}"
+      "revoke": "Revoke {name}",
+      "nameLabel": "Schlüsselname",
+      "advanced": "Berechtigungen und Limits",
+      "permissions": "Erlaubte Aktionen",
+      "scopes": {
+        "read": "Lesen",
+        "write": "Schreiben",
+        "spend": "Ausgeben",
+        "share": "Teilen"
+      },
+      "scopeDescriptions": {
+        "read": "Ressourcen, Preise und Downloads abrufen.",
+        "write": "Fotos hochladen, Vorschauen erstellen und Materialien bearbeiten.",
+        "spend": "Kostenpflichtige Generierungen mit deinen Credits starten.",
+        "share": "Renderings veröffentlichen und Katalogmodelle teilen."
+      },
+      "creditLimit": "Credit-Limit für die gesamte Laufzeit",
+      "unlimited": "Unbegrenzt",
+      "creditLimitHelp": "Ein leeres Feld bedeutet unbegrenzt. Null verhindert Ausgaben. Erstattungen erhöhen dein Guthaben, setzen aber das Limit dieses Schlüssels nicht zurück.",
+      "expiresAt": "Ablaufdatum (optional)",
+      "expiresAtHelp": "Dein lokales Datum und deine lokale Uhrzeit. Leer lassen, wenn der Schlüssel nicht ablaufen soll.",
+      "expired": "Abgelaufen",
+      "noExpiry": "Kein Ablaufdatum",
+      "expiryDate": "Läuft am {date} ab",
+      "spentUnlimited": "{spent} Credits ausgegeben · unbegrenzt",
+      "spentLimit": "{spent} von {limit} Credits ausgegeben"
     }
   },
   "Account": {
@@ -1689,7 +1717,7 @@
       "exampleLabel": "Example request to your connected agent",
       "prompt": "Turn this product photo into a 3D model. Show me the preview and the credit cost first. Wait for my approval before building the GLB. Once it is ready, download the model.",
       "exampleNote": "Illustrative workflow. Use your own photo; the preview and model are generated when you run the tools.",
-      "toolsLabel": "Four tools, one workflow",
+      "toolsLabel": "Der zentrale Workflow vom Foto zum 3D-Modell",
       "tools": {
         "create_render": "Start the angle-sheet preview from a photo.",
         "get_render": "Check progress and retrieve the result links.",
@@ -1717,7 +1745,7 @@
         },
         "input": {
           "q": "Can my agent use a local photo?",
-          "a": "create_render accepts a public HTTPS image URL or base64 image data. For a local photo, your client needs to read and send the file as base64. Supported types are JPEG, PNG and WebP, up to 4 MB."
+          "a": "create_render akzeptiert genau eine Bildquelle: eine öffentliche HTTPS-URL, reine Base64-Daten oder eine upload_id aus einem authentifizierten Upload. Für ein lokales Foto muss dein Client die Datei hochladen oder kodieren können. Unterstützt werden JPEG, PNG und WebP. Für URLs und Uploads gilt ein Limit von 4 MiB; bei direkt gesendeten Base64-Daten sind es 3 MiB minus 16 KiB nach der Dekodierung. Eine upload_id läuft nach einer Stunde ab."
         },
         "payment": {
           "q": "When are credits spent?",

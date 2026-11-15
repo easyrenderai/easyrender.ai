@@ -132,6 +132,12 @@ model Render {
   status            RenderStatus @default(drafting)
   sourceKey         String
   sourceUrl         String?
+  // Idempotent creation is scoped to a user (or anonymous visitor), never an API token.
+  requestScope      String?
+  requestKey        String?
+  requestHash       String?
+  // Throttles status polling without changing the generation's updatedAt deadline.
+  pollAfter         DateTime?
   sheetKey          String?
   glbKey            String?
   // Material changes made by the owner, as a list of { index, baseColor?, roughness?, metalness? }
@@ -167,6 +173,7 @@ model Render {
   updatedAt         DateTime     @updatedAt
   edits             RenderEdit[]
 
+  @@unique([requestScope, requestKey])
   @@index([userId, createdAt])
   @@index([anonId, createdAt])
   @@index([ipHash, createdAt])
@@ -241,6 +248,8 @@ model ProductView {
   // One of the nine sheet positions: front, front_right, ..., top.
   view         String
   status       ProductViewStatus @default(drawing)
+  // Durable processing lease; provider ids survive temporary download failures.
+  advanceAfter DateTime?
   // The finished packshot (white background, fixed canvas). Empty until the first one is made.
   key          String?
   // The drawn view before it was upscaled and finished.
@@ -328,6 +337,27 @@ model Purchase {
   googleDelivery GooglePurchaseDelivery?
 }
 
+model ImageUpload {
+  id          String   @id @default(cuid())
+  userId      String
+  sourceKey   String
+  contentType String
+  size        Int
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([expiresAt])
+}
+
+model ApiRateWindow {
+  id        String   @id
+  count     Int      @default(1)
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
 model ApiKey {
   id         String    @id @default(cuid())
   userId     String
@@ -337,14 +367,31 @@ model ApiKey {
   hash       String    @unique
   lastUsedAt DateTime?
   createdAt  DateTime  @default(now())
+  // OAuth keys are bound to this easyrender service; manual and existing keys remain unscoped.
+  resource   String?
+  scopes     String[]  @default(["read", "write", "spend", "share"])
+  creditLimit Int?
+  spentCredits Int     @default(0)
+  expiresAt  DateTime?
 
   @@index([userId])
+}
+
+// A consumed authorization code must stay consumed even after its API key is revoked.
+// Only a digest is stored, never the code, verifier or access token.
+model OAuthCodeRedemption {
+  codeHash  String   @id
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
 }
 
 // One product of a connected store (Shopify, WooCommerce, ...) that is turned into a 3D model.
 // A plugin sends its products; the server walks each one from photo to finished model.
 model CatalogItem {
   id         String   @id @default(cuid())
+  apiKeyId   String?
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   platform   String

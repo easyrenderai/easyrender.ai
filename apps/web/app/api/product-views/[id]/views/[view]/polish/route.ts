@@ -1,7 +1,7 @@
 import { AppError, polishView, toViewSetView } from '@easyrender/core';
 import { NextResponse } from 'next/server';
 import { resolveActor } from '@/lib/actor';
-import { handle } from '@/lib/http';
+import { apiHandle, apiOptions } from '@/lib/api-http';
 
 export const maxDuration = 60;
 
@@ -11,9 +11,9 @@ export const POST = (
   request: Request,
   { params }: RouteContext<'/api/product-views/[id]/views/[view]/polish'>,
 ) =>
-  handle(async () => {
+  apiHandle(request, async () => {
     const { id, view } = await params;
-    const actor = await resolveActor(request.headers);
+    const actor = await resolveActor(request.headers, 'spend');
     if (!actor.userId) throw new AppError('Sign in to polish a view', 401, 'unauthorized');
     const body = (await request.json().catch(() => null)) as { note?: unknown } | null;
     if (typeof body?.note !== 'string') {
@@ -21,3 +21,5 @@ export const POST = (
     }
     return NextResponse.json(toViewSetView(await polishView(id, view, actor, body.note)));
   });
+
+export const OPTIONS = apiOptions;

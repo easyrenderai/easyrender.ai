@@ -23,6 +23,14 @@ const fake = vi.hoisted(() => ({
   plans: new Map<string, Plan>(),
   starts: [] as { path: string; body: { input?: Record<string, unknown>; version?: string } }[],
   counter: 0,
+  hasReadFailure: false,
+  readGate: null as Promise<void> | null,
+  onRead: null as (() => void) | null,
+  hasDownloadFailure: false,
+  downloadGate: null as Promise<void> | null,
+  onDownload: null as (() => void) | null,
+  startGate: null as Promise<void> | null,
+  onStart: null as (() => void) | null,
   // What the next prediction of a kind answers with: 'succeeded' (default) or 'failed'.
   next: { sheet: [] as string[], redraw: [] as string[], upscale: [] as string[] },
   makeSheet: (() => new Uint8Array()) as () => Uint8Array,
@@ -33,7 +41,12 @@ const fake = vi.hoisted(() => ({
 vi.mock('@easyrender/harness', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@easyrender/harness')>()),
   loadHarness: async () => DEFAULT_HARNESS,
-  download: async (url: string) => fake.outputs.get(url) ?? new Uint8Array(),
+  download: async (url: string) => {
+    fake.onDownload?.();
+    if (fake.downloadGate) await fake.downloadGate;
+    if (fake.hasDownloadFailure) throw new Error('temporary image download outage');
+    return fake.outputs.get(url) ?? new Uint8Array();
+  },
   createReplicate: () => ({
     upload: async () => `https://replicate.test/file/${++fake.counter}`,
     start: async (path: string, body: { input?: Record<string, unknown>; version?: string }) => {
@@ -58,9 +71,14 @@ vi.mock('@easyrender/harness', async (importOriginal) => ({
               : fake.makeUpscale();
         fake.outputs.set(`https://replicate.test/out/${id}`, bytes);
       }
+      fake.onStart?.();
+      if (fake.startGate) await fake.startGate;
       return { id };
     },
     get: async (id: string) => {
+      fake.onRead?.();
+      if (fake.readGate) await fake.readGate;
+      if (fake.hasReadFailure) throw new Error('temporary provider outage');
       const plan = fake.plans.get(id) as Plan;
       return {
         id,
@@ -132,7 +150,8 @@ async function sheet(grey?: number) {
 
 const run = describe.skipIf(!url);
 
-run('product views (real database, scripted models)', () => {
+// Real image processing and the first DB/ESM initialization exceed 5s on shared CI runners.
+run('product views (real database, scripted models)', { timeout: 15_000 }, () => {
   const load = async () => ({
     views: await import('./product-views'),
     renders: await import('./renders'),
@@ -167,6 +186,14 @@ run('product views (real database, scripted models)', () => {
   };
 
   beforeEach(async () => {
+    fake.hasReadFailure = false;
+    fake.readGate = null;
+    fake.onRead = null;
+    fake.hasDownloadFailure = false;
+    fake.downloadGate = null;
+    fake.onDownload = null;
+    fake.startGate = null;
+    fake.onStart = null;
     fake.files.clear();
     fake.outputs.clear();
     fake.plans.clear();
@@ -186,6 +213,253 @@ run('product views (real database, scripted models)', () => {
 
   afterAll(async () => {
     await db().$disconnect();
+  });
+
+  it('keeps a drafting set paid and recoverable during a temporary provider read outage', async () => {
+    const { views } = await load();
+    const userId = await newUser(PRODUCT_VIEWS_CREDITS);
+    const set = await create(userId);
+    fake.hasReadFailure = true;
+    expect((await views.getViewSet(set.id, { userId })).status).toBe('drafting');
+    expect(await balance(userId)).toBe(0);
+    fake.hasReadFailure = false;
+    expect((await settle(set.id, userId)).status).toBe('ready');
+  });
+
+  it('keeps a stale set recoverable if the refund database write fails', async () => {
+    const { views } = await load();
+    const userId = await newUser(2_147_483_647);
+    const set = await db().viewSet.create({
+      data: {
+        userId,
+        sourceKey: 'src',
+        status: 'drafting',
+        credits: PRODUCT_VIEWS_CREDITS,
+        updatedAt: new Date(Date.now() - 46 * 60 * 1000),
+      },
+    });
+    await views.advanceViewSet(set.id).catch(() => undefined);
+    expect((await db().viewSet.findUniqueOrThrow({ where: { id: set.id } })).status).toBe(
+      'drafting',
+    );
+    await db().user.update({ where: { id: userId }, data: { credits: 0 } });
+    expect((await views.advanceViewSet(set.id))?.status).toBe('failed');
+    expect(await balance(userId)).toBe(PRODUCT_VIEWS_CREDITS);
+  });
+
+  it('does not refund a new sheet retry when a stale poll fails after that retry starts', async () => {
+    const { views } = await load();
+    const userId = await newUser(PRODUCT_VIEWS_CREDITS);
+    const set = await create(userId);
+    await db().viewSet.update({
+      where: { id: set.id },
+      data: { updatedAt: new Date(Date.now() - 46 * 60 * 1000) },
+    });
+    let releaseRead: () => void = () => {};
+    fake.readGate = new Promise<void>((resolve) => {
+      releaseRead = resolve;
+    });
+    const reading = new Promise<void>((resolve) => {
+      fake.onRead = resolve;
+    });
+    fake.hasReadFailure = true;
+    const oldPoll = views.advanceViewSet(set.id);
+    await reading;
+    const retryId = `retry-${userId}`;
+    await db().viewSet.update({
+      where: { id: set.id },
+      data: { sheetPredictionId: retryId, sheetAttempts: 2 },
+    });
+    releaseRead();
+    expect(await oldPoll).toMatchObject({ status: 'drafting', sheetPredictionId: retryId });
+    expect(await balance(userId)).toBe(0);
+  });
+
+  it('does not refund a newer polish stage after an expired worker returns a read error', async () => {
+    const { views } = await load();
+    const userId = await newUser(PRODUCT_VIEWS_CREDITS + VIEW_POLISH_CREDITS);
+    const set = await create(userId);
+    await settle(set.id, userId);
+    const polishing = await views.polishView(set.id, 'front', { userId }, 'Keep the fabric seam');
+    const view = polishing.views.find((view) => view.view === 'front');
+    if (!view) throw new Error('Missing polished view');
+    await db().productView.update({
+      where: { id: view.id },
+      data: { updatedAt: new Date(Date.now() - 11 * 60 * 1000) },
+    });
+    let releaseRead: () => void = () => {};
+    fake.readGate = new Promise<void>((resolve) => {
+      releaseRead = resolve;
+    });
+    const reading = new Promise<void>((resolve) => {
+      fake.onRead = resolve;
+    });
+    fake.hasReadFailure = true;
+    const oldPoll = views.advanceViewSet(set.id);
+    await reading;
+    const nextId = `upscale-${userId}`;
+    await db().productView.update({
+      where: { id: view.id },
+      data: { status: 'upscaling', predictionId: nextId },
+    });
+    releaseRead();
+    await oldPoll;
+    expect(await db().productView.findUniqueOrThrow({ where: { id: view.id } })).toMatchObject({
+      status: 'upscaling',
+      predictionId: nextId,
+      isPolishing: true,
+    });
+    expect(await balance(userId)).toBe(0);
+  });
+
+  it('does not let a downloaded old redraw overwrite or restart a newer polish revision', async () => {
+    const { views } = await load();
+    const userId = await newUser(PRODUCT_VIEWS_CREDITS + VIEW_POLISH_CREDITS);
+    const set = await create(userId);
+    await settle(set.id, userId);
+    const polishing = await views.polishView(set.id, 'front', { userId }, 'Keep the fabric seam');
+    const view = polishing.views.find((view) => view.view === 'front');
+    if (!view) throw new Error('Missing view');
+    let release: () => void = () => {};
+    fake.downloadGate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const downloading = new Promise<void>((resolve) => {
+      fake.onDownload = resolve;
+    });
+    const oldPoll = views.advanceViewSet(set.id);
+    await downloading;
+    const newPrediction = `new-polish-${userId}`;
+    await db().productView.update({
+      where: { id: view.id },
+      data: {
+        status: 'drawing',
+        predictionId: newPrediction,
+        polishes: { increment: 1 },
+        note: 'New request',
+      },
+    });
+    const starts = fake.starts.length;
+    release();
+    await oldPoll;
+    expect(await db().productView.findUniqueOrThrow({ where: { id: view.id } })).toMatchObject({
+      status: 'drawing',
+      predictionId: newPrediction,
+      polishes: view.polishes + 1,
+      note: 'New request',
+    });
+    expect(fake.starts).toHaveLength(starts);
+  });
+
+  it('does not revive an already settled polish when an old provider start returns late', async () => {
+    const { views } = await load();
+    const userId = await newUser(PRODUCT_VIEWS_CREDITS + VIEW_POLISH_CREDITS);
+    const set = await create(userId);
+    const done = await settle(set.id, userId);
+    const view = done.views.find((view) => view.view === 'front');
+    if (!view) throw new Error('Missing view');
+    let release: () => void = () => {};
+    fake.startGate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const starting = new Promise<void>((resolve) => {
+      fake.onStart = resolve;
+    });
+    const oldStart = views
+      .polishView(set.id, 'front', { userId }, 'Keep the seam')
+      .catch(() => undefined);
+    await starting;
+    await db().productView.update({
+      where: { id: view.id },
+      data: { status: 'ready', isPolishing: false, predictionId: null },
+    });
+    release();
+    await oldStart;
+    expect(await db().productView.findUniqueOrThrow({ where: { id: view.id } })).toMatchObject({
+      status: 'ready',
+      isPolishing: false,
+      predictionId: null,
+    });
+  });
+
+  it('does not mark a newly active set ready from an earlier child-read snapshot', async () => {
+    const { views } = await load();
+    const userId = await newUser(PRODUCT_VIEWS_CREDITS);
+    const set = await create(userId);
+    const done = await settle(set.id, userId);
+    const view = done.views[0];
+    if (!view) throw new Error('Missing view');
+    await db().viewSet.update({ where: { id: set.id }, data: { status: 'processing' } });
+    let oldPoll: ReturnType<typeof views.advanceViewSet> | undefined;
+    await db().$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "ViewSet" WHERE "id" = ${set.id} FOR UPDATE`;
+      const [connection] = await tx.$queryRaw<{ pid: number }[]>`SELECT pg_backend_pid() AS pid`;
+      if (!connection) throw new Error('Missing transaction PID');
+      oldPoll = views.advanceViewSet(set.id);
+      let isBlocked = false;
+      for (let attempt = 0; attempt < 100; attempt++) {
+        const waiters = await tx.$queryRaw<
+          { pid: number }[]
+        >`SELECT pid FROM pg_stat_activity WHERE ${connection.pid} = ANY(pg_blocking_pids(pid))`;
+        if (waiters.length) {
+          isBlocked = true;
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+      expect(isBlocked).toBe(true);
+      // Another worker has claimed the next paid revision after the old readiness read.
+      await tx.productView.update({
+        where: { id: view.id },
+        data: { status: 'drawing', isPolishing: true, polishes: { increment: 1 } },
+      });
+      await tx.viewSet.update({
+        where: { id: set.id },
+        data: { status: 'processing', updatedAt: new Date(Date.now() + 1000) },
+      });
+    });
+    await oldPoll;
+    expect((await db().viewSet.findUniqueOrThrow({ where: { id: set.id } })).status).toBe(
+      'processing',
+    );
+  });
+
+  it('retains a paid polish prediction across temporary result download failures', async () => {
+    const { views } = await load();
+    const userId = await newUser(PRODUCT_VIEWS_CREDITS + VIEW_POLISH_CREDITS);
+    const set = await create(userId);
+    await settle(set.id, userId);
+    const polishing = await views.polishView(set.id, 'front', { userId }, 'Keep the fabric seam');
+    const predictionId = polishing.views.find((view) => view.view === 'front')?.predictionId;
+    fake.hasDownloadFailure = true;
+    const waiting = await views.getViewSet(set.id, { userId });
+    expect(waiting.views.find((view) => view.view === 'front')).toMatchObject({
+      status: 'drawing',
+      predictionId,
+      isPolishing: true,
+    });
+    expect(await balance(userId)).toBe(0);
+    fake.hasDownloadFailure = false;
+    expect((await settle(set.id, userId)).status).toBe('ready');
+  });
+
+  it('does not mark a failed polish refunded until its ledger and wallet commit', async () => {
+    const { views } = await load();
+    const userId = await newUser(PRODUCT_VIEWS_CREDITS + VIEW_POLISH_CREDITS);
+    const set = await create(userId);
+    await settle(set.id, userId);
+    fake.next.redraw = ['failed', 'failed'];
+    await views.polishView(set.id, 'front', { userId }, 'Keep the fabric seam');
+    await db().user.update({ where: { id: userId }, data: { credits: 2_147_483_647 } });
+    await views.getViewSet(set.id, { userId });
+    const waiting = await views.getViewSet(set.id, { userId });
+    expect(waiting.views.find((view) => view.view === 'front')).toMatchObject({
+      status: 'drawing',
+      isPolishing: true,
+    });
+    await db().user.update({ where: { id: userId }, data: { credits: 0 } });
+    expect((await settle(set.id, userId)).status).toBe('ready');
+    expect(await balance(userId)).toBe(VIEW_POLISH_CREDITS);
   });
 
   it('charges the set once, draws a 2K sheet, and delivers nine finished views', async () => {

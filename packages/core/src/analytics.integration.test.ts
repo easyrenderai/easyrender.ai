@@ -18,7 +18,12 @@ if (url) {
     throw new Error('Analytics integration tests require a local throwaway database');
   process.env.DATABASE_URL = url;
 }
-const provider = vi.hoisted(() => ({ hasFailure: false, get: vi.fn(), sequence: 0 }));
+const provider = vi.hoisted(() => ({
+  hasFailure: false,
+  get: vi.fn(),
+  sequence: 0,
+  predictions: new Map<string, string>(),
+}));
 vi.mock('@easyrender/harness', async (original) => ({
   ...(await original<typeof import('@easyrender/harness')>()),
   checkPhoto: async () => ({
@@ -39,7 +44,11 @@ vi.mock('@easyrender/harness', async (original) => ({
       if (provider.hasFailure) throw new Error('forced provider failure');
       return 'https://provider.invalid/photo';
     },
-    start: async () => ({ id: `qa_prediction_${crypto.randomUUID()}` }),
+    start: async (path: string) => {
+      const id = `qa_prediction_${crypto.randomUUID()}`;
+      provider.predictions.set(id, path);
+      return { id };
+    },
     get: provider.get,
   }),
 }));
@@ -280,6 +289,15 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
     'catalogue %s with sheets=%s preserves API events and null-safe attribution',
     async (platform, hasSheet) => {
       provider.hasFailure = false;
+      // Concurrent ticks may reach the next stage in either order. Each prediction must
+      // return its own model's output, just as the real provider does.
+      provider.get.mockImplementation(async (id: string) => ({
+        status: 'succeeded',
+        output:
+          provider.predictions.get(id) === '/predictions'
+            ? 'https://provider.invalid/model.glb'
+            : 'https://provider.invalid/sheet.png',
+      }));
       process.env.SHEET_ENABLED = String(hasSheet);
       try {
         const userId = await newUser();
@@ -299,16 +317,8 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
           consent_region_at_create: 'strict',
         });
         expect(render.first_seen_at).not.toBeNull();
-        provider.get.mockResolvedValue({
-          status: 'succeeded',
-          output: 'https://provider.invalid/sheet.png',
-        });
         await Promise.all([tickCatalog(scope), tickCatalog(scope)]);
         if (hasSheet) await tickCatalog(scope); // final sheet -> 3D
-        provider.get.mockResolvedValue({
-          status: 'succeeded',
-          output: 'https://provider.invalid/model.glb',
-        });
         await Promise.all([tickCatalog(scope), tickCatalog(scope)]);
         expect((await listCatalog(scope)).items[0]).toMatchObject({
           state: 'ready',

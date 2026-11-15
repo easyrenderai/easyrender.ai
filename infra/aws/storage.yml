@@ -133,6 +133,9 @@ Resources:
               - Effect: Allow
                 Action: s3:PutObject
                 Resource: !Sub "${AssetsBucket.Arn}/*"
+              - Effect: Allow
+                Action: s3:DeleteObject
+                Resource: !Sub "${AssetsBucket.Arn}/renders/uploads/*"
 
 Outputs:
   S3Bucket:
