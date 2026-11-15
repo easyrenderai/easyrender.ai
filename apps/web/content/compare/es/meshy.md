@@ -13,9 +13,9 @@ cta: Prueba la misma foto de producto que le darías a Meshy y revisa gratis tod
 
 Si buscas una alternativa a Meshy AI para productos reales, easyrender convierte una foto en un modelo 3D pasando por una hoja gratis de nueve vistas, y solo cobra por modelo cuando lo generas.
 
-Meshy abarca más: texto a 3D, hasta cuatro imágenes de entrada, texturizado, rigging (un esqueleto para animar el modelo) y animación, con planes mensuales de créditos. Elige según lo que tienes al empezar.
+![Ilustración de un reloj de sobremesa, mitad latón pulido y mitad malla 3D gris, sobre fondo oscuro](/compare/illustrations/meshy/hero.webp "Ilustración conceptual: un reloj de sobremesa muestra la transición del material a la malla 3D.")
 
-<!-- IMAGE PENDING: ilustración EN del reloj de chimenea (mitad latón pulido, mitad malla de arcilla y alambre). Pie: «Ilustración, no es un resultado de easyrender». -->
+Meshy abarca más: texto a 3D, hasta cuatro imágenes de entrada, texturizado, rigging (un esqueleto para animar el modelo) y animación, con planes mensuales de créditos. Elige según lo que tienes al empezar.
 
 ## Una prueba real de Meshy con nuestra foto del sillón
 

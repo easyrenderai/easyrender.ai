@@ -4,6 +4,7 @@ group: compare-3d-modeler-vs-ai
 title: "¿Contratar a un modelador 3D o usar IA?"
 description: Contratar a un modelador 3D o usar IA con una foto: cuánto cuesta cada uno, qué entregas, cuánto tarda, errores habituales y cuándo elegir cada vía.
 date: 2026-11-15
+updated: 2026-11-15
 keyword: modelador 3d
 author: Jorge Rodríguez
 authorType: person
@@ -12,9 +13,9 @@ cta: Antes de redactar el encargo, pasa una foto nítida de la pieza por la prev
 
 Contrata a un modelador 3D cuando el modelo tenga que coincidir con planos CAD, moverse o funcionar en un motor de videojuegos. Un autónomo o un estudio lo construye a mano a partir de tus referencias, con un precio presupuestado y unas revisiones acordadas.
 
-Si el producto existe y tienes una buena foto, la IA a partir de una foto te da un modelo que revisas antes de pagar.
+![Ilustración de un jarrón azul cobalto, mitad esmalte brillante y mitad malla 3D gris](/compare/illustrations/3d-modeler-vs-ai/hero.webp "Ilustración conceptual: un jarrón muestra el material terminado junto a la estructura de su superficie.")
 
-<!-- IMAGE PENDING: ilustración EN del jarrón (mitad esmalte cobalto, mitad malla 3D). Pie: «Ilustración, no es un resultado de easyrender». -->
+Si el producto existe y tienes una buena foto, la IA a partir de una foto te da un modelo que revisas antes de pagar.
 
 ## ¿Cómo se contrata a un modelador 3D?
 

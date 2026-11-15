@@ -13,9 +13,9 @@ cta: Parte de la foto de producto que ya tienes y revisa gratis la hoja de ángu
 
 Si buscas una alternativa a Tripo para una sola foto de producto, easyrender dibuja gratis una hoja con nueve vistas a partir de ella y solo cobra por modelo cuando decides generarlo.
 
-Tripo abarca más: texto, una imagen o varias vistas como entrada, texturas PBR (materiales definidos por propiedades como el color, la metalicidad y la rugosidad), mallas de cuadriláteros, rigging, animación y conversión de formatos. Elige según lo que tienes y para qué quieres el modelo.
+![Ilustración de un taburete de ratán, mitad fibras trenzadas y mitad malla 3D gris, sobre fondo oscuro](/compare/illustrations/tripo/hero.webp "Ilustración conceptual: un taburete de ratán muestra su superficie y su estructura de malla.")
 
-<!-- IMAGE PENDING: ilustración EN del taburete de ratán (mitad mimbre trenzado, mitad malla de arcilla y alambre). Pie: «Ilustración, no es un resultado de easyrender». -->
+Tripo abarca más: texto, una imagen o varias vistas como entrada, texturas PBR (materiales definidos por propiedades como el color, la metalicidad y la rugosidad), mallas de cuadriláteros, rigging, animación y conversión de formatos. Elige según lo que tienes y para qué quieres el modelo.
 
 ## Prueba real de Tripo Studio con nuestra foto del sillón
 
