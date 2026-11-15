@@ -81,6 +81,11 @@ describe('parsing a post', () => {
     expect(postPath('es', 'glb-vs-usdz')).toBe('/es/guias/glb-vs-usdz');
     expect(postPath('de', 'glb-vs-usdz')).toBe('/de/ratgeber/glb-vs-usdz');
   });
+
+  it('keeps filename delimiters inside a single URL segment', () => {
+    expect(postPath('en', 'guide?#/<script>')).toBe('/learn/guide%3F%23%2F%3Cscript%3E');
+    expect(postPath('es', 'guía 3d')).toBe('/es/guias/gu%C3%ADa%203d');
+  });
 });
 
 describe('what a post carries besides its text', () => {
