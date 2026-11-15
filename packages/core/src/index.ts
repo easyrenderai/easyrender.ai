@@ -5,6 +5,7 @@ export * from './api-limits';
 export * from './billing';
 export * from './catalog';
 export * from './config';
+export * from './credit-quote';
 export * from './credits';
 export * from './errors';
 export * from './google-measurement';
