@@ -8,7 +8,16 @@ vi.mock('@easyrender/db', () => ({ db: () => ({ apiKey: state }), Prisma: {} }))
 
 import { verifyApiKey, verifyApiKeyPrincipal } from './api-keys';
 
-const key = { id: 'key', userId: 'owner', resource: null, lastUsedAt: null };
+const key = {
+  id: 'key',
+  userId: 'owner',
+  resource: null,
+  lastUsedAt: null,
+  scopes: ['read', 'write', 'spend', 'share'],
+  creditLimit: null,
+  spentCredits: 0,
+  expiresAt: null,
+};
 beforeEach(() => {
   vi.resetAllMocks();
 });
@@ -23,7 +32,7 @@ describe('API key validation races', () => {
   it('allows a key whose timestamp was refreshed by a concurrent request', async () => {
     state.findUnique.mockResolvedValue(key);
     state.updateMany.mockResolvedValue({ count: 0 });
-    expect(await verifyApiKeyPrincipal('er_test')).toEqual({
+    expect(await verifyApiKeyPrincipal('er_test')).toMatchObject({
       id: 'key',
       userId: 'owner',
       resource: null,

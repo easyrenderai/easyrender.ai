@@ -360,6 +360,10 @@ model ApiKey {
   createdAt  DateTime  @default(now())
   // OAuth keys are bound to this easyrender service; manual and existing keys remain unscoped.
   resource   String?
+  scopes     String[]  @default(["read", "write", "spend", "share"])
+  creditLimit Int?
+  spentCredits Int     @default(0)
+  expiresAt  DateTime?
 
   @@index([userId])
 }

@@ -1,7 +1,13 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { db } from '@easyrender/db';
 import { afterAll, describe, expect, it } from 'vitest';
-import { createApiKey, listApiKeys, revokeApiKey, verifyApiKey } from './api-keys';
+import {
+  createApiKey,
+  listApiKeys,
+  revokeApiKey,
+  verifyApiKey,
+  verifyApiKeyPrincipal,
+} from './api-keys';
 import { exchangeCode, issueCode, parseAuthorizeRequest, registerClient } from './oauth';
 
 const url = process.env.TEST_DATABASE_URL;
@@ -94,5 +100,65 @@ describe.skipIf(!url)('OAuth redemption and API keys (real database)', () => {
     expect(second?.lastUsedAt).toEqual(first?.lastUsedAt);
     await revokeApiKey(id, key.id);
     expect(await verifyApiKey(key.key)).toBeNull();
+  });
+  it('stores scoped limits and returns them without exposing a key hash', async () => {
+    const id = await user();
+    const expiresAt = new Date(Date.now() + 60_000);
+    const key = await createApiKey(id, 'Read only', {
+      scopes: ['read'],
+      creditLimit: 0,
+      expiresAt,
+    });
+    expect(await verifyApiKeyPrincipal(key.key)).toMatchObject({
+      id: key.id,
+      userId: id,
+      scopes: ['read'],
+      creditLimit: 0,
+      spentCredits: 0,
+      expiresAt,
+    });
+    const [listed] = await listApiKeys(id);
+    expect(listed).toMatchObject({ scopes: ['read'], creditLimit: 0, spentCredits: 0, expiresAt });
+    expect(listed).not.toHaveProperty('hash');
+    expect(listed).not.toHaveProperty('key');
+  });
+
+  it('rejects expired keys on the next request without a cached grace period', async () => {
+    const id = await user();
+    const key = await createApiKey(id, 'Expiring', { expiresAt: new Date(Date.now() + 60_000) });
+    expect(await verifyApiKey(key.key)).toBe(id);
+    await db().apiKey.update({
+      where: { id: key.id },
+      data: { expiresAt: new Date(Date.now() - 1) },
+    });
+    expect(await verifyApiKey(key.key)).toBeNull();
+  });
+
+  it('preserves unlimited full-access manual keys unless restrictions are requested', async () => {
+    const key = await createApiKey(await user(), 'Legacy behavior');
+    expect(await verifyApiKeyPrincipal(key.key)).toMatchObject({
+      scopes: ['read', 'write', 'spend', 'share'],
+      creditLimit: null,
+      spentCredits: 0,
+      expiresAt: null,
+    });
+  });
+
+  it('rejects invalid limits and expiration before creating a credential', async () => {
+    const id = await user();
+    for (const creditLimit of [-1, 1.5, Number.NaN, 2_147_483_648]) {
+      await expect(createApiKey(id, 'Invalid', { creditLimit })).rejects.toMatchObject({
+        code: 'bad_key_options',
+      });
+    }
+    for (const expiresAt of [new Date(0), new Date(Number.NaN)]) {
+      await expect(createApiKey(id, 'Invalid', { expiresAt })).rejects.toMatchObject({
+        code: 'bad_key_options',
+      });
+    }
+    await expect(createApiKey(id, 'Invalid', { scopes: [] })).rejects.toMatchObject({
+      code: 'bad_key_options',
+    });
+    expect(await listApiKeys(id)).toHaveLength(0);
   });
 });
