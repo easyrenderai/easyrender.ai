@@ -18,6 +18,9 @@ const PRODUCT_EVENTS = [
   ['material_edits_saved', { material_count: 2 }],
   ['material_edits_reset', { material_count: 0 }],
   ['api_key_created', {}],
+  ['integration_key_verified', { channel: 'shared' }],
+  ['integration_setup_copy', { channel: 'mcp', client: 'codex' }],
+  ['integration_action', { channel: 'api', action: 'setup' }],
   ['api_key_revoked', {}],
   ['shopify_generation_started', { item_count: 5, credits: 320 }],
   ['shopify_account_linked', {}],
@@ -55,4 +58,25 @@ it('product events reach PostHog only while the client is allowed to capture, wi
   await api.setBrowserTools(false, false, true);
   api.captureBrowser('api_key_created');
   expect(sdk.capture).toHaveBeenCalledTimes(calls);
+});
+
+it.each([
+  ['/mcp', 'mcp'],
+  ['/es/mcp', 'mcp'],
+  ['/image-to-3d-api', 'api'],
+  ['/es/api-imagen-a-3d', 'api'],
+])('identifies integration landing %s without private URL data', async (path, channel) => {
+  vi.resetModules();
+  vi.stubEnv('NEXT_PUBLIC_POSTHOG_KEY', 'phc_localtest');
+  const location = new URL(`https://easyrender.ai${path}?token=private&email=private`);
+  vi.stubGlobal('location', location);
+  vi.stubGlobal('window', { location });
+  vi.stubGlobal('document', { cookie: '', referrer: '', querySelector: () => null });
+  const api = await import('./browser');
+  await api.setBrowserTools(false, false);
+  expect(sdk.capture).not.toHaveBeenCalled();
+  await api.setBrowserTools(true, false);
+  const landing = sdk.capture.mock.calls.find(([event]) => event === 'landing_view');
+  expect(landing?.[1]).toMatchObject({ landing_type: channel });
+  expect(JSON.stringify(landing)).not.toContain('private');
 });

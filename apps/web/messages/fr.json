@@ -229,7 +229,12 @@
       "two": "Colle cette URL comme URL du connecteur.",
       "three": "Clique sur Connecter, connecte-toi à easyrender et autorise l'accès. Pas besoin de clé.",
       "note": "La même connexion fonctionne avec n'importe quel client MCP compatible OAuth. Chaque connexion crée une clé que tu peux révoquer ci-dessous."
-    }
+    },
+    "wallet": "L’application web, l’API et le MCP utilisent le même solde de compte. Les opérations payantes consomment ces crédits ; la connexion et la consultation du solde ne coûtent aucun crédit easyrender. Votre client IA peut facturer séparément.",
+    "codexOauth": "Ces commandes ouvrent la connexion OAuth dans le navigateur. Utilisez le même compte easyrender que dans ce tableau de bord ; aucune clé API à coller.",
+    "firstPromptTitle": "Votre premier prompt",
+    "firstPrompt": "Utilise easyrender pour consulter mon solde de crédits et le coût actuel des opérations. Ne génère rien et ne dépense aucun crédit pour le moment.",
+    "firstPromptNote": "Collez ceci dans votre client connecté. Une réponse réussie de get_credits confirme que ce client accède à votre compte."
   },
   "Gallery": {
     "modelAlt": "3D model: {title}",
@@ -689,10 +694,10 @@
       "expiresAt": "Choisissez une date et une heure valides dans le futur, ou laissez le champ vide."
     },
     "connect": {
-      "title": "Connect your agent",
-      "created": "Your new key is filled in below. Copy the snippet now: the key will not be shown again.",
-      "noKeys": "Use the claude.ai tab to connect with a sign-in. For other agents, create a key, then paste the snippet.",
-      "hasKeys": "Paste the snippet into your agent and replace {placeholder} with one of your keys. The claude.ai tab needs no key."
+      "title": "Connecter votre agent",
+      "created": "Votre nouvelle clé figure dans les exemples de configuration par clé API. Copiez-la maintenant : elle ne sera plus affichée.",
+      "noKeys": "Connectez claude.ai ou Codex en vous identifiant dans le navigateur. Pour la configuration par clé API, créez une clé et copiez l’exemple.",
+      "hasKeys": "Pour la configuration par clé API, remplacez {placeholder} par une de vos clés. Les onglets claude.ai et Codex utilisent la connexion dans le navigateur."
     },
     "createMyKey": "Create my key",
     "keys": {
@@ -701,7 +706,7 @@
       "namePlaceholder": "Key name, e.g. Claude Code",
       "create": "Create",
       "none": "No keys yet.",
-      "connected": "Connected",
+      "connected": "Utilisée récemment",
       "idle": "Idle",
       "neverUsed": "Never used",
       "created": "created {date}",
@@ -1668,7 +1673,23 @@
       "visitsNotConfigured": "Visits: PostHog not configured",
       "visitsIncomplete": "Visits: PostHog data incomplete",
       "visitsError": "Visits: PostHog unavailable (request failed)",
-      "sheetCountUnit": "sheets"
+      "sheetCountUnit": "sheets",
+      "developerActivation": "Activation 3D par canal de création",
+      "developerActivationCohorts": "Cohortes d’activation 3D",
+      "activationAccounts": "Comptes de la cohorte",
+      "measuredAccounts": "Comptes mesurés",
+      "legacyAccounts": "Historique sans date exclu",
+      "firstSuccess": "Premier modèle terminé",
+      "secondSuccess": "Deuxième modèle terminé",
+      "activationPercent": "Activation (%)",
+      "repeatPercent": "Réutilisation après activation (%)",
+      "firstSuccessMinutes": "Médiane avant le premier modèle (min)",
+      "repeatMinutes": "Médiane du premier au deuxième (min)",
+      "developerActivationDefinition": "Les comptes identifiés rejoignent la cohorte d’un canal lors de leur première demande 3D. L’activation et la réutilisation comptent les GLB distincts terminés avant la fin de la période. La clé d’authentification ne détermine pas si la demande vient de l’API ou du MCP.",
+      "developerActivationCoverage": "Les réussites historiques sans date excluent ce compte/canal des taux et délais mesurés ; elles sont présentées séparément. Les cohortes récentes ont moins de recul. Il s’agit de générations 3D, pas de visites, clés émises, connexions, téléchargements ou usages limités aux photos produit. Le canal de création historique peut être incomplet.",
+      "api": "API",
+      "mcp": "MCP",
+      "web": "Web"
     }
   },
   "McpLanding": {
@@ -1941,7 +1962,8 @@
       "model": {
         "label": "Textured GLB",
         "alt": "Interactive generated 3D model of the mustard armchair",
-        "body": "Drag to rotate the model. Download it to inspect in your own 3D viewer."
+        "body": "Drag to rotate the model. Download it to inspect in your own 3D viewer.",
+        "hint": "Faites glisser pour tourner"
       },
       "note": "Pre-generated showcase assets, not a live request. This sheet is a finished example; the initial preview is watermarked. Geometry is approximate and unseen surfaces are inferred.",
       "download": "Download sample GLB",
@@ -1952,6 +1974,12 @@
       "api": {
         "title": "From your upload flow to a model response.",
         "description": "See the application handoff and JSON response, then inspect the source photo, generated angles and downloadable GLB."
+      },
+      "evidence": {
+        "title": "Ce que vous pouvez vérifier",
+        "provenance": "Ces fichiers proviennent d’une génération dans l’environnement de test easyrender. Les matériaux du fauteuil ont été ajustés à la photo et les textures compressées pour le web. Il s’agit d’un exemple du produit, pas d’un enregistrement brut de l’API ou du MCP.",
+        "measurementTitle": "Prix et durée",
+        "measurement": "Les prix ci-dessous sont les tarifs actuels, pas la facture de cet exemple. La durée totale de cette ancienne démo n’a pas été vérifiée ; consultez le statut et le débit de votre propre génération."
       }
     },
     "costs": {
@@ -1996,6 +2024,13 @@
       "flow": "Your backend sends the photo to POST /api/renders. Show the preview, display the returned cost and let the user approve the paid build. Poll the render status to retrieve the finished model.",
       "cost": "Use the render’s current renderCredits field before building; the cost can change when a finished sheet is reused. Keep the API key on your server.",
       "response": "Partial response after a full build has finished; sample ID, not a live render."
+    },
+    "examples": {
+      "title": "Exécuter l’exemple complet",
+      "body": "Importez une photo, vérifiez le prix, imposez un plafond de crédits, reprenez avec l’identifiant du rendu et téléchargez le GLB privé. Les exemples ne lancent aucune génération payante sans votre accord explicite.",
+      "python": "Exemple Python",
+      "typescript": "Exemple TypeScript",
+      "reference": "Référence API"
     }
   },
   "Legal": {
@@ -2102,5 +2137,31 @@
         }
       }
     }
+  },
+  "ConnectionCheck": {
+    "title": "Vérifier votre clé API",
+    "description": "Confirmez le compte et les autorisations de cette clé. Cette vérification ne génère rien et ne consomme aucun crédit.",
+    "verifyNew": "Vérifier la nouvelle clé",
+    "keyLabel": "Ou collez une clé API existante",
+    "checking": "Vérification…",
+    "verify": "Vérifier la clé",
+    "privacy": "La clé collée est effacée après vérification. Elle n’est pas enregistrée dans votre navigateur.",
+    "mismatch": "Cette clé appartient à un autre compte. Utilisez une clé du compte auquel vous êtes connecté.",
+    "readRequired": "Cette vérification nécessite la lecture. Créez une clé avec l’autorisation Lecture.",
+    "invalid": "La clé est invalide, expirée ou révoquée. Créez-en une nouvelle et réessayez.",
+    "rateLimit": "Trop de vérifications. Attendez une minute et réessayez.",
+    "failed": "La vérification n’a pas abouti. Veuillez réessayer.",
+    "verified": "Clé vérifiée",
+    "scopeOfCheck": "Cela confirme l’accès actuel à l’API, pas la connexion de votre client externe. Exécutez-y le premier prompt pour vérifier sa configuration.",
+    "account": "Compte",
+    "balance": "Solde partagé",
+    "credits": "{count, number} crédits",
+    "permissions": "Autorisations",
+    "expiry": "Expiration",
+    "noExpiry": "Sans expiration",
+    "cap": "Plafond de dépenses de la clé",
+    "unlimited": "{spent, number} crédits dépensés · sans plafond",
+    "limited": "{spent, number} / {limit, number} dépensés · {remaining, number} restants",
+    "grossCap": "Le plafond compte tous les débits de cette clé. Les remboursements rétablissent le solde du compte, mais pas le plafond de la clé."
   }
 }

@@ -216,17 +216,21 @@ export async function setBrowserTools(
     if (referrerHost !== url.hostname || UTM_KEYS.some((key) => url.searchParams.has(key))) {
       const path = url.pathname.replace(/^\/(es|de|fr|it|pt)(?=\/|$)/, '') || '/';
       const landingType =
-        path === '/'
-          ? 'home'
-          : path.startsWith('/r/')
-            ? 'model_page'
-            : path === '/explore'
-              ? 'explore'
-              : path === '/credits'
-                ? 'credits'
-                : path.includes('services')
-                  ? 'services'
-                  : 'other';
+        path === '/mcp'
+          ? 'mcp'
+          : path === '/image-to-3d-api' || path === '/api-imagen-a-3d'
+            ? 'api'
+            : path === '/'
+              ? 'home'
+              : path.startsWith('/r/')
+                ? 'model_page'
+                : path === '/explore'
+                  ? 'explore'
+                  : path === '/credits'
+                    ? 'credits'
+                    : path.includes('services')
+                      ? 'services'
+                      : 'other';
       posthog.capture('landing_view', {
         landing_type: landingType,
         ...Object.fromEntries(UTM_KEYS.map((key) => [key, a?.[key] ?? null])),

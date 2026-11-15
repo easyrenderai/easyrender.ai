@@ -1,8 +1,8 @@
 import { config } from '@easyrender/core';
 import { ArrowRight, Box, ChevronDownIcon, Code2, Repeat2 } from 'lucide-react';
-import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { IntegrationCosts } from '@/components/integrations/costs';
+import { IntegrationLink } from '@/components/integrations/link';
 import { IntegrationResult } from '@/components/integrations/result';
 import { Pricing, Section } from '@/components/landing';
 import { McpSkill } from '@/components/mcp/mcp-skill';
@@ -130,9 +130,9 @@ export async function McpView({ locale }: { locale: Locale }) {
               {t('connect.accountBody')}
             </p>
             <Button asChild size="lg">
-              <Link href={accountHref}>
+              <IntegrationLink channel="mcp" action="setup" href={accountHref}>
                 {t('connect.cta')} <ArrowRight aria-hidden="true" />
-              </Link>
+              </IntegrationLink>
             </Button>
             <div>
               <Button variant="outline" asChild>
