@@ -229,7 +229,12 @@
       "two": "Cola este URL como URL do conector.",
       "three": "Clica em Connect, inicia sessão no easyrender e autoriza o acesso. Não precisas de chave.",
       "note": "O mesmo início de sessão serve para qualquer cliente MCP compatível com OAuth. Cada ligação cria uma chave que podes revogar mais abaixo."
-    }
+    },
+    "wallet": "A aplicação web, a API e o MCP usam o mesmo saldo da tua conta. As operações pagas consomem esses créditos; ligar ou consultar o saldo não custa créditos easyrender. O teu cliente de IA pode cobrar separadamente.",
+    "codexOauth": "Estes comandos abrem o início de sessão OAuth no navegador. Usa a mesma conta easyrender deste painel; não precisas de colar uma chave API.",
+    "firstPromptTitle": "O teu primeiro prompt",
+    "firstPrompt": "Usa o easyrender para consultar o meu saldo de créditos e o custo atual das operações. Não geres nada nem gastes créditos ainda.",
+    "firstPromptNote": "Cola isto no teu cliente ligado. Uma resposta bem-sucedida de get_credits confirma que o cliente consegue aceder à tua conta."
   },
   "Gallery": {
     "modelAlt": "3D model: {title}",
@@ -689,10 +694,10 @@
       "expiresAt": "Escolhe uma data e hora futuras válidas, ou deixa o campo vazio."
     },
     "connect": {
-      "title": "Connect your agent",
-      "created": "Your new key is filled in below. Copy the snippet now: the key will not be shown again.",
-      "noKeys": "Use the claude.ai tab to connect with a sign-in. For other agents, create a key, then paste the snippet.",
-      "hasKeys": "Paste the snippet into your agent and replace {placeholder} with one of your keys. The claude.ai tab needs no key."
+      "title": "Liga o teu agente",
+      "created": "A nova chave está nos exemplos de configuração com chave API. Copia-a agora: não será apresentada novamente.",
+      "noKeys": "Liga o claude.ai ou o Codex iniciando sessão no navegador. Para as opções com chave API, cria uma chave e copia o exemplo.",
+      "hasKeys": "Para configurar com chave API, substitui {placeholder} por uma das tuas chaves. Os separadores claude.ai e Codex usam o início de sessão no navegador."
     },
     "createMyKey": "Create my key",
     "keys": {
@@ -701,7 +706,7 @@
       "namePlaceholder": "Key name, e.g. Claude Code",
       "create": "Create",
       "none": "No keys yet.",
-      "connected": "Connected",
+      "connected": "Usada recentemente",
       "idle": "Idle",
       "neverUsed": "Never used",
       "created": "created {date}",
@@ -1668,7 +1673,23 @@
       "visitsNotConfigured": "Visits: PostHog not configured",
       "visitsIncomplete": "Visits: PostHog data incomplete",
       "visitsError": "Visits: PostHog unavailable (request failed)",
-      "sheetCountUnit": "sheets"
+      "sheetCountUnit": "sheets",
+      "developerActivation": "Ativação 3D por canal de criação",
+      "developerActivationCohorts": "Coortes de ativação 3D",
+      "activationAccounts": "Contas da coorte",
+      "measuredAccounts": "Contas medidas",
+      "legacyAccounts": "Histórico sem data excluído",
+      "firstSuccess": "Primeiro modelo concluído",
+      "secondSuccess": "Segundo modelo concluído",
+      "activationPercent": "Ativação (%)",
+      "repeatPercent": "Repetição após ativação (%)",
+      "firstSuccessMinutes": "Mediana até ao primeiro modelo (min)",
+      "repeatMinutes": "Mediana do primeiro ao segundo (min)",
+      "developerActivationDefinition": "As contas identificadas entram na coorte de um canal com o primeiro pedido 3D. A ativação e a repetição contam GLB distintos concluídos antes do fim do período. A chave de autenticação não determina se o pedido veio da API ou do MCP.",
+      "developerActivationCoverage": "Os sucessos históricos sem data excluem essa conta/canal das taxas e tempos medidos; são apresentados separadamente. As coortes recentes têm menos tempo de observação. São gerações 3D, não visitas, chaves emitidas, ligações, transferências ou utilizações apenas de fotos de produto. O canal histórico de criação pode estar incompleto.",
+      "api": "API",
+      "mcp": "MCP",
+      "web": "Web"
     }
   },
   "McpLanding": {
@@ -1941,7 +1962,8 @@
       "model": {
         "label": "Textured GLB",
         "alt": "Interactive generated 3D model of the mustard armchair",
-        "body": "Drag to rotate the model. Download it to inspect in your own 3D viewer."
+        "body": "Drag to rotate the model. Download it to inspect in your own 3D viewer.",
+        "hint": "Arrasta para rodar"
       },
       "note": "Pre-generated showcase assets, not a live request. This sheet is a finished example; the initial preview is watermarked. Geometry is approximate and unseen surfaces are inferred.",
       "download": "Download sample GLB",
@@ -1952,6 +1974,12 @@
       "api": {
         "title": "From your upload flow to a model response.",
         "description": "See the application handoff and JSON response, then inspect the source photo, generated angles and downloadable GLB."
+      },
+      "evidence": {
+        "title": "O que podes verificar",
+        "provenance": "Estes ficheiros resultam de uma geração no ambiente de testes do easyrender. Os materiais da poltrona foram ajustados à fotografia e as texturas comprimidas para a web. É uma amostra do produto, não uma gravação sem alterações da API ou do MCP.",
+        "measurementTitle": "Preço e duração",
+        "measurement": "Os preços abaixo são valores atuais, não o recibo desta amostra. Esta demonstração antiga não tem uma duração total verificada; consulta o estado e o débito da tua própria geração."
       }
     },
     "costs": {
@@ -1996,6 +2024,13 @@
       "flow": "Your backend sends the photo to POST /api/renders. Show the preview, display the returned cost and let the user approve the paid build. Poll the render status to retrieve the finished model.",
       "cost": "Use the render’s current renderCredits field before building; the cost can change when a finished sheet is reused. Keep the API key on your server.",
       "response": "Partial response after a full build has finished; sample ID, not a live render."
+    },
+    "examples": {
+      "title": "Executa o exemplo completo",
+      "body": "Carrega uma fotografia, verifica o preço, aplica um limite de créditos, retoma pelo ID e descarrega o GLB privado. Os exemplos não iniciam gerações pagas sem aprovação explícita.",
+      "python": "Exemplo Python",
+      "typescript": "Exemplo TypeScript",
+      "reference": "Referência da API"
     }
   },
   "Legal": {
@@ -2102,5 +2137,31 @@
         }
       }
     }
+  },
+  "ConnectionCheck": {
+    "title": "Verifica a tua chave API",
+    "description": "Confirma a conta e as permissões desta chave. A verificação não gera nada nem gasta créditos.",
+    "verifyNew": "Verificar nova chave",
+    "keyLabel": "Ou cola uma chave API existente",
+    "checking": "A verificar…",
+    "verify": "Verificar chave",
+    "privacy": "A chave colada é apagada após a verificação. Não é guardada no navegador.",
+    "mismatch": "Esta chave pertence a outra conta. Usa uma chave da conta em que tens sessão iniciada.",
+    "readRequired": "Esta verificação precisa de permissão de leitura. Cria uma chave com Leitura ativada.",
+    "invalid": "A chave é inválida, expirou ou foi revogada. Cria uma nova e tenta novamente.",
+    "rateLimit": "Demasiadas verificações. Espera um minuto e tenta novamente.",
+    "failed": "Não foi possível concluir a verificação. Tenta novamente.",
+    "verified": "Chave verificada",
+    "scopeOfCheck": "Isto confirma o acesso atual à API, não a ligação do teu cliente externo. Executa aí o primeiro prompt para confirmar a configuração.",
+    "account": "Conta",
+    "balance": "Saldo partilhado",
+    "credits": "{count, number} créditos",
+    "permissions": "Permissões",
+    "expiry": "Validade",
+    "noExpiry": "Sem validade definida",
+    "cap": "Limite de gastos da chave",
+    "unlimited": "{spent, number} créditos gastos · sem limite",
+    "limited": "{spent, number} / {limit, number} gastos · {remaining, number} restantes",
+    "grossCap": "O limite conta todos os débitos desta chave. Os reembolsos repõem o saldo da conta, mas não o limite da chave."
   }
 }

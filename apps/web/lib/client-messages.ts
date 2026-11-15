@@ -16,6 +16,7 @@ export const CLIENT_NAMESPACES = [
   'BuyButton',
   'Catalog',
   'ConnectorsPanel',
+  'ConnectionCheck',
   'AppHome',
   'AppShell',
   'DashboardNav',

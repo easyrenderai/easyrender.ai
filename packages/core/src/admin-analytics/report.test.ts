@@ -39,6 +39,18 @@ const payment = (fields: Partial<Payment>): Payment => ({
   ...fields,
 });
 describe('admin reports observed output', () => {
+  it('exposes operational API/MCP activation tables in the existing product admin report', () => {
+    const report = buildReport('product', snapshot, range, databaseFinance(snapshot), traffic);
+    expect(report.tables.find((table) => table.key === 'developerActivation')?.rows).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: 'mcp', activationAccounts: 0, activationPercent: null }),
+        expect.objectContaining({ source: 'api', activationAccounts: 0 }),
+      ]),
+    );
+    expect(report.tables.find((table) => table.key === 'developerActivationCohorts')?.note).toBe(
+      'developerActivationCoverage',
+    );
+  });
   it('keeps unavailable fees and cash refunds unknown in DB fallback', () => {
     const report = buildReport('overview', snapshot, range, databaseFinance(snapshot), traffic);
     expect(report.metrics.find((m) => m.key === 'refunds')?.value).toBeNull();
@@ -184,6 +196,7 @@ describe('admin reports observed output', () => {
           error: null,
           source: 'web',
           isPublic: true,
+          completedAt: null,
           createdAt: new Date('2026-11-01T00:00:00Z'),
           updatedAt: new Date('2026-11-01T00:02:00Z'),
         },

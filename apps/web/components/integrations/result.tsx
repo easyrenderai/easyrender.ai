@@ -2,9 +2,10 @@ import { ArrowRight, Download } from 'lucide-react';
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { AgentDemo } from '@/components/agent-demo';
+import { BlogModel } from '@/components/blog/blog-model';
 import { ApiDemo } from '@/components/integrations/api-demo';
+import { IntegrationLink } from '@/components/integrations/link';
 import { Section } from '@/components/landing';
-import { ModelViewer } from '@/components/model-viewer';
 import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
 import { SHOWCASE } from '@/lib/showcase';
@@ -31,11 +32,12 @@ export async function IntegrationResult({ locale, kind }: { locale: Locale; kind
           <figure key={step} className="min-w-0 overflow-hidden rounded-xl border bg-card">
             <div className="relative aspect-square bg-muted/30">
               {step === 'model' ? (
-                <ModelViewer
+                <BlogModel
                   src={sample.model}
                   alt={t('model.alt')}
-                  interactive
-                  autoRotate={false}
+                  poster={{ src: '/blog/models/armchair.webp', width: 960, height: 960 }}
+                  orbit="30deg 75deg auto"
+                  hint={t('model.hint')}
                 />
               ) : (
                 <Image
@@ -59,12 +61,29 @@ export async function IntegrationResult({ locale, kind }: { locale: Locale; kind
           </figure>
         ))}
       </div>
+      <details className="mt-5 rounded-xl border p-5 text-sm">
+        <summary className="cursor-pointer font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          {t('evidence.title')}
+        </summary>
+        <div className="mt-4 grid gap-4 text-muted-foreground md:grid-cols-2">
+          <p>{t('evidence.provenance')}</p>
+          <div className="space-y-2">
+            <h3 className="font-medium text-foreground">{t('evidence.measurementTitle')}</h3>
+            <p>{t('evidence.measurement')}</p>
+          </div>
+        </div>
+      </details>
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
         <p className="max-w-2xl text-xs leading-relaxed text-muted-foreground">{t('note')}</p>
         <Button variant="outline" asChild>
-          <a href={sample.model} download="easyrender-sample-armchair.glb">
+          <IntegrationLink
+            channel={kind}
+            action="sample_download"
+            href={sample.model}
+            download="easyrender-sample-armchair.glb"
+          >
             <Download aria-hidden="true" /> {t('download')}
-          </a>
+          </IntegrationLink>
         </Button>
       </div>
     </Section>

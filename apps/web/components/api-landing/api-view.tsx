@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { CodeSnippet } from '@/components/code-snippet';
 import { IntegrationCosts } from '@/components/integrations/costs';
+import { IntegrationLink } from '@/components/integrations/link';
 import { IntegrationResult } from '@/components/integrations/result';
 import { Pricing, Section } from '@/components/landing';
 import { StudioHero } from '@/components/studio/hero';
@@ -33,6 +34,7 @@ export async function ApiView({ locale }: { locale: Locale }) {
     currentUser().catch(() => null),
     apiFaqItems(locale),
   ]);
+  const examples = await getTranslations({ locale, namespace: 'IntegrationLanding.examples' });
   const accountHref = user ? '/connectors' : '/sign-up?next=%2Fconnectors';
   const copyLabels = {
     copyLabel: t('examples.copy'),
@@ -102,9 +104,9 @@ export async function ApiView({ locale }: { locale: Locale }) {
               {t('connect.accountBody')}
             </p>
             <Button asChild size="lg">
-              <Link href={accountHref}>
+              <IntegrationLink channel="api" action="setup" href={accountHref}>
                 {t('connect.cta')} <ArrowRight aria-hidden="true" />
-              </Link>
+              </IntegrationLink>
             </Button>
             <div className="space-y-2 pt-4">
               <p className="text-sm text-muted-foreground">{t('connect.mcpTitle')}</p>
@@ -144,6 +146,25 @@ export async function ApiView({ locale }: { locale: Locale }) {
         <p className="mt-8 max-w-3xl text-sm leading-relaxed text-muted-foreground">
           {t('examples.polling')}
         </p>
+      </Section>
+      <Section id="runnable-examples" title={examples('title')} description={examples('body')}>
+        <div className="flex flex-wrap justify-center gap-3">
+          {(['python', 'typescript', 'reference'] as const).map((kind) => (
+            <Button key={kind} variant="outline" asChild>
+              <IntegrationLink
+                channel="api"
+                action={kind === 'reference' ? 'reference' : `example_${kind}`}
+                href={
+                  kind === 'reference'
+                    ? '/api/openapi.json'
+                    : `https://github.com/easyrenderai/easyrender.ai/blob/main/examples/rest/${kind === 'python' ? 'render.py' : 'render.ts'}`
+                }
+              >
+                {examples(kind)} <ArrowRight aria-hidden="true" />
+              </IntegrationLink>
+            </Button>
+          ))}
+        </div>
       </Section>
       <Pricing />
       <Section id="faq" title={t('faq.title')} narrow>

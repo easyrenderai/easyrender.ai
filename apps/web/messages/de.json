@@ -229,7 +229,12 @@
       "two": "Füge diese URL als Connector-URL ein.",
       "three": "Klick auf Connect, melde dich bei easyrender an und erlaube den Zugriff. Einen Schlüssel brauchst du nicht.",
       "note": "Dieselbe Anmeldung funktioniert mit jedem MCP-Client, der OAuth unterstützt. Jede Verbindung erzeugt einen Schlüssel, den du unten widerrufen kannst."
-    }
+    },
+    "wallet": "Web-App, API und MCP nutzen dasselbe Kontoguthaben. Kostenpflichtige Vorgänge verbrauchen diese Credits; die Verbindung und Guthabenabfragen kosten keine easyrender-Credits. Dein KI-Client kann eigene Gebühren erheben.",
+    "codexOauth": "Diese Befehle öffnen die OAuth-Anmeldung im Browser. Verwende dasselbe easyrender-Konto wie in diesem Dashboard; du musst keinen API-Schlüssel einfügen.",
+    "firstPromptTitle": "Dein erster Prompt",
+    "firstPrompt": "Prüfe mit easyrender mein Credit-Guthaben und die aktuellen Kosten der Vorgänge. Generiere noch nichts und verbrauche keine Credits.",
+    "firstPromptNote": "Füge dies in deinen verbundenen Client ein. Ein erfolgreicher get_credits-Aufruf bestätigt, dass der Client auf dein Konto zugreifen kann."
   },
   "Gallery": {
     "modelAlt": "3D model: {title}",
@@ -689,10 +694,10 @@
       "expiresAt": "Wähle ein gültiges Datum mit Uhrzeit in der Zukunft oder lass das Feld leer."
     },
     "connect": {
-      "title": "Connect your agent",
-      "created": "Your new key is filled in below. Copy the snippet now: the key will not be shown again.",
-      "noKeys": "Use the claude.ai tab to connect with a sign-in. For other agents, create a key, then paste the snippet.",
-      "hasKeys": "Paste the snippet into your agent and replace {placeholder} with one of your keys. The claude.ai tab needs no key."
+      "title": "Agent verbinden",
+      "created": "Dein neuer Schlüssel steht in den API-Schlüssel-Beispielen unten. Kopiere ihn jetzt: Er wird nicht erneut angezeigt.",
+      "noKeys": "Verbinde claude.ai oder Codex per Browser-Anmeldung. Für die Einrichtung per API-Schlüssel erstelle einen Schlüssel und kopiere das Beispiel.",
+      "hasKeys": "Ersetze für die Einrichtung per API-Schlüssel {placeholder} durch deinen Schlüssel. Die Tabs claude.ai und Codex nutzen die Browser-Anmeldung."
     },
     "createMyKey": "Create my key",
     "keys": {
@@ -701,7 +706,7 @@
       "namePlaceholder": "Key name, e.g. Claude Code",
       "create": "Create",
       "none": "No keys yet.",
-      "connected": "Connected",
+      "connected": "Kürzlich verwendet",
       "idle": "Idle",
       "neverUsed": "Never used",
       "created": "created {date}",
@@ -1668,7 +1673,23 @@
       "visitsNotConfigured": "Visits: PostHog not configured",
       "visitsIncomplete": "Visits: PostHog data incomplete",
       "visitsError": "Visits: PostHog unavailable (request failed)",
-      "sheetCountUnit": "sheets"
+      "sheetCountUnit": "sheets",
+      "developerActivation": "3D-Aktivierung nach Erstellungskanal",
+      "developerActivationCohorts": "3D-Aktivierungskohorten",
+      "activationAccounts": "Konten in der Kohorte",
+      "measuredAccounts": "Gemessene Konten",
+      "legacyAccounts": "Undatierter Verlauf ausgeschlossen",
+      "firstSuccess": "Erstes fertiges Modell",
+      "secondSuccess": "Zweites fertiges Modell",
+      "activationPercent": "Aktivierung (%)",
+      "repeatPercent": "Wiederholung nach Aktivierung (%)",
+      "firstSuccessMinutes": "Median bis zum ersten Modell (Min.)",
+      "repeatMinutes": "Median vom ersten zum zweiten (Min.)",
+      "developerActivationDefinition": "Identifizierte Konten treten mit ihrer ersten 3D-Anfrage der Kanalkohorte bei. Aktivierung und Wiederholung zählen unterschiedliche GLB-Dateien, die vor Periodenende fertiggestellt wurden. Der Authentifizierungsschlüssel bestimmt nicht, ob eine Anfrage über API oder MCP kam.",
+      "developerActivationCoverage": "Historische Erfolge ohne Datum schließen dieses Konto und diesen Kanal von gemessenen Quoten und Zeiten aus; sie werden separat angezeigt. Neue Kohorten haben weniger Beobachtungszeit. Gemessen werden 3D-Generierungen, keine Besuche, ausgestellten Schlüssel, Verbindungen, Downloads oder reinen Produktfoto-Nutzungen. Historische Erstellungskanäle können unvollständig sein.",
+      "api": "API",
+      "mcp": "MCP",
+      "web": "Web"
     }
   },
   "McpLanding": {
@@ -1941,7 +1962,8 @@
       "model": {
         "label": "Textured GLB",
         "alt": "Interactive generated 3D model of the mustard armchair",
-        "body": "Drag to rotate the model. Download it to inspect in your own 3D viewer."
+        "body": "Drag to rotate the model. Download it to inspect in your own 3D viewer.",
+        "hint": "Zum Drehen ziehen"
       },
       "note": "Pre-generated showcase assets, not a live request. This sheet is a finished example; the initial preview is watermarked. Geometry is approximate and unseen surfaces are inferred.",
       "download": "Download sample GLB",
@@ -1952,6 +1974,12 @@
       "api": {
         "title": "From your upload flow to a model response.",
         "description": "See the application handoff and JSON response, then inspect the source photo, generated angles and downloadable GLB."
+      },
+      "evidence": {
+        "title": "Was du prüfen kannst",
+        "provenance": "Diese Dateien stammen aus einer Generierung in der easyrender-Testumgebung. Die Materialien des Sessels wurden an das Foto angepasst und die Texturen für das Web komprimiert. Dies ist ein Produktbeispiel, keine unbearbeitete API- oder MCP-Aufzeichnung.",
+        "measurementTitle": "Preis und Dauer",
+        "measurement": "Die Preise unten sind aktuelle Angebote, keine Abrechnung für dieses Beispiel. Für diese ältere Demo liegt keine verifizierte Gesamtdauer vor. Maßgeblich sind Status und Abbuchung deines eigenen Auftrags."
       }
     },
     "costs": {
@@ -1996,6 +2024,13 @@
       "flow": "Your backend sends the photo to POST /api/renders. Show the preview, display the returned cost and let the user approve the paid build. Poll the render status to retrieve the finished model.",
       "cost": "Use the render’s current renderCredits field before building; the cost can change when a finished sheet is reused. Keep the API key on your server.",
       "response": "Partial response after a full build has finished; sample ID, not a live render."
+    },
+    "examples": {
+      "title": "Vollständiges Beispiel ausführen",
+      "body": "Lade ein Foto hoch, prüfe den Preis, setze ein Kreditlimit, fahre mit der Render-ID fort und lade die private GLB-Datei herunter. Ohne ausdrückliche Freigabe starten die Beispiele keine kostenpflichtige Generierung.",
+      "python": "Python-Beispiel",
+      "typescript": "TypeScript-Beispiel",
+      "reference": "API-Referenz"
     }
   },
   "Legal": {
@@ -2102,5 +2137,31 @@
         }
       }
     }
+  },
+  "ConnectionCheck": {
+    "title": "API-Schlüssel prüfen",
+    "description": "Prüfe das Konto und die Berechtigungen dieses Schlüssels. Dabei wird nichts generiert und es werden keine Credits verbraucht.",
+    "verifyNew": "Neuen Schlüssel prüfen",
+    "keyLabel": "Oder vorhandenen API-Schlüssel einfügen",
+    "checking": "Wird geprüft…",
+    "verify": "Schlüssel prüfen",
+    "privacy": "Der eingefügte Schlüssel wird nach der Prüfung gelöscht und nicht im Browser gespeichert.",
+    "mismatch": "Dieser Schlüssel gehört zu einem anderen Konto. Verwende einen Schlüssel des angemeldeten Kontos.",
+    "readRequired": "Für diese Prüfung ist die Leseberechtigung erforderlich. Erstelle einen Schlüssel mit aktivierter Leseberechtigung.",
+    "invalid": "Der Schlüssel ist ungültig, abgelaufen oder widerrufen. Erstelle einen neuen und versuche es erneut.",
+    "rateLimit": "Zu viele Prüfungen. Warte eine Minute und versuche es erneut.",
+    "failed": "Die Prüfung konnte nicht abgeschlossen werden. Bitte erneut versuchen.",
+    "verified": "Schlüssel geprüft",
+    "scopeOfCheck": "Dies bestätigt den aktuellen API-Zugriff, nicht die Verbindung deines externen Clients. Führe dort den ersten Prompt aus, um die Einrichtung zu prüfen.",
+    "account": "Konto",
+    "balance": "Gemeinsames Guthaben",
+    "credits": "{count, number} Credits",
+    "permissions": "Berechtigungen",
+    "expiry": "Ablaufdatum",
+    "noExpiry": "Kein Ablaufdatum",
+    "cap": "Ausgabenlimit des Schlüssels",
+    "unlimited": "{spent, number} Credits verbraucht · unbegrenzt",
+    "limited": "{spent, number} / {limit, number} verbraucht · {remaining, number} verbleibend",
+    "grossCap": "Das Limit zählt alle Abbuchungen dieses Schlüssels. Rückerstattungen erhöhen das Kontoguthaben, setzen aber das Schlüssellimit nicht zurück."
   }
 }

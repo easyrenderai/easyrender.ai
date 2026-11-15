@@ -229,7 +229,12 @@
       "two": "Paste this URL as the connector URL.",
       "three": "Click Connect, sign in to easyrender and allow access. No key needed.",
       "note": "The same sign-in flow works with any OAuth-capable MCP client. Each connection creates a key you can revoke from Connectors."
-    }
+    },
+    "wallet": "Your web app, API and MCP use the same account wallet. Paid operations use credits from that wallet; connecting or checking your balance costs no easyrender credits. Your AI client may charge separately.",
+    "codexOauth": "These commands open browser sign-in through OAuth. Use the same easyrender account as this dashboard; no API key needs to be pasted.",
+    "firstPromptTitle": "Your first prompt",
+    "firstPrompt": "Use easyrender to check my credit balance and current operation costs. Do not generate anything or spend credits yet.",
+    "firstPromptNote": "Paste this in your connected client. A successful get_credits result confirms that client can reach your account."
   },
   "Gallery": {
     "modelAlt": "3D model: {title}",
@@ -690,9 +695,9 @@
     },
     "connect": {
       "title": "Connect your agent",
-      "created": "Your new key is filled in below. Copy the snippet now: the key will not be shown again.",
-      "noKeys": "Use the claude.ai tab to connect with a sign-in. For other agents, create a key, then paste the snippet.",
-      "hasKeys": "Paste the snippet into your agent and replace {placeholder} with one of your keys. The claude.ai tab needs no key."
+      "created": "Your new key is filled into the API key snippets below. Copy it now: the key will not be shown again.",
+      "noKeys": "Use claude.ai or Codex to connect with browser sign-in. For the API key setup options, create a key and copy the snippet.",
+      "hasKeys": "For API key setup, replace {placeholder} with one of your keys. The claude.ai and Codex tabs use browser sign-in instead."
     },
     "createMyKey": "Create my key",
     "keys": {
@@ -701,7 +706,7 @@
       "namePlaceholder": "Key name, e.g. Claude Code",
       "create": "Create",
       "none": "No keys yet.",
-      "connected": "Connected",
+      "connected": "Recently used",
       "idle": "Idle",
       "neverUsed": "Never used",
       "created": "created {date}",
@@ -1668,7 +1673,23 @@
       "visitsNotConfigured": "Visits: PostHog not configured",
       "visitsIncomplete": "Visits: PostHog data incomplete",
       "visitsError": "Visits: PostHog unavailable (request failed)",
-      "sheetCountUnit": "sheets"
+      "sheetCountUnit": "sheets",
+      "developerActivation": "3D activation by creation channel",
+      "developerActivationCohorts": "3D activation cohorts",
+      "activationAccounts": "Accounts in cohort",
+      "measuredAccounts": "Measured accounts",
+      "legacyAccounts": "Undated history excluded",
+      "firstSuccess": "First completed model",
+      "secondSuccess": "Second completed model",
+      "activationPercent": "Activation (%)",
+      "repeatPercent": "Repeat after activation (%)",
+      "firstSuccessMinutes": "Median to first model (min)",
+      "repeatMinutes": "Median first to second (min)",
+      "developerActivationDefinition": "Identified accounts enter a channel cohort on their first 3D request. Activation and repeat count distinct ready GLBs completed before the selected period ends. Authentication keys do not determine whether a request came through API or MCP.",
+      "developerActivationCoverage": "Undated historical successes exclude that account/channel from measured rates and timing; they are shown separately. Recent cohorts have less observation time. These are 3D generations, not visits, issued keys, connections, downloads or packshot-only uses. Historical creation-channel labels may be incomplete.",
+      "api": "API",
+      "mcp": "MCP",
+      "web": "Web"
     }
   },
   "McpLanding": {
@@ -1941,7 +1962,8 @@
       "model": {
         "label": "Textured GLB",
         "alt": "Interactive generated 3D model of the mustard armchair",
-        "body": "Drag to rotate the model. Download it to inspect in your own 3D viewer."
+        "body": "Drag to rotate the model. Download it to inspect in your own 3D viewer.",
+        "hint": "Drag to rotate"
       },
       "note": "Pre-generated showcase assets, not a live request. This sheet is a finished example; the initial preview is watermarked. Geometry is approximate and unseen surfaces are inferred.",
       "download": "Download sample GLB",
@@ -1952,6 +1974,12 @@
       "api": {
         "title": "From your upload flow to a model response.",
         "description": "See the application handoff and JSON response, then inspect the source photo, generated angles and downloadable GLB."
+      },
+      "evidence": {
+        "title": "What you can inspect",
+        "provenance": "These files come from an easyrender test-harness generation. The armchair materials were adjusted to match the photo and the textures compressed for the web. This is a showcase asset, not an unedited API or MCP recording.",
+        "measurementTitle": "Price and timing",
+        "measurement": "The prices below are current quotes, not a receipt for this sample. This historical demo has no verified end-to-end duration; your job status and debit are the source of truth."
       }
     },
     "costs": {
@@ -1996,6 +2024,13 @@
       "flow": "Your backend sends the photo to POST /api/renders. Show the preview, display the returned cost and let the user approve the paid build. Poll the render status to retrieve the finished model.",
       "cost": "Use the render’s current renderCredits field before building; the cost can change when a finished sheet is reused. Keep the API key on your server.",
       "response": "Partial response after a full build has finished; sample ID, not a live render."
+    },
+    "examples": {
+      "title": "Run the complete example",
+      "body": "Upload a photo, review the quote, enforce a credit ceiling, resume by render ID and download the private GLB. The examples stop before spending unless you explicitly approve the build.",
+      "python": "Python example",
+      "typescript": "TypeScript example",
+      "reference": "API reference"
     }
   },
   "Legal": {
@@ -2102,5 +2137,31 @@
         }
       }
     }
+  },
+  "ConnectionCheck": {
+    "title": "Check your API key",
+    "description": "Confirm which account and permissions this key uses. This check does not generate anything or spend credits.",
+    "verifyNew": "Verify new key",
+    "keyLabel": "Or paste an existing API key",
+    "checking": "Checking…",
+    "verify": "Verify key",
+    "privacy": "The pasted key is cleared after checking. It is not saved in your browser.",
+    "mismatch": "This key belongs to another account. Use a key from the account you are signed in to.",
+    "readRequired": "This check needs read permission. Create a key with Read enabled.",
+    "invalid": "The key is invalid, expired or revoked. Create a new key and try again.",
+    "rateLimit": "Too many checks. Wait a minute and try again.",
+    "failed": "The check could not finish. Please try again.",
+    "verified": "Key verified",
+    "scopeOfCheck": "This verifies API access now, not a connection from your external client. Run the first prompt there to confirm its setup.",
+    "account": "Account",
+    "balance": "Shared wallet",
+    "credits": "{count, number} credits",
+    "permissions": "Permissions",
+    "expiry": "Expires",
+    "noExpiry": "No expiry",
+    "cap": "Key spending cap",
+    "unlimited": "{spent, number} credits spent · no cap",
+    "limited": "{spent, number} / {limit, number} spent · {remaining, number} remaining",
+    "grossCap": "The cap counts total debits for this key. Refunds restore the wallet balance, but do not restore the key cap."
   }
 }

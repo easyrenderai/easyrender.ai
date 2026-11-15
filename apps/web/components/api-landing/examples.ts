@@ -34,9 +34,14 @@ curl --fail-with-body \\
   },
   {
     key: 'build',
-    code: `curl --fail-with-body --request POST \\
+    // Set this ceiling only after inspecting the preview and authorizing the live credit quote.
+    code: `export EASYRENDER_MAX_CREDITS="REPLACE_WITH_APPROVED_CREDIT_CEILING"
+
+curl --fail-with-body --request POST \\
   "$EASYRENDER_URL/api/renders/$EASYRENDER_RENDER_ID/render" \\
-  --header "Authorization: Bearer $EASYRENDER_API_KEY"`,
+  --header "Authorization: Bearer $EASYRENDER_API_KEY" \\
+  --header "Content-Type: application/json" \\
+  --data '{"maxCredits":'"$EASYRENDER_MAX_CREDITS"'}'`,
   },
   {
     key: 'download',

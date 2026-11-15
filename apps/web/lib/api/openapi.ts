@@ -203,6 +203,22 @@ export const openapi = {
       post: {
         ...operation('buildRender', 'Start the paid 3D build', ['spend'], ref('Render')),
         parameters: [id],
+        requestBody: {
+          ...jsonBody(
+            object(
+              {
+                maxCredits: {
+                  ...integer,
+                  maximum: Number.MAX_SAFE_INTEGER,
+                  description:
+                    'Optional per-call authorized ceiling, enforced atomically at debit.',
+                },
+              },
+              [],
+            ),
+          ),
+          required: false,
+        },
       },
     },
     '/api/renders/{id}/sheet': {

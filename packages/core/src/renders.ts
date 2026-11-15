@@ -50,6 +50,8 @@ export type Actor = {
   apiKeyId?: string;
   apiKeyScopes?: string[];
   maxCredits?: number;
+  // Transport that creates the generation; credentials alone do not distinguish API from MCP.
+  source?: RenderSource;
 };
 
 // The caller's explicit spend ceiling is checked again inside the debit transaction.
@@ -210,7 +212,8 @@ export async function createDraft(input: {
   enforce(checkNote(input.prompt), 400);
   const prompt = cleanNote(input.prompt) || null;
   const name = input.name?.trim().slice(0, 120) || null;
-  const isPublic = input.isPublic ?? (!input.isLinkShared && (input.source ?? 'web') === 'web');
+  const source = input.actor.source ?? input.source ?? 'web';
+  const isPublic = input.isPublic ?? (!input.isLinkShared && source === 'web');
   const key = input.idempotencyKey;
   if (key !== undefined && !/^[\x21-\x7e]{1,128}$/.test(key)) {
     throw new AppError(
@@ -274,7 +277,7 @@ export async function createDraft(input: {
         ipHash: input.actor.ipHash ?? null,
         prompt,
         name,
-        source: input.source ?? 'web',
+        source,
         isLinkShared: input.isLinkShared ?? false,
         isPublic,
         requestScope: key ? scope : null,
@@ -572,6 +575,7 @@ export async function advance(id: string): Promise<Render | null> {
         where: renderStage(render),
         data: {
           status: 'ready',
+          completedAt: render.completedAt ?? new Date(),
           glbKey,
           quality: withQuality(render, { glb: quality.measures }),
           costUsd: { increment: buildCostUsd(prediction.metrics?.predict_time) },

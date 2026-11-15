@@ -741,7 +741,7 @@ export async function createRenderFromViews(id: string, actor: Actor): Promise<s
         status: 'preview_ready',
         // Product photos are private by default: the owner chooses to publish the 3D model.
         isPublic: false,
-        source: 'web',
+        source: actor.source ?? (actor.apiKeyId ? 'api' : 'web'),
       },
     });
     await tx.viewSet.update({ where: { id }, data: { renderId: render.id } });

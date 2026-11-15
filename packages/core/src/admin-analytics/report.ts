@@ -1,4 +1,5 @@
 import { isPlanId, PLAN_IDS, SUBSCRIPTION_PLANS } from '@easyrender/harness';
+import { activationTables } from './activation';
 import type { Snapshot } from './database';
 import {
   bucket,
@@ -896,6 +897,7 @@ export function buildReport(
       ),
     );
     if (section === 'product') {
+      view.tables.push(...activationTables(s.renders, range));
       metric('sheets', a.sheets, b.sheets);
       metric('models', a.models, b.models);
       metric('failure', a.failure, b.failure, 'percent', 'postgres', 'measured', undefined, true);

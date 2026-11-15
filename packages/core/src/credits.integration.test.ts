@@ -802,6 +802,13 @@ run('credits and generation billing (real database)', () => {
       const done = await renders.advance(render.id);
       expect(done?.status).toBe('ready');
       expect(done?.quality).toMatchObject({ glb: { bytes: 30_000 }, isDraftUsed: false });
+      expect(done?.completedAt).toBeInstanceOf(Date);
+      const completedAt = done?.completedAt?.getTime();
+      await db().render.update({
+        where: { id: render.id },
+        data: { name: 'Renamed later', updatedAt: new Date(Date.now() + 60_000) },
+      });
+      expect((await renders.advance(render.id))?.completedAt?.getTime()).toBe(completedAt);
     });
 
     it('refunds a build whose final sheet never finishes', async () => {
