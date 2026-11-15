@@ -6,7 +6,7 @@ import { BLOG_IMAGES, parseImage } from '@/lib/blog/images';
 import { heroSource, parseBlocks } from '@/lib/blog/markdown';
 import { llmsFullTxt, llmsTxt } from '@/lib/seo/llms';
 import { isNoindexPath } from '@/lib/seo/noindex';
-import { postTitle } from '@/lib/seo/pages';
+import { comparePageMetadata, postTitle } from '@/lib/seo/pages';
 import { ROUTES } from '@/lib/seo/routes';
 import { localeSitemapXml } from '@/lib/seo/sitemap';
 import {
@@ -29,6 +29,31 @@ const pages = readComparePages();
 const ROOT = process.cwd();
 const raw = (slug: string) =>
   readFileSync(join(ROOT, 'content', 'compare', 'en', `${slug}.md`), 'utf8');
+
+describe.each(readComparePages('es').map((page) => [page.slug, page] as const))(
+  'Spanish comparison image %s',
+  (_, page) => {
+    it('shows its own translated illustration and uses it for the sharing card', () => {
+      const english = pages.find((candidate) => candidate.group === page.group);
+      const expected = heroSource(parseBlocks(english?.body ?? ''));
+      expect(expected).toBeDefined();
+      expect(heroSource(parseBlocks(page.body))).toBe(expected);
+      const image = page.body
+        .split('\n')
+        .map(parseImage)
+        .find((item) => item?.src === expected);
+      expect(image?.alt).toMatch(/^Ilustración de /);
+      expect(image?.caption).toMatch(/^Ilustración conceptual:/);
+      expect(comparePageMetadata(page).openGraph?.images).toEqual([
+        expect.objectContaining({
+          url: `https://easyrender.ai${expected}`,
+          width: 1280,
+          height: 720,
+        }),
+      ]);
+    });
+  },
+);
 
 /** Every file under a directory, recursively, with one of the given extensions. */
 function filesUnder(dir: string, extensions: string[]): string[] {

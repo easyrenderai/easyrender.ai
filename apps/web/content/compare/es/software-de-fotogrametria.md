@@ -4,6 +4,7 @@ group: compare-photogrammetry-software
 title: Software de fotogrametría o IA con una foto
 description: Fotogrametría frente a IA con una foto: RealityScan, Metashape, Meshroom, Polycam y Zephyr, cuántas fotos piden, precios y cuándo encaja cada uno.
 date: 2026-11-15
+updated: 2026-11-15
 keyword: software de fotogrametria
 author: Jorge Rodríguez
 authorType: person
@@ -12,7 +13,7 @@ cta: Si solo tienes una foto de catálogo de la pieza, mírala gratis desde todo
 
 El software de fotogrametría construye un modelo 3D a partir de muchas fotos solapadas de un objeto que tienes delante. RealityScan, Agisoft Metashape, Meshroom, Polycam y 3DF Zephyr son los habituales. Si solo tienes una foto, como la de catálogo de un proveedor, la fotogrametría no puede ni empezar, y la vía es una herramienta de imagen a 3D.
 
-<!-- IMAGE PENDING: ilustración EN del busto de mármol con las pirámides de cámara alrededor. Pie: «Ilustración, no es un resultado de easyrender». -->
+![Ilustración de un busto de mármol, mitad piedra y mitad malla 3D, rodeado de posiciones de cámara](/compare/illustrations/photogrammetry-software/hero.webp "Ilustración conceptual: varios puntos de vista rodean un busto representado como piedra y como malla 3D.")
 
 ## ¿De verdad necesitas un programa de fotogrametría?
 

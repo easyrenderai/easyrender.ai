@@ -40,6 +40,7 @@ export function pageMetadata({
   return {
     title,
     description,
+    robots: { index: true, follow: true, 'max-image-preview': 'large' },
     alternates: { canonical: url, ...(languages ? { languages } : {}) },
     openGraph: {
       type,
