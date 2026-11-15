@@ -18,6 +18,28 @@ import { localeEntries } from './sitemap';
 const urlsIn = (text: string) =>
   [...text.matchAll(/\]\((https:\/\/[^)]+)\)/g)].map((match) => match[1] as string);
 
+const sectionIn = (text: string, heading: string) => {
+  const start = text.indexOf(`## ${heading}\n`);
+  expect(start, heading).toBeGreaterThanOrEqual(0);
+  const end = text.indexOf('\n## ', start + 1);
+  return text.slice(start, end === -1 ? undefined : end);
+};
+
+const withoutForAgents = (text: string) => text.replace(sectionIn(text, 'For agents'), '');
+
+const AGENT_URLS = [
+  `${SITE_URL}/mcp`,
+  `${SITE_URL}/es/mcp`,
+  `${SITE_URL}/api/mcp`,
+  'https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.easyrenderai/easyrender',
+  `${SITE_URL}/image-to-3d-api`,
+  `${SITE_URL}/es/api-imagen-a-3d`,
+  'https://github.com/easyrenderai/easyrender-image-to-3d',
+  'https://www.skills.sh/easyrenderai/easyrender-image-to-3d/easyrender-image-to-3d',
+  'https://clawhub.ai/jorgerl02/skills/easyrender-image-to-3d',
+  'https://github.com/easyrenderai/easyrender-image-to-3d/blob/main/gemini-extension.json',
+];
+
 // Phrases claims.md forbids, in either language. Negations such as "not real-world measurements"
 // are allowed, so these match the promise, not the word.
 const FORBIDDEN = [
@@ -61,7 +83,9 @@ describe('llms.txt', () => {
     const sitemap = LOCALES.flatMap((locale) => localeEntries(locale)).map((entry) =>
       absoluteUrl(entry.path),
     );
-    const listed = urlsIn(text).filter((url) => !url.endsWith('.txt'));
+    const listed = urlsIn(text.slice(text.indexOf('## Pages'))).filter(
+      (url) => !url.endsWith('.txt'),
+    );
     expect(listed.sort()).toEqual([...sitemap].sort());
     expect(listed).toEqual(
       expect.arrayContaining([
@@ -78,7 +102,8 @@ describe('llms.txt', () => {
   });
 
   it('never points at a noindex, app or API path, or at another host', () => {
-    for (const url of urlsIn(text)) {
+    const listings = text.slice(text.indexOf('## Pages'));
+    for (const url of urlsIn(listings)) {
       expect(url.startsWith(SITE_URL), url).toBe(true);
       const path = url.slice(SITE_URL.length) || '/';
       for (const prefix of [...NOINDEX_PREFIXES, ...DISALLOWED_PREFIXES]) {
@@ -87,7 +112,7 @@ describe('llms.txt', () => {
     }
     // What llms.txt lists under each language is exactly what that language’s sitemap lists.
     for (const locale of ['de', 'fr', 'it', 'pt'] as const) {
-      const paths = urlsIn(text)
+      const paths = urlsIn(listings)
         .map((url) => new URL(url).pathname)
         .filter((path) => path.startsWith(`/${locale}/`));
       const expected = localeEntries(locale)
@@ -95,6 +120,18 @@ describe('llms.txt', () => {
         .filter((path) => path.startsWith(`/${locale}/`));
       expect(paths.sort()).toEqual(expected.sort());
     }
+  });
+
+  it('lists the agent entry points before the marketing pages', () => {
+    const agents = sectionIn(text, 'For agents');
+    expect(text.indexOf('## For agents')).toBeLessThan(text.indexOf('## Pages'));
+    expect(urlsIn(agents).sort()).toEqual([...AGENT_URLS].sort());
+    expect(agents).toContain('io.github.easyrenderai/easyrender');
+    expect(agents).toContain('streamable HTTP');
+    expect(agents).toContain('OAuth');
+    expect(agents).toContain('Authorization: Bearer');
+    expect(agents).toContain('401');
+    expect(agents).toContain('Gemini CLI extension');
   });
 
   it('describes the product within claims.md', () => {
@@ -107,6 +144,11 @@ describe('llms.txt', () => {
 
 describe('llms-full.txt', () => {
   const text = llmsFullTxt();
+
+  it('carries the same agent entry points before the FAQs', () => {
+    expect(sectionIn(text, 'For agents')).toBe(sectionIn(llmsTxt(), 'For agents'));
+    expect(text.indexOf('## For agents')).toBeLessThan(text.indexOf('## FAQ (English)'));
+  });
 
   it('carries every FAQ answer of every home, with prices filled in', () => {
     for (const locale of LOCALES) {
@@ -127,8 +169,9 @@ describe('llms-full.txt', () => {
   });
 
   it('stays away from noindex paths, guides included', () => {
-    for (const url of urlsIn(llmsFullTxt(new Date('2026-12-01T00:00:00Z')))) {
-      const path = url.slice(SITE_URL.length) || '/';
+    for (const url of urlsIn(withoutForAgents(llmsFullTxt(new Date('2026-12-01T00:00:00Z'))))) {
+      if (new URL(url).origin !== SITE_URL) continue;
+      const path = new URL(url).pathname;
       for (const prefix of NOINDEX_PREFIXES) expect(path.startsWith(prefix), url).toBe(false);
     }
   });
