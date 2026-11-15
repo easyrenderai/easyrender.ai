@@ -78,6 +78,70 @@ run('credits and generation billing (real database)', () => {
     await db().$disconnect();
   });
 
+  it('keeps a failed refund recoverable and never claims the credits were returned early', async () => {
+    const { renders } = await load();
+    const userId = await newUser(2_147_483_640);
+    const render = await newRender(userId, {
+      status: 'rendering',
+      credits: RENDER_CREDITS,
+      buildPredictionId: `refund-fault-${userId}`,
+    });
+    replicate.get.mockResolvedValue({ status: 'failed', error: 'provider failed' });
+    // PostgreSQL rejects this balance increment: the status change must roll back with it.
+    await expect(renders.advance(render.id)).rejects.toThrow();
+    expect((await db().render.findUniqueOrThrow({ where: { id: render.id } })).status).toBe(
+      'rendering',
+    );
+    expect(
+      await db().creditLedger.count({ where: { idempotencyKey: `refund:${render.id}` } }),
+    ).toBe(0);
+    await db().user.update({ where: { id: userId }, data: { credits: 0 } });
+    expect((await renders.advance(render.id))?.status).toBe('failed');
+    expect(await balance(userId)).toBe(RENDER_CREDITS);
+    await renders.advance(render.id);
+    expect(await balance(userId)).toBe(RENDER_CREDITS);
+  });
+
+  it('keeps a provider read outage retryable instead of refunding a running job', async () => {
+    const { renders } = await load();
+    const userId = await newUser(0);
+    const render = await newRender(userId, {
+      status: 'rendering',
+      credits: RENDER_CREDITS,
+      buildPredictionId: `read-outage-${userId}`,
+    });
+    replicate.get.mockRejectedValueOnce(new Error('temporary connection failure'));
+    expect((await renders.advance(render.id))?.status).toBe('rendering');
+    expect(await balance(userId)).toBe(0);
+    replicate.get.mockResolvedValue({ status: 'processing' });
+    expect((await renders.advance(render.id))?.status).toBe('rendering');
+  });
+
+  it('recovers a paid build lost before starting even when its old preview has a prediction', async () => {
+    const { renders } = await load();
+    const userId = await newUser(0);
+    const render = await newRender(userId, {
+      status: 'rendering',
+      credits: RENDER_CREDITS,
+      sheetPredictionId: `old-sheet-${userId}`,
+      updatedAt: new Date(Date.now() - 46 * 60 * 1000),
+    });
+    expect((await renders.advance(render.id))?.status).toBe('failed');
+    expect(await balance(userId)).toBe(RENDER_CREDITS);
+  });
+
+  it('does not start a second paid prediction when the final-sheet POST outcome is unknown', async () => {
+    const { renders } = await load();
+    const { ProviderRequestError } = await import('@easyrender/harness');
+    const userId = await newUser(RENDER_CREDITS);
+    const render = await newRender(userId, { sheetKey: 'fake:preview.png' });
+    replicate.start.mockRejectedValueOnce(new ProviderRequestError('response lost', true));
+    expect((await renders.startBuild(render.id, { userId })).status).toBe('rendering');
+    expect((await renders.startBuild(render.id, { userId })).status).toBe('rendering');
+    expect(await balance(userId)).toBe(0);
+    expect(replicate.start).toHaveBeenCalledTimes(1);
+  });
+
   it('never lets concurrent spends take the balance below zero', async () => {
     const { credits } = await load();
     const userId = await newUser(100);
