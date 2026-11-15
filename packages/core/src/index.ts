@@ -1,4 +1,5 @@
 export * from './analytics';
+export { flushAnalyticsDeliveries } from './analytics-delivery';
 export * from './api-access';
 export * from './api-keys';
 export * from './api-limits';
@@ -11,6 +12,7 @@ export * from './errors';
 export * from './google-measurement';
 export * from './google-outbox';
 export * from './oauth';
+export { flushPosthogEvents } from './posthog-outbox';
 export * from './pricing-experiment';
 export * from './product-views';
 export * from './remote-image';

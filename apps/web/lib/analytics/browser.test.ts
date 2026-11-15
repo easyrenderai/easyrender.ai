@@ -17,6 +17,9 @@ it('before_send retains the public SDK project key required for ingestion and st
       $referrer: 'https://ref.test/?private=1',
       title: 'private account name',
       fbclid: 'abc',
+      gbraid: 'must-not-send',
+      wbraid: 'must-not-send',
+      dclid: 'must-not-send',
       referrer_host: 'external.test',
     },
   });
@@ -232,4 +235,91 @@ it('keeps campaign context across documents only while analytics storage is allo
   expect(second.api.attribution()?.utm_source).toBe('test');
   await second.api.setBrowserTools(false, false, true);
   expect(saved.size).toBe(0);
+});
+
+it('requires advertising opt-in independently and clears bounded IDs on withdrawal while analytics stays enabled', async () => {
+  const saved = new Map<string, string>();
+  vi.stubGlobal('sessionStorage', {
+    getItem: (key: string) => saved.get(key) ?? null,
+    setItem: (key: string, value: string) => saved.set(key, value),
+    removeItem: (key: string) => saved.delete(key),
+  });
+  const removeLocal = vi.fn();
+  vi.stubGlobal('localStorage', { removeItem: removeLocal });
+  const fetcher = vi.fn(async () => new Response(null, { status: 204 }));
+  vi.stubGlobal('fetch', fetcher);
+  const page = await googleBrowser();
+  page.window.location.search = '?gclid=Allowed_123&email=private';
+  page.api.initializeGa('G-TEST000000');
+  await page.api.setBrowserTools(false, true);
+  expect(JSON.stringify(page.commands())).not.toContain('Allowed_123');
+  expect(saved.has('er_ad_touch')).toBe(false);
+  await page.api.setBrowserTools(false, true, false, true);
+  expect(page.commands()).toContainEqual([
+    'consent',
+    'update',
+    {
+      analytics_storage: 'granted',
+      ad_storage: 'granted',
+      ad_user_data: 'granted',
+      ad_personalization: 'denied',
+    },
+  ]);
+  expect(saved.get('er_ad_touch')).toContain('Allowed_123');
+  expect(JSON.stringify(page.commands())).not.toContain('email=');
+  const before = page.commands().length;
+  await page.api.setBrowserTools(false, true, false, false);
+  expect(saved.has('er_ad_touch')).toBe(false);
+  expect(removeLocal).toHaveBeenCalledWith('_gcl_ls');
+  expect(fetcher).toHaveBeenCalledWith(
+    '/api/analytics/revoke',
+    expect.objectContaining({ method: 'POST' }),
+  );
+  expect(JSON.stringify(page.commands().slice(before))).not.toContain('Allowed_123');
+  expect(page.commands().slice(before)).toContainEqual(['set', 'ads_data_redaction', true]);
+});
+
+it('expires advertising IDs after thirty minutes without extending them on a permission refresh', async () => {
+  vi.useFakeTimers();
+  try {
+    const saved = new Map<string, string>();
+    vi.stubGlobal('sessionStorage', {
+      getItem: (key: string) => saved.get(key) ?? null,
+      setItem: (key: string, value: string) => saved.set(key, value),
+      removeItem: (key: string) => saved.delete(key),
+    });
+    const page = await googleBrowser();
+    page.window.location.search = '?gclid=Expiring_123';
+    page.api.initializeGa('G-TEST000000');
+    await page.api.setBrowserTools(false, true, false, true);
+    const original = JSON.parse(saved.get('er_ad_touch') ?? 'null');
+    page.window.location.search = '';
+    vi.advanceTimersByTime(10 * 60 * 1000);
+    await page.api.setBrowserTools(false, true, false, true);
+    expect(JSON.parse(saved.get('er_ad_touch') ?? 'null').expiresAt).toBe(original.expiresAt);
+    vi.advanceTimersByTime(20 * 60 * 1000 + 1);
+    expect(saved.has('er_ad_touch')).toBe(false);
+    const before = page.commands().length;
+    page.api.gaEvent('begin_checkout');
+    expect(JSON.stringify(page.commands().slice(before))).not.toContain('Expiring_123');
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+it('does not grant advertising when a withdrawal/GPC signal is present, even with a stale grant argument', async () => {
+  const page = await googleBrowser();
+  page.api.initializeGa('G-TEST000000');
+  await page.api.setBrowserTools(false, true, true, true);
+  const updates = page.commands().filter(([c, type]) => c === 'consent' && type === 'update');
+  expect(updates.at(-1)).toEqual([
+    'consent',
+    'update',
+    {
+      analytics_storage: 'granted',
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+    },
+  ]);
 });

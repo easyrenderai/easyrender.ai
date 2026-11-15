@@ -112,7 +112,12 @@ export function analyticsUrl(value: string): string {
 export function sanitizeProperties(properties: Record<string, unknown>): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(properties)) {
-    if (/gclid|fbclid|msclkid|ttclid|email|token|password|\$ip|^\$?title$/i.test(key)) continue;
+    if (
+      /gclid|dclid|gbraid|wbraid|fbclid|msclkid|ttclid|email|token|password|\$ip|^\$?title$/i.test(
+        key,
+      )
+    )
+      continue;
     if (
       typeof value === 'string' &&
       key !== 'referrer_host' &&

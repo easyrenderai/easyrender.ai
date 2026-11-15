@@ -33,76 +33,93 @@ export async function loadDatabase(
       : { email: { equals: entry, mode: 'insensitive' as const } },
   );
   const userWhere: Prisma.UserWhereInput = includeTeam || !excluded.length ? {} : { NOT: excluded };
-  const [users, renders, purchases, ledger, keys, earliest] = await Promise.all([
-    client.user.findMany({
-      where: userWhere,
-      orderBy: { createdAt: 'asc' },
-      take: ROW_LIMIT + 1,
-      select: {
-        id: true,
-        email: true,
-        createdAt: true,
-        subscriptionPlan: true,
-        subscriptionStatus: true,
-        stripeCustomerId: true,
-      },
-    }),
-    client.render.findMany({
-      // An empty relation filter inside OR is discarded by Prisma, leaving only anonymous rows.
-      where: includeTeam || !excluded.length ? {} : { OR: [{ userId: null }, { user: userWhere }] },
-      orderBy: { createdAt: 'asc' },
-      take: ROW_LIMIT + 1,
-      select: {
-        id: true,
-        userId: true,
-        anonId: true,
-        status: true,
-        sheetKey: true,
-        glbKey: true,
-        credits: true,
-        costUsd: true,
-        error: true,
-        source: true,
-        isPublic: true,
-        completedAt: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    }),
-    client.purchase.findMany({
-      where: { user: userWhere },
-      orderBy: { createdAt: 'asc' },
-      take: ROW_LIMIT + 1,
-      select: {
-        id: true,
-        userId: true,
-        packId: true,
-        credits: true,
-        amountCents: true,
-        currency: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    }),
-    client.creditLedger.findMany({
-      where: { user: userWhere },
-      orderBy: { createdAt: 'asc' },
-      take: ROW_LIMIT + 1,
-      select: { userId: true, delta: true, reason: true, purchaseId: true, createdAt: true },
-    }),
-    client.apiKey.findMany({
-      where: { user: userWhere },
-      orderBy: { createdAt: 'asc' },
-      take: ROW_LIMIT + 1,
-      select: { userId: true, createdAt: true, lastUsedAt: true },
-    }),
-    client.user.findFirst({
-      where: userWhere,
-      orderBy: { createdAt: 'asc' },
-      select: { createdAt: true },
-    }),
-  ]);
+  const [users, renders, purchases, ledger, keys, earliest, viewSets, adSpend, upscales] =
+    await Promise.all([
+      client.user.findMany({
+        where: userWhere,
+        orderBy: { createdAt: 'asc' },
+        take: ROW_LIMIT + 1,
+        select: {
+          id: true,
+          email: true,
+          createdAt: true,
+          subscriptionPlan: true,
+          subscriptionStatus: true,
+          stripeCustomerId: true,
+        },
+      }),
+      client.render.findMany({
+        // An empty relation filter inside OR is discarded by Prisma, leaving only anonymous rows.
+        where:
+          includeTeam || !excluded.length ? {} : { OR: [{ userId: null }, { user: userWhere }] },
+        orderBy: { createdAt: 'asc' },
+        take: ROW_LIMIT + 1,
+        select: {
+          id: true,
+          userId: true,
+          anonId: true,
+          status: true,
+          sheetKey: true,
+          glbKey: true,
+          credits: true,
+          costUsd: true,
+          error: true,
+          source: true,
+          isPublic: true,
+          completedAt: true,
+          previewCompletedAt: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      }),
+      client.purchase.findMany({
+        where: { user: userWhere },
+        orderBy: { createdAt: 'asc' },
+        take: ROW_LIMIT + 1,
+        select: {
+          id: true,
+          userId: true,
+          packId: true,
+          credits: true,
+          amountCents: true,
+          paidAt: true,
+          currency: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      }),
+      client.creditLedger.findMany({
+        where: { user: userWhere },
+        orderBy: { createdAt: 'asc' },
+        take: ROW_LIMIT + 1,
+        select: { userId: true, delta: true, reason: true, purchaseId: true, createdAt: true },
+      }),
+      client.apiKey.findMany({
+        where: { user: userWhere },
+        orderBy: { createdAt: 'asc' },
+        take: ROW_LIMIT + 1,
+        select: { userId: true, createdAt: true, lastUsedAt: true },
+      }),
+      client.user.findFirst({
+        where: userWhere,
+        orderBy: { createdAt: 'asc' },
+        select: { createdAt: true },
+      }),
+      client.viewSet.findMany({
+        where: { user: userWhere },
+        orderBy: { createdAt: 'asc' },
+        take: ROW_LIMIT + 1,
+        select: { id: true, userId: true, costUsd: true, createdAt: true },
+      }),
+      client.advertisingSpend.findMany({ orderBy: { date: 'asc' }, take: ROW_LIMIT + 1 }),
+      client.upscale.findMany({
+        where: { user: userWhere },
+        orderBy: { createdAt: 'asc' },
+        take: ROW_LIMIT + 1,
+        select: { id: true, userId: true, costUsd: true, createdAt: true },
+      }),
+    ]);
   // Existing fields use the generated client. Only columns from the coordinated PR use SQL.
   const attribution = columns.user
     ? await client.$queryRaw<Attribution[]>`
@@ -122,6 +139,9 @@ export async function loadDatabase(
     keys,
     attribution,
     renderAttribution,
+    viewSets,
+    upscales,
+    adSpend,
   ].some((rows) => rows.length > ROW_LIMIT);
   // Never publish partial totals. Narrow SQL aggregates are a future scale path for this bounded snapshot.
   if (isTruncated) throw new Error('analyticsRowLimit');
@@ -133,6 +153,9 @@ export async function loadDatabase(
     keys,
     attribution,
     renderAttribution,
+    viewSets,
+    upscales,
+    adSpend,
     columns,
     earliest: earliest?.createdAt.toISOString() ?? new Date().toISOString(),
     fetchedAt: new Date().toISOString(),

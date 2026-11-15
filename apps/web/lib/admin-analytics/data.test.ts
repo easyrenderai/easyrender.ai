@@ -11,7 +11,53 @@ vi.mock('@easyrender/core/admin-analytics', async (importOriginal) => ({
     const at = new Date('2026-11-01T00:00:00Z');
     return {
       users: [],
-      renders: [],
+      renders: [
+        {
+          id: 'finished',
+          userId: 'u',
+          createdAt: at,
+          previewCompletedAt: new Date('2026-11-01T00:30Z'),
+          completedAt: new Date('2026-11-01T01:00Z'),
+          updatedAt: new Date('2027-01-01'),
+          status: 'failed',
+          glbKey: null,
+          sheetKey: null,
+          costUsd: 0,
+          source: 'api',
+          isPublic: false,
+        },
+        {
+          id: 'legacy',
+          userId: 'u',
+          createdAt: at,
+          previewCompletedAt: null,
+          completedAt: null,
+          updatedAt: at,
+          status: 'ready',
+          glbKey: 'model',
+          sheetKey: 'sheet',
+          costUsd: 0,
+          source: 'api',
+          isPublic: false,
+        },
+        {
+          id: 'legacy2',
+          userId: 'u',
+          createdAt: at,
+          previewCompletedAt: null,
+          completedAt: null,
+          updatedAt: at,
+          status: 'ready',
+          glbKey: 'model',
+          sheetKey: 'sheet',
+          costUsd: 0,
+          source: 'api',
+          isPublic: false,
+        },
+      ],
+      viewSets: [],
+      upscales: [],
+      adSpend: [],
       keys: [],
       attribution: [],
       renderAttribution: [],
@@ -26,6 +72,7 @@ vi.mock('@easyrender/core/admin-analytics', async (importOriginal) => ({
           status: 'paid',
           createdAt: at,
           updatedAt: at,
+          paidAt: at,
         },
       ],
       ledger: [
@@ -83,6 +130,18 @@ it('serves DB metrics and accurate purchase reconciliation with PostHog and Stri
   const health = await dashboardData('health', range);
   expect(health.view.tables.find((table) => table.key === 'reconciliation')?.rows).toContainEqual({
     event: 'purchase',
+    database: 1,
+    posthog: null,
+    difference: null,
+  });
+  expect(health.view.tables.find((table) => table.key === 'reconciliation')?.rows).toContainEqual({
+    event: 'render_ready',
+    database: 1,
+    posthog: null,
+    difference: null,
+  });
+  expect(health.view.tables.find((table) => table.key === 'reconciliation')?.rows).toContainEqual({
+    event: 'preview_ready',
     database: 1,
     posthog: null,
     difference: null,

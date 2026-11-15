@@ -1,6 +1,10 @@
-import { createHash } from 'node:crypto';
 import { db, type Render } from '@easyrender/db';
-import type { PostHog } from 'posthog-node';
+import { eventUuid } from './analytics-id';
+import { enqueuePosthogEvent, flushPosthogEvents } from './posthog-outbox';
+import { reportError } from './report';
+
+export { eventUuid } from './analytics-id';
+
 import type { FunnelEvent } from './analytics-events';
 import { type Attribution, pickAttribution, UTM_KEYS } from './attribution';
 
@@ -12,6 +16,7 @@ type EventContext = {
   previewId: string | null;
   source: string;
   attribution: Attribution;
+  hasDeferredDelivery?: boolean;
 };
 type Scheduler = (work: () => Promise<void>) => void;
 let schedule: Scheduler = (work) => {
@@ -34,10 +39,6 @@ export function deferAnalytics(work: () => Promise<void>) {
     /* No platform request context. */
   }
 }
-export function eventUuid(identity: string) {
-  const hex = createHash('sha256').update(`easyrender:${identity}`).digest('hex');
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-a${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
-}
 export function eventProperties(eventId: string, context: EventContext): Properties {
   const a = context.attribution;
   return {
@@ -52,58 +53,50 @@ export function eventProperties(eventId: string, context: EventContext): Propert
     consent_region: a.consent_region_at_create ?? 'strict',
   };
 }
-/** Everything, including DB lookups and network flush, runs after the response. Fail closed. */
-export function captureServer(
+/** Persist before returning; only external delivery runs after the business response. */
+export async function captureServer(
   event: FunnelEvent | 'purchase_completed',
   identity: string,
   context: EventContext,
   properties: Properties,
   alias?: string,
+  occurredAt = new Date(),
 ) {
-  const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-  if (!key) return;
-  const work = async () => {
-    let client: PostHog | undefined;
-    try {
-      const user = context.userId
-        ? await db().user.findUnique({ where: { id: context.userId } })
-        : null;
-      const attribution = user?.first_seen_at ? pickAttribution(user) : context.attribution;
-      const { PostHog } = await import('posthog-node');
-      client = new PostHog(key, {
-        host:
-          process.env.POSTHOG_HOST ||
-          process.env.NEXT_PUBLIC_POSTHOG_HOST ||
-          'https://eu.i.posthog.com',
-        flushAt: 1,
-        flushInterval: 0,
-        requestTimeout: 1500,
-        fetchRetryCount: 0,
-        disableGeoip: true,
+  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
+  try {
+    const user = context.userId
+      ? await db().user.findUnique({ where: { id: context.userId } })
+      : null;
+    const attribution = user?.first_seen_at ? pickAttribution(user) : context.attribution;
+    const uuid = eventUuid(`${event}:${identity}`);
+    await enqueuePosthogEvent({
+      id: uuid,
+      subjectId: identity,
+      userId: context.userId,
+      event,
+      distinctId: context.userId ?? `pv_${context.previewId}`,
+      alias: alias ?? null,
+      occurredAt,
+      properties: { ...eventProperties(uuid, { ...context, attribution }), ...properties },
+    });
+    if (!context.hasDeferredDelivery)
+      deferAnalytics(async () => {
+        await flushPosthogEvents({ eventIds: [uuid] });
       });
-      const uuid = eventUuid(`${event}:${identity}`);
-      const distinctId = context.userId ?? `pv_${context.previewId}`;
-      if (alias) client.alias({ distinctId, alias, disableGeoip: true });
-      client.capture({
-        distinctId,
-        event,
-        uuid,
-        disableGeoip: true,
-        properties: { ...eventProperties(uuid, { ...context, attribution }), ...properties },
-      });
-      await client.shutdown(2000);
-    } catch {
-      /* Analytics must never affect a render, account or payment. */
-    }
-  };
-  deferAnalytics(work);
+  } catch {
+    // Do not attach the original error: transport/DB errors can include payloads or credentials.
+    reportError(new Error('Unable to persist business analytics event'), {
+      component: 'analytics',
+    });
+  }
 }
 export function captureRender(
   event: Exclude<FunnelEvent, 'signup' | 'purchase'>,
   render: Render,
   properties: Properties,
+  options: { occurredAt?: Date; hasDeferredDelivery?: boolean } = {},
 ) {
-  captureServer(
+  return captureServer(
     event,
     render.id,
     {
@@ -111,7 +104,10 @@ export function captureRender(
       previewId: render.id,
       source: render.source,
       attribution: pickAttribution(render),
+      hasDeferredDelivery: options.hasDeferredDelivery,
     },
     properties,
+    undefined,
+    options.occurredAt,
   );
 }
