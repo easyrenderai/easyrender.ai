@@ -12,6 +12,7 @@ const serve = (request: Request) =>
     await consumeApiRateLimit(`api:${principal.id}`, 120);
     return {
       userId: principal.userId,
+      source: 'mcp',
       apiKeyId: principal.id,
       apiKeyScopes: principal.scopes,
       geoCountry: privacyRegion(incoming.headers).country,

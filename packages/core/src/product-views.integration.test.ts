@@ -623,10 +623,19 @@ run('product views (real database, scripted models)', { timeout: 15_000 }, () =>
     const userId = await newUser(PRODUCT_VIEWS_CREDITS + BUILD_FROM_VIEWS_CREDITS);
     const set = await settle((await create(userId)).id, userId);
 
-    const renderId = await views.createRenderFromViews(set.id, { userId });
+    const renderId = await views.createRenderFromViews(set.id, {
+      userId,
+      source: 'mcp',
+      apiKeyId: 'mcp-uses-api-key',
+    });
     expect(await views.createRenderFromViews(set.id, { userId })).toBe(renderId);
     const render = await db().render.findUniqueOrThrow({ where: { id: renderId } });
-    expect(render).toMatchObject({ status: 'preview_ready', hasFinalSheet: true, isPublic: false });
+    expect(render).toMatchObject({
+      status: 'preview_ready',
+      hasFinalSheet: true,
+      isPublic: false,
+      source: 'mcp',
+    });
     expect(renders.toView(render).renderCredits).toBe(BUILD_FROM_VIEWS_CREDITS);
 
     const startsBefore = fake.starts.length;

@@ -171,6 +171,8 @@ model Render {
   source            String       @default("web")
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
+  // Immutable successful GLB completion; null for historical rows with no observed time.
+  completedAt       DateTime?
   edits             RenderEdit[]
 
   @@unique([requestScope, requestKey])

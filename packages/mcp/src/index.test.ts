@@ -392,7 +392,7 @@ describe('MCP protocol contract', () => {
     core.getRender.mockResolvedValue({ ...render, credits: 4 });
     core.createRenderFromViews.mockResolvedValue('r1');
     core.startBuild.mockResolvedValue({ ...render, status: 'rendering', credits: 64 });
-    const client = await connect();
+    const client = await connect(['read', 'write', 'spend']);
     expect(
       await client.callTool({
         name: 'build_from_product_views',
@@ -406,6 +406,10 @@ describe('MCP protocol contract', () => {
         arguments: { id: 'v1', max_credits: 60 },
       }),
     ).toMatchObject({ structuredContent: { id: 'r1', status: 'rendering' } });
+    expect(core.createRenderFromViews).toHaveBeenCalledWith(
+      'v1',
+      expect.objectContaining({ source: 'mcp', apiKeyId: 'key1' }),
+    );
   });
   it.each([
     {

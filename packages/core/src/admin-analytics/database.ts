@@ -48,7 +48,8 @@ export async function loadDatabase(
       },
     }),
     client.render.findMany({
-      where: { OR: [{ userId: null }, { user: userWhere }] },
+      // An empty relation filter inside OR is discarded by Prisma, leaving only anonymous rows.
+      where: includeTeam || !excluded.length ? {} : { OR: [{ userId: null }, { user: userWhere }] },
       orderBy: { createdAt: 'asc' },
       take: ROW_LIMIT + 1,
       select: {
@@ -63,6 +64,7 @@ export async function loadDatabase(
         error: true,
         source: true,
         isPublic: true,
+        completedAt: true,
         createdAt: true,
         updatedAt: true,
       },

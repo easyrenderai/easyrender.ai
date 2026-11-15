@@ -45,6 +45,7 @@ export async function resolveActor(headers?: Headers, scope: ApiKeyScope = 'read
       ...base,
       userId: principal.userId,
       apiKeyId: principal.id,
+      source: 'api' as const,
       apiKeyScopes: principal.scopes,
     };
     assertActorScope(actor, scope);
@@ -52,7 +53,7 @@ export async function resolveActor(headers?: Headers, scope: ApiKeyScope = 'read
     return actor;
   }
   const session = await auth().api.getSession({ headers: h });
-  return { ...base, userId: session?.user.id ?? null };
+  return { ...base, userId: session?.user.id ?? null, source: 'web' };
 }
 
 export async function currentUser() {

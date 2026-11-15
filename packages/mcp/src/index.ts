@@ -24,6 +24,7 @@ import {
 export { MAX_INLINE_IMAGE_BYTES } from './images';
 
 export function createMcpServer(actor: Actor & { userId: string }) {
+  actor = { ...actor, source: 'mcp' };
   const server = new McpServer(
     { name: 'easyrender', version: '0.2.0' },
     { maxToolInputElements: 1000 },
