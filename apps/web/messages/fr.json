@@ -1250,12 +1250,37 @@
         "title": "Essaie avec une photo",
         "button": "Importer une photo"
       },
-      "related": "À lire ensuite"
+      "related": "À lire ensuite",
+      "promo": {
+        "title": "Votre produit sous tous les angles",
+        "input": "Votre photo",
+        "output": "Vues générées par IA",
+        "button": "Tester ma photo gratuitement",
+        "disclosure": "Aperçu gratuit. Le modèle 3D est payant."
+      }
     },
     "comparisons": {
       "title": "Comparatifs",
       "description": "Méthodes et outils de modélisation 3D côte à côte, quand un guide ne suffit pas pour choisir.",
-      "read": "Lire le comparatif"
+      "read": "Lire le comparatif",
+      "choices": {
+        "title": "Choisir selon votre besoin",
+        "photo": {
+          "need": "Une photo de produit",
+          "tools": "easyrender",
+          "check": "Vérifiez les vues gratuites avant de payer le modèle."
+        },
+        "views": {
+          "need": "Des photos de plusieurs côtés",
+          "tools": "Tripo · Rodin",
+          "check": "Montrez les détails cachés avec de vraies vues du produit."
+        },
+        "animation": {
+          "need": "Personnages et animation",
+          "tools": "Meshy · Sloyd",
+          "check": "Vérifiez le rigging, l’export et les droits commerciaux du forfait."
+        }
+      }
     }
   },
   "Models": {

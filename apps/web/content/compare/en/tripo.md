@@ -15,15 +15,17 @@ Looking for Tripo alternatives because the model changes your product or export 
 
 ## Choose by the problem you need to solve
 
-| Tool            | Choose it for                                 | Published price                                      | Free limit                                |
-| --------------- | --------------------------------------------- | ---------------------------------------------------- | ----------------------------------------- |
-| easyrender      | One product photo; review before paying       | {{renderPrice}} per model; {{renderCredits}} credits | Free angle sheet; paid 3D model           |
-| Meshy           | Text, multiple photos and animation           | Pro: £16/month (GBP), billed monthly                 | 100 credits/month; check download access  |
-| Rodin (Hyper3D) | Multiple photos and material controls         | Creator: US$30/month, billed monthly                 | Exports limited to legacy models          |
-| Sloyd           | Frequent generation and editable templates    | Plus: US$15/month, billed monthly                    | 1 generation/day; community model exports |
-| Tripo           | Multiple views, segmentation and mesh control | Pro: US$20/month, billed US$240 yearly               | 200 credits/month; non-commercial use     |
+| Tool                | Choose it for                                 | Published price                                      | Free limit                                |
+| ------------------- | --------------------------------------------- | ---------------------------------------------------- | ----------------------------------------- |
+| **easyrender**      | One product photo; review before paying       | {{renderPrice}} per model; {{renderCredits}} credits | Free angle sheet; paid 3D model           |
+| **Meshy**           | Text, multiple photos and animation           | Pro: £16/month (GBP), billed monthly                 | 100 credits/month; check download access  |
+| **Rodin (Hyper3D)** | Multiple photos and material controls         | Creator: US$30/month, billed monthly                 | Exports limited to legacy models          |
+| **Sloyd**           | Frequent generation and editable templates    | Plus: US$15/month, billed monthly                    | 1 generation/day; community model exports |
+| **Tripo**           | Multiple views, segmentation and mesh control | Pro: US$20/month, billed US$240 yearly               | 200 credits/month; non-commercial use     |
 
 Prices and terms checked on 16 November 2026: [easyrender](/pricing), [Meshy](https://www.meshy.ai/pricing), [Tripo](https://www.tripo3d.ai/pricing), [Rodin](https://hyper3d.ai/pricing) and [Sloyd](https://www.sloyd.ai/pricing). Currencies and billing periods are as displayed on each site, not equivalent per-model costs. Credit units differ between services. API pricing is separate.
+
+> **Before you choose.** Generating, downloading and commercial use are three different permissions. Check all three before paying.
 
 ![Illustration of a rattan stool with a woven oval seat and curved legs, one half in its real cane and the other half in matte grey clay covered by a white wireframe mesh, on a dark background](/compare/illustrations/tripo/hero.webp "Illustration, not an easyrender result: a rattan stool drawn half as woven cane, half as a clay-and-wireframe mesh.")
 
@@ -62,39 +64,39 @@ In the direct Meshy Workspace and Tripo Studio trials, those accounts requested 
 
 ### easyrender: inspect a product before spending credits
 
-A fit for furniture or decor sellers starting from one photo. Review the nine-view angle sheet, count parts and build only when it looks right. A model costs {{renderCredits}} credits ({{renderPrice}}), with GLB and USDZ output. The preview is free; the 3D file is paid.
+**A fit for furniture or decor sellers starting from one photo.** Review the nine-view angle sheet, count parts and build only when it looks right. A model costs {{renderCredits}} credits ({{renderPrice}}), with GLB and USDZ output. The preview is free; the 3D file is paid.
 
 The limit: additional views are predictions, not evidence of the back. If you have several real photos or need rigging and animation, consider the other options. [Try your photo](/#try) or see [pricing](/pricing).
 
 ### Meshy: text, photos and animation in one workflow
 
-Consider Meshy for concepts, retexturing or animation. Its [multi-image input](https://docs.meshy.ai/en/api/multi-image-to-3d) accepts one to four photos of the same object. The [free plan](https://www.meshy.ai/pricing) includes 100 monthly credits and CC BY 4.0 licensing with attribution; check which result you can download. Pro adds unlimited downloads and private licensing.
+**Consider Meshy for concepts, retexturing or animation.** Its [multi-image input](https://docs.meshy.ai/en/api/multi-image-to-3d) accepts one to four photos of the same object. The [free plan](https://www.meshy.ai/pricing) includes 100 monthly credits and CC BY 4.0 licensing with attribution; check which result you can download. Pro adds unlimited downloads and private licensing.
 
 ### Rodin: more input and material control
 
-Rodin is an option for testing several references and controlling geometry and materials. Its [Gen-2.5 API](https://docs.hyper3d.ai/en/api-specification/rodin-gen2-5) accepts up to five images and GLB, USDZ, FBX or OBJ output. [Creator](https://hyper3d.ai/pricing) includes unlimited export and commercial use; full API access is listed under Business.
+**Rodin is an option for testing several references and controlling geometry and materials.** Its [Gen-2.5 API](https://docs.hyper3d.ai/en/api-specification/rodin-gen2-5) accepts up to five images and GLB, USDZ, FBX or OBJ output. [Creator](https://hyper3d.ai/pricing) includes unlimited export and commercial use; full API access is listed under Business.
 
 The [free preview](https://hyper3d.ai/help/articles/how-many-credits-does-each-hyper3d-generation-cost) for Gen-2.5 applies at Medium quality or below before confirmation. High and Extreme High charge during generation. Do not budget for a free trial at every quality setting.
 
 ### Sloyd: volume and templates you can adjust
 
-Sloyd combines text and image generation with parametric templates. [Plus](https://www.sloyd.ai/pricing) includes unlimited core generation, subject to fair use and queues; multi-image and other advanced features use credits. Consider it for frequent asset creation. Selling the files on marketplaces requires checking Pro: Plus does not include that redistribution.
+**Sloyd combines text and image generation with parametric templates.** [Plus](https://www.sloyd.ai/pricing) includes unlimited core generation, subject to fair use and queues; multi-image and other advanced features use credits. Consider it for frequent asset creation. Selling the files on marketplaces requires checking Pro: Plus does not include that redistribution.
 
 Guest allows one daily generation, but exports are limited to community models. Your own free generations are personal-use only. The [format and licence documentation](https://www.sloyd.ai/sloyd-answers) distinguishes community downloads from your own outputs.
 
 ### Tripo: use real photos of several sides
 
-Consider Tripo if you already have front, side and back photos, or need segmentation and mesh reduction. Its [multiview API](https://developers.tripo3d.com/en/docs/generation-multiview-to-model/standard) accepts two to four views with the front required. [Studio Free](https://www.tripo3d.ai/pricing) is non-commercial and lists 15 H2.5 exports. Seeing a newer model in the viewer does not guarantee a free export.
+**Consider Tripo if you already have front, side and back photos, or need segmentation and mesh reduction.** Its [multiview API](https://developers.tripo3d.com/en/docs/generation-multiview-to-model/standard) accepts two to four views with the front required. [Studio Free](https://www.tripo3d.ai/pricing) is non-commercial and lists 15 H2.5 exports. Seeing a newer model in the viewer does not guarantee a free export.
 
 ## Inputs and exports: will it fit your workflow?
 
-| Tool       | Input                                  | Relevant formats           |
-| ---------- | -------------------------------------- | -------------------------- |
-| easyrender | One photo and optional note            | GLB, USDZ                  |
-| Meshy      | Text or 1–4 photos                     | GLB, FBX, OBJ, USDZ, BLEND |
-| Tripo      | Text, one photo or 2–4 views           | GLB; FBX, OBJ, USDZ        |
-| Rodin      | Text or up to 5 API images             | GLB, USDZ, FBX, OBJ        |
-| Sloyd      | Text, image, multi-image and templates | GLB, FBX, OBJ, BLEND, USDZ |
+| Tool           | Input                                  | Relevant formats           |
+| -------------- | -------------------------------------- | -------------------------- |
+| **easyrender** | One photo and optional note            | GLB, USDZ                  |
+| **Meshy**      | Text or 1–4 photos                     | GLB, FBX, OBJ, USDZ, BLEND |
+| **Tripo**      | Text, one photo or 2–4 views           | GLB; FBX, OBJ, USDZ        |
+| **Rodin**      | Text or up to 5 API images             | GLB, USDZ, FBX, OBJ        |
+| **Sloyd**      | Text, image, multi-image and templates | GLB, FBX, OBJ, BLEND, USDZ |
 
 These are documented formats, not a promise of free downloads on every plan. Tripo offers some through [format conversion](https://developers.tripo3d.com/en/docs/models-convert). Test a complete export in your destination tool before committing a catalogue.
 

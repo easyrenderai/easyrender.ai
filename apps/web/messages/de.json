@@ -1250,12 +1250,37 @@
         "title": "Probiere es mit einem Foto",
         "button": "Foto hochladen"
       },
-      "related": "Lies weiter"
+      "related": "Lies weiter",
+      "promo": {
+        "title": "Dein Produkt von allen Seiten",
+        "input": "Dein Foto",
+        "output": "KI-Ansichten",
+        "button": "Foto kostenlos testen",
+        "disclosure": "Kostenlose Vorschau. Das 3D-Modell ist kostenpflichtig."
+      }
     },
     "comparisons": {
       "title": "Vergleiche",
       "description": "Methoden und Werkzeuge des 3D-Modellierens nebeneinander, wenn ein Ratgeber zum Entscheiden nicht reicht.",
-      "read": "Vergleich lesen"
+      "read": "Vergleich lesen",
+      "choices": {
+        "title": "Wähle nach deinem Bedarf",
+        "photo": {
+          "need": "Ein Produktfoto",
+          "tools": "easyrender",
+          "check": "Prüfe die kostenlose Ansichtenübersicht vor dem Modellkauf."
+        },
+        "views": {
+          "need": "Fotos von mehreren Seiten",
+          "tools": "Tripo · Rodin",
+          "check": "Zeige mit echten Ansichten Details, die ein Foto verbirgt."
+        },
+        "animation": {
+          "need": "Figuren und Animation",
+          "tools": "Meshy · Sloyd",
+          "check": "Prüfe Rigging, Export und kommerzielle Rechte im Tarif."
+        }
+      }
     }
   },
   "Models": {

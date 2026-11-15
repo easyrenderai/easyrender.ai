@@ -1250,12 +1250,37 @@
         "title": "Pruébalo con una foto",
         "button": "Subir una foto"
       },
-      "related": "Sigue leyendo"
+      "related": "Sigue leyendo",
+      "promo": {
+        "title": "Mira tu producto desde todos los lados",
+        "input": "Tu foto",
+        "output": "Ángulos con IA",
+        "button": "Prueba tu foto gratis",
+        "disclosure": "Vista previa gratis. El modelo 3D es de pago."
+      }
     },
     "comparisons": {
       "title": "Comparativas",
       "description": "Métodos y herramientas de modelado 3D, uno al lado del otro, para cuando una guía no basta para elegir.",
-      "read": "Leer la comparativa"
+      "read": "Leer la comparativa",
+      "choices": {
+        "title": "Elige según tu necesidad",
+        "photo": {
+          "need": "Una foto de producto",
+          "tools": "easyrender",
+          "check": "Revisa gratis la hoja de ángulos antes de pagar el modelo."
+        },
+        "views": {
+          "need": "Fotos desde varios lados",
+          "tools": "Tripo · Rodin",
+          "check": "Usa vistas reales para mostrar lo que una foto oculta."
+        },
+        "animation": {
+          "need": "Personajes y animación",
+          "tools": "Meshy · Sloyd",
+          "check": "Comprueba rigging, exportación y uso comercial en tu plan."
+        }
+      }
     }
   },
   "Models": {
