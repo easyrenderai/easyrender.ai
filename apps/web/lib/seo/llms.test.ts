@@ -34,6 +34,7 @@ const AGENT_URLS = [
   'https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.easyrenderai/easyrender',
   `${SITE_URL}/image-to-3d-api`,
   `${SITE_URL}/es/api-imagen-a-3d`,
+  `${SITE_URL}/api/openapi.json`,
   'https://github.com/easyrenderai/easyrender-image-to-3d',
   'https://www.skills.sh/easyrenderai/easyrender-image-to-3d/easyrender-image-to-3d',
   'https://clawhub.ai/jorgerl02/skills/easyrender-image-to-3d',

@@ -174,6 +174,7 @@ function forAgentsSection(): string[] {
     '- [Official MCP Registry entry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.easyrenderai/easyrender): io.github.easyrenderai/easyrender.',
     `- [REST API (English)](${absoluteUrl(ROUTES.api.paths.en)}): image-to-3D API overview.`,
     `- [REST API (Spanish)](${absoluteUrl(ROUTES.api.paths.es)}): image-to-3D API overview in Spanish.`,
+    `- [REST OpenAPI contract](${absoluteUrl('/api/openapi.json')}): versioned request, response, authentication and capability schemas.`,
     '- [Agent skill on GitHub](https://github.com/easyrenderai/easyrender-image-to-3d): installation and usage.',
     '- [Agent skill on skills.sh](https://www.skills.sh/easyrenderai/easyrender-image-to-3d/easyrender-image-to-3d): skill listing.',
     '- [Agent skill on ClawHub](https://clawhub.ai/jorgerl02/skills/easyrender-image-to-3d): skill listing.',
