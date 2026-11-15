@@ -158,7 +158,7 @@ function summary(): string[] {
     '- Downloads: GLB and USDZ.',
     '- Augmented reality (see the model in your room from a phone) is coming soon.',
     '- Limits: one object at a time, not whole interior rooms. The model keeps shape and materials, not real-world measurements or scale.',
-    '- Finished models appear in a public gallery by default.',
+    '- Web-created models appear in the public gallery by default. New API and MCP renders are private unless explicitly shared.',
     '- For agents: easyrender is also an MCP server, so Claude, Cursor, VS Code and other MCP clients can create models with an API key.',
     '',
   ];
