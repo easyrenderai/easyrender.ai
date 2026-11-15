@@ -3,8 +3,8 @@
 import { grantCredits } from '@easyrender/core';
 import { db } from '@easyrender/db';
 import { requireAdmin } from '@/lib/admin-analytics/auth';
+import { MAX_GIFT_CREDITS } from '@/lib/admin-gifts/limits';
 
-const MAX_GIFT_CREDITS = 10_000;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const KEY_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 

@@ -1,3 +1,4 @@
+import { RENDER_CREDITS } from '@easyrender/harness/pricing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const state = vi.hoisted(() => ({
@@ -80,9 +81,34 @@ describe('admin gift credits actions', () => {
     expect(state.grants).toHaveLength(0);
   });
 
-  it.each([0, -1, 1.5, 10001, Number.NaN])('rejects invalid amount %s', async (amount) => {
-    expect(await giftCredits({ ...valid, amount })).toMatchObject({ status: 'invalid_amount' });
-    expect(state.grants).toHaveLength(0);
+  it.each([0, -1, 1.5, 15 * RENDER_CREDITS + 1, Number.NaN])(
+    'rejects invalid amount %s',
+    async (amount) => {
+      expect(await giftCredits({ ...valid, amount })).toMatchObject({ status: 'invalid_amount' });
+      expect(state.grants).toHaveLength(0);
+      expect(state.credits).toBe(40);
+    },
+  );
+
+  it('accepts exactly the credits for 15 model generations', async () => {
+    const amount = 15 * RENDER_CREDITS;
+    const log = vi.spyOn(console, 'info').mockImplementation(() => {});
+    try {
+      expect(await giftCredits({ ...valid, amount })).toMatchObject({
+        status: 'granted',
+        recipient: { credits: 40 + amount },
+      });
+      expect(state.grants).toEqual([
+        {
+          userId: 'user-1',
+          amount,
+          key: `admin-gift:${key}`,
+          reason: 'admin_gift:admin-1:Customer support',
+        },
+      ]);
+    } finally {
+      log.mockRestore();
+    }
   });
 
   it('requires a reason and valid submission key', async () => {

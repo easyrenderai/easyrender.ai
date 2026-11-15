@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { findGiftRecipient, giftCredits } from '@/lib/admin-gifts/actions';
+import { MAX_GIFT_CREDITS, MAX_GIFT_MODELS } from '@/lib/admin-gifts/limits';
 
 type Recipient = Extract<Awaited<ReturnType<typeof findGiftRecipient>>, { status: 'found' }>;
 type PendingGift = { email: string; amount: number; reason: string; key: string };
@@ -66,8 +67,8 @@ export function GiftCreditsPanel() {
     setSuccess(null);
     if (!recipient) return;
     const parsed = Number(amount);
-    if (!Number.isInteger(parsed) || parsed < 1 || parsed > 10_000) {
-      setError(t('invalid_amount'));
+    if (!Number.isInteger(parsed) || parsed < 1 || parsed > MAX_GIFT_CREDITS) {
+      setError(t('invalid_amount', { max: MAX_GIFT_CREDITS }));
       return;
     }
     if (!reason.trim() || reason.trim().length > 500) {
@@ -98,7 +99,7 @@ export function GiftCreditsPanel() {
           setReason('');
           setPendingGift(null);
         } else {
-          setError(t(result.status));
+          setError(t(result.status, { max: MAX_GIFT_CREDITS }));
           setPendingGift(null);
         }
       } catch {
@@ -219,15 +220,18 @@ export function GiftCreditsPanel() {
                   id="gift-amount"
                   type="number"
                   min={1}
-                  max={10_000}
+                  max={MAX_GIFT_CREDITS}
                   step={1}
                   inputMode="numeric"
+                  aria-describedby="gift-amount-hint"
                   value={amount}
                   onChange={(event) => setAmount(event.target.value)}
                   disabled={!recipient}
                   required
                 />
-                <p className="text-xs text-muted-foreground">{t('amountHint')}</p>
+                <p id="gift-amount-hint" className="text-xs text-muted-foreground">
+                  {t('amountHint', { max: MAX_GIFT_CREDITS, models: MAX_GIFT_MODELS })}
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="gift-reason">{t('reason')}</Label>
