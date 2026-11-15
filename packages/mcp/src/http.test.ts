@@ -77,3 +77,63 @@ it('catches authentication infrastructure failures without leaking details', asy
   expect(response.status).toBe(500);
   expect(await response.text()).not.toContain('sensitive');
 });
+
+it('returns rate-limit retry information and a generated request identifier', async () => {
+  const { ApiRateLimitError } = await import('@easyrender/core');
+  const response = await serveMcpRequest(new Request('https://easyrender.ai/api/mcp'), async () => {
+    throw new ApiRateLimitError(37);
+  });
+  expect(response.status).toBe(429);
+  expect(response.headers.get('retry-after')).toBe('37');
+  expect(response.headers.get('x-request-id')).toMatch(/^[0-9a-f-]{36}$/);
+  expect(await response.json()).toMatchObject({
+    error: { data: { code: 'rate_limit', status: 429, retryable: true } },
+  });
+});
+
+it('enforces the HTTP JSON limit before processing oversized input', async () => {
+  const response = await serveMcpRequest(
+    new Request('https://easyrender.ai/api/mcp', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        accept: 'application/json, text/event-stream',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 2,
+        method: 'tools/call',
+        params: {
+          name: 'create_render',
+          arguments: { image_base64: 'a'.repeat(4 * 1024 * 1024), content_type: 'image/jpeg' },
+        },
+      }),
+    }),
+    actor,
+  );
+  expect(response.status).toBe(413);
+  expect(response.headers.get('x-request-id')).toBeTruthy();
+});
+
+it('serves all tools on independent stateless HTTP requests', async () => {
+  const response = await serveMcpRequest(
+    new Request('https://easyrender.ai/api/mcp', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        accept: 'application/json, text/event-stream',
+        'mcp-protocol-version': '2025-11-25',
+      },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 3, method: 'tools/list', params: {} }),
+    }),
+    actor,
+  );
+  expect(response.status).toBe(200);
+  const body = await response.json();
+  expect(body.result.tools).toHaveLength(16);
+  expect(body.result.tools).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ name: 'polish_product_view', outputSchema: expect.any(Object) }),
+    ]),
+  );
+});

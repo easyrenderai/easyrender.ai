@@ -70,6 +70,27 @@ describe('remote image transport', () => {
       code: 'too_large',
     });
   });
+  it('rejects a mixed public/private DNS answer without opening a connection', async () => {
+    state.lookup.mockResolvedValueOnce([
+      { address: '93.184.216.34', family: 4 },
+      { address: '127.0.0.1', family: 4 },
+    ]);
+    await expect(fetchRemoteImage('https://cdn.example.com/photo.jpg')).rejects.toMatchObject({
+      code: 'bad_url',
+    });
+    expect(state.targets).toHaveLength(0);
+  });
+  it('bounds stalled DNS with the same abort deadline used for the body', async () => {
+    const controller = new AbortController();
+    const deadline = vi.spyOn(AbortSignal, 'timeout').mockReturnValueOnce(controller.signal);
+    state.lookup.mockImplementationOnce(() => new Promise(() => {}));
+    const download = fetchRemoteImage('https://cdn.example.com/photo.jpg');
+    controller.abort();
+    await expect(download).rejects.toMatchObject({ code: 'bad_url' });
+    expect(deadline).toHaveBeenCalledWith(15000);
+    deadline.mockRestore();
+    expect(state.targets).toHaveLength(0);
+  });
   it('rejects embedded credentials and non-image responses', async () => {
     await expect(
       fetchRemoteImage('https://u:pass@cdn.example.com/photo.jpg'),

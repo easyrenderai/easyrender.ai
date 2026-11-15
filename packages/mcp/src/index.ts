@@ -1,115 +1,27 @@
 import {
   type Actor,
-  AppError,
-  config,
+  assertActorScope,
   createDraft,
-  fetchRemoteImage,
   getCreditQuote,
   getRender,
-  getUploadedImage,
-  reportError,
   startBuild,
   toView,
 } from '@easyrender/core';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+import { registerExtendedTools } from './extended-tools';
+import { imageInputSchema, MAX_INLINE_IMAGE_BYTES, readImage } from './images';
+import {
+  forActor,
+  idSchema,
+  paidActor,
+  quoteSchema,
+  renderSchema,
+  requireBudget,
+  result,
+} from './protocol';
 
-// The HTTP transport accepts 4 MiB including JSON, base64 and notes. Leave room for the envelope;
-// larger photos (up to the core 4 MiB limit) use a public URL or the authenticated upload endpoint.
-export const MAX_INLINE_IMAGE_BYTES = 3 * 1024 * 1024 - 16 * 1024;
-const MAX_INLINE_BASE64_CHARS = 4 * Math.ceil(MAX_INLINE_IMAGE_BYTES / 3);
-const idSchema = z.string().min(1).max(200);
-const renderSchema = {
-  id: idSchema,
-  status: z.enum(['drafting', 'preview_ready', 'rendering', 'ready', 'failed']),
-  prompt: z.string().nullable(),
-  name: z.string().nullable(),
-  error: z.string().nullable(),
-  hasPreview: z.boolean(),
-  hasSheet: z.boolean(),
-  sheetNote: z.string().nullable(),
-  hasModel: z.boolean(),
-  modelVersion: z.number(),
-  credits: z.number().nonnegative(),
-  renderCredits: z.number().nonnegative(),
-  sheetCredits: z.number().nonnegative(),
-  upscaleCredits: z.number().nonnegative(),
-  canUpscale: z.boolean(),
-  isPublic: z.boolean(),
-  source: z.enum(['web', 'mcp', 'api']),
-  createdAt: z.string(),
-  pending_credits: z.number().nonnegative(),
-  links: z.object({
-    page: z.string().url(),
-    preview: z.string().url(),
-    model_glb: z.string().url(),
-  }),
-};
-const planSchema = z.object({ price_per_month: z.number(), credits_per_month: z.number() });
-const quoteSchema = {
-  pricing_variant: z.enum(['control', 'test']),
-  currency: z.enum(['usd', 'eur']),
-  balance: z.number(),
-  render_credits: z.number(),
-  plans: z.object({
-    pay_as_you_go: z.object({
-      price_per_credit: z.number(),
-      min_credits: z.number(),
-      max_credits: z.number(),
-    }),
-    pro: planSchema,
-    enterprise: z.object({ book_a_call: z.string().url() }),
-  }),
-  topup: z.object({
-    plan: z.string().nullable(),
-    currency: z.enum(['usd', 'eur']),
-    price_cents: z.number(),
-    credits_per_unit: z.number(),
-  }),
-  buy: z.string().url(),
-};
-
-export function toolError(error: unknown): CallToolResult {
-  const isKnown = error instanceof AppError;
-  if (!isKnown) reportError(error, { stage: 'mcp-tool' });
-  const details = {
-    code: isKnown ? error.code : 'internal',
-    message: isKnown
-      ? error.message
-      : 'Unexpected error. Check the render status before retrying a mutation.',
-    status: isKnown ? error.status : 500,
-    retryable: isKnown && [429, 502, 503, 504].includes(error.status),
-  };
-  const data = { error: details };
-  return {
-    content: [{ type: 'text', text: JSON.stringify(data) }],
-    structuredContent: data,
-    isError: true,
-  };
-}
-async function run(fn: () => Promise<Record<string, unknown>>): Promise<CallToolResult> {
-  try {
-    const data = await fn();
-    return { content: [{ type: 'text', text: JSON.stringify(data) }], structuredContent: data };
-  } catch (error) {
-    return toolError(error);
-  }
-}
-function result(render: Parameters<typeof toView>[0]) {
-  const view = toView(render);
-  const base = config.appUrl();
-  return {
-    ...view,
-    pending_credits:
-      view.status === 'preview_ready' ? Math.max(0, view.renderCredits - view.credits) : 0,
-    links: {
-      page: `${base}/r/${view.id}`,
-      preview: `${base}/api/renders/${view.id}/preview`,
-      model_glb: `${base}/api/renders/${view.id}/model`,
-    },
-  };
-}
+export { MAX_INLINE_IMAGE_BYTES } from './images';
 
 export function createMcpServer(actor: Actor & { userId: string }) {
   const server = new McpServer(
@@ -120,27 +32,13 @@ export function createMcpServer(actor: Actor & { userId: string }) {
     'create_render',
     {
       title: 'Create render preview',
-      description:
-        'Create a preview from one product photo. Supply exactly one upload_id, image_url or image_base64. Upload larger local photos with authenticated POST /api/uploads (multipart image), then pass its id as upload_id. Inline photos must be at most ' +
-        MAX_INLINE_IMAGE_BYTES +
-        ' decoded bytes; URL photos may be up to 4 MiB. Poll get_render, inspect hasSheet, and approve the pending cost before render_3d. Asset links require the same authentication for private renders.',
+      description: `Create a private preview from one product photo. Supply exactly one upload_id, image_url or image_base64. Upload larger local photos with authenticated POST /api/uploads (multipart image), then pass its id. Inline images: at most ${MAX_INLINE_IMAGE_BYTES} decoded bytes. URL/upload photos: up to 4 MiB. Reuse idempotency_key after a timeout. Poll get_render, inspect hasSheet, then approve pending_credits before render_3d.`,
       inputSchema: {
-        upload_id: idSchema
-          .optional()
-          .describe('Owner-scoped upload id from POST /api/uploads; expires after one hour'),
-        image_url: z
-          .string()
-          .url()
-          .max(4096)
-          .optional()
-          .describe('Public HTTPS JPEG, PNG or WebP URL'),
-        image_base64: z
-          .string()
-          .max(MAX_INLINE_BASE64_CHARS)
-          .optional()
-          .describe('Canonical base64 without a data URL prefix; requires content_type'),
-        content_type: z.enum(['image/jpeg', 'image/png', 'image/webp']).optional(),
+        ...imageInputSchema,
         prompt: z.string().max(500).optional(),
+        name: z.string().max(120).optional(),
+        idempotency_key: z.string().min(1).max(128).optional(),
+        is_public: z.boolean().optional(),
       },
       outputSchema: renderSchema,
       annotations: {
@@ -150,52 +48,20 @@ export function createMcpServer(actor: Actor & { userId: string }) {
         openWorldHint: true,
       },
     },
-    ({ upload_id, image_url, image_base64, content_type, prompt }) =>
-      run(async () => {
-        if (
-          Number(Boolean(upload_id)) +
-            Number(Boolean(image_url)) +
-            Number(Boolean(image_base64)) !==
-          1
-        )
-          throw new AppError(
-            'Supply exactly one upload_id, image_url or image_base64',
-            400,
-            'invalid_image_input',
-          );
-        if ((image_url || upload_id) && content_type)
-          throw new AppError(
-            'content_type is only used with image_base64',
-            400,
-            'invalid_image_input',
-          );
-        let image: { bytes: Uint8Array; contentType: string };
-        if (upload_id) image = await getUploadedImage(upload_id, actor);
-        else if (image_url) image = await fetchRemoteImage(image_url);
-        else {
-          if (
-            !content_type ||
-            !image_base64 ||
-            image_base64.length % 4 !== 0 ||
-            !/^[A-Za-z0-9+/]*={0,2}$/.test(image_base64)
-          )
-            throw new AppError(
-              'Supply canonical base64 and its content_type',
-              400,
-              'invalid_image_input',
-            );
-          const bytes = Buffer.from(image_base64, 'base64');
-          if (bytes.toString('base64') !== image_base64)
-            throw new AppError('Invalid base64 encoding', 400, 'invalid_image_input');
-          if (bytes.byteLength > MAX_INLINE_IMAGE_BYTES)
-            throw new AppError(
-              'Inline photo is too large; use an uploaded image or image_url',
-              413,
-              'too_large',
-            );
-          image = { bytes: new Uint8Array(bytes), contentType: content_type };
-        }
-        return result(await createDraft({ actor, prompt, source: 'mcp', ...image }));
+    (input) =>
+      forActor(actor, 'write', async () => {
+        if (input.is_public) assertActorScope(actor, 'share');
+        return result(
+          await createDraft({
+            actor,
+            ...(await readImage(input, actor)),
+            prompt: input.prompt,
+            name: input.name,
+            idempotencyKey: input.idempotency_key,
+            isPublic: input.is_public ?? false,
+            source: 'mcp',
+          }),
+        );
       }),
   );
   server.registerTool(
@@ -203,7 +69,7 @@ export function createMcpServer(actor: Actor & { userId: string }) {
     {
       title: 'Get render',
       description:
-        'Read render status and pending credits. Poll every 5–15 seconds. This may advance an already-authorized job; it never authorizes a new paid generation.',
+        'Read render status, artifact links and pending credits. Poll every 5–15 seconds. This may advance an already-authorized job; it does not authorize another paid generation. Private links need the same bearer authentication.',
       inputSchema: { id: idSchema },
       outputSchema: renderSchema,
       annotations: {
@@ -213,15 +79,15 @@ export function createMcpServer(actor: Actor & { userId: string }) {
         openWorldHint: true,
       },
     },
-    ({ id }) => run(async () => result(await getRender(id, actor))),
+    ({ id }) => forActor(actor, 'read', async () => result(await getRender(id, actor))),
   );
   server.registerTool(
     'render_3d',
     {
       title: 'Render in 3D',
       description:
-        'Spend the pending_credits shown by get_render to build an approved preview. Respect the user’s authorized budget. Repeating this call for the same running or ready render does not charge again. On a timeout, query that render before retrying.',
-      inputSchema: { id: idSchema },
+        'Build an approved preview for its pending_credits. Send max_credits as the authorized ceiling. Repeating the same running/ready render does not charge again. On timeout query the same id before retrying; never create another paid render automatically.',
+      inputSchema: { id: idSchema, max_credits: z.number().int().nonnegative().optional() },
       outputSchema: renderSchema,
       annotations: {
         readOnlyHint: false,
@@ -230,14 +96,22 @@ export function createMcpServer(actor: Actor & { userId: string }) {
         openWorldHint: true,
       },
     },
-    ({ id }) => run(async () => result(await startBuild(id, actor))),
+    ({ id, max_credits }) =>
+      forActor(actor, 'spend', async () => {
+        const view = toView(await getRender(id, actor));
+        requireBudget(
+          max_credits,
+          view.status === 'preview_ready' ? Math.max(0, view.renderCredits - view.credits) : 0,
+        );
+        return result(await startBuild(id, paidActor(actor, max_credits)));
+      }),
   );
   server.registerTool(
     'get_credits',
     {
       title: 'Get credits',
       description:
-        'Current balance, buyer currency, public offers and the account’s actual credit top-up rate. Prices are in currency; no purchase is made.',
+        'Balance, current operation costs, buyer currency, public offers and actual account top-up rate. Prices are in currency; no purchase is made.',
       inputSchema: {},
       outputSchema: quoteSchema,
       annotations: {
@@ -247,7 +121,8 @@ export function createMcpServer(actor: Actor & { userId: string }) {
         openWorldHint: true,
       },
     },
-    () => run(() => getCreditQuote(actor)),
+    () => forActor(actor, 'read', () => getCreditQuote(actor)),
   );
+  registerExtendedTools(server, actor);
   return server;
 }

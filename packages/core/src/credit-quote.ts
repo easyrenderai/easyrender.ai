@@ -1,9 +1,14 @@
 import {
+  BUILD_FROM_VIEWS_CREDITS,
   displayPricing,
   ENTERPRISE_BOOKING_URL,
+  PRODUCT_VIEWS_CREDITS,
   PUBLIC_PLAN_IDS,
   pricingFor,
   RENDER_CREDITS,
+  SHEET_CREDITS,
+  UPSCALE_CREDITS,
+  VIEW_POLISH_CREDITS,
 } from '@easyrender/harness';
 import { buyerCurrency, getTopupPricing } from './billing';
 import { config } from './config';
@@ -26,6 +31,11 @@ export async function getCreditQuote(actor: Actor & { userId: string }) {
     currency,
     balance,
     render_credits: RENDER_CREDITS,
+    sheet_credits: SHEET_CREDITS,
+    product_views_credits: PRODUCT_VIEWS_CREDITS,
+    view_polish_credits: VIEW_POLISH_CREDITS,
+    upscale_credits: UPSCALE_CREDITS,
+    build_from_views_credits: BUILD_FROM_VIEWS_CREDITS,
     plans: {
       pay_as_you_go: {
         price_per_credit: pricing.creditPrice,
