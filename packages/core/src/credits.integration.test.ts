@@ -143,6 +143,20 @@ run('credits and generation billing (real database)', () => {
     expect(replicate.start).toHaveBeenCalledTimes(1);
   });
 
+  it('enforces the per-call credit ceiling inside the paid build claim', async () => {
+    const { renders } = await load();
+    const userId = await newUser(1000);
+    const render = await newRender(userId);
+    await expect(renders.startBuild(render.id, { userId, maxCredits: 0 })).rejects.toMatchObject({
+      status: 409,
+      code: 'budget_exceeded',
+    });
+    expect(await balance(userId)).toBe(1000);
+    expect((await db().render.findUniqueOrThrow({ where: { id: render.id } })).status).toBe(
+      'preview_ready',
+    );
+  });
+
   it('caps concurrent paid builds without taking credits for a refused request', async () => {
     const { renders } = await load();
     const userId = await newUser(1000);

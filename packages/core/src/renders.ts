@@ -49,7 +49,23 @@ export type Actor = {
   geoCountry?: string | null;
   apiKeyId?: string;
   apiKeyScopes?: string[];
+  maxCredits?: number;
 };
+
+// The caller's explicit spend ceiling is checked again inside the debit transaction.
+export function assertAuthorizedCredits(amount: number, actor: Actor) {
+  if (actor.maxCredits === undefined) return;
+  if (!Number.isSafeInteger(actor.maxCredits) || actor.maxCredits < 0) {
+    throw new AppError('Credit limit must be a non-negative integer', 400, 'bad_max_credits');
+  }
+  if (amount > actor.maxCredits) {
+    throw new AppError(
+      'This operation exceeds the authorized credit limit',
+      409,
+      'budget_exceeded',
+    );
+  }
+}
 
 export type RenderSource = 'web' | 'mcp' | 'api';
 
@@ -133,7 +149,7 @@ async function assertPreviewAllowance(actor: Actor, tx: Prisma.TransactionClient
   }
 }
 
-async function lockActor(tx: Prisma.TransactionClient, actor: Actor) {
+export async function lockRenderActor(tx: Prisma.TransactionClient, actor: Actor) {
   const identities = [
     actor.userId ? `user:${actor.userId}` : null,
     actor.anonId ? `anon:${actor.anonId}` : null,
@@ -238,7 +254,7 @@ export async function createDraft(input: {
   const photo = enforce(await checkPhoto(input.bytes));
   const quality: RenderQuality = { photo: { ...photo.measures, warnings: photo.warnings } };
   const reservation = await db().$transaction(async (tx) => {
-    await lockActor(tx, input.actor);
+    await lockRenderActor(tx, input.actor);
     const existing = await findReplay(tx);
     if (existing) return { render: existing, isNew: false };
     await assertPreviewAllowance(input.actor, tx);
@@ -533,7 +549,7 @@ export async function advance(id: string): Promise<Render | null> {
   } catch (error) {
     const current = await db().render.findUnique({ where: { id }, select: { status: true } });
     if (
-      error instanceof TerminalRenderError &&
+      (error instanceof TerminalRenderError || stale) &&
       (current?.status === 'drafting' || current?.status === 'rendering')
     ) {
       await fail(id, error);
@@ -568,7 +584,7 @@ export async function recoverRenders(take = 20): Promise<{ checked: number; fail
 // The paid step: spends credits, then builds the 3D model from the photo and the sheet's views.
 export async function startBuild(id: string, actor: Actor): Promise<Render> {
   if (!actor.userId) throw new AppError('Sign in to render in 3D', 401, 'sign_in');
-  const render = await db().render.findUnique({ where: { id } });
+  let render = await db().render.findUnique({ where: { id } });
   if (!render || !canAccess(render, actor)) throw notFound();
   if (render.status !== 'preview_ready') {
     if (render.status === 'rendering' || render.status === 'ready') return render;
@@ -577,14 +593,18 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
 
   // An angle sheet bought earlier already counts toward the price, and so does the final sheet
   // of a product views set, which the build then reuses instead of drawing again.
-  const alreadyPaid = render.credits;
-  const owed = Math.max(0, buildTotal(render) - alreadyPaid);
+  let alreadyPaid = render.credits;
+  let owed = Math.max(0, buildTotal(render) - alreadyPaid);
 
   const claimed = await db().$transaction(async (tx) => {
-    await lockActor(tx, actor);
+    await lockRenderActor(tx, actor);
     // Check state after the lock: an identical concurrent request is an idempotent read.
     const current = await tx.render.findUnique({ where: { id } });
     if (current?.status !== 'preview_ready') return false;
+    render = current;
+    alreadyPaid = current.credits;
+    owed = Math.max(0, buildTotal(current) - alreadyPaid);
+    assertAuthorizedCredits(owed, actor);
     await assertConcurrency(actor, tx);
     const { count } = await tx.render.updateMany({
       where: { id, status: 'preview_ready' },
@@ -702,7 +722,7 @@ export async function startSheet(id: string, actor: Actor): Promise<Render> {
   }
 
   const claimed = await db().$transaction(async (tx) => {
-    await lockActor(tx, actor);
+    await lockRenderActor(tx, actor);
     // Check state after the lock: an identical concurrent request is an idempotent read.
     const current = await tx.render.findUnique({ where: { id } });
     if (current?.status !== 'preview_ready') return false;
@@ -712,6 +732,7 @@ export async function startSheet(id: string, actor: Actor): Promise<Render> {
       data: { status: 'drafting', userId: actor.userId, credits: SHEET_CREDITS },
     });
     if (!count) return false;
+    assertAuthorizedCredits(SHEET_CREDITS, actor);
     await spendCreditsInTransaction(tx, {
       userId: actor.userId as string,
       apiKeyId: actor.apiKeyId,
@@ -797,7 +818,7 @@ export async function redrawSheet(id: string, actor: Actor, note: string): Promi
   }
 
   const isClaimed = await db().$transaction(async (tx) => {
-    await lockActor(tx, actor);
+    await lockRenderActor(tx, actor);
     // Check state after the lock: an identical concurrent request is an idempotent read.
     const current = await tx.render.findUnique({ where: { id } });
     if (current?.status !== 'preview_ready') return false;
@@ -819,6 +840,7 @@ export async function redrawSheet(id: string, actor: Actor, note: string): Promi
       },
     });
     if (!count) return false;
+    assertAuthorizedCredits(SHEET_CREDITS, actor);
     await spendCreditsInTransaction(tx, {
       userId: actor.userId as string,
       apiKeyId: actor.apiKeyId,

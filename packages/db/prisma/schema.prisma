@@ -248,6 +248,8 @@ model ProductView {
   // One of the nine sheet positions: front, front_right, ..., top.
   view         String
   status       ProductViewStatus @default(drawing)
+  // Durable processing lease; provider ids survive temporary download failures.
+  advanceAfter DateTime?
   // The finished packshot (white background, fixed canvas). Empty until the first one is made.
   key          String?
   // The drawn view before it was upscaled and finished.

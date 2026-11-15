@@ -23,6 +23,8 @@ const fake = vi.hoisted(() => ({
   plans: new Map<string, Plan>(),
   starts: [] as { path: string; body: { input?: Record<string, unknown>; version?: string } }[],
   counter: 0,
+  hasReadFailure: false,
+  hasDownloadFailure: false,
   // What the next prediction of a kind answers with: 'succeeded' (default) or 'failed'.
   next: { sheet: [] as string[], redraw: [] as string[], upscale: [] as string[] },
   makeSheet: (() => new Uint8Array()) as () => Uint8Array,
@@ -33,7 +35,10 @@ const fake = vi.hoisted(() => ({
 vi.mock('@easyrender/harness', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@easyrender/harness')>()),
   loadHarness: async () => DEFAULT_HARNESS,
-  download: async (url: string) => fake.outputs.get(url) ?? new Uint8Array(),
+  download: async (url: string) => {
+    if (fake.hasDownloadFailure) throw new Error('temporary image download outage');
+    return fake.outputs.get(url) ?? new Uint8Array();
+  },
   createReplicate: () => ({
     upload: async () => `https://replicate.test/file/${++fake.counter}`,
     start: async (path: string, body: { input?: Record<string, unknown>; version?: string }) => {
@@ -61,6 +66,7 @@ vi.mock('@easyrender/harness', async (importOriginal) => ({
       return { id };
     },
     get: async (id: string) => {
+      if (fake.hasReadFailure) throw new Error('temporary provider outage');
       const plan = fake.plans.get(id) as Plan;
       return {
         id,
@@ -167,6 +173,8 @@ run('product views (real database, scripted models)', () => {
   };
 
   beforeEach(async () => {
+    fake.hasReadFailure = false;
+    fake.hasDownloadFailure = false;
     fake.files.clear();
     fake.outputs.clear();
     fake.plans.clear();
@@ -186,6 +194,76 @@ run('product views (real database, scripted models)', () => {
 
   afterAll(async () => {
     await db().$disconnect();
+  });
+
+  it('keeps a drafting set paid and recoverable during a temporary provider read outage', async () => {
+    const { views } = await load();
+    const userId = await newUser(PRODUCT_VIEWS_CREDITS);
+    const set = await create(userId);
+    fake.hasReadFailure = true;
+    expect((await views.getViewSet(set.id, { userId })).status).toBe('drafting');
+    expect(await balance(userId)).toBe(0);
+    fake.hasReadFailure = false;
+    expect((await settle(set.id, userId)).status).toBe('ready');
+  });
+
+  it('keeps a stale set recoverable if the refund database write fails', async () => {
+    const { views } = await load();
+    const userId = await newUser(2_147_483_647);
+    const set = await db().viewSet.create({
+      data: {
+        userId,
+        sourceKey: 'src',
+        status: 'drafting',
+        credits: PRODUCT_VIEWS_CREDITS,
+        updatedAt: new Date(Date.now() - 46 * 60 * 1000),
+      },
+    });
+    await views.advanceViewSet(set.id).catch(() => undefined);
+    expect((await db().viewSet.findUniqueOrThrow({ where: { id: set.id } })).status).toBe(
+      'drafting',
+    );
+    await db().user.update({ where: { id: userId }, data: { credits: 0 } });
+    expect((await views.advanceViewSet(set.id))?.status).toBe('failed');
+    expect(await balance(userId)).toBe(PRODUCT_VIEWS_CREDITS);
+  });
+
+  it('retains a paid polish prediction across temporary result download failures', async () => {
+    const { views } = await load();
+    const userId = await newUser(PRODUCT_VIEWS_CREDITS + VIEW_POLISH_CREDITS);
+    const set = await create(userId);
+    await settle(set.id, userId);
+    const polishing = await views.polishView(set.id, 'front', { userId }, 'Keep the fabric seam');
+    const predictionId = polishing.views.find((view) => view.view === 'front')?.predictionId;
+    fake.hasDownloadFailure = true;
+    const waiting = await views.getViewSet(set.id, { userId });
+    expect(waiting.views.find((view) => view.view === 'front')).toMatchObject({
+      status: 'drawing',
+      predictionId,
+      isPolishing: true,
+    });
+    expect(await balance(userId)).toBe(0);
+    fake.hasDownloadFailure = false;
+    expect((await settle(set.id, userId)).status).toBe('ready');
+  });
+
+  it('does not mark a failed polish refunded until its ledger and wallet commit', async () => {
+    const { views } = await load();
+    const userId = await newUser(PRODUCT_VIEWS_CREDITS + VIEW_POLISH_CREDITS);
+    const set = await create(userId);
+    await settle(set.id, userId);
+    fake.next.redraw = ['failed', 'failed'];
+    await views.polishView(set.id, 'front', { userId }, 'Keep the fabric seam');
+    await db().user.update({ where: { id: userId }, data: { credits: 2_147_483_647 } });
+    await views.getViewSet(set.id, { userId });
+    const waiting = await views.getViewSet(set.id, { userId });
+    expect(waiting.views.find((view) => view.view === 'front')).toMatchObject({
+      status: 'drawing',
+      isPolishing: true,
+    });
+    await db().user.update({ where: { id: userId }, data: { credits: 0 } });
+    expect((await settle(set.id, userId)).status).toBe('ready');
+    expect(await balance(userId)).toBe(VIEW_POLISH_CREDITS);
   });
 
   it('charges the set once, draws a 2K sheet, and delivers nine finished views', async () => {
