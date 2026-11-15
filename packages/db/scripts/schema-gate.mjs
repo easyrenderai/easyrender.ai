@@ -16,20 +16,39 @@ function statementsOf(sql) {
     .filter(Boolean);
 }
 
-/** Split on commas that are not inside parentheses, so `numeric(10, 2)` stays in one piece. */
+/** Split ALTER clauses, keeping type parameters, array defaults and quoted SQL in one piece. */
 function topLevelParts(text) {
   const parts = [];
   let depth = 0;
+  let quote = null;
   let start = 0;
   for (let i = 0; i < text.length; i++) {
     const char = text[i];
-    if (char === '(') depth++;
-    else if (char === ')') depth--;
+    if (quote !== null) {
+      // E-string/unicode escapes need a full SQL lexer. Never guess their quote boundaries.
+      if (char === '\\') return ['UNRECOGNIZED SQL'];
+      if (char === quote) {
+        if (text[i + 1] === quote)
+          i++; // SQL escapes a quote by doubling it.
+        else quote = null;
+      }
+      continue;
+    }
+    // Dollar-quoted dbgenerated SQL is outside this small parser. Require review instead of
+    // letting brackets inside a literal hide a destructive clause that follows it.
+    if (char === '$') return ['UNRECOGNIZED SQL'];
+    if ((char === '/' && text[i + 1] === '*') || (char === '-' && text[i + 1] === '-'))
+      return ['UNRECOGNIZED SQL'];
+    if (char === "'" || char === '"') quote = char;
+    else if (char === '(' || char === '[') depth++;
+    else if (char === ')' || char === ']') depth--;
     else if (char === ',' && depth === 0) {
       parts.push(text.slice(start, i).trim());
       start = i + 1;
     }
+    if (depth < 0) return ['UNRECOGNIZED SQL'];
   }
+  if (depth !== 0 || quote !== null) return ['UNRECOGNIZED SQL'];
   parts.push(text.slice(start).trim());
   return parts.filter(Boolean);
 }

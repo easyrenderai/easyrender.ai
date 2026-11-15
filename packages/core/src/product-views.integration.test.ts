@@ -150,7 +150,8 @@ async function sheet(grey?: number) {
 
 const run = describe.skipIf(!url);
 
-run('product views (real database, scripted models)', () => {
+// Real image processing and the first DB/ESM initialization exceed 5s on shared CI runners.
+run('product views (real database, scripted models)', { timeout: 15_000 }, () => {
   const load = async () => ({
     views: await import('./product-views'),
     renders: await import('./renders'),

@@ -73,4 +73,52 @@ describe('assessChange', () => {
       true,
     );
   });
+
+  it('accepts the actual additive API key scopes migration', () => {
+    const sql = `ALTER TABLE "ApiKey" ADD COLUMN "creditLimit" INTEGER,
+ADD COLUMN "expiresAt" TIMESTAMP(3),
+ADD COLUMN "resource" TEXT,
+ADD COLUMN "scopes" TEXT[] DEFAULT ARRAY['read', 'write', 'spend', 'share']::TEXT[],
+ADD COLUMN "spentCredits" INTEGER NOT NULL DEFAULT 0;`;
+    expect(assessChange(sql)).toEqual({ isEmpty: false, isAdditive: true, risky: [] });
+  });
+
+  it('does not mistake quoted commas or escaped quotes for another SQL clause', () => {
+    expect(
+      assessChange(
+        `ALTER TABLE "Example" ADD COLUMN "label" TEXT DEFAULT 'owner''s, [label]', ADD COLUMN "tags" TEXT[] DEFAULT ARRAY['one,two', ']'];`,
+      ).isAdditive,
+    ).toBe(true);
+  });
+
+  it('still rejects destructive clauses following an array default', () => {
+    expect(
+      assessChange(
+        `ALTER TABLE "ApiKey" ADD COLUMN "scopes" TEXT[] DEFAULT ARRAY['read', 'write'], DROP COLUMN "hash";`,
+      ).isAdditive,
+    ).toBe(false);
+    expect(
+      assessChange(
+        `ALTER TABLE "ApiKey" ADD COLUMN "scopes" TEXT[] DEFAULT ARRAY['read', 'write'], ADD COLUMN "required" TEXT NOT NULL;`,
+      ).isAdditive,
+    ).toBe(false);
+  });
+
+  it.each(['$$', '$tag$', '$é$'])('fails closed on unparsed dollar quotes: %s', (quote) => {
+    const sql = `ALTER TABLE "Example" ADD COLUMN "a" TEXT DEFAULT ${quote}[${quote}, DROP COLUMN "hash", ADD COLUMN "b" TEXT DEFAULT ${quote}]${quote};`;
+    expect(assessChange(sql).isAdditive).toBe(false);
+  });
+
+  it('fails closed on SQL escape strings or inline comments instead of hiding a drop', () => {
+    expect(
+      assessChange(
+        String.raw`ALTER TABLE "Example" ADD COLUMN "a" TEXT DEFAULT E'\'', DROP COLUMN "hash", ADD COLUMN "b" TEXT DEFAULT E'\'';`,
+      ).isAdditive,
+    ).toBe(false);
+    expect(
+      assessChange(
+        'ALTER TABLE "Example" ADD COLUMN "a" INTEGER DEFAULT 1 /*[*/, DROP COLUMN "hash", ADD COLUMN "b" INTEGER DEFAULT 1 /*]*/;',
+      ).isAdditive,
+    ).toBe(false);
+  });
 });
