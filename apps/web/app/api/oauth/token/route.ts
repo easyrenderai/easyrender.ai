@@ -8,12 +8,16 @@ export async function POST(request: Request) {
     if (form.get('grant_type') !== 'authorization_code') {
       throw new AppError('Only authorization_code is supported', 400, 'unsupported_grant_type');
     }
+    if (form.getAll('resource').length > 1) {
+      throw new AppError('Only one resource is supported', 400, 'invalid_target');
+    }
     return json(
       await exchangeCode({
         code: form.get('code'),
         clientId: form.get('client_id'),
         redirectUri: form.get('redirect_uri'),
         codeVerifier: form.get('code_verifier'),
+        resource: form.get('resource'),
       }),
     );
   } catch (error) {

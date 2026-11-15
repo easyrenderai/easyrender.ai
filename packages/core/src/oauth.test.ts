@@ -3,7 +3,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 process.env.BETTER_AUTH_SECRET = 'test-secret-test-secret-test-secret';
 
-vi.mock('./api-keys', () => ({ ensureApiKey: vi.fn(async () => {}) }));
+const redemptions = vi.hoisted(() => new Set<string>());
+vi.mock('./api-keys', () => ({
+  ensureApiKey: vi.fn(async () => {}),
+  redeemOAuthApiKey: async (input: { codeHash: string }) => {
+    if (redemptions.has(input.codeHash)) throw new Error('Authorization code already used');
+    redemptions.add(input.codeHash);
+    return `er_${input.codeHash}`;
+  },
+}));
 
 const { exchangeCode, issueCode, parseAuthorizeRequest, readClient, registerClient } = await import(
   './oauth'
@@ -26,7 +34,10 @@ function authorize(clientId: string, extra: Record<string, string> = {}) {
   );
 }
 
-afterEach(() => vi.useRealTimers());
+afterEach(() => {
+  vi.useRealTimers();
+  redemptions.clear();
+});
 
 describe('client registration', () => {
   it('round-trips a signed client id', () => {
@@ -70,6 +81,16 @@ describe('authorize request', () => {
   });
 });
 
+it('rejects another resource at authorization', () => {
+  const { client_id } = registerClient({ redirect_uris: [REDIRECT] });
+  expect(() => authorize(client_id, { resource: 'https://other.example/api' })).toThrow(/resource/);
+});
+
+it('requires a valid S256 challenge', () => {
+  const { client_id } = registerClient({ redirect_uris: [REDIRECT] });
+  expect(() => authorize(client_id, { code_challenge: 'short' })).toThrow(/PKCE/);
+});
+
 describe('code exchange', () => {
   const { client_id } = registerClient({ redirect_uris: [REDIRECT] });
   const exchange = (code: string, over: Partial<Parameters<typeof exchangeCode>[0]> = {}) =>
@@ -81,11 +102,11 @@ describe('code exchange', () => {
       ...over,
     });
 
-  it('issues an er_ key bound to the code, and the same key on replay', async () => {
+  it('issues one token and rejects code replay', async () => {
     const code = issueCode(authorize(client_id), 'user_1');
     const first = await exchange(code);
     expect(first.access_token).toMatch(/^er_/);
-    expect((await exchange(code)).access_token).toBe(first.access_token);
+    await expect(exchange(code)).rejects.toThrow(/already used/);
     expect((await exchange(issueCode(authorize(client_id), 'user_1'))).access_token).not.toBe(
       first.access_token,
     );
@@ -101,12 +122,21 @@ describe('code exchange', () => {
     const other = registerClient({ client_name: 'Other', redirect_uris: [REDIRECT] }).client_id;
     await expect(exchange(code, { clientId: other })).rejects.toThrow();
     await expect(exchange(`${code}x`)).rejects.toThrow();
+    await expect(exchange(`${code}.ignored`)).rejects.toThrow();
+    await expect(exchange(code, { redirectUri: null })).rejects.toThrow(/redirect_uri/);
+  });
+
+  it('rejects a token request for another resource', async () => {
+    const code = issueCode(authorize(client_id), 'user_1');
+    await expect(exchange(code, { resource: 'https://other.example/api' })).rejects.toThrow(
+      /resource/,
+    );
   });
 
   it('expires codes after two minutes', async () => {
     vi.useFakeTimers();
     const code = issueCode(authorize(client_id), 'user_1');
-    vi.advanceTimersByTime(121_000);
+    vi.advanceTimersByTime(120_000);
     await expect(exchange(code)).rejects.toThrow(/expired/);
   });
 });

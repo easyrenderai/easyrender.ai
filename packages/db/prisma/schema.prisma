@@ -358,8 +358,20 @@ model ApiKey {
   hash       String    @unique
   lastUsedAt DateTime?
   createdAt  DateTime  @default(now())
+  // OAuth keys are bound to this easyrender service; manual and existing keys remain unscoped.
+  resource   String?
 
   @@index([userId])
+}
+
+// A consumed authorization code must stay consumed even after its API key is revoked.
+// Only a digest is stored, never the code, verifier or access token.
+model OAuthCodeRedemption {
+  codeHash  String   @id
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
 }
 
 // One product of a connected store (Shopify, WooCommerce, ...) that is turned into a 3D model.
