@@ -1,4 +1,4 @@
-import { config, listApiKeys } from '@easyrender/core';
+import { config, isApiKeyScope, listApiKeys } from '@easyrender/core';
 import { Globe, ShoppingBag, Store } from 'lucide-react';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -30,8 +30,10 @@ export default async function ConnectorsPage() {
       <ConnectorsPanel
         initial={keys.map((key) => ({
           ...key,
+          scopes: key.scopes.filter(isApiKeyScope),
           createdAt: key.createdAt.toISOString(),
           lastUsedAt: key.lastUsedAt?.toISOString() ?? null,
+          expiresAt: key.expiresAt?.toISOString() ?? null,
         }))}
         mcpUrl={`${config.appUrl()}/api/mcp`}
       />

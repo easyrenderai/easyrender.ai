@@ -683,7 +683,10 @@
     "errors": {
       "expired": "Tu sesión ha caducado. Vuelve a iniciar sesión para crear una clave.",
       "create": "No se pudo crear la clave. Vuelve a intentarlo.",
-      "revoke": "No se pudo revocar la clave. Sigue activa; vuelve a intentarlo."
+      "revoke": "No se pudo revocar la clave. Sigue activa; vuelve a intentarlo.",
+      "scopes": "Selecciona al menos un permiso.",
+      "creditLimit": "Introduce un límite entero de créditos, igual o mayor que cero, o déjalo vacío.",
+      "expiresAt": "Elige una fecha y hora futuras válidas, o deja el campo vacío."
     },
     "connect": {
       "title": "Conecta tu agente",
@@ -703,7 +706,32 @@
       "neverUsed": "Sin usar",
       "created": "creada el {date}",
       "lastUsed": "último uso el {date}",
-      "revoke": "Revocar {name}"
+      "revoke": "Revocar {name}",
+      "nameLabel": "Nombre de la clave",
+      "advanced": "Permisos y límites",
+      "permissions": "Acciones permitidas",
+      "scopes": {
+        "read": "Lectura",
+        "write": "Escritura",
+        "spend": "Gasto",
+        "share": "Compartir"
+      },
+      "scopeDescriptions": {
+        "read": "Consultar recursos, precios y descargas.",
+        "write": "Subir fotos, crear vistas previas y editar materiales.",
+        "spend": "Iniciar generaciones de pago con tus créditos.",
+        "share": "Publicar renders y compartir modelos del catálogo."
+      },
+      "creditLimit": "Límite total de créditos",
+      "unlimited": "Sin límite",
+      "creditLimitHelp": "Vacío significa sin límite. Cero impide gastar. Los reembolsos devuelven créditos al saldo, pero no restablecen el límite de esta clave.",
+      "expiresAt": "Caducidad (opcional)",
+      "expiresAtHelp": "Fecha y hora locales. Déjalo vacío para que no caduque.",
+      "expired": "Caducada",
+      "noExpiry": "Sin caducidad",
+      "expiryDate": "Caduca el {date}",
+      "spentUnlimited": "{spent} créditos gastados · sin límite",
+      "spentLimit": "{spent} de {limit} créditos gastados"
     }
   },
   "Account": {
