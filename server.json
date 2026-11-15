@@ -1,0 +1,41 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.easyrenderai/easyrender",
+  "title": "easyrender",
+  "description": "Remote image-to-3D MCP: preview a product photo, then build a textured GLB with account credits.",
+  "version": "0.1.0",
+  "websiteUrl": "https://easyrender.ai/mcp",
+  "repository": {
+    "url": "https://github.com/easyrenderai/easyrender.ai",
+    "source": "github",
+    "id": "1451843595",
+    "subfolder": "packages/mcp"
+  },
+  "icons": [
+    {
+      "src": "https://easyrender.ai/apple-icon.png",
+      "mimeType": "image/png",
+      "sizes": ["180x180"]
+    },
+    {
+      "src": "https://easyrender.ai/icon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": ["any"]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://easyrender.ai/api/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Optional API key as `Bearer er_...`. OAuth-capable clients can sign in at the endpoint instead and should omit this header.",
+          "isRequired": false,
+          "isSecret": true,
+          "placeholder": "Bearer er_your_key"
+        }
+      ]
+    }
+  ]
+}

@@ -21,9 +21,9 @@ import { absoluteUrl, SITE_NAME } from './site';
 import { localeEntries, sitemapLocales } from './sitemap';
 
 // /llms.txt and /llms-full.txt (https://llmstxt.org): the site described for AI assistants, in
-// plain markdown. Both are built from the same sources as the sitemaps, so they list exactly the
+// plain markdown. Their marketing listings come from the sitemaps, so they list exactly the
 // indexable URLs: never the gallery, model pages, hub, ad landings, auth or the app, and a guide
-// appears on the day it is published, with no deploy.
+// appears on the day it is published, with no deploy. Agent entry points are listed separately.
 //
 // Every product statement here follows decisiones/claims.md: one photo, a free angle sheet, a 3D
 // model as GLB and USDZ, AR coming soon. No real-world size or scale, no other formats, no
@@ -164,6 +164,24 @@ function summary(): string[] {
   ];
 }
 
+function forAgentsSection(): string[] {
+  return [
+    '## For agents',
+    '',
+    `- [MCP server (English)](${absoluteUrl(ROUTES.mcp.paths.en)}): setup and tools.`,
+    `- [MCP server (Spanish)](${absoluteUrl(ROUTES.mcp.paths.es)}): setup and tools in Spanish.`,
+    `- [Remote MCP endpoint](${absoluteUrl('/api/mcp')}): streamable HTTP; authenticate with OAuth or an API key in Authorization: Bearer. Without credentials, it returns 401.`,
+    '- [Official MCP Registry entry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.easyrenderai/easyrender): io.github.easyrenderai/easyrender.',
+    `- [REST API (English)](${absoluteUrl(ROUTES.api.paths.en)}): image-to-3D API overview.`,
+    `- [REST API (Spanish)](${absoluteUrl(ROUTES.api.paths.es)}): image-to-3D API overview in Spanish.`,
+    '- [Agent skill on GitHub](https://github.com/easyrenderai/easyrender-image-to-3d): installation and usage.',
+    '- [Agent skill on skills.sh](https://www.skills.sh/easyrenderai/easyrender-image-to-3d/easyrender-image-to-3d): skill listing.',
+    '- [Agent skill on ClawHub](https://clawhub.ai/jorgerl02/skills/easyrender-image-to-3d): skill listing.',
+    '- [Gemini CLI extension](https://github.com/easyrenderai/easyrender-image-to-3d/blob/main/gemini-extension.json): the same skill repo includes gemini-extension.json.',
+    '',
+  ];
+}
+
 type Link = { url: string; title: string; note: string };
 
 function indexableLinks(now: Date): { pages: Link[]; guides: Link[] } {
@@ -203,11 +221,12 @@ function indexableLinks(now: Date): { pages: Link[]; guides: Link[] } {
 
 const linkLine = ({ url, title, note }: Link) => `- [${title}](${url})${note ? `: ${note}` : ''}`;
 
-/** /llms.txt: the summary and the indexable pages, nothing else. */
+/** /llms.txt: the summary, agent entry points and indexable pages. */
 export function llmsTxt(now: Date = new Date()): string {
   const { pages, guides } = indexableLinks(now);
   return [
     ...summary(),
+    ...forAgentsSection(),
     '## Pages',
     '',
     ...pages.map(linkLine),
@@ -238,7 +257,7 @@ export function faqText(locale: Locale): { question: string; answer: string }[] 
 
 /** /llms-full.txt: llms.txt plus the FAQ of each live home and the full text of every guide. */
 export function llmsFullTxt(now: Date = new Date()): string {
-  const lines = [...summary()];
+  const lines = [...summary(), ...forAgentsSection()];
   const faqTitles: Record<Locale, string> = {
     en: 'FAQ (English)',
     es: 'Preguntas frecuentes (español)',
