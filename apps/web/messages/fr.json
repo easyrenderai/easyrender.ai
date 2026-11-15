@@ -23,7 +23,8 @@
     "connectSuffix": "ton agent",
     "sections": "Rubriques",
     "menuOpen": "Ouvrir le menu",
-    "menuClose": "Fermer le menu"
+    "menuClose": "Fermer le menu",
+    "upload": "Importer une photo"
   },
   "Footer": {
     "tagline": "Une photo devient un modèle 3D à regarder sous tous les angles et à télécharger en GLB et USDZ.",
@@ -88,8 +89,23 @@
       "title": "Qu'est-ce qu'easyrender ?",
       "body": "easyrender transforme une image en 3D : la photo d'un meuble, d'un objet de décoration ou de la façade d'un bâtiment devient un modèle 3D. L'outil dessine d'abord l'objet sous tous ses angles, sur une planche gratuite que tu vérifies avant de dépenser quoi que ce soit. Si l'aperçu te convient, un clic suffit pour obtenir le modèle 3D, à faire pivoter et à télécharger en GLB et USDZ.",
       "scope": "Il modélise un objet à la fois, pas une pièce entière, et il n'invente pas de dimensions. Tu reçois le fichier, et c'est toi qui décides s'il mérite d'être gardé.",
-      "primaryCta": "Essayer gratuitement",
+      "primaryCta": "Importer une photo",
       "secondaryCta": "Voir la galerie"
+    },
+    "integrations": {
+      "title": "Intégrez la 3D à votre travail.",
+      "description": "Utilisez un agent IA ou connectez votre application. Choisissez l’intégration adaptée à votre processus.",
+      "mcp": {
+        "title": "Pour votre agent IA",
+        "body": "Demandez à votre agent de créer un aperçu, de vérifier le coût et de générer un modèle 3D.",
+        "cta": "Découvrir MCP"
+      },
+      "api": {
+        "title": "Pour votre application",
+        "body": "Ajoutez la conversion photo en 3D avec l’API REST. Gérez l’import, l’aperçu et la génération payante.",
+        "cta": "Découvrir l’API"
+      },
+      "english": "anglais"
     }
   },
   "Landing": {
@@ -190,15 +206,18 @@
     }
   },
   "AgentDemo": {
-    "window": "Ton agent · easyrender MCP",
-    "ask": "Voici le catalogue de printemps. Fais un modèle 3D de chaque produit.",
+    "window": "Your agent · easyrender MCP",
+    "illustration": "Illustrative conversation and tool sequence. No request runs on this page.",
+    "ask": "Turn this armchair photo into a 3D model. Show me the preview and cost, then wait for my approval before building.",
+    "approval": "In this example, you instruct your agent to wait for approval. Configure that behavior in your client; the paid tool itself does not enforce a confirmation dialog.",
+    "budget": "Planning a catalogue? {count} full 3D builds = {credits} credits.",
+    "budgetNote": "A budget example, not a completed batch. Your agent must create and track each render separately. Extra edits and AI-client charges are additional.",
     "calls": {
-      "create_render": "24 photos · aperçus gratuits",
-      "get_render": "24 aperçus prêts",
-      "render_3d": "24 modèles · GLB et USDZ"
-    },
-    "done": "C'est fait. Tes 24 modèles sont dans ta bibliothèque easyrender, en GLB et USDZ. Voici le premier :",
-    "modelAlt": "Modèle 3D : {title}"
+      "create_render": "Submit the product photo and request the free preview.",
+      "get_render": "Poll for the preview and return its link for inspection.",
+      "get_credits": "Check the balance and current full-build credit cost.",
+      "render_3d": "After your approval, request the paid build. Poll get_render until ready, then retrieve the GLB link."
+    }
   },
   "McpSetup": {
     "terminal": "À lancer dans ton terminal",
@@ -882,7 +901,7 @@
   "Studio": {
     "hero": {
       "title": "Ta photo produit devient un modèle 3D.",
-      "cta": "Essayer gratuitement",
+      "cta": "Importer une photo",
       "note": "Aperçu gratuit · sans carte bancaire",
       "stackLabel": "Un même objet vu à travers cinq passes du moteur. Fais-le glisser pour le tourner.",
       "photo": "Photo d'origine",
@@ -1861,8 +1880,6 @@
   },
   "IntegrationLanding": {
     "result": {
-      "title": "Inspect the output before you integrate.",
-      "description": "A real easyrender showcase example: the source photo, generated angles and a textured GLB you can rotate and download.",
       "photo": {
         "label": "Source photo",
         "alt": "Source photo of a mustard armchair with a metal frame",
@@ -1879,7 +1896,15 @@
         "body": "Drag to rotate the model. Download it to inspect in your own 3D viewer."
       },
       "note": "Pre-generated showcase assets, not a live request. This sheet is a finished example; the initial preview is watermarked. Geometry is approximate and unseen surfaces are inferred.",
-      "download": "Download sample GLB"
+      "download": "Download sample GLB",
+      "mcp": {
+        "title": "From an agent request to a 3D asset.",
+        "description": "See how a photo moves through the MCP tools, then inspect a real showcase result below."
+      },
+      "api": {
+        "title": "From your upload flow to a model response.",
+        "description": "See the application handoff and JSON response, then inspect the source photo, generated angles and downloadable GLB."
+      }
     },
     "costs": {
       "api": {
@@ -1914,6 +1939,15 @@
         "body": "The minimum credit purchase is {credits} credits ({price}). Credits do not expire. Review the total at checkout before paying."
       },
       "refund": "Failed 3D builds refund their credits. Prices shown use your current currency and pricing offer."
+    },
+    "apiDemo": {
+      "title": "Your application · easyrender REST API",
+      "illustration": "Illustrative application flow and partial JSON response. No upload or paid request runs here.",
+      "photoAlt": "Armchair photo used as an example upload",
+      "upload": "Product photo received",
+      "flow": "Your backend sends the photo to POST /api/renders. Show the preview, display the returned cost and let the user approve the paid build. Poll the render status to retrieve the finished model.",
+      "cost": "Use the render’s current renderCredits field before building; the cost can change when a finished sheet is reused. Keep the API key on your server.",
+      "response": "Partial response after a full build has finished; sample ID, not a live render."
     }
   },
   "Legal": {

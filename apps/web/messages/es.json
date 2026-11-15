@@ -23,7 +23,8 @@
     "connectSuffix": "tu agente",
     "sections": "Secciones",
     "menuOpen": "Abrir menú",
-    "menuClose": "Cerrar menú"
+    "menuClose": "Cerrar menú",
+    "upload": "Subir una foto"
   },
   "Footer": {
     "tagline": "Una foto se convierte en un modelo 3D que puedes mirar desde todos los ángulos y descargar en GLB y USDZ.",
@@ -88,8 +89,23 @@
       "title": "¿Qué es easyrender?",
       "body": "easyrender pasa una imagen a 3D: convierte una foto de un mueble, un objeto de decoración o la fachada de un edificio en un modelo 3D. Primero dibuja la pieza desde todos los lados, en una hoja de ángulos gratis que revisas antes de gastar nada. Si la previsualización está bien, un clic la convierte en un modelo 3D que puedes girar y descargar en GLB y USDZ.",
       "scope": "No modela habitaciones enteras: trabaja con una pieza cada vez. No saca el modelo a escala real.",
-      "primaryCta": "Pruébalo gratis",
+      "primaryCta": "Subir una foto",
       "secondaryCta": "Ver la galería"
+    },
+    "integrations": {
+      "title": "Integra el 3D en tu trabajo.",
+      "description": "Usa un agente de IA o conecta tu propia aplicación. Elige la integración que encaje con tu proceso.",
+      "mcp": {
+        "title": "Para tu agente de IA",
+        "body": "Pide a tu agente que genere una vista previa, consulte el coste y construya un modelo 3D.",
+        "cta": "Explorar MCP"
+      },
+      "api": {
+        "title": "Para tu aplicación",
+        "body": "Añade foto a 3D a tu producto con la API REST. Controla la carga, la vista previa y la generación de pago.",
+        "cta": "Explorar la API"
+      },
+      "english": "inglés"
     }
   },
   "Landing": {
@@ -191,14 +207,17 @@
   },
   "AgentDemo": {
     "window": "Tu agente · easyrender MCP",
-    "ask": "Aquí tienes el catálogo de primavera. Haz un modelo 3D de cada producto.",
+    "illustration": "Conversación y secuencia de herramientas ilustrativas. Esta página no ejecuta ninguna solicitud.",
+    "ask": "Convierte esta foto del sillón en un modelo 3D. Muéstrame la vista previa y el coste, y espera mi aprobación antes de generarlo.",
+    "approval": "En este ejemplo le indicas al agente que espere tu aprobación. Configura ese comportamiento en tu cliente: la herramienta de pago no impone un diálogo de confirmación.",
+    "budget": "¿Preparas un catálogo? {count} generaciones 3D completas = {credits} créditos.",
+    "budgetNote": "Ejemplo de presupuesto, no un lote generado. Tu agente debe crear y seguir cada render por separado. Las ediciones adicionales y el uso del cliente de IA se cobran aparte.",
     "calls": {
-      "create_render": "24 fotos · vistas previas gratis",
-      "get_render": "24 vistas previas listas",
-      "render_3d": "24 modelos · 480 créditos"
-    },
-    "done": "Hecho. Tienes 24 modelos en tu biblioteca de easyrender, con GLB y USDZ para RA. Aquí va el primero:",
-    "modelAlt": "Modelo 3D: {title}"
+      "create_render": "Envía la foto del producto y solicita la vista previa gratuita.",
+      "get_render": "Consulta el estado hasta obtener la vista previa y devuelve su enlace para revisarla.",
+      "get_credits": "Consulta el saldo y el coste actual de una generación completa.",
+      "render_3d": "Tras tu aprobación, solicita la generación de pago. Consulta get_render hasta que esté lista y obtén el enlace GLB."
+    }
   },
   "McpSetup": {
     "terminal": "Ejecútalo en tu terminal",
@@ -882,7 +901,7 @@
   "Studio": {
     "hero": {
       "title": "De una imagen a 3D, con una sola foto.",
-      "cta": "Pruébalo gratis",
+      "cta": "Subir una foto",
       "note": "Vista previa gratis · sin tarjeta",
       "stackLabel": "Un mismo objeto visto en cinco pases del motor. Arrastra para girarlo.",
       "photo": "Foto de entrada",
@@ -1861,8 +1880,6 @@
   },
   "IntegrationLanding": {
     "result": {
-      "title": "Examina el resultado antes de integrar.",
-      "description": "Un ejemplo real de easyrender: la foto original, las vistas generadas y un GLB con textura que puedes girar y descargar.",
       "photo": {
         "label": "Foto original",
         "alt": "Foto original de una butaca mostaza con estructura metálica",
@@ -1879,7 +1896,15 @@
         "body": "Arrastra para girar el modelo. Descárgalo para examinarlo en tu propio visor 3D."
       },
       "note": "Ejemplo generado previamente, no una solicitud en directo. Esta hoja muestra un resultado final; la vista previa inicial lleva marca de agua. La geometría es aproximada y las superficies no visibles se infieren.",
-      "download": "Descargar GLB de ejemplo"
+      "download": "Descargar GLB de ejemplo",
+      "mcp": {
+        "title": "De una petición al agente a un recurso 3D.",
+        "description": "Mira cómo pasa una foto por las herramientas MCP y revisa debajo un resultado real de la galería."
+      },
+      "api": {
+        "title": "De la carga en tu aplicación a la respuesta del modelo.",
+        "description": "Revisa el flujo de integración y el JSON; después, la foto original, los ángulos generados y el GLB descargable."
+      }
     },
     "costs": {
       "api": {
@@ -1914,6 +1939,15 @@
         "body": "La compra mínima es de {credits} créditos ({price}). Los créditos no caducan. Revisa el total antes de confirmar el pago."
       },
       "refund": "Las generaciones 3D fallidas devuelven sus créditos. Los precios corresponden a tu moneda y oferta actuales."
+    },
+    "apiDemo": {
+      "title": "Tu aplicación · API REST de easyrender",
+      "illustration": "Flujo de aplicación y respuesta JSON parcial ilustrativos. Aquí no se carga ninguna foto ni se ejecutan solicitudes de pago.",
+      "photoAlt": "Foto del sillón usada como ejemplo de carga",
+      "upload": "Foto del producto recibida",
+      "flow": "Tu backend envía la foto a POST /api/renders. Muestra la vista previa y el coste devuelto, y pide al usuario que apruebe la generación de pago. Consulta el estado para obtener el modelo terminado.",
+      "cost": "Usa el campo renderCredits actual antes de generar: el coste puede cambiar al reutilizar una hoja final. Guarda la clave API en tu servidor.",
+      "response": "Respuesta parcial tras una generación completa; ID de ejemplo, no un render en directo."
     }
   },
   "Legal": {

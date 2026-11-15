@@ -73,7 +73,7 @@ export async function ApiView({ locale }: { locale: Locale }) {
           ))}
         </div>
       </Section>
-      <IntegrationResult locale={locale} />
+      <IntegrationResult locale={locale} kind="api" />
       <IntegrationCosts locale={locale} kind="api" />
       <Section
         id="how-it-works"

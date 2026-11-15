@@ -1,16 +1,19 @@
 import { ArrowRight, Download } from 'lucide-react';
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
+import { AgentDemo } from '@/components/agent-demo';
+import { ApiDemo } from '@/components/integrations/api-demo';
 import { Section } from '@/components/landing';
 import { ModelViewer } from '@/components/model-viewer';
 import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
 
 /** Existing harness showcase assets, not a simulated customer run or a generated UI screenshot. */
-export async function IntegrationResult({ locale }: { locale: Locale }) {
+export async function IntegrationResult({ locale, kind }: { locale: Locale; kind: 'api' | 'mcp' }) {
   const t = await getTranslations({ locale, namespace: 'IntegrationLanding.result' });
   return (
-    <Section id="sample" title={t('title')} description={t('description')}>
+    <Section id="sample" title={t(`${kind}.title`)} description={t(`${kind}.description`)}>
+      {kind === 'mcp' ? <AgentDemo locale={locale} /> : <ApiDemo locale={locale} />}
       <div className="grid gap-4 md:grid-cols-3">
         {(['photo', 'angles', 'model'] as const).map((step, index) => (
           <figure key={step} className="min-w-0 overflow-hidden rounded-xl border bg-card">

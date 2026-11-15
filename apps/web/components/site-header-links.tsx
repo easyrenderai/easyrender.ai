@@ -1,12 +1,12 @@
 'use client';
 
+import { LayoutDashboard } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { SiteLink as Link } from '@/components/site-link';
 import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
-import { isPublished, ROUTES } from '@/lib/seo/routes';
-import { headerSectionHref } from '@/lib/site-navigation';
+import { headerPrimaryAction, headerSectionHref } from '@/lib/site-navigation';
 
 // Layouts persist across client navigation. Resolve section links from the live pathname.
 export function HeaderNavItem({
@@ -45,20 +45,31 @@ export function HeaderConnect({
   connect,
   suffix,
   apiLabel,
+  uploadLabel,
+  dashboardLabel,
+  isSignedIn,
 }: {
   locale: Locale;
   connect: string;
   suffix: string;
   apiLabel: string;
+  uploadLabel: string;
+  dashboardLabel: string;
+  isSignedIn: boolean;
 }) {
-  const path = usePathname();
-  const isApiPage = isPublished('api', locale) && path === ROUTES.api.paths[locale];
+  const action = headerPrimaryAction(locale, usePathname(), isSignedIn);
+  const label = { api: apiLabel, upload: uploadLabel, dashboard: dashboardLabel, mcp: connect }[
+    action.kind
+  ];
   return (
     <Button size="sm" asChild>
-      <Link href={headerSectionHref(locale, path, '#connect')}>
+      <Link href={action.href}>
+        {action.kind === 'dashboard' ? <LayoutDashboard aria-hidden="true" /> : null}
         <span>
-          {isApiPage ? apiLabel : connect}
-          {!isApiPage && suffix ? <span className="hidden sm:inline"> {suffix}</span> : null}
+          {label}
+          {action.kind === 'mcp' && suffix ? (
+            <span className="hidden sm:inline"> {suffix}</span>
+          ) : null}
         </span>
       </Link>
     </Button>

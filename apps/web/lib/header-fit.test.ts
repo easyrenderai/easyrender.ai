@@ -54,6 +54,7 @@ describe('the header labels', () => {
         .join('') +
       header.signIn +
       fullCta;
+    expect(header.upload.length, `${locale}: Header.upload`).toBeLessThanOrEqual(MAX_PHONE_CTA);
     expect(header.connect.length, `${locale}: Header.connect`).toBeLessThanOrEqual(MAX_PHONE_CTA);
     expect(fullCta.length, `${locale}: connect + connectSuffix`).toBeLessThanOrEqual(MAX_FULL_CTA);
     expect(row.length, `${locale}: desktop row`).toBeLessThanOrEqual(MAX_DESKTOP_ROW);

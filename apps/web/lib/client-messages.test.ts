@@ -62,7 +62,15 @@ describe('client messages', () => {
 
   it('leaves server-only copy out of the browser payload', () => {
     const picked = pickClientMessages(en);
-    for (const namespace of ['Landing', 'Home', 'Metadata', 'Connectors', 'Credits', 'Blog']) {
+    for (const namespace of [
+      'Landing',
+      'Home',
+      'Metadata',
+      'Connectors',
+      'Credits',
+      'Blog',
+      'AgentDemo',
+    ]) {
       expect(picked).not.toHaveProperty(namespace);
     }
     expect(lookup(picked, 'Studio.cta')).toBeUndefined();

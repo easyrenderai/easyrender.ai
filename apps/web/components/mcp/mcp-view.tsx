@@ -72,7 +72,7 @@ export async function McpView({ locale }: { locale: Locale }) {
         </div>
       </Section>
 
-      <IntegrationResult locale={locale} />
+      <IntegrationResult locale={locale} kind="mcp" />
       <IntegrationCosts locale={locale} kind="mcp" />
       <Section
         id="how-it-works"

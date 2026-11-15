@@ -28,3 +28,17 @@ export function headerSectionHref(locale: Locale, path: string | null, hash: str
   const isLocalSection = hash === '#connect' || hash === '#how-it-works';
   return `${isIntegrationPage && isLocalSection ? path : ROUTES.home.paths[locale]}${hash}`;
 }
+
+export function headerPrimaryAction(locale: Locale, path: string | null, isSignedIn: boolean) {
+  if (path === ROUTES.home.paths[locale]) {
+    return { kind: 'upload', href: `${path}#try` } as const;
+  }
+  for (const kind of ['api', 'mcp'] as const) {
+    if (isPublished(kind, locale) && path === ROUTES[kind].paths[locale]) {
+      return { kind, href: `${path}#connect` };
+    }
+  }
+  return isSignedIn
+    ? ({ kind: 'dashboard', href: '/dashboard' } as const)
+    : ({ kind: 'mcp', href: `${ROUTES.home.paths[locale]}#connect` } as const);
+}

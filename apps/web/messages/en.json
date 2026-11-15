@@ -23,7 +23,8 @@
     "connectSuffix": "your agent",
     "sections": "Sections",
     "menuOpen": "Open menu",
-    "menuClose": "Close menu"
+    "menuClose": "Close menu",
+    "upload": "Upload a photo"
   },
   "Footer": {
     "tagline": "One photo becomes a 3D model you can see from every angle and download as GLB and USDZ.",
@@ -88,8 +89,23 @@
       "title": "What is easyrender?",
       "body": "easyrender is an image-to-3D tool: it turns one photo of a piece of furniture, a decor object or a building exterior into a 3D model. First it draws the object from every side, a free angle sheet you can check before you spend anything. If the preview looks right, one click turns it into a 3D model you can spin and download as GLB and USDZ.",
       "scope": "It does not model whole rooms. It does not invent measurements. You get the file; you decide if it is good enough to keep.",
-      "primaryCta": "Try it free",
+      "primaryCta": "Upload a photo",
       "secondaryCta": "See models made from a photo"
+    },
+    "integrations": {
+      "title": "Build 3D into your workflow.",
+      "description": "Use an AI agent or connect your own application. Choose the integration that fits your workflow.",
+      "mcp": {
+        "title": "For your AI agent",
+        "body": "Ask your agent to preview a product, check its cost and build a 3D model.",
+        "cta": "Explore MCP"
+      },
+      "api": {
+        "title": "For your application",
+        "body": "Add photo-to-3D to your product with the REST API. Control the upload, preview and paid build.",
+        "cta": "Explore the API"
+      },
+      "english": "English"
     }
   },
   "Landing": {
@@ -191,14 +207,17 @@
   },
   "AgentDemo": {
     "window": "Your agent · easyrender MCP",
-    "ask": "Here is the spring catalogue. Make a 3D model of every product.",
+    "illustration": "Illustrative conversation and tool sequence. No request runs on this page.",
+    "ask": "Turn this armchair photo into a 3D model. Show me the preview and cost, then wait for my approval before building.",
+    "approval": "In this example, you instruct your agent to wait for approval. Configure that behavior in your client; the paid tool itself does not enforce a confirmation dialog.",
+    "budget": "Planning a catalogue? {count} full 3D builds = {credits} credits.",
+    "budgetNote": "A budget example, not a completed batch. Your agent must create and track each render separately. Extra edits and AI-client charges are additional.",
     "calls": {
-      "create_render": "24 photos · previews free",
-      "get_render": "24 previews ready",
-      "render_3d": "24 models · 480 credits"
-    },
-    "done": "Done. 24 models are in your easyrender library, with GLB and USDZ for AR. Here is the first one:",
-    "modelAlt": "3D model: {title}"
+      "create_render": "Submit the product photo and request the free preview.",
+      "get_render": "Poll for the preview and return its link for inspection.",
+      "get_credits": "Check the balance and current full-build credit cost.",
+      "render_3d": "After your approval, request the paid build. Poll get_render until ready, then retrieve the GLB link."
+    }
   },
   "McpSetup": {
     "terminal": "Run in your terminal",
@@ -882,7 +901,7 @@
   "Studio": {
     "hero": {
       "title": "3D model from a photo.",
-      "cta": "Try it free",
+      "cta": "Upload a photo",
       "note": "Free preview · no card",
       "stackLabel": "One object seen through five passes of the engine. Drag to turn it.",
       "photo": "Input photo",
@@ -1861,8 +1880,6 @@
   },
   "IntegrationLanding": {
     "result": {
-      "title": "Inspect the output before you integrate.",
-      "description": "A real easyrender showcase example: the source photo, generated angles and a textured GLB you can rotate and download.",
       "photo": {
         "label": "Source photo",
         "alt": "Source photo of a mustard armchair with a metal frame",
@@ -1879,7 +1896,15 @@
         "body": "Drag to rotate the model. Download it to inspect in your own 3D viewer."
       },
       "note": "Pre-generated showcase assets, not a live request. This sheet is a finished example; the initial preview is watermarked. Geometry is approximate and unseen surfaces are inferred.",
-      "download": "Download sample GLB"
+      "download": "Download sample GLB",
+      "mcp": {
+        "title": "From an agent request to a 3D asset.",
+        "description": "See how a photo moves through the MCP tools, then inspect a real showcase result below."
+      },
+      "api": {
+        "title": "From your upload flow to a model response.",
+        "description": "See the application handoff and JSON response, then inspect the source photo, generated angles and downloadable GLB."
+      }
     },
     "costs": {
       "api": {
@@ -1914,6 +1939,15 @@
         "body": "The minimum credit purchase is {credits} credits ({price}). Credits do not expire. Review the total at checkout before paying."
       },
       "refund": "Failed 3D builds refund their credits. Prices shown use your current currency and pricing offer."
+    },
+    "apiDemo": {
+      "title": "Your application · easyrender REST API",
+      "illustration": "Illustrative application flow and partial JSON response. No upload or paid request runs here.",
+      "photoAlt": "Armchair photo used as an example upload",
+      "upload": "Product photo received",
+      "flow": "Your backend sends the photo to POST /api/renders. Show the preview, display the returned cost and let the user approve the paid build. Poll the render status to retrieve the finished model.",
+      "cost": "Use the render’s current renderCredits field before building; the cost can change when a finished sheet is reused. Keep the API key on your server.",
+      "response": "Partial response after a full build has finished; sample ID, not a live render."
     }
   },
   "Legal": {
