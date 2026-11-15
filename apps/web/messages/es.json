@@ -1740,6 +1740,26 @@
     "closing": {
       "title": "Lleva tu próximo producto a la conversación.",
       "cta": "Conecta easyrender"
+    },
+    "skill": {
+      "cta": "Instalar skill",
+      "title": "Enséñale a tu agente el flujo de foto a 3D.",
+      "description": "Añade la skill de easyrender para guiar a tu agente desde la primera foto hasta una generación GLB aprobada.",
+      "body": "El MCP conecta las herramientas. La skill explica cuándo generar la vista previa, cómo consultar el coste actual, cómo trabajar dentro del presupuesto que apruebes y cómo retomar un render tras un timeout.",
+      "steps": {
+        "install": "Ejecuta el comando desde tu proyecto y elige un agente compatible.",
+        "connect": "Conecta tu cuenta de easyrender siguiendo la configuración MCP de arriba.",
+        "ask": "Adjunta una foto de producto e indica qué quieres crear y cuándo puede gastar créditos tu agente."
+      },
+      "source": "Leer la skill en GitHub",
+      "commandLabel": "Instalar en tu proyecto",
+      "copy": "Copiar comando",
+      "copied": "Copiado",
+      "copyError": "No se ha podido copiar. Selecciona y copia el comando manualmente.",
+      "requirement": "Necesitas Node.js/npm para el instalador y un cliente compatible con Agent Skills. La instalación añade instrucciones: no conecta tu cuenta ni inicia un render. También puedes copiar la carpeta de la skill desde GitHub.",
+      "exampleLabel": "Pruébalo con tu foto",
+      "example": "Usa la skill easyrender-image-to-3d para convertir esta foto de producto en un GLB. Muéstrame la vista previa y el coste antes de gastar créditos.",
+      "cost": "La skill es de código abierto con licencia MIT. Las generaciones 3D consumen créditos de easyrender a la tarifa actual indicada arriba; tu cliente de IA puede cobrar aparte. Las instrucciones están en inglés y el agente puede responder en tu idioma."
     }
   },
   "ApiLanding": {

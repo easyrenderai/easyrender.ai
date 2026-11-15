@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server';
 import { IntegrationCosts } from '@/components/integrations/costs';
 import { IntegrationResult } from '@/components/integrations/result';
 import { Pricing, Section } from '@/components/landing';
+import { McpSkill } from '@/components/mcp/mcp-skill';
 import { McpSetup } from '@/components/mcp-setup';
 import { StudioHero } from '@/components/studio/hero';
 import { StudioClosing, StudioCompatibility } from '@/components/studio/proof';
@@ -133,6 +134,11 @@ export async function McpView({ locale }: { locale: Locale }) {
                 {t('connect.cta')} <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
+            <div>
+              <Button variant="outline" asChild>
+                <a href="#agent-skill">{t('skill.cta')}</a>
+              </Button>
+            </div>
             <dl className="space-y-2 pt-3 text-sm">
               <dt className="text-muted-foreground">{t('connect.endpoint')}</dt>
               <dd className="break-all font-mono text-xs">{mcpUrl}</dd>
@@ -148,6 +154,7 @@ export async function McpView({ locale }: { locale: Locale }) {
         </div>
       </Section>
 
+      <McpSkill locale={locale} />
       <Pricing />
       <Section id="faq" title={t('faq.title')} narrow>
         <div className="sec__column">
