@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n/config';
 import { listPosts } from '@/lib/blog/posts';
-import { listComparePages } from '@/lib/compare/pages';
+import { compareHref, listComparePages } from '@/lib/compare/pages';
 import { isPublished, ROUTES } from '@/lib/seo/routes';
 import { FeaturedPostCard, PostCard } from './post-card';
 
@@ -86,7 +86,7 @@ export async function BlogIndexView({ locale }: { locale: Locale }) {
           <ul className="mt-8 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {comparisons.map((page) => (
               <li key={page.slug}>
-                <Link href={page.path} className="group block">
+                <Link href={compareHref(page.locale, page.slug)} className="group block">
                   <h3 className="font-medium tracking-tight text-balance group-hover:underline">
                     {page.title}
                   </h3>

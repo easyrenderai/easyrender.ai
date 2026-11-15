@@ -56,6 +56,28 @@ const AUTHOR_TYPES: Record<string, BlogAuthor['type']> = {
 export const comparePath = (locale: Locale, slug: string): string =>
   `${ROUTES.compare.paths[locale]}/${slug}`;
 
+/**
+ * An href for a comparison card. The hub is one of the fixed paths, and the slug has to be the
+ * file name shape we publish. Anything else stays on the hub, so a file name cannot become a
+ * `javascript:` URL.
+ */
+export function compareHref(locale: Locale, slug: string): string {
+  const hub =
+    locale === 'es'
+      ? '/es/comparativas'
+      : locale === 'de'
+        ? '/de/vergleich'
+        : locale === 'fr'
+          ? '/fr/comparatifs'
+          : locale === 'it'
+            ? '/it/confronti'
+            : locale === 'pt'
+              ? '/pt/comparacoes'
+              : '/compare';
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) return hub;
+  return `${hub}/${slug}`;
+}
+
 /** The comparisons hub: title and description for the page, the sitemap and llms.txt. */
 export const COMPARE_INDEX: Record<Locale, { title: string; description: string }> = {
   en: {

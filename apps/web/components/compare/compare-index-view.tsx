@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n/config';
-import { COMPARE_INDEX, listComparePages } from '@/lib/compare/pages';
+import { COMPARE_INDEX, compareHref, listComparePages } from '@/lib/compare/pages';
 import { ROUTES } from '@/lib/seo/routes';
 
 /**
@@ -46,7 +46,7 @@ export async function CompareIndexView({ locale }: { locale: Locale }) {
         {pages.map((page) => (
           <li key={page.slug} className="py-8">
             <h2 className="text-xl font-semibold tracking-tight text-balance sm:text-2xl">
-              <Link href={page.path} className="hover:underline">
+              <Link href={compareHref(page.locale, page.slug)} className="hover:underline">
                 {page.title}
               </Link>
             </h2>
@@ -54,7 +54,10 @@ export async function CompareIndexView({ locale }: { locale: Locale }) {
               {page.description}
             </p>
             <p className="mt-4">
-              <Link href={page.path} className="text-sm font-medium hover:underline">
+              <Link
+                href={compareHref(page.locale, page.slug)}
+                className="text-sm font-medium hover:underline"
+              >
                 {t('comparisons.read')}
               </Link>
             </p>

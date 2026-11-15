@@ -11,6 +11,7 @@ import { ROUTES } from '@/lib/seo/routes';
 import { localeSitemapXml } from '@/lib/seo/sitemap';
 import {
   COMPARE_INDEX,
+  compareHref,
   getComparePage,
   isCompareInReview,
   isComparePublished,
@@ -50,6 +51,10 @@ describe('the published comparisons', () => {
     expect(postTitle(COMPARE_INDEX.en.title).length).toBeLessThanOrEqual(60);
     expect(COMPARE_INDEX.en.description.length).toBeLessThanOrEqual(160);
     for (const slug of REVIEW_SLUGS) expect(getComparePage(slug)?.path).toBe(`/compare/${slug}`);
+    expect(compareHref('es', 'meshy')).toBe('/es/comparativas/meshy');
+    expect(compareHref('de', 'vergleich-meshy')).toBe('/de/vergleich/vergleich-meshy');
+    expect(compareHref('fr', 'javascript:alert(1)')).toBe('/fr/comparatifs');
+    expect(compareHref('it', '../file-glb')).toBe('/it/confronti');
     expect(getComparePage('does-not-exist')).toBeNull();
   });
 });
