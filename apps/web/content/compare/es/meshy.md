@@ -25,6 +25,24 @@ El resultado texturizado apareció en el visor, que indicaba 868.902 caras trian
 
 Es un recorrido observado en Workspace, no un benchmark controlado de calidad o velocidad. No generamos simultáneamente un modelo con el flujo actual de easyrender. Nuestro [GLB de muestra del sillón](/showcase/armchair.glb) es un resultado histórico con otros ajustes. Tener créditos gratuitos para generar y poder descargar el modelo son comprobaciones distintas: la lista de formatos de abajo no garantiza una exportación gratuita.
 
+## Un resultado de Meshy descargable a través de Higgsfield
+
+El 15 de noviembre de 2026 también pasamos la misma foto por Meshy 7 Image to 3D en Higgsfield. Fue una generación independiente, no la exportación del resultado de Meshy Workspace anterior. Usamos modo Standard, remallado con un objetivo de 30.000 triángulos, texturas activadas y PBR, rigging y animación desactivados. Consumió 38 créditos de Higgsfield de un saldo promocional en una cuenta Ultra existente; no hicimos ninguna compra nueva. Esto no demuestra que esté disponible en una cuenta gratuita de Higgsfield, y sus créditos no equivalen a los de Meshy o easyrender.
+
+| Resultado descargado | Medición                                                                                 |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| Archivo              | GLB, 2.824.116 bytes (2,82 MB)                                                           |
+| Geometría            | 27.415 triángulos; 26.795 vértices                                                       |
+| Material y textura   | Un material; una textura JPEG incrustada de 2.048 × 2.048                                |
+| Validación glTF      | Khronos glTF Validator 2.0.0-dev.3.10: 0 errores, 0 advertencias y 1 mensaje informativo |
+| Visor externo        | Cargó con textura y pudimos girarlo en el editor model-viewer en Chrome de escritorio    |
+
+El comando tardó unos 163 segundos, incluyendo subida, procesamiento y consultas de estado cada 10 segundos. Es una espera observada de principio a fin, no el tiempo de ejecución del servidor ni una clasificación de velocidad. No hemos probado este archivo en Shopify, en un móvil físico ni en realidad aumentada. Pasar la validación del archivo no demuestra fidelidad al sillón real.
+
+![GLB descargado de Meshy, visto de lado en el editor model-viewer](/benchmarks/2026-11-15/meshy-viewer.jpg "Resultado real de Meshy 7 a través de Higgsfield, abierto en un visor externo el 15 de noviembre de 2026.")
+
+El [registro de mediciones](/benchmarks/2026-11-15/measurements.json) incluye las huellas SHA-256 de entrada y salida, los ajustes y los resultados de validación. Nuestra muestra histórica de easyrender utiliza otros ajustes y compresión de texturas, por lo que su menor peso no demuestra que el flujo actual sea mejor o más rápido. La [prueba de Tripo](/es/comparativas/tripo) documenta otra generación con la misma entrada.
+
 ## ¿En qué se diferencian Meshy y easyrender?
 
 Las dos son herramientas de imagen a 3D con IA. Cambian en lo que entra, en cómo pagas y en lo que sale. Los precios son los publicados en noviembre de 2026.

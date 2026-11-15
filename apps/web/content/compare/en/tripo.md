@@ -23,6 +23,26 @@ This tests one Studio workflow, not the API pricing table below. We have not run
 
 The practical lesson is to check export access as well as generation credits before choosing a free workflow. One trial cannot establish which tool produces better furniture models. A full benchmark still needs downloadable outputs, recorded versions and settings, repeat attempts, and the same acceptance checks for both tools.
 
+## A downloadable Tripo result through Higgsfield
+
+On the same day we ran the same photo through Higgsfield's Tripo H3.1 Image to 3D. This was a separate Standard-quality generation, not an export of the Best Quality Studio result above. Geometry and texture quality were Standard, with a 30,000-face limit, textures and PBR on, and quad output off. It consumed 9 Higgsfield credits from a promotional balance on an existing Ultra account; we made no new purchase. This does not establish free-plan access, and the charge is not a Tripo API or Studio price.
+
+| Downloaded result     | Measurement                                                                       |
+| --------------------- | --------------------------------------------------------------------------------- |
+| File                  | GLB, 3,846,052 bytes (3.85 MB)                                                    |
+| Geometry              | 27,067 triangles; 17,176 vertices                                                 |
+| Material and textures | One material; three embedded 2,048 × 2,048 textures (two JPEG, one PNG)           |
+| glTF validation       | Khronos glTF Validator 2.0.0-dev.3.10: 0 errors, 1 warning, 4 hints               |
+| External viewer       | Loaded with its textures and rotated in the model-viewer editor in desktop Chrome |
+
+The warning concerns a normal-mapped material without stored mesh tangents: the viewer has to calculate tangent space, which may differ across implementations. It did not prevent this desktop viewer from displaying the model. The four hints concern missing buffer-view target metadata. These are file-format observations, not a quality verdict on Tripo.
+
+The command took about 431 seconds, including request overhead, processing and polling every 10 seconds; the input image was already uploaded. This is one observed wait, not a provider execution time or a speed ranking. We have not tested this file in Shopify, on a physical phone or in AR.
+
+![Downloaded Tripo GLB displayed in the model-viewer editor](/benchmarks/2026-11-15/tripo-viewer.jpg "Actual Tripo H3.1 output through Higgsfield, opened in an external viewer on 15 November 2026.")
+
+The [measurement record](/benchmarks/2026-11-15/measurements.json) includes input and output SHA-256 hashes, settings and the validation report. The separate [Meshy run](/compare/meshy) used the same photo but different material settings. Our easyrender sample is historical and has compressed WebP textures. None of these single runs establishes which current product is better, faster or cheaper per usable model.
+
 ## How do Tripo and easyrender compare?
 
 Both are AI image-to-3D tools. The table sets their public facts side by side, as listed in November 2026. Tripo's figures come from its developer platform, because its consumer pricing page would not load for us.
@@ -37,7 +57,7 @@ Both are AI image-to-3D tools. The table sets their public facts side by side, a
 | Extras                       | Rigging, animation retargeting, retopology, segmentation, smart low-poly | Bulk upload from your library                  |
 | For developers               | REST API with credit balance                                             | MCP server and REST API                        |
 
-Sources: [Tripo API introduction](https://developers.tripo3d.com/en/docs/introduction), [image to model](https://developers.tripo3d.com/en/docs/generation-image-to-model/standard), [multiview to model](https://developers.tripo3d.com/en/docs/generation-multiview-to-model), [v3.1 model page](https://developers.tripo3d.com/en/models/v3-1), [API pricing](https://developers.tripo3d.com/en/pricing), [billing](https://developers.tripo3d.com/en/docs/billing) and [format conversion](https://developers.tripo3d.com/en/docs/models-convert), all read on 11 November 2026. easyrender figures are from our [pricing page](/credits).
+Sources: [Tripo API introduction](https://developers.tripo3d.com/en/docs/introduction), [image to model](https://developers.tripo3d.com/en/docs/generation-image-to-model/standard), [multiview to model](https://developers.tripo3d.com/en/docs/generation-multiview-to-model), [v3.1 model page](https://developers.tripo3d.com/en/models/v3-1), [API pricing](https://developers.tripo3d.com/en/pricing), [billing](https://developers.tripo3d.com/en/docs/billing) and [format conversion](https://developers.tripo3d.com/en/docs/models-convert), all read on 11 November 2026. easyrender figures are from our [pricing page](/pricing).
 
 Tripo's web app plans are on tripo3d.ai, which returned an error each time we tried to read it. Check its plans and licence terms there before you subscribe.
 
