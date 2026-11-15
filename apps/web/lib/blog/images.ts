@@ -35,7 +35,7 @@ export function blogImageLayout(nativeWidth: number, isGrid: boolean) {
 }
 
 export const BLOG_IMAGES: Record<string, BlogImage> = {
-  '/showcase/armchair.jpg': { width: 720, height: 720 },
+  '/showcase/armchair.jpg': { width: 2048, height: 2048 },
   '/showcase/armchair-angles.jpg': { width: 1200, height: 1200 },
   '/showcase/vase.jpg': { width: 720, height: 720 },
   '/showcase/swivel-chair.jpg': { width: 720, height: 720 },

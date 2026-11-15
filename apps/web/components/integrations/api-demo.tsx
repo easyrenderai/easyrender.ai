@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import type { Locale } from '@/i18n/config';
+import { versionedPublicModel } from '@/lib/public-models';
 
 export async function ApiDemo({ locale }: { locale: Locale }) {
   const t = await getTranslations({ locale, namespace: 'IntegrationLanding.apiDemo' });
@@ -25,11 +26,12 @@ export async function ApiDemo({ locale }: { locale: Locale }) {
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <Image
-              src="/showcase/armchair.jpg"
+              src={versionedPublicModel('/showcase/armchair.jpg')}
               alt={t('photoAlt')}
               width={88}
               height={88}
               sizes="88px"
+              quality={85}
               className="rounded-lg border"
             />
             <div className="min-w-0 space-y-1">
