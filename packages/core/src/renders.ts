@@ -1,4 +1,5 @@
-import { db, type Render } from '@easyrender/db';
+import { createHash } from 'node:crypto';
+import { db, type Prisma, type Render } from '@easyrender/db';
 import {
   BUILD_MODEL,
   buildCostUsd,
@@ -57,6 +58,8 @@ export const IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const DAY_MS = 24 * 60 * 60 * 1000;
 // A sheet takes ~1 minute and a 3D build ~2: anything still running after this has been lost.
 const STALE_MS = 45 * 60 * 1000;
+export const MAX_ACTIVE_RENDERS = 5;
+const POLL_INTERVAL_MS = 5000;
 
 const harness = () => loadHarness({ token: config.harnessToken() });
 const replicate = () => createReplicate(config.replicateToken());
@@ -91,7 +94,7 @@ function enforce<M>(check: Check<M>, status = 422): Passed<M> {
 }
 
 // Each preview costs a real sheet generation, so visitors get a small daily allowance.
-async function assertPreviewAllowance(actor: Actor) {
+async function assertPreviewAllowance(actor: Actor, tx: Prisma.TransactionClient) {
   const since = new Date(Date.now() - DAY_MS);
   const or = [
     actor.userId ? { userId: actor.userId } : null,
@@ -101,7 +104,7 @@ async function assertPreviewAllowance(actor: Actor) {
   if (or.length === 0) throw new AppError('Missing visitor id', 400, 'no_actor');
 
   const user = actor.userId
-    ? await db().user.findUnique({ where: { id: actor.userId }, select: { credits: true } })
+    ? await tx.user.findUnique({ where: { id: actor.userId }, select: { credits: true } })
     : null;
   const credits = user?.credits ?? 0;
   const paying = credits >= RENDER_CREDITS;
@@ -112,7 +115,7 @@ async function assertPreviewAllowance(actor: Actor) {
     : config.freePreviewsPerDay();
   // Previews that failed produced nothing, so they do not use up the allowance: an upstream outage
   // must not lock visitors out for the day.
-  const used = await db().render.count({
+  const used = await tx.render.count({
     where: {
       createdAt: { gte: since },
       status: { not: 'failed' },
@@ -130,6 +133,39 @@ async function assertPreviewAllowance(actor: Actor) {
   }
 }
 
+async function lockActor(tx: Prisma.TransactionClient, actor: Actor) {
+  const identities = [
+    actor.userId ? `user:${actor.userId}` : null,
+    actor.anonId ? `anon:${actor.anonId}` : null,
+    actor.ipHash ? `ip:${actor.ipHash}` : null,
+  ]
+    .filter((identity): identity is string => Boolean(identity))
+    .sort();
+  if (!identities.length) throw new AppError('Missing visitor id', 400, 'no_actor');
+  for (const identity of identities) {
+    const key = createHash('sha256').update(`render-quota:${identity}`).digest().readBigInt64BE();
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(${key})`;
+  }
+}
+
+async function assertConcurrency(actor: Actor, tx: Prisma.TransactionClient) {
+  const owner = actor.userId
+    ? { userId: actor.userId }
+    : actor.anonId
+      ? { anonId: actor.anonId }
+      : { ipHash: actor.ipHash ?? '' };
+  const active = await tx.render.count({
+    where: { ...owner, status: { in: ['drafting', 'rendering'] } },
+  });
+  if (active >= MAX_ACTIVE_RENDERS) {
+    throw new AppError(
+      'Too many active generations. Wait for one to finish.',
+      429,
+      'concurrent_limit',
+    );
+  }
+}
+
 export async function createDraft(input: {
   actor: Actor;
   bytes: Uint8Array;
@@ -140,6 +176,8 @@ export async function createDraft(input: {
   attribution?: Attribution;
   // Viewable by link from a store's product page, without being in the gallery.
   isLinkShared?: boolean;
+  isPublic?: boolean;
+  idempotencyKey?: string;
 }): Promise<Render> {
   if (!IMAGE_TYPES.has(input.contentType)) {
     throw new AppError('Upload a JPEG, PNG or WebP photo', 415, 'bad_type');
@@ -147,41 +185,102 @@ export async function createDraft(input: {
   if (input.bytes.byteLength > MAX_UPLOAD_BYTES) {
     throw new AppError('Photo is larger than 4 MB', 413, 'too_large');
   }
-  // Guardrails first: a bad photo or note is refused before it uses an allowance or a generation.
-  const photo = enforce(await checkPhoto(input.bytes));
   enforce(checkNote(input.prompt), 400);
-  if (photo.warnings.length > 0) console.warn(`photo warnings: ${photo.warnings.join(', ')}`);
-  const quality: RenderQuality = { photo: { ...photo.measures, warnings: photo.warnings } };
-  await assertPreviewAllowance(input.actor);
-
-  const ext = extension(input.contentType);
-  const sourceKey = await putFile(`sources/source.${ext}`, input.bytes, input.contentType);
   const prompt = cleanNote(input.prompt) || null;
-  const render = await db().render.create({
-    data: {
-      ...(input.attribution ??
-        normalizeAttribution(null, config.appUrl(), classifyCountry(input.actor.geoCountry))),
-      userId: input.actor.userId ?? null,
-      anonId: input.actor.anonId ?? null,
-      ipHash: input.actor.ipHash ?? null,
-      prompt,
-      name: input.name?.trim().slice(0, 120) || null,
-      source: input.source ?? 'web',
-      isLinkShared: input.isLinkShared ?? false,
-      isPublic: input.isLinkShared ? false : undefined,
-      sourceKey,
-      quality,
-      status: config.sheetEnabled() ? 'drafting' : 'preview_ready',
-    },
+  const name = input.name?.trim().slice(0, 120) || null;
+  const isPublic = input.isPublic ?? (!input.isLinkShared && (input.source ?? 'web') === 'web');
+  const key = input.idempotencyKey;
+  if (key !== undefined && !/^[\x21-\x7e]{1,128}$/.test(key)) {
+    throw new AppError(
+      'Idempotency key must contain 1–128 printable ASCII characters',
+      400,
+      'bad_idempotency_key',
+    );
+  }
+  const scope = input.actor.userId
+    ? `user:${input.actor.userId}`
+    : input.actor.anonId
+      ? `anon:${input.actor.anonId}`
+      : null;
+  if (key && !scope)
+    throw new AppError('Idempotency requires an identified caller', 400, 'no_actor');
+  const requestHash = key
+    ? createHash('sha256')
+        .update(input.bytes)
+        .update(
+          JSON.stringify({
+            contentType: input.contentType,
+            prompt,
+            name,
+            isPublic,
+            isLinkShared: input.isLinkShared ?? false,
+          }),
+        )
+        .digest('hex')
+    : null;
+  const findReplay = async (client: Prisma.TransactionClient) => {
+    if (!key || !scope) return null;
+    const existing = await client.render.findUnique({
+      where: { requestScope_requestKey: { requestScope: scope, requestKey: key } },
+    });
+    if (existing && existing.requestHash !== requestHash) {
+      throw new AppError(
+        'Idempotency key was already used for different input',
+        409,
+        'idempotency_conflict',
+      );
+    }
+    return existing;
+  };
+  const replay = await findReplay(db());
+  if (replay) return replay;
+  // A bad photo or note is refused before a quota reservation or generation.
+  const photo = enforce(await checkPhoto(input.bytes));
+  const quality: RenderQuality = { photo: { ...photo.measures, warnings: photo.warnings } };
+  const reservation = await db().$transaction(async (tx) => {
+    await lockActor(tx, input.actor);
+    const existing = await findReplay(tx);
+    if (existing) return { render: existing, isNew: false };
+    await assertPreviewAllowance(input.actor, tx);
+    await assertConcurrency(input.actor, tx);
+    const render = await tx.render.create({
+      data: {
+        ...(input.attribution ??
+          normalizeAttribution(null, config.appUrl(), classifyCountry(input.actor.geoCountry))),
+        userId: input.actor.userId ?? null,
+        anonId: input.actor.anonId ?? null,
+        ipHash: input.actor.ipHash ?? null,
+        prompt,
+        name,
+        source: input.source ?? 'web',
+        isLinkShared: input.isLinkShared ?? false,
+        isPublic,
+        requestScope: key ? scope : null,
+        requestKey: key,
+        requestHash,
+        // Reservation precedes external I/O, so a retry never uploads or generates twice.
+        sourceKey: 'pending:',
+        quality,
+        status: 'drafting',
+      },
+    });
+    return { render, isNew: true };
   });
-  if (!config.sheetEnabled()) return render;
-  captureRender('preview_start', render, {
-    input_type: render.source === 'web' ? 'upload' : 'api',
-    entry_path: render.landing_path,
-    is_logged_in: Boolean(render.userId),
-  });
-
+  let render = reservation.render;
+  if (!reservation.isNew) return render;
+  const ext = extension(input.contentType);
   try {
+    const sourceKey = await putFile(`sources/source.${ext}`, input.bytes, input.contentType);
+    render = await db().render.update({
+      where: { id: render.id },
+      data: { sourceKey, status: config.sheetEnabled() ? 'drafting' : 'preview_ready' },
+    });
+    if (!config.sheetEnabled()) return render;
+    captureRender('preview_start', render, {
+      input_type: render.source === 'web' ? 'upload' : 'api',
+      entry_path: render.landing_path,
+      is_logged_in: Boolean(render.userId),
+    });
     const client = replicate();
     const sourceUrl = await client.upload(input.bytes, `source.${ext}`, input.contentType);
     const recipe = await harness();
@@ -482,6 +581,11 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
   const owed = Math.max(0, buildTotal(render) - alreadyPaid);
 
   const claimed = await db().$transaction(async (tx) => {
+    await lockActor(tx, actor);
+    // Check state after the lock: an identical concurrent request is an idempotent read.
+    const current = await tx.render.findUnique({ where: { id } });
+    if (current?.status !== 'preview_ready') return false;
+    await assertConcurrency(actor, tx);
     const { count } = await tx.render.updateMany({
       where: { id, status: 'preview_ready' },
       data: { status: 'rendering', userId: actor.userId, credits: alreadyPaid + owed },
@@ -598,6 +702,11 @@ export async function startSheet(id: string, actor: Actor): Promise<Render> {
   }
 
   const claimed = await db().$transaction(async (tx) => {
+    await lockActor(tx, actor);
+    // Check state after the lock: an identical concurrent request is an idempotent read.
+    const current = await tx.render.findUnique({ where: { id } });
+    if (current?.status !== 'preview_ready') return false;
+    await assertConcurrency(actor, tx);
     const { count } = await tx.render.updateMany({
       where: { id, status: 'preview_ready', sheetKey: null, sheetPredictionId: null },
       data: { status: 'drafting', userId: actor.userId, credits: SHEET_CREDITS },
@@ -688,6 +797,11 @@ export async function redrawSheet(id: string, actor: Actor, note: string): Promi
   }
 
   const isClaimed = await db().$transaction(async (tx) => {
+    await lockActor(tx, actor);
+    // Check state after the lock: an identical concurrent request is an idempotent read.
+    const current = await tx.render.findUnique({ where: { id } });
+    if (current?.status !== 'preview_ready') return false;
+    await assertConcurrency(actor, tx);
     const { count } = await tx.render.updateMany({
       where: {
         id,
@@ -810,6 +924,11 @@ export async function getRender(id: string, actor: Actor): Promise<Render> {
   const render = await db().render.findUnique({ where: { id } });
   if (!render || !canView(render, actor)) throw notFound();
   if (render.status === 'drafting' || render.status === 'rendering') {
+    const now = new Date();
+    const next = new Date(now.getTime() + POLL_INTERVAL_MS);
+    const claimed = await db().$executeRaw`UPDATE "Render" SET "pollAfter" = ${next}
+      WHERE "id" = ${id} AND ("pollAfter" IS NULL OR "pollAfter" <= ${now})`;
+    if (!claimed) return render;
     return (await advance(id)) ?? render;
   }
   return render;
@@ -817,6 +936,68 @@ export async function getRender(id: string, actor: Actor): Promise<Render> {
 
 const IN_FLIGHT: Render['status'][] = ['drafting', 'rendering'];
 const MAX_ADVANCE_PER_LIST = 8;
+
+export type RenderPageInput = { cursor?: string; limit?: number; status?: Render['status'] };
+
+export async function listRenderPage(userId: string, input: RenderPageInput = {}) {
+  const limit = input.limit ?? 25;
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+    throw new AppError('Limit must be an integer from 1 to 100', 400, 'bad_limit');
+  }
+  if (
+    input.status &&
+    !['drafting', 'preview_ready', 'rendering', 'ready', 'failed'].includes(input.status)
+  ) {
+    throw new AppError('Unknown render status', 400, 'bad_status');
+  }
+  let cursor: { id: string; createdAt: Date } | null = null;
+  if (input.cursor) {
+    try {
+      if (input.cursor.length > 512) throw new Error('too long');
+      const parsed = JSON.parse(Buffer.from(input.cursor, 'base64url').toString());
+      const date = new Date(parsed.createdAt);
+      if (
+        typeof parsed.id !== 'string' ||
+        !parsed.id ||
+        parsed.id.length > 128 ||
+        !Number.isFinite(date.getTime())
+      ) {
+        throw new Error('invalid');
+      }
+      cursor = { id: parsed.id, createdAt: date };
+    } catch {
+      throw new AppError('Invalid render cursor', 400, 'bad_cursor');
+    }
+  }
+  const rows = await db().render.findMany({
+    where: {
+      userId,
+      ...(input.status ? { status: input.status } : {}),
+      ...(cursor
+        ? {
+            OR: [
+              { createdAt: { lt: cursor.createdAt } },
+              { createdAt: cursor.createdAt, id: { lt: cursor.id } },
+            ],
+          }
+        : {}),
+    },
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+    take: limit + 1,
+  });
+  const renders = rows.slice(0, limit);
+  const last = renders.at(-1);
+  const nextCursor =
+    rows.length > limit && last
+      ? Buffer.from(
+          JSON.stringify({
+            id: last.id,
+            createdAt: last.createdAt.toISOString(),
+          }),
+        ).toString('base64url')
+      : null;
+  return { renders, nextCursor };
+}
 
 // The user's whole catalog, newest first. Nudges a few in-flight items forward so the
 // library makes progress even where Replicate cannot call the webhook (local dev).
@@ -832,7 +1013,7 @@ export async function listLibrary(userId: string, take = 500): Promise<Render[]>
     .slice(0, MAX_ADVANCE_PER_LIST);
   if (stale.length === 0) return renders;
   const advanced = new Map(
-    (await Promise.all(stale.map((render) => advance(render.id))))
+    (await Promise.all(stale.map((render) => getRender(render.id, { userId }))))
       .filter((render) => render !== null)
       .map((render) => [render.id, render]),
   );

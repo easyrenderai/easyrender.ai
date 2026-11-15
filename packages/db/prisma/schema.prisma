@@ -132,6 +132,12 @@ model Render {
   status            RenderStatus @default(drafting)
   sourceKey         String
   sourceUrl         String?
+  // Idempotent creation is scoped to a user (or anonymous visitor), never an API token.
+  requestScope      String?
+  requestKey        String?
+  requestHash       String?
+  // Throttles status polling without changing the generation's updatedAt deadline.
+  pollAfter         DateTime?
   sheetKey          String?
   glbKey            String?
   // Material changes made by the owner, as a list of { index, baseColor?, roughness?, metalness? }
@@ -167,6 +173,7 @@ model Render {
   updatedAt         DateTime     @updatedAt
   edits             RenderEdit[]
 
+  @@unique([requestScope, requestKey])
   @@index([userId, createdAt])
   @@index([anonId, createdAt])
   @@index([ipHash, createdAt])

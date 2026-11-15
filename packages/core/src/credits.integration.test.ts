@@ -63,9 +63,10 @@ run('credits and generation billing (real database)', () => {
     });
 
   beforeEach(() => {
+    process.env.FREE_PREVIEWS_PER_DAY = '2';
     replicate.fail = false;
     replicate.upload.mockReset().mockResolvedValue('https://replicate.test/file');
-    replicate.start.mockReset().mockResolvedValue({ id: `pred_${Math.random()}` });
+    replicate.start.mockReset().mockImplementation(async () => ({ id: `pred_${Math.random()}` }));
     replicate.get.mockReset();
     replicate.download.mockReset().mockResolvedValue(new Uint8Array([9, 9, 9]));
     replicate.checkSheet
@@ -140,6 +141,73 @@ run('credits and generation billing (real database)', () => {
     expect((await renders.startBuild(render.id, { userId })).status).toBe('rendering');
     expect(await balance(userId)).toBe(0);
     expect(replicate.start).toHaveBeenCalledTimes(1);
+  });
+
+  it('caps concurrent paid builds without taking credits for a refused request', async () => {
+    const { renders } = await load();
+    const userId = await newUser(1000);
+    for (let index = 0; index < renders.MAX_ACTIVE_RENDERS; index++) {
+      await newRender(userId, { status: 'rendering' });
+    }
+    const next = await newRender(userId);
+    await expect(renders.startBuild(next.id, { userId })).rejects.toMatchObject({
+      status: 429,
+      code: 'concurrent_limit',
+    });
+    expect(await balance(userId)).toBe(1000);
+    expect((await db().render.findUniqueOrThrow({ where: { id: next.id } })).status).toBe(
+      'preview_ready',
+    );
+  });
+
+  it('paginates only the caller library without advancing jobs or skipping tied timestamps', async () => {
+    const { renders } = await load();
+    const userId = await newUser(0);
+    const other = await newUser(0);
+    const createdAt = new Date('2026-01-01T00:00:00Z');
+    const own = await Promise.all(
+      Array.from({ length: 5 }, () => newRender(userId, { status: 'drafting', createdAt })),
+    );
+    await newRender(other, { status: 'drafting', createdAt });
+    const first = await renders.listRenderPage(userId, { limit: 2, status: 'drafting' });
+    const second = await renders.listRenderPage(userId, {
+      limit: 2,
+      status: 'drafting',
+      cursor: first.nextCursor ?? undefined,
+    });
+    const third = await renders.listRenderPage(userId, {
+      limit: 2,
+      status: 'drafting',
+      cursor: second.nextCursor ?? undefined,
+    });
+    expect(
+      [...first.renders, ...second.renders, ...third.renders].map((row) => row.id).sort(),
+    ).toEqual(own.map((row) => row.id).sort());
+    expect(third.nextCursor).toBeNull();
+    expect(replicate.get).not.toHaveBeenCalled();
+    await expect(renders.listRenderPage(userId, { cursor: 'invalid' })).rejects.toMatchObject({
+      status: 400,
+      code: 'bad_cursor',
+    });
+    await expect(renders.listRenderPage(userId, { limit: 101 })).rejects.toMatchObject({
+      status: 400,
+      code: 'bad_limit',
+    });
+  });
+
+  it('shares a durable polling cooldown without postponing the job deadline', async () => {
+    const { renders } = await load();
+    const userId = await newUser(0);
+    const created = await newRender(userId, {
+      status: 'rendering',
+      buildPredictionId: `poll-${userId}`,
+    });
+    replicate.get.mockResolvedValue({ status: 'processing' });
+    await Promise.all(Array.from({ length: 5 }, () => renders.getRender(created.id, { userId })));
+    expect(replicate.get).toHaveBeenCalledTimes(1);
+    const stored = await db().render.findUniqueOrThrow({ where: { id: created.id } });
+    expect(stored.updatedAt).toEqual(created.updatedAt);
+    expect(stored.pollAfter?.getTime()).toBeGreaterThan(Date.now());
   });
 
   it('never lets concurrent spends take the balance below zero', async () => {
@@ -872,6 +940,59 @@ run('credits and generation billing (real database)', () => {
         ]),
       );
     };
+
+    it('keeps API and MCP generations private while preserving the web default', async () => {
+      const { renders } = await load();
+      const bytes = photo();
+      for (const source of ['api', 'mcp', 'web'] as const) {
+        const userId = await newUser(0);
+        const render = await renders.createDraft({
+          actor: { userId },
+          bytes,
+          contentType: 'image/png',
+          source,
+        });
+        expect(render.isPublic).toBe(source === 'web');
+      }
+    });
+
+    it('reserves one render for concurrent identical idempotent requests and rejects changed content', async () => {
+      const { renders } = await load();
+      const userId = await newUser(0);
+      const input = {
+        actor: { userId },
+        bytes: photo(),
+        contentType: 'image/png',
+        source: 'api' as const,
+        idempotencyKey: 'photo-1',
+      };
+      const results = await Promise.all(
+        Array.from({ length: 4 }, () => renders.createDraft(input)),
+      );
+      expect(new Set(results.map((render) => render.id)).size).toBe(1);
+      expect(await db().render.count({ where: { userId } })).toBe(1);
+      await expect(
+        renders.createDraft({ ...input, prompt: 'different product' }),
+      ).rejects.toMatchObject({ status: 409, code: 'idempotency_conflict' });
+    });
+
+    it('atomically enforces the daily allowance across simultaneous preview requests', async () => {
+      const { renders } = await load();
+      const userId = await newUser(0);
+      const bytes = photo();
+      const results = await Promise.allSettled(
+        Array.from({ length: 8 }, () =>
+          renders.createDraft({
+            actor: { userId },
+            bytes,
+            contentType: 'image/png',
+            source: 'api',
+          }),
+        ),
+      );
+      expect(results.filter((result) => result.status === 'fulfilled')).toHaveLength(2);
+      expect(await db().render.count({ where: { userId } })).toBe(2);
+    });
 
     it('stores what the guardrails measured on the photo and the draft sheet', async () => {
       const { renders } = await load();
