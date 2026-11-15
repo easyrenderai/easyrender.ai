@@ -23,7 +23,7 @@ export function AdminNavigation({
   section,
 }: {
   labels: Record<string, string>;
-  section: Section;
+  section: Section | 'giftCredits';
 }) {
   const params = useSearchParams();
   return (
@@ -39,6 +39,15 @@ export function AdminNavigation({
           </Link>
         </Button>
       ))}
+      <Button asChild variant={section === 'giftCredits' ? 'secondary' : 'ghost'} size="sm">
+        <Link
+          prefetch={false}
+          aria-current={section === 'giftCredits' ? 'page' : undefined}
+          href="/admin/gift-credits"
+        >
+          {labels.giftCredits}
+        </Link>
+      </Button>
     </nav>
   );
 }
