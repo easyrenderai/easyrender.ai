@@ -40,6 +40,26 @@ export async function spendCreditsInTransaction(
     skipDuplicates: true,
   });
   if (!inserted.count) return false;
+  if (input.apiKeyId) {
+    // Serialize debits against this key across workers. Wallet, key cap and ledger commit together.
+    await tx.$queryRaw`SELECT id FROM "ApiKey" WHERE id = ${input.apiKeyId} FOR UPDATE`;
+    const apiKey = await tx.apiKey.findUnique({ where: { id: input.apiKeyId } });
+    if (
+      !apiKey ||
+      apiKey.userId !== input.userId ||
+      !apiKey.scopes.includes('spend') ||
+      (apiKey.expiresAt && apiKey.expiresAt <= new Date())
+    ) {
+      throw new AppError('This API key cannot authorize spending', 403, 'insufficient_scope');
+    }
+    if (apiKey.creditLimit !== null && input.amount > apiKey.creditLimit - apiKey.spentCredits) {
+      throw new AppError('API key credit budget exceeded', 403, 'key_budget_exceeded');
+    }
+    await tx.apiKey.update({
+      where: { id: apiKey.id },
+      data: { spentCredits: { increment: input.amount } },
+    });
+  }
   const { count } = await tx.user.updateMany({
     where: { id: input.userId, credits: { gte: input.amount } },
     data: { credits: { decrement: input.amount } },

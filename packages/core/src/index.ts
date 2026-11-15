@@ -1,4 +1,5 @@
 export * from './analytics';
+export * from './api-access';
 export * from './api-keys';
 export * from './api-limits';
 export * from './billing';
