@@ -102,6 +102,20 @@ const render = {
 };
 
 describe('MCP protocol contract', () => {
+  it('also rejects anonymous execution at the tool boundary without the HTTP gate', async () => {
+    const server = createMcpServer({});
+    const client = new Client({ name: 'anonymous', version: '1' });
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await server.connect(serverTransport);
+    await client.connect(clientTransport);
+    connections.push({ client, server });
+    const result = await client.callTool({ name: 'get_credits', arguments: {} });
+    expect(result).toMatchObject({
+      isError: true,
+      structuredContent: { error: { code: 'unauthorized', status: 401 } },
+    });
+  });
+
   it('advertises schemas and truthful behavior annotations', async () => {
     const tools = (await (await connect()).listTools()).tools;
     for (const tool of tools) {

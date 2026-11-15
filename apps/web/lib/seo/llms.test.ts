@@ -132,6 +132,8 @@ describe('llms.txt', () => {
     expect(agents).toContain('OAuth');
     expect(agents).toContain('Authorization: Bearer');
     expect(agents).toContain('401');
+    expect(agents).toContain('tools/list are public without credentials');
+    expect(agents).toContain('All tools/call requests require');
     expect(agents).toContain('Gemini CLI extension');
   });
 

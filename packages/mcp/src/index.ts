@@ -23,7 +23,7 @@ import {
 
 export { MAX_INLINE_IMAGE_BYTES } from './images';
 
-export function createMcpServer(actor: Actor & { userId: string }) {
+export function createMcpServer(actor: Actor) {
   actor = { ...actor, source: 'mcp' };
   const server = new McpServer(
     { name: 'easyrender', version: '0.2.0' },
@@ -122,7 +122,7 @@ export function createMcpServer(actor: Actor & { userId: string }) {
         openWorldHint: true,
       },
     },
-    () => forActor(actor, 'read', () => getCreditQuote(actor)),
+    () => forActor(actor, 'read', (owner) => getCreditQuote(owner)),
   );
   registerExtendedTools(server, actor);
   return server;

@@ -107,14 +107,18 @@ export function result(render: Parameters<typeof toView>[0]) {
   };
 }
 
+export const MCP_UNAUTHORIZED_MESSAGE =
+  'Pass an easyrender API key as Authorization: Bearer er_...';
+
 export function forActor(
   actor: Actor,
   scope: 'read' | 'write' | 'spend' | 'share',
-  fn: () => Promise<Record<string, unknown>>,
+  fn: (owner: Actor & { userId: string }) => Promise<Record<string, unknown>>,
 ) {
   return run(async () => {
+    if (!actor.userId) throw new AppError(MCP_UNAUTHORIZED_MESSAGE, 401, 'unauthorized');
     assertActorScope(actor, scope);
-    return fn();
+    return fn({ ...actor, userId: actor.userId });
   });
 }
 export function requireBudget(maxCredits: number | undefined, cost: number) {
