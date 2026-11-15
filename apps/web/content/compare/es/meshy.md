@@ -4,6 +4,7 @@ group: compare-meshy
 title: Alternativa a Meshy AI para fotos de producto
 description: Alternativa a Meshy AI para convertir una foto de producto en un modelo 3D: precios, entradas y formatos con fuentes, y a quién le conviene cada uno.
 date: 2026-11-15
+updated: 2026-11-15
 keyword: meshy ai
 author: Jorge Rodríguez
 authorType: person
@@ -15,6 +16,14 @@ Si buscas una alternativa a Meshy AI para productos reales, easyrender convierte
 Meshy abarca más: texto a 3D, hasta cuatro imágenes de entrada, texturizado, rigging (un esqueleto para animar el modelo) y animación, con planes mensuales de créditos. Elige según lo que tienes al empezar.
 
 <!-- IMAGE PENDING: ilustración EN del reloj de chimenea (mitad latón pulido, mitad malla de arcilla y alambre). Pie: «Ilustración, no es un resultado de easyrender». -->
+
+## Una prueba real de Meshy con nuestra foto del sillón
+
+El 15 de noviembre de 2026 subimos nuestra [foto pública del sillón](/showcase/armchair.jpg) a una cuenta gratuita de Meshy. Seleccionamos High Detail, Meshy 7.1 Flagship, resolución geométrica Standard y texturas Meshy 7 a 2K, con Multi-view, Split, Pose e Image Enhancement desactivados. La interfaz cotizó 30 créditos; usamos créditos gratuitos y no compramos ninguna suscripción.
+
+El resultado texturizado apareció en el visor, que indicaba 868.902 caras triangulares y 522.161 vértices. Al seleccionar GLB y pulsar Download, esta cuenta mostró «Subscribe to download». No obtuvimos el archivo, por lo que no podemos indicar su tamaño ni confirmar su funcionamiento en un visor externo o una tienda.
+
+Es un recorrido observado en Workspace, no un benchmark controlado de calidad o velocidad. No generamos simultáneamente un modelo con el flujo actual de easyrender. Nuestro [GLB de muestra del sillón](/showcase/armchair.glb) es un resultado histórico con otros ajustes. Tener créditos gratuitos para generar y poder descargar el modelo son comprobaciones distintas: la lista de formatos de abajo no garantiza una exportación gratuita.
 
 ## ¿En qué se diferencian Meshy y easyrender?
 
