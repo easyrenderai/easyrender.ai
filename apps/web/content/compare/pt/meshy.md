@@ -1,104 +1,123 @@
 ---
 
 group: compare-meshy
-title: "Alternativa ao Meshy AI para fotos de produto: easyrender"
-description: "Alternativa ao Meshy para passar uma fotografia de produto a modelo 3D: preços, entradas e formatos com fonte, e quem deve escolher cada ferramenta."
+title: "4 alternativas ao Meshy: preços e testes 3D"
+description: "Paga por modelos que descarta? Compare 4 alternativas ao Meshy por custo, downloads e fidelidade, com tabelas e resultados reais."
 date: 2026-11-11
-updated: 2026-11-15
-keyword: meshy ai
+updated: "2026-11-16"
+keyword: "alternativas ao Meshy"
 author: Jorge Rodríguez
 authorType: person
 cta: Experimente a mesma fotografia de produto que daria ao Meshy e veja todos os ângulos grátis, antes de gastar um crédito.
 ---
 
-<!-- NOTA PARA QUEM CARREGA: rota de destino /pt/comparacoes/meshy. As comparativas EN não usam o loader do blog (na cópia local de 10-nov, a rota compare tem published: []). Confirmar o formato de conteúdo das comparativas e se os tokens de preço se preenchem aqui. O nome do grupo hreflang («compare-meshy») é provisório: usar o que a página EN tiver no código. -->
+Procura alternativas ao Meshy porque paga por modelos que não consegue usar? Veja o easyrender para uma fotografia de produto, Tripo ou Rodin para várias vistas e Sloyd para criação frequente. Escolha pelo download, licença e trabalho necessário para corrigir o resultado.
 
-Como alternativa ao Meshy para produtos reais, o easyrender mostra uma folha de nove ângulos grátis e só cobra ao gerar o modelo. O Meshy abrange geração a partir de texto (text-to-3D), até quatro imagens de entrada, texturização, rigging e animação, com planos mensais de créditos. Escolha pelo ponto de partida.
+## Escolha pelo problema que precisa de resolver
 
-## Como se comparam o Meshy e o easyrender?
+| Ferramenta      | Quando escolher                                 | Preço publicado                                        | Limite grátis                              |
+| --------------- | ----------------------------------------------- | ------------------------------------------------------ | ------------------------------------------ |
+| easyrender      | Uma fotografia de produto; rever antes de pagar | {{renderPrice}} por modelo; {{renderCredits}} créditos | Folha de ângulos grátis; modelo pago       |
+| Tripo           | Várias vistas e controlo da malha               | Pro: US$20/mês; US$240 cobrados anualmente             | 200 créditos/mês; uso não comercial        |
+| Rodin (Hyper3D) | Várias fotografias e materiais                  | Creator: US$30/mês, cobrança mensal                    | Exportações limitadas a modelos anteriores |
+| Sloyd           | Criação frequente e modelos paramétricos        | Plus: US$15/mês, cobrança mensal                       | 1 geração/dia; exportações da comunidade   |
+| Meshy           | Texto, várias fotografias e animação            | Pro: £16/mês (GBP), cobrança mensal                    | 100 créditos/mês; confirmar download       |
 
-Os dois são ferramentas de image-to-3D com IA. Diferem no que entra, na forma de pagar e no que sai. Os preços são os publicados em novembro de 2026.
+Preços e condições verificados a 16 de novembro de 2026: [easyrender](/pt/precos), [Meshy](https://www.meshy.ai/pricing), [Tripo](https://www.tripo3d.ai/pricing), [Rodin](https://hyper3d.ai/pricing) e [Sloyd](https://www.sloyd.ai/pricing). Mantemos moedas e períodos de cobrança dos sites; não são custos equivalentes por modelo. Os créditos diferem entre serviços e as tarifas API são separadas.
 
-|                            | Meshy                                                                        | easyrender                                                                  |
-| -------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| Entrada                    | Texto, uma imagem, ou uma a quatro imagens do mesmo objeto                   | Uma fotografia, com uma nota curta opcional                                 |
-| Verificação antes de pagar | O text-to-3D começa com uma pré-visualização sem textura, 20 créditos na API | Folha de nove ângulos grátis, antes de gastar créditos                      |
-| Modelo de preço            | Planos mensais; Pro com 1.000 créditos. Consulte o preço atual               | {{renderCredits}} créditos por modelo ({{renderPrice}}); à medida ou mensal |
-| Créditos                   | Os créditos do plano renovam-se todos os meses e não acumulam                | Os créditos nunca expiram                                                   |
-| Plano gratuito             | 100 créditos por mês, resultados com licença CC BY 4.0                       | Pré-visualizações grátis, sem cartão de crédito                             |
-| Descargas                  | GLB, OBJ, FBX, USDZ, BLEND e outros                                          | GLB e USDZ                                                                  |
-| Extras                     | Retexturização, reconstrução da malha (remesh), rigging, animação            | Carregamento em lote a partir da sua biblioteca                             |
-| Para programadores         | API e MCP nos planos pagos                                                   | Servidor MCP e API REST                                                     |
+![Ilustração de um relógio de latão, metade material e metade malha 3D](/compare/illustrations/meshy/hero.webp "Ilustração conceptual: relógio de latão representado entre superfície e malha 3D.")
 
-Fontes, em inglês: [preços do Meshy](https://www.meshy.ai/pricing), [Image to 3D](https://docs.meshy.ai/en/api/image-to-3d), [Multi Image to 3D](https://docs.meshy.ai/en/api/multi-image-to-3d), [Text to 3D](https://docs.meshy.ai/en/api/text-to-3d) e [preços da API](https://docs.meshy.ai/en/api/pricing), todas lidas a 11 de novembro de 2026. Os valores do easyrender vêm da nossa [página de preços](/pt/precos).
+## Custo, download ou fidelidade ao produto?
 
-## Como funciona o Meshy?
+| O seu problema                         | O que experimentar                              | O que verificar antes de mudar                                  |
+| -------------------------------------- | ----------------------------------------------- | --------------------------------------------------------------- |
+| Créditos gastos em modelos descartados | easyrender ou pré-visualização Rodin            | Rever a forma antes de pagar; Rodin depende da qualidade        |
+| Sem download grátis do resultado       | Condições de exportação de cada plano           | Gerar, exportar e usar comercialmente são permissões diferentes |
+| As costas não correspondem ao produto  | Tripo ou Rodin com fotografias adicionais reais | Vistas geradas não documentam superfícies escondidas            |
+| Precisa de uma personagem animada      | Meshy ou Sloyd                                  | Testar o esqueleto e a animação no seu motor                    |
 
-O Meshy aceita três tipos de entrada. O Image to 3D aceita um JPG, PNG ou WebP até 20 MB. O Multi Image to 3D aceita de uma a quatro imagens, que segundo a documentação devem mostrar o mesmo objeto de ângulos diferentes, com a primeira a servir de frente.
+## A mesma fotografia: o que vimos e descarregámos
 
-O rigging prepara a estrutura que permite animar o modelo. O Text to 3D funciona em dois passos. Um passo de pré-visualização cria uma malha sem textura a partir de um texto até 800 caracteres, e um passo de refinamento aplica-lhe a textura.
+Esta fotografia foi enviada ao Meshy e ao Tripo a 15 de novembro de 2026. Ao lado, a folha de ângulos do nosso exemplo easyrender existente: vistas geradas a partir de uma fotografia, não nove fotografias reais.
 
-Pode pedir mapas PBR, que descrevem a resposta da superfície à luz (metal, rugosidade e normais) além da cor base, texturas de cor base a 2K, 4K ou 8K, e faces quadrangulares ou triangulares ao refazer a malha (remesh). O número de faces pretendido vai de 100 a 300.000, com 30.000 por predefinição.
+![Fotografia original da poltrona amarela com estrutura metálica](/showcase/armchair.jpg "Entrada dos dois testes: uma fotografia, sem outras vistas reais.")
+![Nove vistas da poltrona geradas na folha de ângulos easyrender](/showcase/armchair-angles.jpg "Exemplo easyrender: confira a forma e as peças antes de gerar o 3D.")
 
-Na página de preços da API, uma geração de image-to-3D com texturas 2K nos modelos atuais custa 30 créditos. O rigging custa 5 créditos e a animação 3 créditos por ação. Os planos pagos indicam uma licença «Private & Customer owned» e descargas ilimitadas.
+![Poltrona Meshy 7 num visualizador externo](/benchmarks/2026-11-15/meshy-viewer.jpg "Meshy 7 via Higgsfield: GLB real de 2,82 MB; PBR desativado.")
+![Poltrona Tripo H3.1 num visualizador externo](/benchmarks/2026-11-15/tripo-viewer.jpg "Tripo H3.1 via Higgsfield: GLB real de 3,85 MB; PBR ativado.")
 
-## Como funciona o easyrender?
+| Medição do GLB descarregado        | Meshy 7                        | Tripo H3.1                     |
+| ---------------------------------- | ------------------------------ | ------------------------------ |
+| Tamanho                            | 2.824.116 bytes                | 3.846.052 bytes                |
+| Triângulos                         | 27.415                         | 27.067                         |
+| Texturas                           | 1 × 2K                         | 3 × 2K                         |
+| Validação glTF                     | 0 erros; 0 avisos              | 0 erros; 1 aviso               |
+| Visualizador externo no computador | Texturas e rotação funcionaram | Texturas e rotação funcionaram |
 
-O easyrender parte de um único tipo de entrada: a fotografia de um produto real, como a fotografia de fornecedor de uma cadeira de carvalho. Pode juntar uma nota curta para o que a fotografia esconde, como «costas abertas» ou «quatro gavetas».
+Gerações separadas no Higgsfield com a mesma entrada, mas definições de material e ângulos das capturas diferentes. O aviso do Tripo refere-se a tangentes calculadas pelo visualizador. Não estabelecem um vencedor de fidelidade ou velocidade. O [registo de medições](/benchmarks/2026-11-15/measurements.json) conserva definições, dados dos ficheiros e validação.
 
-1. Carregue a fotografia. Verificamos o tamanho, as proporções e a desfocagem.
-2. Veja a folha de ângulos: nove vistas desenhadas a partir da sua fotografia, oito à volta do objeto em passos de 45 graus e uma de cima. É grátis.
-3. Conte as peças em cada vista: pernas, portas, puxadores. Se algo estiver mal, mude a fotografia ou a nota.
-4. Gere o modelo só se estiver certo. É nesse momento que gasta {{renderCredits}} créditos.
-5. Descarregue o GLB para a web e para Android, e o USDZ para aparelhos Apple.
+Nos testes diretos, Meshy Workspace e Tripo Studio pediram outro plano para as exportações escolhidas. Os GLB apresentados foram gerados depois com saldo existente de uma conta Higgsfield Ultra. Sem testes no Shopify ou num telemóvel físico. Rodin e Sloyd foram comparados pela documentação, sem geração própria.
 
-Se a geração falhar, os créditos voltam ao seu saldo. A realidade aumentada chega em breve: vai poder ver a peça na sua casa a partir do telemóvel. [Carregar uma fotografia](/pt) para experimentar os dois primeiros passos, grátis.
+## Vantagens e limites de cada alternativa
 
-## Para que precisa do modelo?
+### easyrender: rever o produto antes de pagar
 
-Defina primeiro o uso do modelo, porque isso determina a escolha da ferramenta. Cada objetivo abaixo traz uma verificação que pode fazer no resultado de qualquer das duas.
+Para móveis e decoração a partir de uma fotografia: confira nove ângulos, conte as peças e gere quando a forma estiver correta. O modelo custa {{renderCredits}} créditos ({{renderPrice}}), com GLB e USDZ. A pré-visualização é grátis; o ficheiro 3D é pago.
 
-- O modelo de um produto que vende, para a ficha de produto. Conte pernas, portas e puxadores e compare com a peça real, e rode o modelo para as costas, o lado que a fotografia nunca mostrou.
-- Um recurso 3D para um jogo ou uma animação. Confirme que o ficheiro abre no seu motor de jogo e que a estrutura de animação move as partes certas. O FBX, o rigging e a animação do Meshy são feitos para isto.
-- Um conceito que ainda não existe. A entrada é um texto. Avalie-o por corresponder ao briefing, não pela fidelidade.
-- Uma fatura previsível. Calcule o custo por modelo final na página de preços de cada ferramenta, sem esquecer as pré-visualizações e as repetições que deitou fora.
+As vistas adicionais são previsões das partes escondidas. Para várias fotografias reais, rigging ou animação, veja as outras opções. [Experimente a fotografia](/pt#try) ou consulte os [preços](/pt/precos).
 
-## O que corre mal no image-to-3D com IA, e como se resolve?
+### Tripo: aproveitar fotografias reais de vários lados
 
-Estas falhas aparecem em qualquer ferramenta de image-to-3D, porque vêm da fotografia ou da preparação. Esta é a lista que conferimos.
+Para vistas de frente, laterais e costas, segmentação e redução da malha. A [API multivista](https://developers.tripo3d.com/en/docs/generation-multiview-to-model/standard) aceita duas a quatro vistas, com a frente obrigatória. [Studio Free](https://www.tripo3d.ai/pricing) é não comercial e indica 15 exportações H2.5. Ver um modelo recente não garante exportação grátis.
 
-| Sintoma                                     | Causa                                                                       | Solução                                                                                                                                   |
-| ------------------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| A fotografia só mostra a frente             | A câmara não viu as costas nem os lados                                     | Use uma fotografia a três quartos; no Meshy, junte uma vista de trás como segunda imagem; no easyrender, escreva «costas abertas» na nota |
-| Duas pernas da cadeira fundem-se numa só    | De frente, as pernas de trás escondem-se atrás das da frente                | Fotografe a três quartos, para as quatro pernas se verem separadas                                                                        |
-| Parte do tapete passa a fazer parte da mesa | Um fundo carregado                                                          | Recorte rente à peça, ou fotografe contra uma parede lisa                                                                                 |
-| Um halo claro à volta da peça               | Um recorte com halo deixado pela remoção de fundo                           | Confira o contorno à resolução original antes de carregar                                                                                 |
-| A cadeira do text-to-3D não é a sua cadeira | O texto inventa um produto                                                  | Use uma imagem como entrada para tudo o que vende                                                                                         |
-| O ficheiro não abre no motor de jogo        | Formato errado para a ferramenta                                            | Use FBX ou OBJ do Meshy; GLB para a web e USDZ para a RA da Apple                                                                         |
-| Os créditos acabam antes do fim do mês      | Os créditos do plano renovam-se todos os meses e não passam para o seguinte | Ajuste o plano ao que gera, ou use créditos que não expiram                                                                               |
+### Rodin: controlar referências e materiais
 
-## Quem deve escolher o Meshy, e quem deve escolher o easyrender?
+A [API Gen-2.5](https://docs.hyper3d.ai/en/api-specification/rodin-gen2-5) aceita até cinco imagens e saídas GLB, USDZ, FBX ou OBJ. [Creator](https://hyper3d.ai/pricing) inclui exportações ilimitadas e uso comercial; acesso API completo surge no Business.
 
-Escolha o Meshy se cria recursos 3D para jogos, personagens ou conceitos a partir de texto. O rigging, a animação, a retexturização e a exportação em FBX cobrem trabalho que nós não fazemos. Também lhe serve se tiver até quatro fotografias do objeto e quiser usá-las todas.
+A [pré-visualização grátis](https://hyper3d.ai/help/articles/how-many-credits-does-each-hyper3d-generation-cost) antes da confirmação aplica-se ao Gen-2.5 em qualidade Medium ou inferior. High e Extreme High cobram durante a geração.
 
-Escolha o easyrender se vende mobiliário, decoração ou outro produto físico e tem uma fotografia dele. A folha de ângulos grátis deixa-o avaliar a forma antes de pagar, e pode comprar créditos conforme as necessidades, sem subscrição.
+### Sloyd: volume e modelos paramétricos
 
-O teste mais justo é passar a sua própria fotografia pelas duas ferramentas. Avalie as costas, o número de peças e a textura em ecrã inteiro, e depois o custo por modelo com que fica. As verificações estão em [como criar um modelo 3D](/pt/guias/como-criar-um-modelo-3d).
+Sloyd combina texto e imagem com modelos paramétricos. [Plus](https://www.sloyd.ai/pricing) inclui geração básica ilimitada com uso razoável e regras de fila. Multivista e outras funções gastam créditos. Para revender os ficheiros em marketplaces, consulte Pro: Plus exclui essa redistribuição.
+
+Guest permite uma geração diária, mas exporta apenas modelos da comunidade. As suas gerações gratuitas são de uso pessoal. Veja os [formatos e licenças](https://www.sloyd.ai/sloyd-answers).
+
+### Meshy: texto, fotografias e animação
+
+Para conceitos, novas texturas ou animação. A [entrada multi-imagem](https://docs.meshy.ai/en/api/multi-image-to-3d) aceita uma a quatro fotografias do mesmo objeto. O [plano grátis](https://www.meshy.ai/pricing) oferece 100 créditos mensais e licença CC BY 4.0 com atribuição; confirme o download. Pro acrescenta downloads ilimitados e licença privada.
+
+## Entradas e exportações para o seu trabalho
+
+| Ferramenta | Entrada                                          | Formatos relevantes        |
+| ---------- | ------------------------------------------------ | -------------------------- |
+| easyrender | Uma fotografia e nota opcional                   | GLB, USDZ                  |
+| Meshy      | Texto ou 1–4 fotografias                         | GLB, FBX, OBJ, USDZ, BLEND |
+| Tripo      | Texto, uma fotografia ou 2–4 vistas              | GLB; FBX, OBJ, USDZ        |
+| Rodin      | Texto ou até 5 imagens na API                    | GLB, USDZ, FBX, OBJ        |
+| Sloyd      | Texto, imagem, multivista e modelos paramétricos | GLB, FBX, OBJ, BLEND, USDZ |
+
+Formatos documentados não significam downloads grátis em todos os planos. Tripo oferece alguns por [conversão](https://developers.tripo3d.com/en/docs/models-convert). Teste uma exportação completa na ferramenta de destino antes de processar o catálogo.
+
+## Decida com um produto, não cem gerações
+
+Escolha uma peça difícil do catálogo. Verifique silhueta, peças, costas e material; descarregue e abra o ficheiro. Divida toda a despesa, incluindo descartes e correções, pelos modelos utilizáveis. Numa ficha de produto, o resultado tem de continuar a ser o seu produto.
+
+Veja também as [alternativas ao Tripo](/pt/comparacoes/tripo) e [modelos 3D para ecommerce](/pt/guias/modelos-3d-para-ecommerce).
 
 ## Perguntas frequentes
 
-### O easyrender é uma alternativa grátis ao Meshy?
+### Qual alternativa ao Meshy escolher para uma loja?
 
-A pré-visualização é grátis: vê o objeto de nove ângulos sem cartão de crédito. Um modelo pronto custa {{renderCredits}} créditos, ou seja {{renderPrice}}. O Meshy tem um plano gratuito com 100 créditos por mês e resultados com licença CC BY 4.0, que permite uso comercial com atribuição.
+easyrender para uma fotografia e revisão antes do pagamento. Compare Meshy, Tripo e Rodin para várias fotografias reais. Não está demonstrada maior fidelidade em todos os produtos: teste uma peça representativa.
 
-### O easyrender faz text-to-3D como o Meshy?
+### Existe uma alternativa completamente grátis?
 
-Não: o easyrender parte da fotografia de um objeto real. O Text to 3D do Meshy cria uma malha a partir de um texto até 800 caracteres e aplica a textura num segundo passo. Se o produto ainda não existe, o Meshy é a ferramenta certa; se tem uma fotografia dele, as duas podem partir daí.
+Distinga pré-visualização, geração, exportação e licença comercial. A pré-visualização easyrender é grátis, o modelo é pago. Meshy Free usa CC BY 4.0 com limites de download. Tripo Free é não comercial; Sloyd Guest exporta modelos da comunidade.
 
-### Que formatos de ficheiro exporta cada ferramenta?
+### Os cinco foram testados com a mesma fotografia?
 
-O easyrender dá um GLB, para a web e para a maioria das ferramentas 3D, e um USDZ, para aparelhos Apple. O Meshy lista FBX, OBJ, USDZ, GLB e BLEND entre as suas descargas. Se o passo seguinte for o Unity, o Unreal ou um rig, o FBX do Meshy é a escolha prática.
+Meshy e Tripo receberam a mesma fotografia da poltrona; as capturas mostram GLB do Higgsfield. A folha easyrender é um exemplo existente com outras definições. Rodin e Sloyd foram verificados em fontes oficiais. Não é um benchmark controlado dos cinco.
 
-### Quem pode ver os modelos gerados?
+### E se precisar de medidas exatas ou peças editáveis?
 
-No easyrender, os modelos prontos aparecem por predefinição na galeria pública. Pode desligar «Show in public gallery» na página do modelo, mas hoje isso desativa a ligação partilhada. Os planos pagos do Meshy indicam uma licença privada, do cliente, e os resultados do plano gratuito ficam com licença CC BY 4.0.
+Verifique dimensões e topologia no editor. Um modelo bonito não prova precisão. Para fabrico, considere modelação manual ou CAD com referências medidas.

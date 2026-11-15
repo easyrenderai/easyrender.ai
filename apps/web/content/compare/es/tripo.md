@@ -1,33 +1,122 @@
 ---
 
 group: compare-tripo
-title: Alternativa a Tripo para fotos de producto
-description: Alternativa a Tripo para pasar una foto de producto a modelo 3D: entradas, coste en créditos y formatos con fuentes, y a quién le conviene cada uno.
+title: "4 alternativas a Tripo: precios y pruebas 3D"
+description: "¿Necesitas un archivo 3D que puedas usar? Compara 4 alternativas a Tripo por exportación, detalle y coste, con tablas y resultados reales."
 date: 2026-11-15
-updated: 2026-11-15
-keyword: tripo
+updated: "2026-11-16"
+keyword: "alternativas a Tripo"
 author: Jorge Rodríguez
 authorType: person
 cta: Parte de la foto de producto que ya tienes y revisa gratis la hoja de ángulos antes de gastar un crédito.
 ---
 
-Si buscas una alternativa a Tripo para una sola foto de producto, easyrender dibuja gratis una hoja con nueve vistas a partir de ella y solo cobra por modelo cuando decides generarlo.
+¿Buscas alternativas a Tripo porque tu modelo no se parece al producto o la descarga exige otro plan? easyrender permite revisar los ángulos antes de pagar; Meshy añade herramientas de animación; Rodin ofrece controles de geometría y materiales; Sloyd puede encajar si generas con frecuencia.
+
+## Qué elegir según lo que te está frenando
+
+| Herramienta     | Cuándo elegirla                                | Precio publicado                                       | Límite gratis                                     |
+| --------------- | ---------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------- |
+| easyrender      | Una foto de producto; revisar antes de pagar   | {{renderPrice}} por modelo; {{renderCredits}} créditos | Hoja de ángulos gratis; modelo de pago            |
+| Meshy           | Texto, varias fotos y animación                | Pro: £16/mes (GBP), pago mensual                       | 100 créditos/mes; confirma acceso a descarga      |
+| Rodin (Hyper3D) | Varias fotos y control de materiales           | Creator: US$30/mes, pago mensual                       | Exportaciones limitadas a modelos anteriores      |
+| Sloyd           | Generación frecuente y plantillas editables    | Plus: US$15/mes, pago mensual                          | 1 generación/día; exporta modelos de la comunidad |
+| Tripo           | Varias vistas, segmentación y control de malla | Pro: US$20/mes, US$240 facturados al año               | 200 créditos/mes; uso no comercial                |
+
+Precios y condiciones consultados el 16 de noviembre de 2026: [easyrender](/es/precios), [Meshy](https://www.meshy.ai/pricing), [Tripo](https://www.tripo3d.ai/pricing), [Rodin](https://hyper3d.ai/pricing) y [Sloyd](https://www.sloyd.ai/pricing). Conservamos la moneda y la facturación que muestra cada web; no son costes equivalentes por modelo. Los créditos de unas plataformas no equivalen a los de otras. Las tarifas de API se consultan aparte.
 
 ![Ilustración de un taburete de ratán, mitad fibras trenzadas y mitad malla 3D gris, sobre fondo oscuro](/compare/illustrations/tripo/hero.webp "Ilustración conceptual: un taburete de ratán muestra su superficie y su estructura de malla.")
 
-Tripo abarca más: texto, una imagen o varias vistas como entrada, texturas PBR (materiales definidos por propiedades como el color, la metalicidad y la rugosidad), mallas de cuadriláteros, rigging, animación y conversión de formatos. Elige según lo que tienes y para qué quieres el modelo.
+## ¿El problema es la exportación, el peso o los detalles?
 
-## Prueba real de Tripo Studio con nuestra foto del sillón
+| Tu problema                              | Qué probar                                                   | Qué comprobar antes de cambiar                                                                 |
+| ---------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| La exportación de H3.1 te pide otro plan | easyrender, Meshy o un plan de Tripo con esa exportación     | Tripo gratis lista 15 exportaciones de H2.5; no de todos sus modelos                           |
+| El GLB pesa demasiado para la ficha      | Controles de malla de Meshy, Rodin o Tripo                   | Mide peso y carga con tus texturas, no solo polígonos                                          |
+| Cambian patas, tiradores o la trasera    | Hoja de ángulos de easyrender; varias fotos en Meshy o Rodin | Cuenta piezas y revisa lados ocultos antes de aceptar el resultado                             |
+| Generas muchos objetos cada semana       | Sloyd Plus o planes de volumen                               | Sloyd incluye generación básica ilimitada con uso razonable; otras funciones consumen créditos |
+
+## La misma foto: qué pudimos ver y descargar
+
+Esta es la foto que enviamos a Meshy y Tripo el 15 de noviembre de 2026. A su lado, la hoja de ángulos de nuestra muestra de easyrender: son vistas generadas a partir de una foto, no nueve fotografías del objeto.
+
+![Foto original del sillón amarillo con estructura metálica](/showcase/armchair.jpg "Entrada de las dos pruebas: una sola foto del sillón, no varias vistas reales.")
+![Hoja de nueve ángulos del sillón generada por easyrender](/showcase/armchair-angles.jpg "Muestra de easyrender: revisa la forma y las piezas antes de generar el 3D.")
+
+![Modelo de Meshy 7 del sillón en el visor externo](/benchmarks/2026-11-15/meshy-viewer.jpg "Meshy 7 vía Higgsfield: GLB real, 2,82 MB; PBR desactivado en esta prueba.")
+![Modelo de Tripo H3.1 del sillón en el visor externo](/benchmarks/2026-11-15/tripo-viewer.jpg "Tripo H3.1 vía Higgsfield: GLB real, 3,85 MB; PBR activado en esta prueba.")
+
+| Medición del GLB descargado | Meshy 7                      | Tripo H3.1                   |
+| --------------------------- | ---------------------------- | ---------------------------- |
+| Tamaño                      | 2.824.116 bytes              | 3.846.052 bytes              |
+| Triángulos                  | 27.415                       | 27.067                       |
+| Texturas                    | 1 × 2K                       | 3 × 2K                       |
+| Validación glTF             | 0 errores; 0 advertencias    | 0 errores; 1 advertencia     |
+| Visor externo de escritorio | Abrió con textura y rotación | Abrió con textura y rotación |
+
+Son generaciones separadas a través de Higgsfield, con la misma entrada y distintos ajustes de material. Las cámaras de las capturas también difieren. El aviso de Tripo corresponde a tangentes que debe calcular el visor. No establecemos un ganador de fidelidad o velocidad con estas pruebas. El [registro de mediciones](/benchmarks/2026-11-15/measurements.json) conserva ajustes, archivos y validación.
+
+En las pruebas directas de Meshy Workspace y Tripo Studio, esas cuentas pidieron mejorar el plan al exportar los resultados elegidos. Los GLB de las capturas se generaron después con créditos existentes de una cuenta Ultra de Higgsfield. No se probaron en Shopify ni en un móvil físico. Rodin y Sloyd se comparan por su documentación, sin una prueba propia de generación.
+
+## Qué ganas y qué cedes con cada alternativa
+
+### easyrender: revisar un producto antes de gastar créditos
+
+Encaja si vendes muebles o decoración y partes de una foto. Revisa la hoja de nueve ángulos, cuenta las piezas y genera solo cuando te convenza. El modelo cuesta {{renderCredits}} créditos ({{renderPrice}}), con salida GLB y USDZ. La vista previa es gratis; el archivo 3D no lo es.
+
+Su límite: las vistas adicionales son predicciones, no evidencia de la trasera. Si tienes varias fotos reales o necesitas rigging y animación, revisa las otras opciones. [Prueba tu foto](/es#try) o consulta los [precios](/es/precios).
+
+### Meshy: texto, fotos y animación en el mismo flujo
+
+Considera Meshy si necesitas crear conceptos, retexturizar o animar. Su [entrada multimagen](https://docs.meshy.ai/en/api/multi-image-to-3d) acepta de una a cuatro fotos del mismo objeto. El [plan gratis](https://www.meshy.ai/pricing) ofrece 100 créditos al mes y licencia CC BY 4.0 con atribución; comprueba qué resultado puedes descargar. Pro añade descargas ilimitadas y licencia privada.
+
+### Rodin: más control de entrada y materiales
+
+Rodin es una opción para probar varias referencias y controlar la geometría y los materiales. Su [API Gen-2.5](https://docs.hyper3d.ai/en/api-specification/rodin-gen2-5) acepta hasta cinco imágenes y salida GLB, USDZ, FBX u OBJ. [Creator](https://hyper3d.ai/pricing) incluye exportaciones ilimitadas y uso comercial; el acceso completo a API aparece en Business.
+
+La [vista previa gratis](https://hyper3d.ai/help/articles/how-many-credits-does-each-hyper3d-generation-cost) de Gen-2.5 se limita a calidad Medium o inferior antes de confirmar. High y Extreme High cobran al generar. No lo presupuestes como una prueba gratis en cualquier calidad.
+
+### Sloyd: volumen y plantillas con controles
+
+Sloyd combina generación por texto e imagen con plantillas paramétricas. [Plus](https://www.sloyd.ai/pricing) incluye generación básica ilimitada, sujeta a uso razonable y colas; multimagen y otras funciones avanzadas gastan créditos. Es una opción si creas recursos con frecuencia. Para vender los archivos en marketplaces necesitas revisar Pro: Plus no incluye esa redistribución.
+
+Guest permite una generación diaria, pero sus exportaciones se limitan a modelos de la comunidad. Tus generaciones gratuitas son de uso personal. La [documentación de formatos y licencia](https://www.sloyd.ai/sloyd-answers) distingue esos modelos de comunidad de tus propios resultados.
+
+### Tripo: aprovechar fotos reales de varios lados
+
+Considera Tripo si ya tienes frente, laterales y trasera, o necesitas segmentar y reducir una malla. Su [API multivista](https://developers.tripo3d.com/en/docs/generation-multiview-to-model/standard) admite de dos a cuatro vistas con el frente obligatorio. El [plan gratis de Studio](https://www.tripo3d.ai/pricing) es no comercial y lista 15 exportaciones de H2.5. Ver un modelo nuevo en el visor no garantiza poder exportarlo gratis.
+
+## Entradas y formatos: ¿encaja en tu trabajo?
+
+| Herramienta | Entrada                                | Formatos relevantes        |
+| ----------- | -------------------------------------- | -------------------------- |
+| easyrender  | Una foto y nota opcional               | GLB, USDZ                  |
+| Meshy       | Texto o 1–4 fotos                      | GLB, FBX, OBJ, USDZ, BLEND |
+| Tripo       | Texto, una foto o 2–4 vistas           | GLB; FBX, OBJ, USDZ        |
+| Rodin       | Texto o hasta 5 imágenes en la API     | GLB, USDZ, FBX, OBJ        |
+| Sloyd       | Texto, imagen, multimagen y plantillas | GLB, FBX, OBJ, BLEND, USDZ |
+
+Son formatos documentados, no una promesa de descarga gratuita en cualquier plan. Tripo ofrece parte de ellos mediante [conversión](https://developers.tripo3d.com/en/docs/models-convert). Prueba una exportación completa en tu herramienta de destino antes de comprometer un catálogo.
+
+## Decide con un producto, no con cien generaciones
+
+Elige una pieza difícil de tu catálogo. Revisa la silueta, las piezas, la trasera y el material; después descarga y abre el archivo. Divide el gasto total, incluidos descartes y correcciones, entre los modelos que sí usarías. Para una ficha de producto importa que siga siendo tu producto, no solo que el visor muestre una malla bonita.
+
+Consulta también las [alternativas a Meshy](/es/comparativas/meshy) y la guía para [hacer un modelo 3D](/es/guias/como-hacer-un-modelo-3d).
+
+## Detalles de nuestra prueba con Tripo
+
+### Prueba real de Tripo Studio con nuestra foto del sillón
 
 El 15 de noviembre de 2026 subimos la [foto pública de nuestro sillón](/showcase/armchair.jpg) a Tripo Studio. Seleccionamos H3.1 Best Quality, Geometry & Texture, con 8K y Generate in Parts desactivados. La interfaz indicó 55 créditos, consumidos del saldo existente; no contratamos ningún plan.
 
 El modelo apareció en el visor de Studio, que indicó 1.836.704 caras triangulares y 998.795 vértices. Al intentar exportar en GLB con la textura actual de 4K, esta cuenta recibió una petición de pasar a un plan de pago. No descargamos el archivo ni medimos su peso, compatibilidad externa o carga en móvil.
 
-Esta prueba corresponde a Studio, no a los precios de API de la tabla siguiente. No generamos simultáneamente un modelo con el flujo actual de easyrender, por lo que no es una comparación controlada de calidad o velocidad. El [sillón de muestra de easyrender](/showcase/armchair.glb) es un resultado histórico con otros ajustes.
+Esta prueba corresponde a Studio, no a los precios de API. No generamos simultáneamente un modelo con el flujo actual de easyrender, por lo que no es una comparación controlada de calidad o velocidad. El [sillón de muestra de easyrender](/showcase/armchair.glb) es un resultado histórico con otros ajustes.
 
 Antes de elegir un flujo gratuito, comprueba el acceso a las exportaciones además de los créditos de generación. Una prueba no permite concluir qué herramienta produce mejores muebles. La comparación completa necesita archivos descargables, versiones y ajustes registrados, repeticiones y el mismo criterio de aceptación para ambas herramientas.
 
-## Un resultado de Tripo descargable a través de Higgsfield
+### Un resultado de Tripo descargable a través de Higgsfield
 
 Ese mismo día pasamos la misma foto por Tripo H3.1 Image to 3D en Higgsfield. Fue una generación independiente con calidad Standard, no la exportación del resultado Best Quality de Studio anterior. Seleccionamos geometría y textura Standard, límite de 30.000 caras, texturas y PBR activados y salida en cuadriláteros desactivada. Consumió 9 créditos de Higgsfield de un saldo promocional en una cuenta Ultra existente; no hicimos ninguna compra nueva. Esto no demuestra acceso desde un plan gratuito, y ese cargo no es un precio de la API ni de Studio de Tripo.
 
@@ -43,95 +132,23 @@ La advertencia corresponde a un material con mapa de normales sin tangentes guar
 
 El comando tardó unos 431 segundos, incluyendo envío, procesamiento y consultas de estado cada 10 segundos; la imagen de entrada ya estaba subida. Es una espera observada, no el tiempo de ejecución del proveedor ni una clasificación de velocidad. No hemos probado este archivo en Shopify, en un móvil físico ni en realidad aumentada.
 
-![GLB descargado de Tripo abierto en el editor model-viewer](/benchmarks/2026-11-15/tripo-viewer.jpg "Resultado real de Tripo H3.1 a través de Higgsfield, abierto en un visor externo el 15 de noviembre de 2026.")
 
 El [registro de mediciones](/benchmarks/2026-11-15/measurements.json) incluye las huellas SHA-256 de entrada y salida, los ajustes y el informe de validación. La [prueba de Meshy](/es/comparativas/meshy) usó la misma foto con otros ajustes de materiales. Nuestra muestra de easyrender es histórica y tiene texturas WebP comprimidas. Ninguna de estas pruebas aisladas demuestra qué producto actual es mejor, más rápido o más barato por modelo aprovechable.
 
-## ¿En qué se diferencian Tripo y easyrender?
-
-Las dos son herramientas de imagen a 3D con IA. La tabla pone sus datos públicos uno al lado del otro, tal como figuraban en noviembre de 2026. Las cifras de Tripo salen de su plataforma para desarrolladores, porque su página de precios para usuarios no nos cargó.
-
-|                                   | Tripo (API)                                                                           | easyrender                                            |
-| --------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| Entrada                           | Texto, una imagen o de dos a cuatro vistas, con la frontal obligatoria                | Una foto, más una nota corta opcional                 |
-| Previsualización                  | Una imagen de previsualización que llega con el modelo                                | Hoja de nueve vistas gratis, antes de gastar créditos |
-| Coste de un modelo de imagen a 3D | 30 créditos con textura estándar, a 0,07 ¥ el crédito                                 | {{renderCredits}} créditos ({{renderPrice}})          |
-| Tareas fallidas                   | No se cobran                                                                          | Los créditos vuelven a tu saldo                       |
-| Descargas                         | GLB por defecto; FBX con mallas de cuadriláteros; conversión a glTF, FBX, USDZ y OBJ  | GLB y USDZ                                            |
-| Extras                            | Rigging, reasignación de animaciones, retopología, segmentación, low poly inteligente | Subida por lotes desde tu biblioteca                  |
-| Para desarrolladores              | API REST con saldo de créditos                                                        | Servidor MCP y API REST                               |
-
-Fuentes: [introducción a la API de Tripo](https://developers.tripo3d.com/en/docs/introduction), [imagen a modelo](https://developers.tripo3d.com/en/docs/generation-image-to-model/standard), [multivista a modelo](https://developers.tripo3d.com/en/docs/generation-multiview-to-model), [ficha del modelo v3.1](https://developers.tripo3d.com/en/models/v3-1), [precios de la API](https://developers.tripo3d.com/en/pricing), [facturación](https://developers.tripo3d.com/en/docs/billing) y [conversión de formatos](https://developers.tripo3d.com/en/docs/models-convert), consultadas el 11 de noviembre de 2026. Las cifras de easyrender salen de nuestra [página de precios](/es/precios).
-
-Los planes de la aplicación web de Tripo están en tripo3d.ai, que nos devolvió un error cada vez que intentamos leerla. Revisa allí sus planes y su licencia antes de suscribirte.
-
-## ¿Cómo funciona Tripo?
-
-Tripo genera con dos familias de modelos, la serie H y la serie P, y su modelo v3.1 acepta de forma nativa «text prompts, single images, and multiview inputs», es decir, texto, una imagen o varias vistas. Como imagen admite PNG, JPEG o WebP de hasta 20 MB, y la documentación recomienda al menos 256 × 256 píxeles.
-
-La entrada multivista es donde Tripo destaca. Envías al menos dos vistas entre frontal, izquierda, trasera y derecha, y la frontal no puede faltar. La documentación pide que todas las imágenes muestren el mismo objeto con la misma luz.
-
-Los ajustes están pensados para producción. Las texturas PBR vienen activadas por defecto. Las mallas de cuadriláteros cambian la salida a FBX, un límite de caras acota el número de polígonos y hay una opción de topología low poly inteligente. Después, la API puede añadir un esqueleto al modelo (rigging), reasignarle animaciones y convertirlo a glTF, FBX, USDZ u OBJ.
-
-Los costes se publican por tarea, en créditos. Texto a 3D con textura estándar cuesta 20 créditos; imagen a 3D, 30; el rigging automático, 25, y cada reasignación de animación, 10.
-
-## ¿Cómo funciona easyrender?
-
-easyrender parte de una foto de un producto real, como la foto de catálogo de una librería de nogal. Una nota corta puede contar lo que la foto esconde: «trasera abierta», «tres baldas», «tiradores de latón». Por dentro combina varios modelos de IA: unos dibujan las vistas y otro construye el modelo.
-
-1. Sube la foto. Comprobamos su tamaño, sus proporciones y su nitidez.
-2. Revisa la hoja de ángulos gratis: nueve vistas dibujadas a partir de tu foto, ocho alrededor del objeto en pasos de 45 grados y una desde arriba.
-3. Cuenta baldas, patas y tiradores en cada vista. Si alguna está mal, cambia la foto o la nota y vuelve a probar.
-4. Genera el modelo cuando la hoja te convenza. Es el único paso que gasta créditos.
-5. Descarga el GLB para la web y Android, y el USDZ para los dispositivos de Apple.
-
-Los créditos no caducan, y la realidad aumentada llegará pronto, así que podrás ver la pieza en tu casa desde el móvil. [Sube una foto](/es) para ver gratis la hoja de ángulos.
-
-## ¿Para qué necesitas el modelo?
-
-El uso que le vayas a dar pesa más al elegir la herramienta que cualquier lista de funciones. Cada caso lleva una comprobación que sirve para el resultado de cualquiera de las dos:
-
-- El modelo de algo que vendes, para la ficha de producto. Cuenta las piezas frente al mueble real y gíralo hasta la parte de atrás, que nunca salió en la foto.
-- Un personaje o un objeto para un videojuego. Abre el FBX en tu motor y reproduce una animación. El rigging y la reasignación de Tripo están hechos para esto.
-- Un modelo a partir de fotos de todos los lados. Si ya tienes el frente, la izquierda, la trasera y la derecha con la misma luz, la entrada multivista de Tripo puede usar las cuatro.
-- Un coste previsible. Divide lo que gastaste entre los modelos que te quedaste, contando los que descartaste.
-
-## ¿Qué suele fallar y cómo se arregla?
-
-Casi todos los fallos vienen de la entrada o de un ajuste, no de la herramienta. Esta es la lista que conviene repasar.
-
-| Síntoma                                  | Causa                                         | Arreglo                                                                                                           |
-| ---------------------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Color desigual en un modelo multivista   | Las vistas se hicieron con luces distintas    | Repite todas las vistas con la misma luz, como pide la documentación de Tripo                                     |
-| Una petición multivista se rechaza       | Falta la vista frontal                        | Incluye siempre el frente; izquierda, trasera y derecha son opcionales                                            |
-| Querías un GLB y te llega un FBX         | Las mallas de cuadriláteros estaban activadas | Desactívalas, o convierte el FBX después                                                                          |
-| El modelo pesa demasiado para una web    | No se fijó un límite de caras                 | Fija un límite de caras o usa low poly inteligente para la web                                                    |
-| La foto solo enseña el frente            | La cámara no vio la trasera ni los costados   | Usa una foto de tres cuartos; añade una vista trasera en Tripo, o escribe «trasera lisa» en la nota de easyrender |
-| Los bordes salen blandos y emborronados  | Una imagen de origen pequeña o desenfocada    | Usa el archivo original de la cámara, nítido al 100 %                                                             |
-| El sofá generado con texto no es tu sofá | El texto se inventa un producto               | Usa una imagen para todo lo que vendas                                                                            |
-
-## ¿A quién le conviene Tripo y a quién easyrender?
-
-Elige Tripo si haces recursos para videojuegos, personajes u objetos de atrezo, o si tienes varias vistas de un objeto. Su entrada multivista, las texturas PBR, las mallas de cuadriláteros, el rigging y la reasignación de animaciones encajan en un flujo de producción.
-
-Elige easyrender si vendes muebles, decoración u otro producto físico y tienes una foto. Juzgas la hoja de ángulos gratis antes de pagar, y compras créditos por modelo que no caducan.
-
-La prueba justa es pasar la misma foto por las dos y comparar la parte de atrás, el número de piezas y la textura a pantalla completa. Las comprobaciones están en [cómo hacer un modelo 3D](/es/guias/como-hacer-un-modelo-3d).
-
 ## Preguntas frecuentes
 
-### ¿easyrender es una alternativa gratis a Tripo?
+### ¿Cuál es la mejor alternativa a Tripo para una tienda?
 
-La previsualización es gratis y no pide tarjeta: ves el objeto desde nueve ángulos antes de decidir. Un modelo terminado cuesta {{renderCredits}} créditos ({{renderPrice}}). La API de Tripo cobra por tarea en créditos, 30 por un modelo de imagen a 3D con textura estándar, y sus planes web están en tripo3d.ai.
+Si tienes una foto y quieres revisar antes de pagar, empieza por easyrender. Si necesitas aprovechar varias fotos reales, compara Meshy, Tripo y Rodin. No hemos demostrado que una herramienta conserve mejor todos los productos: compruébalo con una pieza representativa.
 
-### ¿easyrender acepta varias fotos, como la multivista de Tripo?
+### ¿Hay una alternativa completamente gratis?
 
-No. easyrender trabaja con una foto y una nota opcional, y genera las demás vistas en la hoja de ángulos gratis. La multivista de Tripo acepta de dos a cuatro vistas reales, con la frontal obligatoria. Si ya tienes fotos de todos los lados con la misma luz, Tripo puede usarlas directamente.
+Distingue vista previa, generación, exportación y licencia comercial. La vista previa de easyrender es gratis; su modelo es de pago. Meshy usa CC BY 4.0 en el plan gratuito, con límites de descarga. Tripo gratis es no comercial y Sloyd limita las exportaciones Guest a la comunidad.
 
-### ¿Qué formatos puedo descargar?
+### ¿Se han probado todas con la misma foto?
 
-easyrender te da un GLB para la web y la mayoría de las herramientas 3D, y un USDZ para los dispositivos de Apple. Tripo devuelve GLB por defecto, FBX si activas las mallas de cuadriláteros, y su servicio de conversión saca glTF, FBX, USDZ y OBJ. Para Unity o Unreal, el FBX de Tripo es el camino directo.
+Probamos Meshy y Tripo con la misma foto del sillón. Las capturas son de GLB generados en Higgsfield. La hoja de easyrender es una muestra existente con otros ajustes; Rodin y Sloyd se revisaron en fuentes oficiales. No es un benchmark controlado de las cinco herramientas.
 
-### ¿Qué pasa si una generación falla?
+### ¿Qué hago si necesito medidas exactas o piezas editables?
 
-En las dos, no la pagas. La documentación de facturación de Tripo dice que las tareas fallidas y canceladas no se cobran. En easyrender, si un modelo 3D no llega a generarse, los créditos de ese render vuelven a tu saldo automáticamente.
+No des por válidas las medidas ni la topología solo porque el modelo se vea bien. Comprueba las dimensiones y las piezas en tu editor; si necesitas precisión de fabricación, valora modelado manual o CAD con referencias medidas.
