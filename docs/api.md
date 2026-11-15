@@ -18,11 +18,11 @@ make a key safe to embed in public JavaScript or grant cross-origin session-cook
 Keys can have these scopes. Each endpoint's exact requirements appear as `x-required-scopes`
 in OpenAPI; requirements are cumulative where more than one is listed.
 
-| Scope | Permitted operations |
-| --- | --- |
-| `read` | Read owned resources, quotes and downloads; poll an already authorized job |
-| `write` | Upload images, create previews/drafts, edit materials, remove catalog references |
-| `spend` | Start paid builds, sheets/redraws, product views, polish and upscales |
+| Scope   | Permitted operations                                                                  |
+| ------- | ------------------------------------------------------------------------------------- |
+| `read`  | Read owned resources, quotes and downloads; poll an already authorized job            |
+| `write` | Upload images, create previews/drafts, edit materials, remove catalog references      |
+| `spend` | Start paid builds, sheets/redraws, product views, polish and upscales                 |
 | `share` | Change visibility, explicitly create a public render, share catalog models for embeds |
 
 A paid operation such as creating product views requires `spend`; it does not additionally require
@@ -70,6 +70,14 @@ It returns HTTP 201 with `{id, contentType, size, expiresAt}`. The private uploa
 and expires after **one hour**. It can be used by REST or MCP; another account cannot consume it.
 Image quality checks still apply. A successful upload has not created a preview or paid render.
 
+The one-hour limit expires the authenticated **reference**, not every copy of the image at that
+instant. Temporary blobs become eligible for cleanup ten minutes later and are removed in bounded
+batches by the scheduled worker. Failed deletions are reported and retried on a later run. Upload
+objects use `private, no-store, max-age=0`; the existing CDN can retain a short minimum cache period.
+Raw storage URLs are not returned by this endpoint, but storage URLs themselves are not an
+authentication boundary. Keep any such URL out of public logs and shared output. Creating a render
+copies its source into that render's storage; expiring an upload does not delete the render.
+
 `POST /api/renders` accepts either multipart `image` or `upload_id` (exactly one), or JSON
 `{upload_id, prompt?, name?, isPublic?}`. `prompt` is at most 500 characters. API callers default to
 `isPublic:false`. HTTP 201 returns a render with its stable `id`; creation starts a usage-limited
@@ -93,12 +101,20 @@ curl --fail-with-body https://easyrender.ai/api/renders \
 const headers = { Authorization: `Bearer ${process.env.EASYRENDER_API_KEY}` };
 const form = new FormData();
 form.set('image', new Blob([photoBytes], { type: 'image/jpeg' }), 'chair.jpg');
-const uploadResponse = await fetch('https://easyrender.ai/api/uploads', { method: 'POST', headers, body: form });
+const uploadResponse = await fetch('https://easyrender.ai/api/uploads', {
+  method: 'POST',
+  headers,
+  body: form,
+});
 if (!uploadResponse.ok) throw new Error(await uploadResponse.text());
 const upload = await uploadResponse.json();
 const response = await fetch('https://easyrender.ai/api/renders', {
   method: 'POST',
-  headers: { ...headers, 'Content-Type': 'application/json', 'Idempotency-Key': 'chair-front-preview-001' },
+  headers: {
+    ...headers,
+    'Content-Type': 'application/json',
+    'Idempotency-Key': 'chair-front-preview-001',
+  },
   body: JSON.stringify({ upload_id: upload.id, isPublic: false }),
 });
 if (!response.ok) throw new Error(await response.text());
@@ -119,13 +135,13 @@ with urllib.request.urlopen(request, timeout=30) as response:
 
 ## Render lifecycle, discovery and downloads
 
-| State | Meaning and client behavior |
-| --- | --- |
-| `drafting` | Preview pending. Poll the existing ID with bounded backoff. |
-| `preview_ready` | Preview can be reviewed. The paid build still requires authorized spend. |
-| `rendering` | Build pending. Poll; do not create a replacement. |
-| `ready` with `hasModel:true` | Deliver the existing GLB/page. |
-| `failed` | Terminal attempt; report the error. A new attempt needs retry scope and budget. |
+| State                        | Meaning and client behavior                                                     |
+| ---------------------------- | ------------------------------------------------------------------------------- |
+| `drafting`                   | Preview pending. Poll the existing ID with bounded backoff.                     |
+| `preview_ready`              | Preview can be reviewed. The paid build still requires authorized spend.        |
+| `rendering`                  | Build pending. Poll; do not create a replacement.                               |
+| `ready` with `hasModel:true` | Deliver the existing GLB/page.                                                  |
+| `failed`                     | Terminal attempt; report the error. A new attempt needs retry scope and budget. |
 
 `GET /api/renders?limit=25&cursor=...&status=ready` returns
 `{renders, balance, nextCursor}`. Limit is 1–100 (default 25); status is optional. Follow the opaque
@@ -147,21 +163,21 @@ Color is RGB; color components, roughness and metalness are 0–1. The list repl
 
 ## Product views, upscales and store catalogs
 
-| Endpoint | Behavior |
-| --- | --- |
-| `POST /api/product-views` | Paid image-to-view-set creation; returns 201 and a view-set ID. |
-| `GET /api/product-views` | Recent owned sets and balance. This collection is not cursor-paginated. |
-| `GET /api/product-views/{id}` | Poll a view set; includes per-view readiness and operation costs. |
-| `POST .../{id}/views/{view}/polish` | Paid revision of one view, with `{note}`. |
-| `GET .../{id}/views/{view}` or `.../{id}/zip` | Download a finished image or ZIP. |
-| `POST /api/product-views/{id}/render` | Create/reuse a render draft from final views; returns `{renderId}`. Does not itself pay for/build the model. |
-| `POST /api/upscales` | `{kind:"sheet",renderId}` or `{kind:"view",viewSetId,view}`; returns 202. Reuses an existing upscale of that same picture. |
-| `GET /api/upscales?renderId=...` or `?viewSetId=...` | List owned enlargements. |
-| `GET /api/upscales/{id}` and `.../{id}/image` | Poll and download. |
-| `GET /api/catalog/quote?items=N` | Live estimate, balance, missing credits and per-request batch limit. |
-| `POST /api/catalog` | `{platform,store,maxCredits,items:[{externalId,title,imageUrl,note?}]}`; approve and queue up to 100 store products. |
-| `GET /api/catalog?platform=...&store=...` | Items, summary and balance; advances the already authorized queue. |
-| `DELETE /api/catalog?platform=...&store=...` | Forget store references; keeps existing renders. |
+| Endpoint                                             | Behavior                                                                                                                   |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `POST /api/product-views`                            | Paid image-to-view-set creation; returns 201 and a view-set ID.                                                            |
+| `GET /api/product-views`                             | Recent owned sets and balance. This collection is not cursor-paginated.                                                    |
+| `GET /api/product-views/{id}`                        | Poll a view set; includes per-view readiness and operation costs.                                                          |
+| `POST .../{id}/views/{view}/polish`                  | Paid revision of one view, with `{note}`.                                                                                  |
+| `GET .../{id}/views/{view}` or `.../{id}/zip`        | Download a finished image or ZIP.                                                                                          |
+| `POST /api/product-views/{id}/render`                | Create/reuse a render draft from final views; returns `{renderId}`. Does not itself pay for/build the model.               |
+| `POST /api/upscales`                                 | `{kind:"sheet",renderId}` or `{kind:"view",viewSetId,view}`; returns 202. Reuses an existing upscale of that same picture. |
+| `GET /api/upscales?renderId=...` or `?viewSetId=...` | List owned enlargements.                                                                                                   |
+| `GET /api/upscales/{id}` and `.../{id}/image`        | Poll and download.                                                                                                         |
+| `GET /api/catalog/quote?items=N`                     | Live estimate, balance, missing credits and per-request batch limit.                                                       |
+| `POST /api/catalog`                                  | `{platform,store,maxCredits,items:[{externalId,title,imageUrl,note?}]}`; approve and queue up to 100 store products.       |
+| `GET /api/catalog?platform=...&store=...`            | Items, summary and balance; advances the already authorized queue.                                                         |
+| `DELETE /api/catalog?platform=...&store=...`         | Forget store references; keeps existing renders.                                                                           |
 
 Catalog platforms: `shopify`, `woocommerce`, `prestashop`, `other`. Images must be public HTTPS.
 `maxCredits` is the approved total for that submission; insufficient approval is rejected. Model
@@ -193,24 +209,24 @@ Connect to `https://easyrender.ai/api/mcp` using Streamable HTTP and OAuth or a 
 Tool successes include `structuredContent` and the same JSON in a text content block. Failures set
 `isError:true` and use `{error:{code,message,status,retryable,retry_after_seconds?}}`; do not mistake them for render data.
 
-| Tool | Input / behavior |
-| --- | --- |
-| `create_render` | Exactly one of `image_url`, `image_base64`, `upload_id`; `content_type` for base64; optional `prompt`, `name` (max 120 characters), `idempotency_key`, `is_public`. Free preview. |
-| `get_render` | `{id}`; render view, `pending_credits`, links. |
-| `list_renders` | Optional `cursor`, `limit`, `status`; returns `renders` and `next_cursor`. |
-| `get_credits` | Current account quote and balance. |
-| `render_3d` | `{id,max_credits?}`; paid build. Supply the approved ceiling even where optional for older clients. |
-| `set_render_visibility` | `{id,is_public}`; explicit publication control. |
-| `start_render_sheet` | `{id,max_credits}`; paid sheet. |
-| `redraw_render_sheet` | `{id,note,max_credits}`; paid redraw. |
-| `upscale_image` | `{kind,render_id?}` or `{kind,view_set_id?,view?}`, plus `max_credits`. |
-| `get_upscale` | `{id}`; poll upscale. |
-| `create_product_views` | Same exclusive image source, optional `prompt`/`name`, plus `max_credits`. |
-| `get_product_views` | `{id}`; view-set state and operation costs. |
-| `list_product_views` | Optional `limit` (1–100, default 24); newest sets in `view_sets`, with ZIP links. Bounded list, no cursor. |
-| `list_upscales` | Exactly one of `render_id`, `view_set_id`; returns `upscales` with image links, bounded to 50 current sources. |
-| `polish_product_view` | `{id,view,note,max_credits}`; paid revision of one view. Each sequential revision is a new charge. |
-| `build_from_product_views` | `{id,max_credits}`; create/reuse the render and start the approved paid build. |
+| Tool                       | Input / behavior                                                                                                                                                                  |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `create_render`            | Exactly one of `image_url`, `image_base64`, `upload_id`; `content_type` for base64; optional `prompt`, `name` (max 120 characters), `idempotency_key`, `is_public`. Free preview. |
+| `get_render`               | `{id}`; render view, `pending_credits`, links.                                                                                                                                    |
+| `list_renders`             | Optional `cursor`, `limit`, `status`; returns `renders` and `next_cursor`.                                                                                                        |
+| `get_credits`              | Current account quote and balance.                                                                                                                                                |
+| `render_3d`                | `{id,max_credits?}`; paid build. Supply the approved ceiling even where optional for older clients.                                                                               |
+| `set_render_visibility`    | `{id,is_public}`; explicit publication control.                                                                                                                                   |
+| `start_render_sheet`       | `{id,max_credits}`; paid sheet.                                                                                                                                                   |
+| `redraw_render_sheet`      | `{id,note,max_credits}`; paid redraw.                                                                                                                                             |
+| `upscale_image`            | `{kind,render_id?}` or `{kind,view_set_id?,view?}`, plus `max_credits`.                                                                                                           |
+| `get_upscale`              | `{id}`; poll upscale.                                                                                                                                                             |
+| `create_product_views`     | Same exclusive image source, optional `prompt`/`name`, plus `max_credits`.                                                                                                        |
+| `get_product_views`        | `{id}`; view-set state and operation costs.                                                                                                                                       |
+| `list_product_views`       | Optional `limit` (1–100, default 24); newest sets in `view_sets`, with ZIP links. Bounded list, no cursor.                                                                        |
+| `list_upscales`            | Exactly one of `render_id`, `view_set_id`; returns `upscales` with image links, bounded to 50 current sources.                                                                    |
+| `polish_product_view`      | `{id,view,note,max_credits}`; paid revision of one view. Each sequential revision is a new charge.                                                                                |
+| `build_from_product_views` | `{id,max_credits}`; create/reuse the render and start the approved paid build.                                                                                                    |
 
 MCP input uses snake_case where shown; core view fields remain camelCase. `max_credits` is a ceiling
 for that operation and does not replace the user's overall task budget or the key's lifetime cap.
@@ -224,3 +240,22 @@ Never send both sources, expose a private photo on another host merely for a URL
 easyrender credential to the image host. No native batch, cancellation, refund or export-conversion
 MCP tools are promised. The reusable [image-to-3D skill](../skills/easyrender-image-to-3d/SKILL.md)
 covers user authorization, inspection and recovery without duplicate spend.
+
+## Deployment prerequisites
+
+Production database additions are applied by the existing Vercel build schema gate. Preview
+deployments skip that sync; validate against a separate scratch database, never a production
+database from a developer machine.
+
+Set `CRON_SECRET` in the Vercel production environment and verify that the five-minute
+`/api/cron/renders` schedule executes successfully. The endpoint fails closed when the secret is
+absent or incorrect. Its worker recovers stalled work and runs rate-window/upload cleanup; a Git
+merge alone does not demonstrate that scheduled execution is healthy.
+
+Apply the CloudFormation change in [`infra/aws/storage.yml`](../infra/aws/storage.yml) to the
+actual storage stack before relying on temporary-object cleanup. It grants the Vercel role
+`s3:DeleteObject` only for `renders/uploads/*`. Vercel's application deployment does not apply
+CloudFormation or update this IAM policy. Verify that the production role can delete a disposable
+upload object without granting deletion of model assets. Missing permissions leave references
+expired while deletion failures are reported and retried; they do not establish successful blob
+removal. Check the worker result and error monitoring after deployment.

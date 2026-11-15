@@ -26,8 +26,6 @@ describe('public API contract', () => {
 
   it('documents only implemented methods on the established resource routes', () => {
     for (const [path, methods] of Object.entries(openapi.paths)) {
-      // Credits/uploads are new routes delivered by the integration branch alongside this contract.
-      if (path === '/api/credits' || path === '/api/uploads') continue;
       const route = path.replace(/\{([^}]+)\}/g, '[$1]');
       const source = readFileSync(new URL(`../../app${route}/route.ts`, import.meta.url), 'utf8');
       const implemented = [

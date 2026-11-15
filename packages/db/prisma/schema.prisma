@@ -391,6 +391,7 @@ model OAuthCodeRedemption {
 // A plugin sends its products; the server walks each one from photo to finished model.
 model CatalogItem {
   id         String   @id @default(cuid())
+  apiKeyId   String?
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   platform   String

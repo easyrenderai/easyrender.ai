@@ -1,43 +1,31 @@
-import {
-  AppError,
-  createViewSet,
-  getBalance,
-  listViewSets,
-  MAX_UPLOAD_BYTES,
-  toViewSetView,
-} from '@easyrender/core';
+import { AppError, createViewSet, getBalance, listViewSets, toViewSetView } from '@easyrender/core';
 import { NextResponse } from 'next/server';
 import { resolveActor } from '@/lib/actor';
-import { handle } from '@/lib/http';
+import { apiHandle, apiOptions } from '@/lib/api-http';
+import { parseApiPhoto } from '@/lib/api-upload';
 
 export const maxDuration = 60;
 
 // Multipart upload: `image` (file), an optional `prompt` and an optional `name`. Charges the set
 // and starts drawing its nine views.
 export const POST = (request: Request) =>
-  handle(async () => {
-    const actor = await resolveActor(request.headers);
+  apiHandle(request, async () => {
+    const actor = await resolveActor(request.headers, 'spend');
     if (!actor.userId) throw new AppError('Sign in to make product views', 401, 'unauthorized');
-    const form = await request.formData().catch(() => null);
-    const image = form?.get('image');
-    if (!(image instanceof File)) throw new AppError('Attach a photo as `image`', 400, 'no_image');
-    if (image.size > MAX_UPLOAD_BYTES)
-      throw new AppError('Photo is larger than 4 MB', 413, 'too_large');
-    const prompt = form?.get('prompt');
-    const name = form?.get('name');
+    const photo = await parseApiPhoto(request, actor);
     const set = await createViewSet({
       actor,
-      bytes: new Uint8Array(await image.arrayBuffer()),
-      contentType: image.type,
-      prompt: typeof prompt === 'string' ? prompt.slice(0, 500) : null,
-      name: typeof name === 'string' ? name : null,
+      bytes: photo.bytes,
+      contentType: photo.contentType,
+      prompt: photo.prompt,
+      name: photo.name,
     });
     return NextResponse.json(toViewSetView(set), { status: 201 });
   });
 
 // The signed-in user's product views, newest first.
 export const GET = (request: Request) =>
-  handle(async () => {
+  apiHandle(request, async () => {
     const actor = await resolveActor(request.headers);
     if (!actor.userId) throw new AppError('Sign in to see your product views', 401, 'unauthorized');
     const [sets, balance] = await Promise.all([
@@ -46,3 +34,5 @@ export const GET = (request: Request) =>
     ]);
     return NextResponse.json({ sets: sets.map(toViewSetView), balance });
   });
+
+export const OPTIONS = apiOptions;

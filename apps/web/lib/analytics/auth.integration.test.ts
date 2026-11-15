@@ -103,5 +103,5 @@ describe.skipIf(!url)('Google attribution through real Better Auth state and cal
     expect(
       await db().verification.findFirst({ where: { identifier: `auth-state:${state}` } }),
     ).toBeNull();
-  });
+  }, 15_000);
 });

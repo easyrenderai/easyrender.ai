@@ -1,12 +1,12 @@
 import { zipViewSet } from '@easyrender/core';
 import { resolveActor } from '@/lib/actor';
-import { handle } from '@/lib/http';
+import { apiHandle, apiOptions } from '@/lib/api-http';
 
 export const maxDuration = 60;
 
 // Every finished view in one ZIP.
 export const GET = (request: Request, { params }: RouteContext<'/api/product-views/[id]/zip'>) =>
-  handle(async () => {
+  apiHandle(request, async () => {
     const { id } = await params;
     const { bytes, filename } = await zipViewSet(id, await resolveActor(request.headers));
     return new Response(bytes as BodyInit, {
@@ -17,3 +17,5 @@ export const GET = (request: Request, { params }: RouteContext<'/api/product-vie
       },
     });
   });
+
+export const OPTIONS = apiOptions;
