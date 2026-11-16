@@ -95,6 +95,15 @@ it('preserves the render on both checkout return URLs', async () => {
   expect(new URL(checkout.success_url).searchParams.get('next')).toBe('/r/render_123');
   expect(new URL(checkout.cancel_url).searchParams.get('next')).toBe('/r/render_123');
 });
+it.each(['/views', '/views/set_123'])(
+  'preserves existing product-view return navigation: %s',
+  async (next) => {
+    await createCheckout('user', { plan: 'payg', credits: 500, next });
+    const checkout = state.session.mock.calls[0][0];
+    expect(new URL(checkout.success_url).searchParams.get('next')).toBe(next);
+    expect(new URL(checkout.cancel_url).searchParams.get('next')).toBe(next);
+  },
+);
 it.each([
   '//evil.example',
   '/\\evil.example',

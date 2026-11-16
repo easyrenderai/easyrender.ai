@@ -167,9 +167,12 @@ export async function getTopupPricing(
   );
 }
 
-/** Only a render route can be carried through checkout. Authorization is checked there. */
-export function checkoutRenderPath(value: unknown): string | null {
-  return typeof value === 'string' && /^\/r\/[A-Za-z0-9_-]+$/.test(value) ? value : null;
+/** Only known render and product-view routes can be carried through checkout. Authorization is checked there. */
+export function checkoutReturnPath(value: unknown): string | null {
+  return typeof value === 'string' &&
+    /^\/(?:r\/[A-Za-z0-9_-]+|views(?:\/[A-Za-z0-9_-]+)?)$/.test(value)
+    ? value
+    : null;
 }
 
 const devCheckoutUrl = (request: CheckoutRequest) =>
@@ -201,7 +204,7 @@ export async function createCheckoutDetails(
       'pricing_changed',
     );
   const request = parseCheckout(input, variant);
-  const next = checkoutRenderPath(input.next);
+  const next = checkoutReturnPath(input.next);
   const returnQuery = next ? `&next=${encodeURIComponent(next)}` : '';
   let metadata: Stripe.MetadataParam = {
     userId,

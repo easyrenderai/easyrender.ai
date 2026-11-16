@@ -1,4 +1,4 @@
-import { checkoutRenderPath, getBalance, getBillingStatus } from '@easyrender/core';
+import { checkoutReturnPath, getBalance, getBillingStatus } from '@easyrender/core';
 import {
   ENTERPRISE_BOOKING_URL,
   type PlanId,
@@ -116,7 +116,7 @@ export default async function CreditsPage({ searchParams }: PageProps<'/credits'
       minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
     });
   const credits = (value: number) => format.number(value);
-  const back = checkoutRenderPath(next);
+  const back = checkoutReturnPath(next);
   const signUp = (plan: string) => {
     const destination = `/credits?plan=${plan}${back ? `&next=${encodeURIComponent(back)}` : ''}#${plan}`;
     return (
