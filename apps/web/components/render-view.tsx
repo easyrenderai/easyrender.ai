@@ -159,6 +159,7 @@ export function RenderView({
         name={render.id}
         downloadUrl={owner ? `${base}/model?download=1` : null}
         editableRenderId={owner ? render.id : undefined}
+        nextStepsHref={owner ? (signedIn ? '/dashboard' : '/#try') : undefined}
       />
     ) : (
       <div className="flex aspect-square w-full flex-col items-center justify-center gap-3 rounded-xl border bg-muted/40 p-6 text-center text-muted-foreground sm:aspect-[4/3]">
