@@ -117,12 +117,12 @@ function Model({
       <ThreeCanvas
         width={size}
         height={size}
-        camera={{ position: [0, 0.3, 4.8], fov: 34 }}
+        camera={{ position: [0, 1.8, 4.6], fov: 34 }}
         gl={{ alpha: true, antialias: true }}
       >
-        <ambientLight intensity={1.5} />
-        <directionalLight position={[4, 5, 6]} intensity={2.6} />
-        <directionalLight position={[-4, 1, 3]} intensity={1.3} />
+        <ambientLight intensity={0.65} />
+        <directionalLight position={[4, 5, 6]} intensity={2} />
+        <directionalLight position={[-4, 1, 3]} intensity={0.8} />
         {isGrid && <gridHelper args={[8, 16, '#909095', '#26262A']} position={[0, -1.05, 0]} />}
         <group rotation={[0, rotation, 0]}>
           <primitive object={model} />
@@ -207,7 +207,7 @@ function File({
       }}
     >
       <FileBox size={68} strokeWidth={1.2} />
-      <div style={{ fontSize: 26, marginTop: 12 }}>vase.glb</div>
+      <div style={{ fontSize: 26, marginTop: 12 }}>table.glb</div>
     </div>
   );
 }
@@ -252,7 +252,7 @@ function DownloadScene({ scene, f }: { scene: Group; f: number }) {
             color: C.muted,
           }}
         >
-          <Check size={27} /> vase.glb
+          <Check size={27} /> table.glb
         </div>
       </Window>
       <Cursor
@@ -320,7 +320,7 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
         </div>
         <div style={{ position: 'absolute', left: 710, top: 120, width: 290 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 28 }}>
-            <FileBox size={30} /> vase.glb
+            <FileBox size={30} /> table.glb
           </div>
           {[0, 1, 2].map((n) => (
             <div
@@ -422,7 +422,7 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
             >
               {'<model-viewer'}
               <br />
-              {'  src="vase.glb"'}
+              {'  src="table.glb"'}
               <br />
               {'  camera-controls'}
               <br />
@@ -550,10 +550,10 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
 function Guide({ journey }: { journey: Journey }) {
   const f = useCurrentFrame();
   const [scene, setScene] = useState<Group | null>(null);
-  const [handle] = useState(() => delayRender('Loading the real vase model'));
+  const [handle] = useState(() => delayRender('Loading the textured wood table model'));
   useEffect(() => {
     new GLTFLoader().load(
-      staticFile('vase.glb'),
+      staticFile('table.glb'),
       ({ scene: loaded }) => {
         const box = new Box3().setFromObject(loaded);
         const size = box.getSize(new Vector3());

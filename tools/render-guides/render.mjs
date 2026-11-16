@@ -12,7 +12,7 @@ const output = join(root, 'apps/web/public/motion');
 const assets = await mkdtemp(join(tmpdir(), 'easyrender-motion-'));
 const require = createRequire(join(root, 'apps/web/package.json'));
 await mkdir(output, { recursive: true });
-await copyFile(join(root, 'apps/web/public/showcase/vase.glb'), join(assets, 'vase.glb'));
+await copyFile(join(root, 'apps/web/public/showcase/coffee-table.glb'), join(assets, 'table.glb'));
 await copyFile(
   join(dirname(require.resolve('geist/font/sans')), 'fonts/geist-sans/Geist-Variable.woff2'),
   join(assets, 'geist.woff2'),
