@@ -8,7 +8,7 @@ import { ModelView } from '@/components/model-view';
 import { DATE_FORMAT, RenderDetail } from '@/components/render-detail';
 import { RenderView } from '@/components/render-view';
 import { Button } from '@/components/ui/button';
-import { currentUser, resolveActor } from '@/lib/actor';
+import { currentUser, resolveViewerActor } from '@/lib/actor';
 import { noindexMetadata } from '@/lib/seo/metadata';
 import { findShowcase } from '@/lib/showcase';
 
@@ -83,7 +83,7 @@ export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
     );
   }
 
-  const actor = await resolveActor();
+  const actor = await resolveViewerActor();
   const render = await getRender(id, actor).catch((error) => {
     if (error instanceof AppError && error.status === 404) notFound();
     throw error;

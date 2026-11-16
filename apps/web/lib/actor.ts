@@ -56,6 +56,21 @@ export async function resolveActor(headers?: Headers, scope: ApiKeyScope = 'read
   return { ...base, userId: session?.user.id ?? null, source: 'web' };
 }
 
+// Pages are for people. A request with a stale or wrong Authorization header (a crawler, an agent
+// replaying a key) is shown the page as an anonymous visitor instead of failing the render with a
+// 500. API routes keep calling `resolveActor`, which still rejects a bad key.
+export async function resolveViewerActor(): Promise<Actor> {
+  const h = await nextHeaders();
+  try {
+    return await resolveActor(h);
+  } catch (error) {
+    if (!(error instanceof AppError) || error.status !== 401) throw error;
+    const withoutKey = new Headers(h);
+    withoutKey.delete('authorization');
+    return resolveActor(withoutKey);
+  }
+}
+
 export async function currentUser() {
   const session = await auth().api.getSession({ headers: await nextHeaders() });
   return session?.user ?? null;
