@@ -32,7 +32,9 @@ What the workflow does, in order. A failure before step 5 leaves production as i
 3. **Stage**: `vercel deploy --prod --skip-domain`. Vercel builds with the project's own variables.
    The production build also syncs the database schema (`packages/db/scripts/deploy.mjs`): additive
    changes apply, anything else fails here, before any user sees the release.
-4. **Smoke**: `/` and `/api/openapi.json` on the staged URL.
+4. **Smoke**: `/` and `/api/openapi.json` on the staged URL. The staged build is a production
+   build, so `apps/web/proxy.ts` would 301 it to easyrender.ai; `lib/canonical-host.ts` lets the
+   deployment's own host (`VERCEL_URL`) through and still redirects www and every other alias.
 5. **Promote**: points easyrender.ai at the staged deployment (no rebuild), then smokes production.
 6. **Publish**: creates the tag and the GitHub release (generated notes plus the deployment URL).
 

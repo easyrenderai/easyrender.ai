@@ -1,6 +1,7 @@
 import { adminDecision } from '@easyrender/core/admin-analytics/helpers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { isRoutableLocale, LOCALE_HEADER, PATH_HEADER } from './i18n/config';
+import { canonicalHostTarget } from './lib/canonical-host';
 import {
   COUNTRY_HEADER,
   decideHome,
@@ -9,36 +10,19 @@ import {
   HOME_VARY,
   homePath,
 } from './lib/home-locale';
-import { LEGACY_HOSTS, SITE_HOST } from './lib/seo/site';
 
 const ANON_COOKIE = 'er_anon';
 
-// Only production has a canonical host. Preview deployments keep answering on their own
-// *.vercel.app URL, which is what makes a Vercel preview reviewable at all.
-const CANONICAL_HOST_ENFORCED = process.env.VERCEL_ENV === 'production';
-
-/**
- * Sends www, easyrenderai.vercel.app and any other alias of the production deployment to
- * https://easyrender.ai, keeping the path and the query. Only GET and HEAD: a 301 would turn a
- * webhook POST into a GET and lose its body, and /api is excluded for the same reason.
- */
+/** Sends www, easyrenderai.vercel.app and other aliases of production to https://easyrender.ai. */
 function canonicalHostRedirect(request: NextRequest): NextResponse | null {
-  if (!CANONICAL_HOST_ENFORCED) return null;
-  if (request.method !== 'GET' && request.method !== 'HEAD') return null;
-  if (request.nextUrl.pathname.startsWith('/api/')) return null;
-
-  const host = request.headers.get('host')?.split(':')[0]?.toLowerCase();
-  if (!host || host === SITE_HOST) return null;
-
-  const target = new URL(request.nextUrl.toString());
-  target.protocol = 'https:';
-  target.host = SITE_HOST;
-  target.port = '';
-  // A retired landing goes to the page that replaced it, not to the same path on the new host.
-  const replacement = LEGACY_HOSTS[host];
-  if (replacement && request.nextUrl.pathname === '/') target.pathname = replacement;
-
-  return NextResponse.redirect(target, 301);
+  const target = canonicalHostTarget({
+    method: request.method,
+    url: request.nextUrl.toString(),
+    host: request.headers.get('host'),
+    vercelEnv: process.env.VERCEL_ENV,
+    deploymentHost: process.env.VERCEL_URL,
+  });
+  return target ? NextResponse.redirect(target, 301) : null;
 }
 
 /** Adds the headers the redirect depends on, so no cache serves one visitor's answer to another. */
