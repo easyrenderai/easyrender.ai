@@ -8,8 +8,11 @@ This isolated authoring package is not part of the web build or its runtime bund
 bun install --frozen-lockfile
 bun run typecheck
 bun run render
+bun run check:alignment # requires ffmpeg on PATH; checks the delivered video pixels
 ```
 
 Requires root workspace dependencies for the existing Geist font. Outputs go to `apps/web/public/motion/`: three 18-second H.264 videos, posters and localized WebVTT captions. `bun run render web --still` renders one poster for iteration. The script bundles only the coffee table and font in a temporary public directory.
 
 Timing at 30 fps: 0–150 download; 150–360 import/prepare; 360–540 use/result. Every movement is frame-driven so the output can be reproduced. Update source, media and captions together. In the product, videos play once on first visibility, pause when out of view and respect reduced-motion preferences; native controls allow manual playback and replay.
+
+Layout uses shared frame and viewport bounds. Download controls share one horizontal axis; file and cursor share a drag path; final-scene columns are vertically centred within their viewing area. The pixel check catches the original 62px download-button displacement.
