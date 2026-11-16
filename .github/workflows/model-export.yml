@@ -113,3 +113,23 @@ jobs:
             --query LastUpdateStatus --output text
           aws lambda wait function-updated-v2 --function-name "$FUNCTION"
           aws lambda get-function --function-name "$FUNCTION" --query Code.ImageUri --output text
+      - name: Run the new image once
+        # Lambda fetches a new image piece by piece as files are first read. Measured: 53 seconds
+        # for the first export on a new image, 3 seconds for a fresh container after that. This
+        # run takes that wait, so a customer does not. It never fails the deploy.
+        run: |
+          if ! aws lambda get-function --function-name "$FUNCTION" >/dev/null 2>&1; then
+            exit 0
+          fi
+          started="$(date +%s)"
+          if aws lambda invoke --function-name "$FUNCTION" \
+            --cli-binary-format raw-in-base64-out --cli-read-timeout 150 \
+            --payload '{"warm":true}' /tmp/warm.json >/dev/null; then
+            cat /tmp/warm.json
+            echo
+            echo "First run took $(( $(date +%s) - started )) seconds."
+            grep -q '"warm": true' /tmp/warm.json ||
+              echo "::warning::The first run of the new image did not answer as a warm-up."
+          else
+            echo "::warning::The first run of the new image failed. The first export will be slow."
+          fi

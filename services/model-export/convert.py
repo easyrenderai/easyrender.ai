@@ -42,6 +42,33 @@ def convert(source: Path, fmt: str, work_dir: Path) -> Path:
     return _export_obj(out_dir)
 
 
+def warm_up(work_dir: Path) -> None:
+    """Convert a small generated model to every format and throw the results away.
+
+    AWS Lambda fetches a new image piece by piece as files are first read, and Blender is most of
+    this image: the first export after a deploy took 53 seconds for a conversion that takes one.
+    The deploy workflow calls this once after it ships an image, so that wait is not a customer's.
+    """
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    bpy.ops.mesh.primitive_cube_add(size=1)
+    cube = bpy.context.active_object
+    image = bpy.data.images.new("Warm", 8, 8)
+    image.pack()
+    material = bpy.data.materials.new("Warm")
+    material.use_nodes = True
+    nodes = material.node_tree.nodes
+    texture = nodes.new("ShaderNodeTexImage")
+    texture.image = image
+    shader = next(node for node in nodes if node.type == "BSDF_PRINCIPLED")
+    material.node_tree.links.new(texture.outputs["Color"], shader.inputs["Base Color"])
+    cube.data.materials.append(material)
+
+    source = work_dir / "warm.glb"
+    bpy.ops.export_scene.gltf(filepath=str(source), export_format="GLB")
+    for fmt in FORMATS:
+        convert(source, fmt, work_dir)
+
+
 def _load(source: Path) -> None:
     # Start from an empty file every time: a warm container must not carry the previous
     # customer's meshes into the next export.

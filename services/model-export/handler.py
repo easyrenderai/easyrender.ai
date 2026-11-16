@@ -9,6 +9,9 @@ Event:    {"sourceKey": "exports/<id>/source.glb", "format": "obj" | "fbx" | "bl
 Returns:  {"ok": true, "outputKey", "bytes", "contentType", "seconds"}
           {"ok": false, "error": "..."} when the input is the problem (nothing to retry)
 Anything else (S3 down, out of memory) raises, so the caller sees a failed run and can retry.
+
+{"warm": true} converts a small generated model and touches no bucket. The deploy workflow sends
+it once per new image, because the first run of a new image is slow (see convert.warm_up).
 """
 
 from __future__ import annotations
@@ -64,6 +67,13 @@ def _download_name(value: Any, extension: str) -> str:
 
 def handler(event: dict[str, Any], _context: Any = None) -> dict[str, Any]:
     started = time.monotonic()
+    if event.get("warm") is True:
+        # Sent by the deploy workflow after it ships an image. Reads and writes nothing in S3.
+        from convert import warm_up
+
+        with tempfile.TemporaryDirectory(prefix="warm-") as work:
+            warm_up(Path(work))
+        return {"ok": True, "warm": True, "seconds": round(time.monotonic() - started, 2)}
     try:
         fmt = event.get("format")
         if fmt not in FORMATS:

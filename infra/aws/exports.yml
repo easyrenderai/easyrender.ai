@@ -149,7 +149,8 @@ Resources:
             Action: lambda:InvokeFunction
             Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:easyrender-model-export
 
-  # GitHub Actions on main: push a new image and point the function at it. Nothing else.
+  # GitHub Actions on main: push a new image, point the function at it and run it once (the
+  # first run of a new image is slow). Nothing else.
   DeployRole:
     Type: AWS::IAM::Role
     Properties:
@@ -193,6 +194,7 @@ Resources:
                 Action:
                   - lambda:GetFunction
                   - lambda:GetFunctionConfiguration
+                  - lambda:InvokeFunction
                   - lambda:UpdateFunctionCode
                 Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:easyrender-model-export
 

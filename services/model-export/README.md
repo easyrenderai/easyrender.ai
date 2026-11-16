@@ -42,6 +42,15 @@ so the caller sees a failed run.
 
 `MAX_SOURCE_BYTES` caps the source size (default 200 MB). The time limit is the Lambda timeout.
 
+## The first run of a new image
+
+Lambda fetches a new image piece by piece as files are first read, and Blender is most of it.
+Measured on 2026-11-16 with a 623 KB model: 53 seconds for the first export on a new image,
+about 3 seconds for a fresh container after that, under half a second on a warm one. The deploy
+workflow therefore sends `{"warm": true}` once after it ships an image. That request converts a
+small generated model to every format, touches no bucket and answers
+`{"ok": true, "warm": true, "seconds"}`.
+
 ## Material edits
 
 The app's material editor stores a colour tint next to the texture, as glTF does
