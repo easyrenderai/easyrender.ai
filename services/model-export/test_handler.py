@@ -1,6 +1,8 @@
 """The handler is checked through what its caller sees: the returned value and what lands in S3."""
 
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -123,3 +125,34 @@ def test_refuses_a_source_over_the_size_limit(
 
     assert result == {"ok": False, "error": "The model is too large to convert"}
     assert bucket.uploads == {}
+
+
+def test_starting_the_container_does_not_load_blender() -> None:
+    # AWS Lambda gives the start-up 10 seconds and Blender alone can take longer on a cold start.
+    # The first real run on Lambda timed out there and took 26 seconds for a 1.5 second conversion.
+    code = "import sys, handler; print('bpy' in sys.modules, 'convert' in sys.modules)"
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        capture_output=True,
+        text=True,
+        check=True,
+        cwd=Path(__file__).parent,
+    )
+
+    assert result.stdout.split() == ["False", "False"]
+
+
+def test_a_refused_request_is_answered_without_loading_blender() -> None:
+    code = (
+        "import sys, handler; "
+        "print(handler.handler({'format': 'stl'})['ok'], 'bpy' in sys.modules)"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        capture_output=True,
+        text=True,
+        check=True,
+        cwd=Path(__file__).parent,
+    )
+
+    assert result.stdout.split() == ["False", "False"]

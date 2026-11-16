@@ -13,6 +13,8 @@ There is no server to keep running, no public endpoint and no shared token.
 ## Files
 
 - `convert.py`: the conversion. No network and no AWS, so it runs the same on a laptop.
+- `formats.py`: the format names and the refusal error. It loads no Blender, so the container
+  starts fast and loads Blender on the first conversion.
 - `handler.py`: the Lambda entry point. Reads the GLB from the private exports bucket, converts
   it and writes the result back.
 - `Dockerfile`: the image Lambda runs.
