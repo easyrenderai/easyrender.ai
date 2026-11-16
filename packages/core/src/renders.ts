@@ -334,7 +334,11 @@ export async function createDraft(input: {
       // Replicate answered with a server error for the Lite draw. Try the sturdier model once
       // (a different request, not a replay) so the visitor still gets a preview.
       if (!(error instanceof ProviderRequestError) || (error.status ?? 0) < 500) throw error;
-      reportError(error, { renderId: render.id, stage: 'preview_start_fallback' });
+      reportError(error, {
+        renderId: render.id,
+        stage: 'preview_start_fallback',
+        ...failureContext(error),
+      });
       const fallback = sheetRequest(
         sourceUrl,
         prompt,
@@ -349,8 +353,12 @@ export async function createDraft(input: {
   } catch (error) {
     // Hold only when no answer arrived (or the id could not be saved): the job may exist. A
     // received error response means it was rejected, so fail now instead of hanging.
-    if (error instanceof ProviderRequestError && error.isAmbiguous && error.status === undefined) {
-      reportError(error, { renderId: render.id, stage: 'preview_start_uncertain' });
+    if (isUncertainStart(error)) {
+      reportError(error, {
+        renderId: render.id,
+        stage: 'preview_start_uncertain',
+        ...failureContext(error),
+      });
       return (await db().render.findUnique({ where: { id: render.id } })) as Render;
     }
     await fail(render.id, error);
@@ -386,9 +394,43 @@ async function persistStartedPrediction(
   }
 }
 
+// What kind of provider failure this is, so a rejected request is told apart from an outage:
+// `input` (4xx the provider will keep rejecting), `auth` (token or billing), `outage` (5xx) or
+// `no_response` (no answer at all). Not a provider error: `other`.
+function providerFailureKind(error: unknown): string {
+  if (!(error instanceof ProviderRequestError)) return 'other';
+  if (error.status === undefined) return 'no_response';
+  if ([401, 402, 403].includes(error.status)) return 'auth';
+  return error.status >= 500 ? 'outage' : 'input';
+}
+
+// A start whose outcome is unknown: no answer arrived (or the id could not be saved), so the job
+// may exist and must not be replayed or refunded. An error response Replicate did send (even a
+// 5xx) means it was rejected, so the render fails and refunds now instead of waiting for the
+// never-started timeout.
+function isUncertainStart(error: unknown): error is ProviderRequestError {
+  return error instanceof ProviderRequestError && error.isAmbiguous && error.status === undefined;
+}
+
+function failureContext(error: unknown): Record<string, string> {
+  return error instanceof ProviderRequestError
+    ? { failureKind: providerFailureKind(error), providerStatus: String(error.status ?? 'none') }
+    : {};
+}
+
 async function fail(id: string, error: unknown, expected?: Pick<Render, 'status' | 'updatedAt'>) {
   const message = error instanceof Error ? error.message : String(error);
-  reportError(error, { renderId: id, stage: 'render' });
+  // A render that timed out or never started is an expected lifecycle end: it is refunded and
+  // shown as failed, so it is a warning that names the stage, not an unhandled exception.
+  if (error instanceof TerminalRenderError) {
+    reportError(
+      error,
+      { renderId: id, stage: error.stage ?? 'render_terminal', ...failureContext(error) },
+      'warning',
+    );
+  } else {
+    reportError(error, { renderId: id, stage: 'render', ...failureContext(error) });
+  }
   const render = await db().render.findUnique({ where: { id } });
   if (!render || !['drafting', 'rendering'].includes(render.status)) return;
   // The terminal state and refund commit together. If any wallet/ledger write fails, the
@@ -440,7 +482,15 @@ async function fail(id: string, error: unknown, expected?: Pick<Render, 'status'
   );
 }
 
-class TerminalRenderError extends Error {}
+class TerminalRenderError extends Error {
+  constructor(
+    message: string,
+    // Which lifecycle step ended the render, for diagnostics.
+    readonly stage?: string,
+  ) {
+    super(message);
+  }
+}
 
 // Moves a render forward if its Replicate job finished. Called by polling and by the webhook;
 // it always re-reads the prediction from Replicate, so it is safe to call with any input.
@@ -462,7 +512,10 @@ export async function advance(id: string): Promise<Render | null> {
           !render.finalSheetPredictionId &&
           !render.buildPredictionId))
     ) {
-      throw new TerminalRenderError('never started');
+      throw new TerminalRenderError(
+        'never started',
+        render.status === 'drafting' ? 'preview_never_started' : 'build_never_started',
+      );
     }
     // The final sheet was drawn but the 3D build never started (the worker died in between).
     if (
@@ -471,7 +524,7 @@ export async function advance(id: string): Promise<Render | null> {
       render.buildClaimedAt &&
       !render.buildPredictionId
     ) {
-      throw new TerminalRenderError('3D render never started');
+      throw new TerminalRenderError('3D render never started', 'build_never_started');
     }
     if (render.status === 'drafting' && render.sheetPredictionId) {
       const prediction = await replicate().get(render.sheetPredictionId);
@@ -761,7 +814,7 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
           config.webhookUrl(`/api/webhooks/replicate?render=${id}`),
         );
       } catch (error) {
-        if (error instanceof ProviderRequestError && error.isAmbiguous) throw error;
+        if (isUncertainStart(error)) throw error;
         // Only a definite rejection permits falling back to the draft.
         reportError(error, { renderId: id, stage: 'final_sheet_start' });
       }
@@ -776,7 +829,7 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
       buildClaimedAt: new Date(),
     });
   } catch (error) {
-    if (error instanceof ProviderRequestError && error.isAmbiguous) {
+    if (isUncertainStart(error)) {
       reportError(error, { renderId: id, stage: 'render_start_uncertain' });
       return (await db().render.findUnique({ where: { id } })) as Render;
     }
@@ -862,7 +915,7 @@ export async function startSheet(id: string, actor: Actor): Promise<Render> {
   try {
     return await startSheetPrediction(claimed);
   } catch (error) {
-    if (error instanceof ProviderRequestError && error.isAmbiguous) {
+    if (isUncertainStart(error)) {
       reportError(error, { renderId: id, stage: 'render_start_uncertain' });
       return (await db().render.findUnique({ where: { id } })) as Render;
     }
@@ -895,11 +948,29 @@ async function startSheetPrediction(render: Render): Promise<Render> {
     recipe.sheetPrompt,
     selectMaterialsFrom(recipe.materials, render.name, notes),
   );
-  const prediction = await client.start(
-    request.path,
-    request.body,
-    config.webhookUrl(`/api/webhooks/replicate?render=${render.id}`),
-  );
+  const webhook = config.webhookUrl(`/api/webhooks/replicate?render=${render.id}`);
+  let prediction: Prediction;
+  try {
+    prediction = await client.start(request.path, request.body, webhook);
+  } catch (error) {
+    // A server error Replicate actually returned means no prediction exists, so one retry on the
+    // sturdier model is safe (as in createDraft). No response at all is ambiguous: never replay it.
+    if (!(error instanceof ProviderRequestError) || (error.status ?? 0) < 500) throw error;
+    reportError(error, {
+      renderId: render.id,
+      stage: 'sheet_start_fallback',
+      ...failureContext(error),
+    });
+    const fallback = sheetRequest(
+      sourceUrl,
+      notes,
+      selectSkillFrom(recipe.skills, render.name, notes),
+      FALLBACK_SHEET_SETTINGS,
+      recipe.sheetPrompt,
+      selectMaterialsFrom(recipe.materials, render.name, notes),
+    );
+    prediction = await client.start(fallback.path, fallback.body, webhook);
+  }
   return persistStartedPrediction(render, { sheetPredictionId: prediction.id });
 }
 
@@ -960,7 +1031,7 @@ export async function redrawSheet(id: string, actor: Actor, note: string): Promi
   try {
     return await startSheetPrediction(claimed);
   } catch (error) {
-    if (error instanceof ProviderRequestError && error.isAmbiguous) {
+    if (isUncertainStart(error)) {
       reportError(error, { renderId: id, stage: 'render_start_uncertain' });
       return (await db().render.findUnique({ where: { id } })) as Render;
     }
