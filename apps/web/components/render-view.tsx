@@ -12,12 +12,23 @@ import { DATE_FORMAT, RenderDetail } from '@/components/render-detail';
 import { RenderHistory } from '@/components/render-history';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { UpscaleAction } from '@/components/upscale/upscale-action';
 import { latestUpscale, useUpscales } from '@/components/upscale/use-upscales';
 import { captureBrowser, observeRender } from '@/lib/analytics/browser';
+
+import { correctionNote, SHEET_ISSUES, type SheetIssue } from '@/lib/sheet-correction';
 
 const RUNNING = new Set(['drafting', 'rendering']);
 // Mirrors MAX_NOTE_LENGTH in the harness, which a client component cannot import (it pulls in sharp).
@@ -48,6 +59,13 @@ export function RenderView({
   const [saving, setSaving] = useState(false);
   const [redrawError, setRedrawError] = useState<string | null>(null);
   const [note, setNote] = useState(initial.sheetNote ?? '');
+  const [issues, setIssues] = useState<SheetIssue[]>([]);
+  const [isConfirmingCorrection, setIsConfirmingCorrection] = useState(false);
+  const correction = correctionNote(
+    issues.map((issue) => t(`correction.instructions.${issue}`)),
+    note,
+  );
+  const isCorrectionValid = correction.length > 0 && correction.length <= NOTE_MAX_LENGTH;
   const upscales = useUpscales({ renderId: initial.id }, owner && signedIn && initial.canUpscale);
 
   useEffect(() => {
@@ -93,15 +111,17 @@ export function RenderView({
   }
 
   async function redrawSheet() {
+    if (!isCorrectionValid || starting) return;
     setStarting(true);
     setRedrawError(null);
     const response = await fetch(`/api/renders/${render.id}/sheet/redraw`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ note }),
+      body: JSON.stringify({ note: correction }),
     });
     const data = await response.json().catch(() => ({}));
     if (response.ok) {
+      setIsConfirmingCorrection(false);
       setRender(data);
       router.refresh();
       captureBrowser('render_sheet_redraw_started', {
@@ -181,6 +201,16 @@ export function RenderView({
   const angles = (
     <div className="space-y-4">
       {sheet}
+      {owner && render.status === 'preview_ready' && render.hasSheet && (
+        <details className="text-sm text-muted-foreground">
+          <summary className="cursor-pointer">{t('review.title')}</summary>
+          <ul className="mt-3 list-disc space-y-2 pl-5">
+            {(['shape', 'parts', 'openings'] as const).map((key) => (
+              <li key={key}>{t(`review.${key}`)}</li>
+            ))}
+          </ul>
+        </details>
+      )}
       {owner && signedIn && render.canUpscale && (
         <div className="space-y-2">
           <UpscaleAction
@@ -202,6 +232,28 @@ export function RenderView({
       )}
       {isFixable && (
         <div className="space-y-2">
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium">{t('correction.title')}</legend>
+            <p className="text-xs text-muted-foreground">{t('correction.multiple')}</p>
+            <div className="flex flex-wrap gap-x-5 gap-y-2">
+              {SHEET_ISSUES.map((issue) => (
+                <Label key={issue} className="min-h-11 cursor-pointer gap-2">
+                  <Checkbox
+                    checked={issues.includes(issue)}
+                    disabled={starting}
+                    onCheckedChange={(checked) =>
+                      setIssues((current) =>
+                        checked === true
+                          ? [...current.filter((key) => key !== issue), issue]
+                          : current.filter((key) => key !== issue),
+                      )
+                    }
+                  />
+                  {t(`correction.labels.${issue}`)}
+                </Label>
+              ))}
+            </div>
+          </fieldset>
           <Label htmlFor="sheet-note">{t('fixSheetLabel')}</Label>
           <Textarea
             id="sheet-note"
@@ -212,6 +264,11 @@ export function RenderView({
             onChange={(event) => setNote(event.target.value)}
           />
           <p className="text-xs text-muted-foreground">{t('fixSheetHint')}</p>
+          {correction.length > NOTE_MAX_LENGTH && (
+            <p role="alert" className="text-sm text-destructive">
+              {t('correction.tooLong', { max: NOTE_MAX_LENGTH })}
+            </p>
+          )}
           {balance < render.sheetCredits ? (
             <Button variant="outline" className="w-full" asChild>
               <Link href={`/credits?next=${next}`}>{t('buyToRedraw')}</Link>
@@ -220,13 +277,42 @@ export function RenderView({
             <Button
               variant="outline"
               className="w-full"
-              onClick={redrawSheet}
-              disabled={starting || note.trim().length === 0}
+              onClick={() => setIsConfirmingCorrection(true)}
+              disabled={starting || !isCorrectionValid}
             >
               {starting ? <Loader2 className="animate-spin" /> : <RefreshCw />}
-              {t('redrawSheet', { credits: render.sheetCredits })}
+              {t('correction.review')}
             </Button>
           )}
+          <Dialog open={isConfirmingCorrection} onOpenChange={setIsConfirmingCorrection}>
+            <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>{t('correction.confirmTitle')}</DialogTitle>
+                <DialogDescription>
+                  {t('correction.confirmBody', { credits: render.sheetCredits })}
+                </DialogDescription>
+              </DialogHeader>
+              <p className="text-sm break-words whitespace-pre-wrap">{correction}</p>
+              {redrawError && (
+                <p role="alert" className="text-sm text-destructive">
+                  {redrawError}
+                </p>
+              )}
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  disabled={starting}
+                  onClick={() => setIsConfirmingCorrection(false)}
+                >
+                  {t('correction.back')}
+                </Button>
+                <Button disabled={starting || !isCorrectionValid} onClick={redrawSheet}>
+                  {starting && <Loader2 className="animate-spin" />}
+                  {t('redrawSheet', { credits: render.sheetCredits })}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           {redrawError && (
             <Alert variant="destructive">
               <AlertDescription>{redrawError}</AlertDescription>

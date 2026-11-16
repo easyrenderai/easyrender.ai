@@ -108,6 +108,25 @@
         "cta": "Explore the API"
       },
       "english": "English"
+    },
+    "journey": {
+      "title": "From your photo to your next project.",
+      "hub": "Explore how the Hub works",
+      "photo": {
+        "title": "Upload your product",
+        "body": "Start with a photo you already have."
+      },
+      "model": {
+        "title": "Get your model",
+        "body": "Review the free angles, then choose whether to build the 3D model."
+      },
+      "use": {
+        "title": "Use it in your work",
+        "body": "Download the file for your store, design project or scene."
+      }
+    },
+    "customer": {
+      "label": "Used by"
     }
   },
   "Landing": {
@@ -375,6 +394,31 @@
         "material": "Materials changed"
       },
       "credits": "{credits} credits"
+    },
+    "review": {
+      "title": "What should I check before building?",
+      "shape": "Does the silhouette match your product?",
+      "parts": "Are the legs, handles and other parts present?",
+      "openings": "Are the openings and gaps preserved?"
+    },
+    "correction": {
+      "title": "What needs correcting?",
+      "multiple": "Select all that apply, or describe another change below.",
+      "tooLong": "Keep your selections and description within {max} characters.",
+      "labels": {
+        "shape": "Shape",
+        "parts": "Parts",
+        "material": "Material"
+      },
+      "instructions": {
+        "shape": "Match the shape and proportions to the original photo.",
+        "parts": "Preserve the parts and openings visible in the original photo.",
+        "material": "Match the materials and colours to the original photo."
+      },
+      "review": "Review correction",
+      "confirmTitle": "Confirm the new angle sheet",
+      "confirmBody": "This regenerates the angles for {credits} credits. It does not build the 3D model.",
+      "back": "Edit instructions"
     }
   },
   "PromptBar": {
@@ -389,7 +433,11 @@
       "noPhoto": "Attach a photo of the object or building first.",
       "upload": "Upload failed",
       "unreadable": "Could not read this photo",
-      "title": "Could not start this render"
+      "title": "Could not start this render",
+      "small": "Use a higher-resolution original photo.",
+      "large": "Choose a smaller photo and try again.",
+      "aspect": "Use a photo that shows the whole product, rather than a very narrow crop.",
+      "blank": "This image appears blank. Choose a photo with the product visible."
     },
     "photoSize": "Photo · {size}",
     "removePhoto": "Remove photo",
@@ -1316,6 +1364,10 @@
           "tools": "Meshy · Sloyd",
           "check": "Check rigging, export and commercial rights in your plan."
         }
+      },
+      "groups": {
+        "tools": "Compare tools",
+        "methods": "Compare methods"
       }
     }
   },

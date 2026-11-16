@@ -42,28 +42,44 @@ export async function CompareIndexView({ locale }: { locale: Locale }) {
         </p>
       </header>
 
-      <ul className="mt-12 max-w-3xl divide-y border-t sm:mt-16">
-        {pages.map((page) => (
-          <li key={page.slug} className="py-8">
-            <h2 className="text-xl font-semibold tracking-tight text-balance sm:text-2xl">
-              <Link href={compareHref(page.locale, page.slug)} className="hover:underline">
-                {page.title}
-              </Link>
-            </h2>
-            <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">
-              {page.description}
-            </p>
-            <p className="mt-4">
-              <Link
-                href={compareHref(page.locale, page.slug)}
-                className="text-sm font-medium hover:underline"
-              >
-                {t('comparisons.read')}
-              </Link>
-            </p>
-          </li>
-        ))}
-      </ul>
+      {(['tools', 'methods'] as const).map((group) => (
+        <section
+          key={group}
+          className="mt-12 max-w-3xl sm:mt-16"
+          aria-labelledby={`compare-${group}`}
+        >
+          <h2 id={`compare-${group}`} className="text-2xl font-medium tracking-tight">
+            {t(`comparisons.groups.${group}`)}
+          </h2>
+          <ul className="mt-5 divide-y border-t">
+            {pages
+              .filter(
+                (page) =>
+                  ['compare-meshy', 'compare-tripo'].includes(page.group) === (group === 'tools'),
+              )
+              .map((page) => (
+                <li key={page.slug} className="py-8">
+                  <h3 className="text-xl font-semibold tracking-tight text-balance sm:text-2xl">
+                    <Link href={compareHref(page.locale, page.slug)} className="hover:underline">
+                      {page.title}
+                    </Link>
+                  </h3>
+                  <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">
+                    {page.description}
+                  </p>
+                  <p className="mt-4">
+                    <Link
+                      href={compareHref(page.locale, page.slug)}
+                      className="text-sm font-medium hover:underline"
+                    >
+                      {t('comparisons.read')}
+                    </Link>
+                  </p>
+                </li>
+              ))}
+          </ul>
+        </section>
+      ))}
     </div>
   );
 }

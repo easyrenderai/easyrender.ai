@@ -108,6 +108,25 @@
         "cta": "Explorar la API"
       },
       "english": "inglés"
+    },
+    "journey": {
+      "title": "De tu foto a tu próximo proyecto.",
+      "hub": "Descubre cómo funciona el Hub",
+      "photo": {
+        "title": "Sube tu producto",
+        "body": "Empieza con una foto que ya tienes."
+      },
+      "model": {
+        "title": "Obtén su modelo",
+        "body": "Revisa los ángulos gratis y decide si quieres crear el modelo 3D."
+      },
+      "use": {
+        "title": "Úsalo en tu trabajo",
+        "body": "Descarga el archivo para tu tienda, proyecto de diseño o escena."
+      }
+    },
+    "customer": {
+      "label": "Utilizado por"
     }
   },
   "Landing": {
@@ -375,6 +394,31 @@
         "material": "Materiales cambiados"
       },
       "credits": "{credits} créditos"
+    },
+    "review": {
+      "title": "¿Qué conviene revisar antes de crear el 3D?",
+      "shape": "¿La silueta coincide con tu producto?",
+      "parts": "¿Están las patas, los tiradores y las demás piezas?",
+      "openings": "¿Se conservan los huecos y las aberturas?"
+    },
+    "correction": {
+      "title": "¿Qué necesita corregirse?",
+      "multiple": "Marca todo lo que corresponda o describe otro cambio debajo.",
+      "tooLong": "Las opciones y la descripción deben ocupar como máximo {max} caracteres.",
+      "labels": {
+        "shape": "Forma",
+        "parts": "Piezas",
+        "material": "Material"
+      },
+      "instructions": {
+        "shape": "Ajusta la forma y las proporciones a la foto original.",
+        "parts": "Conserva las piezas y los huecos visibles en la foto original.",
+        "material": "Ajusta los materiales y colores a la foto original."
+      },
+      "review": "Revisar corrección",
+      "confirmTitle": "Confirmar los nuevos ángulos",
+      "confirmBody": "Se regenerarán los ángulos por {credits} créditos. No se creará el modelo 3D.",
+      "back": "Editar instrucciones"
     }
   },
   "PromptBar": {
@@ -389,7 +433,11 @@
       "noPhoto": "Primero adjunta una foto del objeto o del edificio.",
       "upload": "No se pudo subir",
       "unreadable": "No se pudo leer esta foto",
-      "title": "No se pudo iniciar este render"
+      "title": "No se pudo iniciar este render",
+      "small": "Usa la foto original con mayor resolución.",
+      "large": "Elige una foto más pequeña y vuelve a intentarlo.",
+      "aspect": "Usa una foto que muestre el producto completo, sin un recorte demasiado estrecho.",
+      "blank": "La imagen parece vacía. Elige una foto donde se vea el producto."
     },
     "photoSize": "Foto · {size}",
     "removePhoto": "Quitar foto",
@@ -1316,6 +1364,10 @@
           "tools": "Meshy · Sloyd",
           "check": "Comprueba rigging, exportación y uso comercial en tu plan."
         }
+      },
+      "groups": {
+        "tools": "Comparar herramientas",
+        "methods": "Comparar métodos"
       }
     }
   },

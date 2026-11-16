@@ -55,6 +55,7 @@ export async function ApiView({ locale }: { locale: Locale }) {
         }}
       />
       <StudioCompatibility />
+      <IntegrationResult locale={locale} kind="api" />
       <Section title={t('intro.title')} description={t('intro.description')}>
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 pb-8 text-sm">
           <p className="text-muted-foreground">{t('formatsLabel')}</p>
@@ -76,7 +77,6 @@ export async function ApiView({ locale }: { locale: Locale }) {
           ))}
         </div>
       </Section>
-      <IntegrationResult locale={locale} kind="api" />
       <IntegrationCosts locale={locale} kind="api" />
       <Section
         id="how-it-works"

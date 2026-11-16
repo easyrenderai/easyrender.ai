@@ -108,6 +108,25 @@
         "cta": "Scopri l’API"
       },
       "english": "inglese"
+    },
+    "journey": {
+      "title": "Dalla tua foto al prossimo progetto.",
+      "hub": "Scopri come funziona l’Hub",
+      "photo": {
+        "title": "Carica il tuo prodotto",
+        "body": "Inizia da una foto che hai già."
+      },
+      "model": {
+        "title": "Ottieni il modello",
+        "body": "Controlla le angolazioni gratis, poi decidi se creare il modello 3D."
+      },
+      "use": {
+        "title": "Usalo nel tuo lavoro",
+        "body": "Scarica il file per il negozio, il progetto o la scena."
+      }
+    },
+    "customer": {
+      "label": "Utilizzato da"
     }
   },
   "Landing": {
@@ -375,6 +394,31 @@
         "material": "Materiali modificati"
       },
       "credits": "{credits} crediti"
+    },
+    "review": {
+      "title": "Cosa controllare prima di creare il 3D?",
+      "shape": "La sagoma corrisponde al prodotto?",
+      "parts": "Sono presenti gambe, maniglie e altri elementi?",
+      "openings": "Sono conservate aperture e spazi vuoti?"
+    },
+    "correction": {
+      "title": "Cosa va corretto?",
+      "multiple": "Seleziona tutti i punti pertinenti o descrivi un’altra modifica sotto.",
+      "tooLong": "Opzioni e descrizione devono rientrare in {max} caratteri.",
+      "labels": {
+        "shape": "Forma",
+        "parts": "Elementi",
+        "material": "Materiale"
+      },
+      "instructions": {
+        "shape": "Allinea forma e proporzioni alla foto originale.",
+        "parts": "Conserva gli elementi e le aperture visibili nella foto originale.",
+        "material": "Allinea materiali e colori alla foto originale."
+      },
+      "review": "Rivedi la correzione",
+      "confirmTitle": "Conferma le nuove viste",
+      "confirmBody": "Le viste verranno rigenerate per {credits} crediti. Il modello 3D non verrà creato.",
+      "back": "Modifica le istruzioni"
     }
   },
   "PromptBar": {
@@ -389,7 +433,11 @@
       "noPhoto": "Prima allega una foto dell'oggetto o dell'edificio.",
       "upload": "Caricamento non riuscito",
       "unreadable": "Impossibile leggere questa foto",
-      "title": "Impossibile avviare questo render"
+      "title": "Impossibile avviare questo render",
+      "small": "Usa la foto originale con una risoluzione maggiore.",
+      "large": "Scegli una foto più piccola e riprova.",
+      "aspect": "Usa una foto del prodotto intero, senza un ritaglio troppo stretto.",
+      "blank": "Questa immagine sembra vuota. Scegli una foto in cui il prodotto sia visibile."
     },
     "photoSize": "Foto · {size}",
     "removePhoto": "Rimuovi la foto",
@@ -1316,6 +1364,10 @@
           "tools": "Meshy · Sloyd",
           "check": "Verifica rigging, esportazione e diritti commerciali del piano."
         }
+      },
+      "groups": {
+        "tools": "Confronta gli strumenti",
+        "methods": "Confronta i metodi"
       }
     }
   },
