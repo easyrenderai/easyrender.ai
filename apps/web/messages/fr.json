@@ -1410,13 +1410,13 @@
       },
       "related": "À lire ensuite",
       "promo": {
-        "title": "On vous demande plus de photos ?",
+        "title": "Une photo ne montre pas tout.",
         "button": "Tester ma photo gratuitement",
         "disclosure": "Aperçu gratuit. Le modèle 3D est payant.",
-        "solution": "Montrez-le en 3D. À partir d’une photo.",
-        "visual": "Exemple de modèle généré de table d’appoint en bois en rotation",
-        "play": "Lire la vidéo du produit",
-        "pause": "Mettre la vidéo en pause"
+        "solution": "Créez en 3D. Explorez chaque angle.",
+        "visual": "Démonstration visuelle : un fauteuil apparaît dans une pièce et se dévoile sous plusieurs angles",
+        "play": "Lire la démonstration",
+        "pause": "Mettre la démonstration en pause"
       },
       "priceReference": "Les prix de l’article sont des références en USD. Consultez les tarifs pour votre devise et votre offre actuelles."
     },

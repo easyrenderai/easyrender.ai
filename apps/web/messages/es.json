@@ -1410,13 +1410,13 @@
       },
       "related": "Sigue leyendo",
       "promo": {
-        "title": "¿Te piden más fotos?",
+        "title": "Una foto no lo muestra todo.",
         "button": "Prueba tu foto gratis",
         "disclosure": "Vista previa gratis. El modelo 3D es de pago.",
-        "solution": "Enséñalo en 3D. Desde una foto.",
-        "visual": "Ejemplo de un modelo generado de mesa auxiliar de madera girando",
-        "play": "Reproducir vídeo del producto",
-        "pause": "Pausar vídeo del producto"
+        "solution": "Crea en 3D. Explora cada ángulo.",
+        "visual": "Demostración visual: una butaca aparece en un salón y se muestra desde varios ángulos",
+        "play": "Reproducir demostración",
+        "pause": "Pausar demostración"
       },
       "priceReference": "Los precios del artículo son referencias en USD. Consulta Precios para ver tu moneda y oferta actuales."
     },

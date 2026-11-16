@@ -22,7 +22,7 @@ export function PromoVideo({ label, play, pause }: { label: string; play: string
         video.pause();
         return;
       }
-      if (!video.getAttribute('src')) video.src = '/blog/promo/product-turn.mp4';
+      if (!video.getAttribute('src')) video.src = '/blog/promo/room-reveal.mp4';
       void video.play().catch(() => {
         // Autoplay can be blocked; leave the poster and a manual play control.
         if (isActive) setIsPlaying(false);
@@ -49,13 +49,13 @@ export function PromoVideo({ label, play, pause }: { label: string; play: string
 
   return (
     <div className="relative overflow-hidden" data-promo-video="">
-      {/* Silent product motion: the hook and action remain readable outside the video. */}
-      {/* biome-ignore lint/a11y/useMediaCaption: silent decorative rotation; equivalent description is the accessible label */}
+      {/* Silent room demonstration: the hook and action remain readable outside the video. */}
+      {/* biome-ignore lint/a11y/useMediaCaption: silent decorative room demonstration; equivalent description is the accessible label */}
       <video
         ref={videoRef}
-        width={480}
-        height={438}
-        poster="/blog/promo/product-turn.jpg"
+        width={600}
+        height={400}
+        poster="/blog/promo/room-reveal.jpg"
         preload="none"
         muted
         loop
@@ -82,7 +82,7 @@ export function PromoVideo({ label, play, pause }: { label: string; play: string
               setIsPaused(false);
               const video = videoRef.current;
               if (video) {
-                video.src ||= '/blog/promo/product-turn.mp4';
+                video.src ||= '/blog/promo/room-reveal.mp4';
                 void video.play().catch(() => setHasError(true));
               }
             }
