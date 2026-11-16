@@ -147,5 +147,7 @@ describe('geometry guard', () => {
       ?.extensions?.EXT_meshopt_compression as { byteOffset: number };
     doc.binary[compressed.byteOffset ?? 0] ^= 1;
     expect(() => assertGeometryUnchanged(bytes, writeDocument(doc))).toThrow('changed geometry');
-  });
+    // Runs the whole material pass on a real showcase model: about 1.5 s alone, over the 5 s
+    // default on a CI runner that is running the other packages' tests at the same time.
+  }, 20_000);
 });

@@ -1,0 +1,59 @@
+name: Model export
+
+# Builds the Blender converter image (services/model-export) and runs its tests inside it, so
+# the thing that is tested is the thing Lambda would run. It does not push the image anywhere.
+on:
+  pull_request:
+    paths:
+      - "services/model-export/**"
+      - ".github/workflows/model-export.yml"
+  push:
+    branches: [main]
+    paths:
+      - "services/model-export/**"
+      - ".github/workflows/model-export.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: model-export-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  image:
+    name: Converter image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build the image
+        run: docker build -t model-export services/model-export
+      - name: Run the tests inside the image
+        run: |
+          docker run --rm --entrypoint sh \
+            -v "$PWD/services/model-export:/src:ro" -w /src \
+            -e PYTHONDONTWRITEBYTECODE=1 \
+            model-export -c "pip install --quiet pytest && python -m pytest -p no:cacheprovider"
+      - name: Start it the way Lambda does and refuse a bad request
+        run: |
+          docker run -d --name converter --read-only --tmpfs /tmp -p 9000:8080 \
+            -e EXPORTS_BUCKET=unused model-export
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -sf -o /dev/null -X POST \
+              http://127.0.0.1:9000/2015-03-31/functions/function/invocations -d '{}'; then
+              break
+            fi
+            sleep 1
+          done
+          answer=$(curl -s -X POST \
+            http://127.0.0.1:9000/2015-03-31/functions/function/invocations \
+            -d '{"sourceKey":"renders/models/a.glb","format":"obj","outputKey":"exports/a/model.zip"}')
+          echo "$answer"
+          test "$answer" = '{"ok": false, "error": "sourceKey must be a .glb key under exports/"}'
+      - name: Report the image size
+        if: always()
+        run: |
+          docker image inspect model-export --format 'Image size: {{.Size}} bytes'
