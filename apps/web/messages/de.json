@@ -51,7 +51,8 @@
       "privacy": "Datenschutzerklärung",
       "terms": "Nutzungsbedingungen",
       "editorial": "Redaktion",
-      "comparisons": "Vergleiche"
+      "comparisons": "Vergleiche",
+      "ecommerce": "E-commerce plugins"
     },
     "copyright": "© 2026 easyrender. Technologie von Genfeed.",
     "pricesNote": "Prüfe Währung und Gesamtbetrag vor dem Bezahlen. Credits verfallen nicht."
@@ -2282,7 +2283,12 @@
         "title": "Start without a subscription",
         "body": "The minimum credit purchase is {credits} credits ({price}). Credits do not expire. Review the total at checkout before paying."
       },
-      "refund": "Failed 3D builds refund their credits. Prices shown use your current currency and pricing offer."
+      "refund": "Failed 3D builds refund their credits. Prices shown use your current currency and pricing offer.",
+      "ecommerce": {
+        "title": "What does a 3D catalogue cost?",
+        "description": "The plugins are free to install. You pay for each 3D model with your account credits, and the total is on the button before you click.",
+        "check": "The plugin asks easyrender for the price of the run and sends that figure with your click. A run that would cost more is refused."
+      }
     },
     "apiDemo": {
       "title": "Your application · easyrender REST API",
@@ -2444,5 +2450,210 @@
   "Resources": {
     "title": "Dein nächster Schritt",
     "description": "Bereite ein Foto vor, vergleiche Arbeitsabläufe und nutze die fertige 3D-Datei."
+  },
+  "EcommerceLanding": {
+    "meta": {
+      "title": "3D and AR for Shopify, WooCommerce and PrestaShop · easyrender",
+      "description": "Add a View in your room button to your product pages. easyrender turns your catalogue photos into 3D models that shoppers open in AR, on Shopify, WooCommerce, PrestaShop or any other store."
+    },
+    "breadcrumb": "E-commerce",
+    "home": "Home",
+    "hero": {
+      "eyebrow": "E-commerce",
+      "title": "A View in your room button on every product page.",
+      "subtitle": "easyrender turns the photos already in your catalogue into 3D models and adds an AR button and a QR code to each product page. Choose your platform to see how it is set up."
+    },
+    "picker": {
+      "label": "Choose your store platform"
+    },
+    "stepsLabel": "Setup",
+    "availabilityLabel": "Availability",
+    "requirementsLabel": "Requirements",
+    "platforms": {
+      "shopify": {
+        "name": "Shopify",
+        "title": "easyrender for Shopify",
+        "steps": {
+          "one": {
+            "title": "Install the app",
+            "body": "Open the install link in your Shopify admin. The app opens inside the admin, like any other Shopify app."
+          },
+          "two": {
+            "title": "Connect your easyrender account",
+            "body": "One click links the store to your account. Models for this store are paid with credits from that account."
+          },
+          "three": {
+            "title": "Generate the catalogue",
+            "body": "The button shows how many products have a photo and what the run costs. One click sends them all."
+          },
+          "four": {
+            "title": "Add the block to your theme",
+            "body": "In the theme editor, open a product page, add the View in your room block and save. You choose where it sits and what it says."
+          }
+        },
+        "path": "Online Store › Themes › Customize › Product › Add block",
+        "placement": "A theme block. Products with a finished model show it; the others show nothing.",
+        "availability": "Installed from a link we send you. The app is not listed in the Shopify App Store yet.",
+        "requirements": "An Online Store 2.0 theme and product photos.",
+        "cta": "Ask for the Shopify app",
+        "secondary": "Create your easyrender account"
+      },
+      "woocommerce": {
+        "name": "WooCommerce",
+        "title": "easyrender for WooCommerce",
+        "steps": {
+          "one": {
+            "title": "Upload the plugin",
+            "body": "In WordPress, go to Plugins, Add New, Upload Plugin, choose the zip file and activate it."
+          },
+          "two": {
+            "title": "Paste your API key",
+            "body": "Create a key in your easyrender account and paste it under WooCommerce, 3D & AR."
+          },
+          "three": {
+            "title": "Generate the catalogue",
+            "body": "The button shows how many published products have a photo and what the run costs. One click sends them in batches."
+          },
+          "four": {
+            "title": "The button appears by itself",
+            "body": "Each product with a finished model shows the button and QR code after add to cart. The Products list gains a 3D status column."
+          }
+        },
+        "path": "WooCommerce › 3D & AR",
+        "placement": "After the add-to-cart button, with no theme edits. Use the [easyrender_ar] shortcode to place it anywhere else.",
+        "availability": "A zip file you upload. The plugin is not in the WordPress.org directory yet; the source is public on GitHub.",
+        "requirements": "WordPress 6.0 or later, PHP 7.4 or later, and product photos served over https.",
+        "cta": "Create your API key",
+        "secondary": "Get the plugin on GitHub"
+      },
+      "prestashop": {
+        "name": "PrestaShop",
+        "title": "easyrender for PrestaShop",
+        "steps": {
+          "one": {
+            "title": "Upload the module",
+            "body": "In the back office, go to Modules, Module Manager, Upload a module and choose the zip file."
+          },
+          "two": {
+            "title": "Paste your API key",
+            "body": "Create a key in your easyrender account, open the module’s Configure page, paste it and save."
+          },
+          "three": {
+            "title": "Generate the catalogue",
+            "body": "The button shows how many products have a cover photo and what the run costs. One click sends them in batches."
+          },
+          "four": {
+            "title": "The button appears by itself",
+            "body": "Each product with a finished model shows the button and QR code on its page. An optional cron URL keeps the states in sync."
+          }
+        },
+        "path": "Modules › Module Manager › easyrender 3D & AR › Configure",
+        "placement": "In the product’s additional information area, with no theme edits.",
+        "availability": "A zip file you upload. The module is not in PrestaShop Addons yet; the source is public on GitHub.",
+        "requirements": "PrestaShop 1.7.7 or later, including 8.x, and cover photos served over https.",
+        "cta": "Create your API key",
+        "secondary": "Get the module on GitHub"
+      },
+      "other": {
+        "name": "Other platform",
+        "title": "easyrender on any other store",
+        "steps": {
+          "one": {
+            "title": "Create your account",
+            "body": "Sign up and create an API key. You can also work from the dashboard with no code at all."
+          },
+          "two": {
+            "title": "Turn your products into 3D",
+            "body": "Upload each product photo in the dashboard or send it through the REST API. Review the free preview before the paid build."
+          },
+          "three": {
+            "title": "Copy the model id",
+            "body": "Every finished model has an id. Its AR page and its QR code are two plain URLs built from that id."
+          },
+          "four": {
+            "title": "Paste the button",
+            "body": "Add the two lines to your product template. Any platform that lets you edit HTML works: Magento, BigCommerce, Wix, Squarespace or a custom store."
+          }
+        },
+        "path": "Your product template",
+        "placement": "Wherever you paste the two lines. Style the link as your own button.",
+        "availability": "Available today with any easyrender account.",
+        "requirements": "A product template you can edit, and a model that is public or shared by link.",
+        "cta": "Create your API key",
+        "secondary": "Read the REST API guide"
+      }
+    },
+    "snippet": {
+      "label": "Product template (HTML)",
+      "copy": "Copy",
+      "copied": "Copied",
+      "error": "Could not copy",
+      "placeholder": "YOUR_MODEL_ID"
+    },
+    "mock": {
+      "adminLabel": "In your admin",
+      "generate": "Generate 3D for {count} products ({credits} credits)",
+      "generateNote": "Example for a store with {count} products. The plugin shows your own count and price.",
+      "storeLabel": "On your product page",
+      "domain": "yourstore.com",
+      "productName": "Oak side table",
+      "productMeta": "Solid oak · In stock",
+      "addToCart": "Add to cart",
+      "added": "Added by easyrender",
+      "button": "View in your room",
+      "qrCaption": "Scan with your phone to see it in your room",
+      "qrAlt": "QR code that opens this table in AR on a phone",
+      "photoAlt": "Product photo of an oak side table",
+      "live": "This one is live. The button and the QR code open a real model made from this photo."
+    },
+    "shopper": {
+      "title": "What your shopper sees",
+      "description": "One block on the product page. It works with the phone the shopper already has.",
+      "phone": {
+        "title": "On a phone: one tap",
+        "body": "The button opens the model in the phone’s own AR viewer, Quick Look on iPhone and Scene Viewer on Android. There is no app to install."
+      },
+      "desktop": {
+        "title": "On a computer: a QR code",
+        "body": "The QR code carries the same page to the shopper’s phone. It only shows on screens with a mouse."
+      },
+      "quiet": {
+        "title": "No model, no button",
+        "body": "A product without a finished model shows nothing, so a half-converted catalogue never looks broken."
+      }
+    },
+    "faq": {
+      "title": "Questions from store owners",
+      "items": {
+        "photos": {
+          "q": "Which photos does it use?",
+          "a": "The main photo of each product. Products without a photo are skipped and counted on the plugin page, and a photo that cannot be used is reported so you can replace it."
+        },
+        "cost": {
+          "q": "When am I charged?",
+          "a": "Credits are spent as each 3D model starts building, never before you click. The button shows the total for the run, and a model that fails is refunded."
+        },
+        "theme": {
+          "q": "Does it change my theme?",
+          "a": "No. On Shopify you add a block in the theme editor and can remove it there. On WooCommerce and PrestaShop the button is added through the platform’s own hooks, without editing theme files."
+        },
+        "devices": {
+          "q": "Which phones can open the AR view?",
+          "a": "iPhones and iPads through Quick Look and Android phones that support Scene Viewer. On a device without AR the page shows the 3D model and the QR code instead."
+        },
+        "accuracy": {
+          "q": "How close is the model to the real product?",
+          "a": "The model is generated from one photo, so the sides the photo does not show are estimated. Check each model before you rely on it, and treat sizes as approximate."
+        },
+        "remove": {
+          "q": "What happens if I uninstall it?",
+          "a": "The button disappears from your product pages and the store’s product list is forgotten. The models stay in your easyrender account."
+        }
+      }
+    },
+    "closing": {
+      "title": "Put your catalogue in your shopper’s room.",
+      "cta": "Create your account"
+    }
   }
 }
