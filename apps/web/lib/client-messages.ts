@@ -31,6 +31,7 @@ export const CLIENT_NAMESPACES = [
   'Upscale',
   'PromptBar',
   'Render',
+  'FirstModel',
   'Showcase',
   'Studio.hero',
   'Studio.industries',
