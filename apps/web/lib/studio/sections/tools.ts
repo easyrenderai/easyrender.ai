@@ -170,7 +170,7 @@ async function material(tile: HTMLElement, { scope, fmt }: ToolsContext) {
 
 // ─────────── Real scale ───────────
 async function scale(tile: HTMLElement, { scope, fmt }: ToolsContext) {
-  const id = 'armchair';
+  const id = 'bedside-table';
   const item = itemOf(id);
   const [w, h, d] = item.dims;
   const still = prefersReducedMotion();

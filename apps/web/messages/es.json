@@ -214,9 +214,9 @@
   "AgentDemo": {
     "window": "Tu agente · easyrender MCP",
     "illustration": "Conversación y secuencia de herramientas ilustrativas. Esta página no ejecuta ninguna solicitud.",
-    "ask": "Convierte esta foto del sillón en un modelo 3D. Muéstrame la vista previa y el coste, y espera mi aprobación antes de generarlo.",
+    "ask": "Convierte esta foto de una mesa en un modelo 3D. Muéstrame la vista previa y espera mi aprobación antes de generarlo.",
     "approval": "En este ejemplo le indicas al agente que espere tu aprobación. Configura ese comportamiento en tu cliente: la herramienta de pago no impone un diálogo de confirmación.",
-    "budget": "¿Preparas un catálogo? {count} generaciones 3D completas = {credits} créditos.",
+    "budget": "¿Preparas un catálogo? Revisa y aprueba cada objeto antes de generar su modelo.",
     "budgetNote": "Ejemplo de presupuesto, no un lote generado. Tu agente debe crear y seguir cada render por separado. Las ediciones adicionales y el uso del cliente de IA se cobran aparte.",
     "calls": {
       "create_render": "Envía la foto del producto y solicita la vista previa gratuita.",
@@ -284,6 +284,10 @@
       "bedside-table": {
         "title": "Mesita de noche",
         "prompt": "Mesita de noche de madera maciza con cajón"
+      },
+      "table": {
+        "title": "Mesa de madera",
+        "prompt": "Mesa rectangular de madera"
       }
     }
   },
@@ -1830,13 +1834,13 @@
   "McpLanding": {
     "meta": {
       "title": "Servidor MCP de imagen a 3D para agentes · easyrender",
-      "description": "Conecta Claude, Cursor o VS Code a easyrender. Convierte fotos de producto en modelos 3D mediante MCP: revisa la vista previa, genera con créditos y descarga el GLB."
+      "description": "Conecta Claude, Cursor o VS Code a easyrender. Convierte fotos de producto en modelos 3D mediante MCP: revisa la vista previa gratis y descarga el GLB cuando esté listo."
     },
     "hero": {
       "title": "Servidor MCP de imagen a 3D. Desde tu agente.",
       "subtitle": "Conecta easyrender mediante MCP. Dale a tu agente una foto de producto, revisa la vista previa y genera un GLB con texturas sin abrir una herramienta de modelado.",
       "cta": "Conecta tu agente",
-      "note": "Primero la vista previa. Créditos al generar el 3D."
+      "note": "Revisa la vista previa gratis antes de generar el 3D."
     },
     "clientsLabel": "Guías de configuración para",
     "intro": {
@@ -1943,7 +1947,7 @@
       "requirement": "Necesitas Node.js/npm para el instalador y un cliente compatible con Agent Skills. La instalación añade instrucciones: no conecta tu cuenta ni inicia un render. También puedes copiar la carpeta de la skill desde GitHub.",
       "exampleLabel": "Pruébalo con tu foto",
       "example": "Usa la skill easyrender-image-to-3d para convertir esta foto de producto en un GLB. Muéstrame la vista previa y el coste antes de gastar créditos.",
-      "cost": "La skill es de código abierto con licencia MIT. Las generaciones 3D consumen créditos de easyrender a la tarifa actual indicada arriba; tu cliente de IA puede cobrar aparte. Las instrucciones están en inglés y el agente puede responder en tu idioma."
+      "cost": "La skill es de código abierto con licencia MIT. Consulta el coste actual con tu agente antes de aprobar una generación; tu cliente de IA puede cobrar aparte. Las instrucciones están en inglés y el agente puede responder en tu idioma."
     }
   },
   "ApiLanding": {
@@ -2086,17 +2090,17 @@
     "result": {
       "photo": {
         "label": "Foto original",
-        "alt": "Foto original de una butaca mostaza con estructura metálica",
+        "alt": "Foto original de una mesa rectangular de madera",
         "body": "Una imagen clara del objeto. Sin archivo 3D previo ni captura con varias cámaras."
       },
       "angles": {
         "label": "Hoja de vistas generada",
-        "alt": "Nueve vistas generadas de la misma butaca mostaza",
+        "alt": "Nueve vistas generadas de la misma mesa de madera",
         "body": "Comprueba cómo se interpreta el objeto desde varios lados antes de usar el modelo final."
       },
       "model": {
         "label": "GLB con textura",
-        "alt": "Modelo 3D interactivo generado de la butaca mostaza",
+        "alt": "Modelo 3D interactivo generado de la mesa de madera",
         "body": "Arrastra para girar el modelo. Descárgalo para examinarlo en tu propio visor 3D.",
         "hint": "Arrastra para girar"
       },
@@ -2112,9 +2116,9 @@
       },
       "evidence": {
         "title": "Qué puedes comprobar",
-        "provenance": "Estos archivos proceden de una generación del entorno de pruebas de easyrender. Los materiales del sillón se ajustaron a la foto y las texturas se comprimieron para la web. Es una muestra del producto, no una grabación sin editar de la API o del MCP.",
-        "measurementTitle": "Precio y tiempo",
-        "measurement": "Los precios de abajo son cotizaciones actuales, no el recibo de esta muestra. Esta demo histórica no tiene una duración completa verificada; consulta el estado y el cargo de tu propia generación."
+        "provenance": "Estos archivos son copias sin modificar de un render público existente de una mesa de easyrender. La foto original, la hoja de ángulos y el GLB pertenecen al mismo render. Es una muestra ya generada, no una grabación en directo de la API o del MCP.",
+        "measurementTitle": "Estado de la generación",
+        "measurement": "Este ejemplo existente no tiene una duración completa verificada. Consulta el estado de tu render para saber cuándo están listos sus archivos."
       }
     },
     "costs": {
@@ -2124,9 +2128,9 @@
         "check": "Consulta renderCredits en la respuesta antes de generar: indica el coste en créditos de ese render. Implementa la aprobación y los límites de gasto en tu aplicación."
       },
       "mcp": {
-        "title": "¿Cuánto cuesta el servidor MCP de imagen a 3D?",
-        "description": "Conecta tu agente a tu cuenta de easyrender. La generación 3D consume créditos; no hay una suscripción adicional para acceder por MCP.",
-        "check": "Pide al agente que consulte get_credits y confirme el coste antes de llamar a render_3d. Tu cliente de IA o proveedor del modelo puede cobrar por separado; esas tarifas no están incluidas aquí."
+        "title": "Revisa antes de generar",
+        "description": "La vista previa es gratis, sujeta a los límites de tu cuenta. Revisa los ángulos antes de decidir si generas el GLB.",
+        "check": "Pide a tu agente que consulte get_credits y espere tu aprobación antes de llamar a render_3d. Tu cliente de IA puede cobrar aparte."
       },
       "preview": {
         "label": "Vista previa de ángulos",
@@ -2154,7 +2158,7 @@
     "apiDemo": {
       "title": "Tu aplicación · API REST de easyrender",
       "illustration": "Flujo de aplicación y respuesta JSON parcial ilustrativos. Aquí no se carga ninguna foto ni se ejecutan solicitudes de pago.",
-      "photoAlt": "Foto del sillón usada como ejemplo de carga",
+      "photoAlt": "Foto de una mesa usada como ejemplo de subida",
       "upload": "Foto del producto recibida",
       "flow": "Tu backend envía la foto a POST /api/renders. Muestra la vista previa y el coste devuelto, y pide al usuario que apruebe la generación de pago. Consulta el estado para obtener el modelo terminado.",
       "cost": "Usa el campo renderCredits actual antes de generar: el coste puede cambiar al reutilizar una hoja final. Guarda la clave API en tu servidor.",

@@ -17,12 +17,11 @@ import {
   captureBrowser,
   observeRender,
 } from '@/lib/analytics/browser';
+import { TRY_ONE_EXAMPLES } from '@/lib/marketing-examples';
 import { prepare } from '@/lib/prepare-image';
-import { SHOWCASE } from '@/lib/showcase';
 import { cn } from '@/lib/utils';
 
 const TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-const EXAMPLES = SHOWCASE.filter((item) => item.angles);
 
 export { prepare };
 
@@ -221,7 +220,7 @@ export function PromptBar({ signedIn }: { signedIn: boolean }) {
       )}
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <span className="text-muted-foreground">{t('seeExample')}</span>
-        {EXAMPLES.map((example) => (
+        {TRY_ONE_EXAMPLES.map((example) => (
           <Button key={example.id} variant="outline" size="sm" asChild>
             <Link href={`/r/${example.id}`}>
               <Image

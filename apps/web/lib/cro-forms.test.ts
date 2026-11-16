@@ -25,7 +25,8 @@ import { PromptBar } from '@/components/prompt-bar';
 
 it('offers existing examples directly without requiring an account or a generation', () => {
   const html = renderToStaticMarkup(createElement(PromptBar, { signedIn: false }));
-  expect(html).toContain('href="/r/demo-armchair"');
+  expect(html).toContain('href="/r/cmwceijqd000007l23vfjeftv"');
+  expect(html).not.toContain('demo-armchair');
   expect(html).toContain('href="/r/demo-vase"');
   expect(html).toContain('optionalNotes');
   expect(html).not.toContain('name="name"');

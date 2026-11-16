@@ -8,20 +8,9 @@ import { IntegrationLink } from '@/components/integrations/link';
 import { Section } from '@/components/landing';
 import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
-import { SHOWCASE } from '@/lib/showcase';
+import { TABLE_EXAMPLE as sample } from '@/lib/marketing-examples';
 
-function armchairSample() {
-  const entry = SHOWCASE.find((item) => item.slug === 'armchair');
-  const angles = entry?.angles;
-  if (!entry || angles == null) {
-    throw new Error('The armchair showcase is missing its angle sheet');
-  }
-  return { model: entry.model, photo: entry.photo, angles };
-}
-
-const sample = armchairSample();
-
-/** Existing harness showcase assets, not a simulated customer run or a generated UI screenshot. */
+/** Existing public-render assets, not a simulated run or a new generation. */
 export async function IntegrationResult({ locale, kind }: { locale: Locale; kind: 'api' | 'mcp' }) {
   const t = await getTranslations({ locale, namespace: 'IntegrationLanding.result' });
   return (
@@ -35,7 +24,7 @@ export async function IntegrationResult({ locale, kind }: { locale: Locale; kind
                 <BlogModel
                   src={sample.model}
                   alt={t('model.alt')}
-                  poster={{ src: '/blog/models/armchair.webp', width: 960, height: 960 }}
+                  poster={{ src: sample.photo, width: 1000, height: 1000 }}
                   orbit="30deg 75deg auto"
                   hint={t('model.hint')}
                 />
@@ -80,7 +69,7 @@ export async function IntegrationResult({ locale, kind }: { locale: Locale; kind
             channel={kind}
             action="sample_download"
             href={sample.model}
-            download="easyrender-sample-armchair.glb"
+            download="easyrender-sample-table.glb"
           >
             <Download aria-hidden="true" /> {t('download')}
           </IntegrationLink>

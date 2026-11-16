@@ -71,6 +71,20 @@ describe('the message files', () => {
     },
   );
 
+  it.each(LOCALES)('%s keeps MCP copy and metadata free of amounts and plans', (locale) => {
+    const messages = MESSAGES[locale];
+    const copy = JSON.stringify([
+      messages.McpLanding,
+      messages.IntegrationLanding.costs.mcp,
+      messages.IntegrationLanding.result,
+      messages.AgentDemo,
+    ]);
+    expect(copy).not.toMatch(
+      /[$€]|\d[\d.,\s]*\s*(credits|créditos|crédits|crediti)|\{credits\}|5,500|Go Pro|Buy credits|monthly plans/i,
+    );
+    expect(messages.McpLanding.meta.description).not.toMatch(/credit|crédit|[$€]|plan/i);
+  });
+
   it('keeps pt in European Portuguese', () => {
     const text = JSON.stringify(pt);
     expect(text).not.toMatch(/\bvocê\b|\bcelular\b|\bbaixar\b|\bcadastr/i);

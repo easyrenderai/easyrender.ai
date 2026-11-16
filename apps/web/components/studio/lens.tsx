@@ -5,7 +5,7 @@ import { itemOf } from '@/lib/studio/catalog';
 import { useSection } from './use-section';
 import './lens.css';
 
-const ITEM = itemOf('armchair');
+const ITEM = itemOf('bedside-table');
 // From the pointer outwards. The 3D code places them in this order.
 const LAYERS = ['texture', 'normals', 'physics', 'mesh'] as const;
 
