@@ -1,0 +1,95 @@
+name: Rollback
+run-name: Rollback to ${{ inputs.target_tag || 'the previous release' }}
+
+# Puts an earlier release back on easyrender.ai in seconds. It does not rebuild: it promotes the
+# Vercel deployment that release.yml staged and recorded in the GitHub release ("Vercel deployment:"
+# line). It never touches the database. Schema changes are additive only (packages/db/scripts/
+# deploy.mjs), so the previous code keeps working against the current schema; a bad schema change is
+# repaired with a forward fix.
+#
+# Dispatch from main. Leave target_tag empty to go back one release from the latest.
+on:
+  workflow_dispatch:
+    inputs:
+      target_tag:
+        description: "Release tag to restore (vX.Y.Z). Empty = the release before the latest."
+        required: false
+        default: ""
+        type: string
+      reason:
+        description: "Why production is being rolled back (kept in the run summary)"
+        required: true
+        type: string
+
+concurrency:
+  group: release-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  rollback:
+    name: Roll back production
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+      PRODUCTION_URL: ${{ vars.PRODUCTION_URL || 'https://easyrender.ai' }}
+      TARGET_TAG: ${{ inputs.target_tag }}
+      REASON: ${{ inputs.reason }}
+    steps:
+      - name: Require main
+        run: |
+          if [ "${GITHUB_REF}" != "refs/heads/main" ]; then
+            echo "::error::Rollbacks run from refs/heads/main (got ${GITHUB_REF})"
+            exit 1
+          fi
+
+      - name: Resolve the deployment to restore
+        id: target
+        run: |
+          set -euo pipefail
+          if [ -z "${TARGET_TAG}" ]; then
+            TARGET_TAG="$(gh release list --repo "${GITHUB_REPOSITORY}" --exclude-drafts --exclude-pre-releases \
+              --limit 2 --json tagName --jq '.[1].tagName // empty')"
+          fi
+          if [[ ! "${TARGET_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::No earlier release to restore (resolved '${TARGET_TAG}')."
+            exit 1
+          fi
+          body="$(gh release view "${TARGET_TAG}" --repo "${GITHUB_REPOSITORY}" --json body --jq .body)"
+          url="$(printf '%s\n' "${body}" | sed -n 's/^Vercel deployment: //p' | head -n1 | tr -d '[:space:]')"
+          if ! printf '%s' "${url}" | grep -Eq '^https://[A-Za-z0-9.-]+\.vercel\.app/?$'; then
+            echo "::error::${TARGET_TAG} does not record a Vercel deployment URL."
+            exit 1
+          fi
+          echo "tag=${TARGET_TAG}" >> "$GITHUB_OUTPUT"
+          echo "url=${url}" >> "$GITHUB_OUTPUT"
+          {
+            echo "Rolling back to ${TARGET_TAG} (${url})"
+            echo "Reason: ${REASON}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install the Vercel CLI
+        run: npm install --global vercel@65.9.0
+
+      - name: Promote the earlier deployment
+        env:
+          TARGET_URL: ${{ steps.target.outputs.url }}
+        run: vercel promote "${TARGET_URL}" --timeout 5m --yes --token "${VERCEL_TOKEN}"
+
+      - name: Smoke production
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PRODUCTION_URL%/}/" || true)"
+            [ "${status}" = "200" ] && { echo "/ -> 200"; exit 0; }
+            sleep 10
+          done
+          echo "::error::${PRODUCTION_URL} returned ${status} after the rollback."
+          exit 1

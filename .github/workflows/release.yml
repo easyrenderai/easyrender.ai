@@ -1,0 +1,299 @@
+name: Release
+run-name: Release ${{ inputs.tag }}${{ inputs.stage_only && ' (stage only)' || '' }}
+
+# The only way easyrender.ai reaches production. Merging to main deploys nothing.
+#
+# A maintainer bumps `version` in the root package.json in a normal PR, merges it, then dispatches
+# this workflow from main with the matching tag (v1.2.3). The workflow pins that commit and:
+#
+#   1. verify    runs the full CI workflow once on the pinned commit
+#   2. backend   applies infra/aws when it changed since the last release (optional until
+#                AWS_DEPLOY_ROLE_ARN is set); a Replace or Remove stops here for a person
+#   3. stage     builds a production deployment with `--skip-domain`, so no domain points at it. The
+#                Vercel build also syncs the database schema, additive changes only (deploy.mjs)
+#   4. smoke     checks the staged deployment answers
+#   5. promote   points easyrender.ai at the staged deployment (seconds, no rebuild), smokes prod
+#   6. publish   tags the commit and writes the GitHub release, which names the deployment so
+#                rollback.yml can restore it
+#
+# A failed step before `promote` leaves production exactly as it was. `stage_only` runs steps 1 to 4
+# and stops, so the first run through a new setup can be rehearsed without touching users.
+# Vercel Git auto-deploy for main is off in vercel.json; this workflow is the production path.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (vX.Y.Z). Must equal the root package.json version."
+        required: true
+        type: string
+      stage_only:
+        description: "Stage and smoke the deployment but do not promote or tag (rehearsal)"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: release-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate release
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      sha: ${{ steps.pin.outputs.sha }}
+      has_infra_change: ${{ steps.infra.outputs.has_infra_change }}
+    steps:
+      - name: Require main and a vX.Y.Z tag
+        env:
+          REQUESTED_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_REF}" != "refs/heads/main" ]; then
+            echo "::error::Releases run from refs/heads/main (got ${GITHUB_REF})"
+            exit 1
+          fi
+          if [[ ! "${REQUESTED_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::The release tag must look like v1.2.3 (got ${REQUESTED_TAG})"
+            exit 1
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Pin the commit
+        id: pin
+        run: echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Require the root version to match the tag, and the tag to be new
+        env:
+          REQUESTED_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          package_version="$(jq -r '.version' package.json)"
+          if [ "v${package_version}" != "${REQUESTED_TAG}" ]; then
+            echo "::error::Root package.json is ${package_version} but the tag is ${REQUESTED_TAG}. Bump the version in a PR, merge it, then dispatch the release."
+            exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/${REQUESTED_TAG}" >/dev/null; then
+            echo "::error::${REQUESTED_TAG} already exists. Bump the version for a new release."
+            exit 1
+          fi
+
+      - name: Did infra/aws change since the last release?
+        id: infra
+        run: |
+          set -euo pipefail
+          last="$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n1)"
+          if [ -z "${last}" ] || ! git diff --quiet "${last}" HEAD -- infra/aws; then
+            echo "has_infra_change=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_infra_change=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "previous release: ${last:-none}"
+
+  verify:
+    name: Verify
+    needs: validate
+    uses: ./.github/workflows/ci.yml
+
+  backend:
+    name: Backend (AWS)
+    needs: [validate, verify]
+    # Skipped until the deploy role exists (infra/aws/github-deploy-role.yml) and its ARN is stored
+    # as the AWS_DEPLOY_ROLE_ARN variable, and skipped when infra/aws did not change.
+    if: ${{ needs.validate.outputs.has_infra_change == 'true' && vars.AWS_DEPLOY_ROLE_ARN != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION || 'eu-west-1' }}
+      STACK: easyrenderai-storage
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.validate.outputs.sha }}
+          persist-credentials: false
+
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Parameters that are not passed keep the value the stack already has (infra/aws/README.md).
+      - name: Create the change set
+        run: |
+          set -euo pipefail
+          aws cloudformation deploy --stack-name "${STACK}" \
+            --template-file infra/aws/storage.yml --capabilities CAPABILITY_IAM \
+            --no-execute-changeset --no-fail-on-empty-changeset
+
+      - name: Review the change set, then execute it
+        run: |
+          set -euo pipefail
+          arn="$(aws cloudformation list-change-sets --stack-name "${STACK}" \
+            --query "sort_by(Summaries[?Status=='CREATE_COMPLETE'],&CreationTime)[-1].ChangeSetId" --output text)"
+          if [ -z "${arn}" ] || [ "${arn}" = "None" ]; then
+            echo "The stack already matches infra/aws/storage.yml."
+            exit 0
+          fi
+          aws cloudformation describe-change-set --change-set-name "${arn}" \
+            --query 'Changes[].ResourceChange.{Action:Action,Id:LogicalResourceId,Type:ResourceType,Replace:Replacement}' \
+            --output table
+          risky="$(aws cloudformation describe-change-set --change-set-name "${arn}" \
+            --query "Changes[?ResourceChange.Action=='Remove' || ResourceChange.Replacement=='True' || ResourceChange.Replacement=='Conditional'].ResourceChange.LogicalResourceId" \
+            --output text)"
+          if [ -n "${risky}" ]; then
+            echo "::error::The change set would replace or remove: ${risky}. Review it by hand (infra/aws/README.md); the release stops here and production is untouched."
+            aws cloudformation delete-change-set --change-set-name "${arn}"
+            exit 1
+          fi
+          aws cloudformation execute-change-set --change-set-name "${arn}"
+          aws cloudformation wait stack-update-complete --stack-name "${STACK}"
+
+  stage:
+    name: Stage production build
+    needs: [validate, verify, backend]
+    # `backend` is skipped on most releases; a skip is fine, a failure is not.
+    if: ${{ !cancelled() && needs.validate.result == 'success' && needs.verify.result == 'success' && (needs.backend.result == 'success' || needs.backend.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Require the Vercel settings
+        run: |
+          set -euo pipefail
+          for name in VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID; do
+            if [ -z "${!name}" ]; then
+              echo "::error::${name} is empty. Set it on the 'production' environment (docs: RELEASING.md)."
+              exit 1
+            fi
+          done
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.validate.outputs.sha }}
+          persist-credentials: false
+
+      - name: Install the Vercel CLI
+        run: npm install --global vercel@65.9.0
+
+      # Vercel builds remotely, with the project's own environment variables (sensitive ones do not
+      # come down through `vercel pull`). `--prod` makes it a production build, so the schema sync
+      # in `vercel-build` runs; `--skip-domain` keeps every production domain on the old deployment.
+      - name: Build and stage
+        id: deploy
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_SHA: ${{ needs.validate.outputs.sha }}
+        run: |
+          set -euo pipefail
+          url="$(vercel deploy --prod --skip-domain --yes --token "${VERCEL_TOKEN}" \
+            --meta release="${RELEASE_TAG}" --meta commit="${RELEASE_SHA}" | tail -n1)"
+          if ! printf '%s' "${url}" | grep -Eq '^https://[A-Za-z0-9.-]+\.vercel\.app/?$'; then
+            echo "::error::Vercel did not print a deployment URL (got '${url}')."
+            exit 1
+          fi
+          echo "url=${url}" >> "$GITHUB_OUTPUT"
+          echo "Staged ${url} (no domain points at it yet)" >> "$GITHUB_STEP_SUMMARY"
+
+  smoke-staged:
+    name: Smoke staged build
+    needs: stage
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      STAGED_URL: ${{ needs.stage.outputs.url }}
+      # Optional. When Vercel Authentication protects *.vercel.app, store the project's "Protection
+      # Bypass for Automation" secret as VERCEL_AUTOMATION_BYPASS_SECRET so this check can read it.
+      BYPASS: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+    steps:
+      - name: Check the staged deployment answers
+        run: |
+          set -euo pipefail
+          header=()
+          if [ -n "${BYPASS}" ]; then header=(-H "x-vercel-protection-bypass: ${BYPASS}"); fi
+          for path in / /api/openapi.json; do
+            for attempt in 1 2 3 4 5 6; do
+              status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${header[@]}" "${STAGED_URL%/}${path}" || true)"
+              [ "${status}" = "200" ] && break
+              sleep 10
+            done
+            echo "${path} -> ${status}"
+            if [ "${status}" = "401" ] && [ -z "${BYPASS}" ]; then
+              echo "::error::The staged URL is behind Vercel Authentication. Add VERCEL_AUTOMATION_BYPASS_SECRET, or turn the protection off for production deployments."
+              exit 1
+            fi
+            [ "${status}" = "200" ] || { echo "::error::${path} returned ${status} on the staged deployment."; exit 1; }
+          done
+
+  promote:
+    name: Promote to production
+    needs: [validate, stage, smoke-staged]
+    if: ${{ !inputs.stage_only }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+      STAGED_URL: ${{ needs.stage.outputs.url }}
+      PRODUCTION_URL: ${{ vars.PRODUCTION_URL || 'https://easyrender.ai' }}
+    steps:
+      - name: Install the Vercel CLI
+        run: npm install --global vercel@65.9.0
+
+      # Re-aliases the deployment that was already built and smoked. No rebuild.
+      - name: Promote
+        run: vercel promote "${STAGED_URL}" --timeout 5m --yes --token "${VERCEL_TOKEN}"
+
+      - name: Smoke production
+        run: |
+          set -euo pipefail
+          for path in / /api/openapi.json; do
+            for attempt in 1 2 3 4 5 6; do
+              status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PRODUCTION_URL%/}${path}" || true)"
+              [ "${status}" = "200" ] && break
+              sleep 10
+            done
+            echo "${path} -> ${status}"
+            [ "${status}" = "200" ] || { echo "::error::${PRODUCTION_URL}${path} returned ${status} after promote. Run the Rollback workflow."; exit 1; }
+          done
+
+  publish:
+    name: Tag and publish release
+    needs: [validate, stage, promote]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RELEASE_TAG: ${{ inputs.tag }}
+      RELEASE_SHA: ${{ needs.validate.outputs.sha }}
+      STAGED_URL: ${{ needs.stage.outputs.url }}
+    steps:
+      # rollback.yml reads the "Vercel deployment" line to restore this release.
+      - name: Create the tag and the release
+        run: |
+          set -euo pipefail
+          printf 'Vercel deployment: %s\nCommit: %s\n\n' "${STAGED_URL}" "${RELEASE_SHA}" > notes.md
+          gh release create "${RELEASE_TAG}" --repo "${GITHUB_REPOSITORY}" --target "${RELEASE_SHA}" \
+            --title "${RELEASE_TAG}" --notes-file notes.md --generate-notes --latest

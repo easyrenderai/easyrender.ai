@@ -1,0 +1,82 @@
+# Releasing easyrender.ai
+
+Merging to `main` deploys nothing. Production changes only when someone dispatches **Release**.
+Pull requests still get Vercel previews (skipped when a commit touches nothing the web app uses,
+see `ignoreCommand` in `apps/web/vercel.json`).
+
+## Ship a release
+
+1. Merge the changes to `main` through PRs as usual (CI Gate must pass).
+2. Bump `version` in the root `package.json` in a PR and merge it. Semver: patch for fixes, minor
+   for features, major for breaking API or MCP changes.
+3. GitHub Actions, **Release**, branch `main`, tag `vX.Y.Z` (must equal the root version).
+   First time through, or after changing the pipeline, tick **stage_only** to rehearse: it builds
+   and smokes a production deployment that no domain points at, then stops.
+
+```bash
+gh workflow run release.yml --repo easyrenderai/easyrender.ai --ref main -f tag=v0.1.0
+```
+
+What the workflow does, in order. A failure before step 5 leaves production as it was.
+
+1. **Verify**: runs `ci.yml` (Biome, UI guards, secrets, typecheck, tests, schema check) on the
+   pinned `main` commit.
+2. **Backend**: only when `infra/aws` changed since the previous release and the variable
+   `AWS_DEPLOY_ROLE_ARN` is set. Creates a CloudFormation change set for `easyrenderai-storage`
+   and executes it only if nothing is replaced or removed; otherwise it stops for a person
+   (`infra/aws/README.md`).
+3. **Stage**: `vercel deploy --prod --skip-domain`. Vercel builds with the project's own variables.
+   The production build also syncs the database schema (`packages/db/scripts/deploy.mjs`): additive
+   changes apply, anything else fails here, before any user sees the release.
+4. **Smoke**: `/` and `/api/openapi.json` on the staged URL.
+5. **Promote**: points easyrender.ai at the staged deployment (no rebuild), then smokes production.
+6. **Publish**: creates the tag and the GitHub release (generated notes plus the deployment URL).
+
+The release is not tagged unless it reached production. The crons in `vercel.json` run from the
+production deployment, so they switch with the promote.
+
+## Roll back
+
+GitHub Actions, **Rollback**, enter a reason. Empty `target_tag` means the release before the
+latest. It promotes the deployment recorded in that release, in seconds. The database is never
+rolled back: schema changes are additive, so earlier code keeps working. Fix a bad schema change
+forward.
+
+## One-time setup
+
+Everything below lives on the GitHub environment `production`, not in the repo. Nothing in this
+list is a secret except the token.
+
+| Name                              | Kind               | Value                                                                                     |
+| --------------------------------- | ------------------ | ----------------------------------------------------------------------------------------- |
+| `VERCEL_TOKEN`                    | secret             | A Vercel token for the `shipshitdev` team that can deploy `easyrender.ai`                 |
+| `VERCEL_ORG_ID`                   | variable           | The team id (`.vercel/project.json` after `vercel link`, or Team Settings)                |
+| `VERCEL_PROJECT_ID`               | variable           | The `easyrender.ai` project id (same file, or Project Settings)                           |
+| `VERCEL_AUTOMATION_BYPASS_SECRET` | secret, optional   | Only if Vercel Authentication protects `*.vercel.app`; lets the staged smoke read it      |
+| `PRODUCTION_URL`                  | variable, optional | Defaults to `https://easyrender.ai`                                                       |
+| `AWS_DEPLOY_ROLE_ARN`             | variable, optional | Output `DeployRoleArn` of `infra/aws/github-deploy-role.yml`. Empty skips the backend job |
+| `AWS_REGION`                      | variable, optional | Defaults to `eu-west-1`                                                                   |
+
+```bash
+gh api -X PUT repos/easyrenderai/easyrender.ai/environments/production
+gh secret set VERCEL_TOKEN --env production --repo easyrenderai/easyrender.ai
+gh variable set VERCEL_ORG_ID --env production --repo easyrenderai/easyrender.ai --body "<team id>"
+gh variable set VERCEL_PROJECT_ID --env production --repo easyrenderai/easyrender.ai --body "<project id>"
+```
+
+Add required reviewers to the `production` environment if releases should wait for an approval.
+
+AWS role (once, by a person; review the template first):
+
+```bash
+aws cloudformation deploy --region eu-west-1 --stack-name easyrender-github-release \
+  --template-file infra/aws/github-deploy-role.yml --capabilities CAPABILITY_NAMED_IAM
+```
+
+## Not in this workflow
+
+- The mobile app (`apps/mobile`, `mobile-release.yml`) and the desktop shell (`apps/desktop`)
+  release on their own.
+- Store plugins (`plugins/`) are packaged and submitted by hand.
+- The exports converter Lambda is not built yet. When it is, its stack is added to the `backend`
+  job and gated the same way.
