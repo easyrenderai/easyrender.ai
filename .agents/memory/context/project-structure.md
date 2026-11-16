@@ -19,3 +19,6 @@
 - `packages/db`: Prisma schema, client, `db:deploy` script used by the Vercel build.
 - `infra/aws`: CloudFormation for storage (public assets, private signed exports) and the CDN
   certificate. See `infra/aws/README.md`.
+- `services/model-export`: the Blender converter for OBJ, FBX and BLEND downloads. Python, its own
+  Dockerfile, outside the bun workspace; one run per export on AWS Lambda, no server. See its
+  README for the request contract and why colour edits are baked into OBJ and FBX textures.

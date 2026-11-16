@@ -5,7 +5,23 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 /** Loads only the visible card; reduced-motion readers keep the still poster. */
-export function PromoVideo({ label, play, pause }: { label: string; play: string; pause: string }) {
+export function PromoVideo({
+  label,
+  play,
+  pause,
+  src = '/blog/promo/room-reveal.mp4',
+  poster = '/blog/promo/room-reveal.jpg',
+  width = 600,
+  height = 400,
+}: {
+  label: string;
+  play: string;
+  pause: string;
+  src?: string;
+  poster?: string;
+  width?: number;
+  height?: number;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -22,7 +38,7 @@ export function PromoVideo({ label, play, pause }: { label: string; play: string
         video.pause();
         return;
       }
-      if (!video.getAttribute('src')) video.src = '/blog/promo/product-turn.mp4';
+      if (!video.getAttribute('src')) video.src = src;
       void video.play().catch(() => {
         // Autoplay can be blocked; leave the poster and a manual play control.
         if (isActive) setIsPlaying(false);
@@ -45,17 +61,16 @@ export function PromoVideo({ label, play, pause }: { label: string; play: string
       document.removeEventListener('visibilitychange', sync);
       video.pause();
     };
-  }, [isPaused, hasError]);
+  }, [isPaused, hasError, src]);
 
   return (
     <div className="relative overflow-hidden" data-promo-video="">
-      {/* Silent product motion: the hook and action remain readable outside the video. */}
-      {/* biome-ignore lint/a11y/useMediaCaption: silent decorative rotation; equivalent description is the accessible label */}
+      {/* Silent illustration; equivalent description and action remain readable outside the video. */}
       <video
         ref={videoRef}
-        width={480}
-        height={438}
-        poster="/blog/promo/product-turn.jpg"
+        width={width}
+        height={height}
+        poster={poster}
         preload="none"
         muted
         loop
@@ -82,7 +97,7 @@ export function PromoVideo({ label, play, pause }: { label: string; play: string
               setIsPaused(false);
               const video = videoRef.current;
               if (video) {
-                video.src ||= '/blog/promo/product-turn.mp4';
+                video.src ||= src;
                 void video.play().catch(() => setHasError(true));
               }
             }

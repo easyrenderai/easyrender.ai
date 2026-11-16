@@ -1,3 +1,4 @@
+import '@/components/blog/editorial.css';
 import { ArrowLeft, ArrowRight, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
@@ -12,6 +13,7 @@ import {
   readingMinutes,
   relatedPosts,
 } from '@/lib/blog/posts';
+import { landingIntent } from '@/lib/landing-intent';
 import { ROUTES } from '@/lib/seo/routes';
 import { DATE_FORMAT, PostCard } from './post-card';
 
@@ -40,12 +42,14 @@ function TocList({ entries }: { entries: TocEntry[] }) {
 export async function BlogPostView({ post }: { post: BlogPost }) {
   const [t, format] = await Promise.all([getTranslations('Blog'), getFormatter()]);
   const hub = ROUTES.blog.paths[post.locale];
+  const intent = landingIntent(post.group, post.locale);
+  const nextT = await getTranslations({ locale: post.locale, namespace: 'LandingIntent' });
   const toc = tocOf(post.body);
   const related = relatedPosts(post);
   const modified = modifiedDate(post);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pt-10 pb-20 sm:px-6 sm:pt-14 sm:pb-28">
+    <div className="mx-auto max-w-7xl px-4 pt-10 pb-20 sm:px-6 sm:pt-14 sm:pb-28">
       <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
         <ol className="flex flex-wrap items-center gap-2">
           <li>
@@ -108,7 +112,7 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
           </p>
         </header>
 
-        <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-16 xl:gap-24">
+        <div className="mt-14 lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-14 xl:gap-20">
           <div className="min-w-0">
             {toc.length > 0 && (
               <details className="group mb-10 rounded-xl border lg:hidden">
@@ -125,19 +129,20 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
             <div className="mb-10 max-w-sm lg:hidden">
               <ArticlePromo
                 locale={post.locale}
+                href={intent.href}
                 copy={{
                   title: t('post.promo.title'),
                   solution: t('post.promo.solution'),
                   visual: t('post.promo.visual'),
                   play: t('post.promo.play'),
                   pause: t('post.promo.pause'),
-                  button: t('post.promo.button'),
+                  button: nextT(intent.action),
                   disclosure: t('post.promo.disclosure'),
                 }}
               />
             </div>
 
-            <div className="text-base leading-7 sm:text-lg sm:leading-8 [&>*:first-child]:mt-0 [&>:not([data-wide])]:max-w-xl">
+            <div className="editorial-body text-base sm:text-lg">
               <Markdown
                 source={post.body}
                 isLive={isLiveBlogLink(post.locale)}
@@ -148,14 +153,14 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
 
             <aside className="mt-20 max-w-xl rounded-2xl border bg-muted/40 p-6 sm:p-10">
               <p className="text-2xl font-semibold tracking-tight text-balance">
-                {t('post.cta.title')}
+                {nextT(`${intent.key}.title`)}
               </p>
               {post.cta && (
                 <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">{post.cta}</p>
               )}
               <Button asChild size="lg" className="mt-6">
-                <Link href={`${ROUTES.home.paths[post.locale]}#try`}>
-                  {t('post.cta.button')}
+                <Link href={intent.href}>
+                  {nextT(intent.action)}
                   <ArrowRight />
                 </Link>
               </Button>
@@ -176,13 +181,14 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
                 </nav>
                 <ArticlePromo
                   locale={post.locale}
+                  href={intent.href}
                   copy={{
                     title: t('post.promo.title'),
                     solution: t('post.promo.solution'),
                     visual: t('post.promo.visual'),
                     play: t('post.promo.play'),
                     pause: t('post.promo.pause'),
-                    button: t('post.promo.button'),
+                    button: nextT(intent.action),
                     disclosure: t('post.promo.disclosure'),
                   }}
                 />

@@ -1,11 +1,11 @@
 ---
 
 name: easyrender-image-to-3d
-description: Turn product photos into textured GLB models with easyrender's MCP server. Use for easyrender photo-to-3D requests, inspecting a free preview, building an approved model, or resuming an existing render. Supports individual products and budgeted catalogues; not dimensionally accurate CAD, room reconstruction or photogrammetry.
+description: Turn any Product Photo into a 3D model as a textured GLB with easyrender's MCP server. Use for easyrender photo-to-3D requests, inspecting a free preview, building an approved model, or resuming an existing render. Supports individual products and budgeted catalogues; not dimensionally accurate CAD, room reconstruction or photogrammetry.
 license: MIT
 ---
 
-# easyrender: photo to 3D
+# Easy Render | Photo to 3D
 
 Help the user obtain a usable 3D asset, with a preview before spending credits and an accurate
 account of what finished. Follow the user's language and existing budget/approval instructions.

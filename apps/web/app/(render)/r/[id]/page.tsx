@@ -1,4 +1,12 @@
-import { AppError, canAccess, getBalance, getRender, listEdits, toView } from '@easyrender/core';
+import {
+  AppError,
+  canAccess,
+  getBalance,
+  getRender,
+  isModelExportEnabled,
+  listEdits,
+  toView,
+} from '@easyrender/core';
 import { Globe, Sparkles } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -100,6 +108,7 @@ export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
       signedIn={Boolean(actor.userId)}
       balance={balance}
       owner={isOwner}
+      canExport={isModelExportEnabled()}
     />
   );
 }

@@ -24,7 +24,9 @@ packages/db     Prisma schema and client (Postgres)
 packages/harness  Replicate pipeline, models, pricing, guardrails, skills loader
 packages/mcp    MCP server tools: create_render, get_render, render_3d, get_credits
 packages/tsconfig  shared tsconfig
-infra/aws       CloudFormation for the S3 bucket and CloudFront
+services/model-export  Blender converter: GLB to OBJ, FBX and BLEND, one run per export on AWS Lambda.
+                Python with its own Dockerfile, NOT in the bun workspace
+infra/aws       CloudFormation for the S3 buckets and CloudFront
 ```
 
 Respect the boundaries: shared logic in `packages/*`, framework code in `apps/*`. `packages/core`
@@ -70,6 +72,7 @@ bun run preflight                 # what CI runs: biome, ui guards, typecheck, t
 bun run db:generate               # prisma generate
 cd apps/mobile && bun install && bunx expo export --platform android   # mobile bundle check
 cd apps/desktop && bun install && bun run typecheck && bun run test    # desktop; `bun run dev` opens the window
+cd services/model-export && python -m pytest                           # converter; needs Python 3.13 and requirements-dev.txt
 ```
 
 Run `bun run preflight` before you push. The `credits.integration.test.ts` suite needs a scratch

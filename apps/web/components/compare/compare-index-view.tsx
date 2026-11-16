@@ -55,7 +55,8 @@ export async function CompareIndexView({ locale }: { locale: Locale }) {
             {pages
               .filter(
                 (page) =>
-                  ['compare-meshy', 'compare-tripo'].includes(page.group) === (group === 'tools'),
+                  ['compare-meshy', 'compare-tripo', 'compare-polycam'].includes(page.group) ===
+                  (group === 'tools'),
               )
               .map((page) => (
                 <li key={page.slug} className="py-8">

@@ -1,0 +1,135 @@
+name: Model export
+
+# Builds the Blender converter image (services/model-export) and runs its tests inside it, so
+# the thing that is tested is the thing Lambda runs. On main it then pushes the image to the
+# registry and points the function at it (infra/aws/exports.yml). Shipping stays off until the
+# repository variable MODEL_EXPORT_DEPLOY_ROLE_ARN holds that stack's DeployRoleArn output.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "services/model-export/**"
+      - ".github/workflows/model-export.yml"
+  push:
+    branches: [main]
+    paths:
+      - "services/model-export/**"
+      - ".github/workflows/model-export.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: model-export-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  image:
+    name: Converter image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build the image
+        run: docker build -t model-export services/model-export
+      - name: Run the tests inside the image
+        run: |
+          docker run --rm --entrypoint sh \
+            -v "$PWD/services/model-export:/src:ro" -w /src \
+            -e PYTHONDONTWRITEBYTECODE=1 \
+            model-export -c "pip install --quiet pytest && python -m pytest -p no:cacheprovider"
+      - name: Start it the way Lambda does and refuse a bad request
+        run: |
+          docker run -d --name converter --read-only --tmpfs /tmp -p 9000:8080 \
+            -e EXPORTS_BUCKET=unused model-export
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -sf -o /dev/null -X POST \
+              http://127.0.0.1:9000/2015-03-31/functions/function/invocations -d '{}'; then
+              break
+            fi
+            sleep 1
+          done
+          answer=$(curl -s -X POST \
+            http://127.0.0.1:9000/2015-03-31/functions/function/invocations \
+            -d '{"sourceKey":"renders/models/a.glb","format":"obj","outputKey":"exports/a/model.zip"}')
+          echo "$answer"
+          test "$answer" = '{"ok": false, "error": "sourceKey must be a .glb key under exports/"}'
+      - name: Report the image size
+        if: always()
+        run: |
+          docker image inspect model-export --format 'Image size: {{.Size}} bytes'
+
+  ship:
+    name: Ship the image
+    needs: image
+    if: >-
+      github.ref == 'refs/heads/main' && github.event_name != 'pull_request' &&
+      vars.MODEL_EXPORT_DEPLOY_ROLE_ARN != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_REGION: eu-west-1
+      REPOSITORY: easyrender-model-export
+      FUNCTION: easyrender-model-export
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.MODEL_EXPORT_DEPLOY_ROLE_ARN }}
+          aws-region: eu-west-1
+      - name: Push the image
+        id: push
+        run: |
+          account="$(aws sts get-caller-identity --query Account --output text)"
+          registry="$account.dkr.ecr.$AWS_REGION.amazonaws.com"
+          image="$registry/$REPOSITORY:$GITHUB_SHA"
+          echo "image=$image" >> "$GITHUB_OUTPUT"
+          # Tags are immutable, so a re-run of the same commit has nothing to push.
+          if aws ecr describe-images --repository-name "$REPOSITORY" \
+            --image-ids "imageTag=$GITHUB_SHA" >/dev/null 2>&1; then
+            echo "Image for $GITHUB_SHA is already in the registry."
+            exit 0
+          fi
+          aws ecr get-login-password | docker login --username AWS --password-stdin "$registry"
+          # Lambda reads a plain image manifest, not one with build attestations attached.
+          docker build --platform linux/amd64 --provenance=false -t "$image" services/model-export
+          docker push "$image"
+      - name: Point the function at it
+        env:
+          IMAGE: ${{ steps.push.outputs.image }}
+        run: |
+          if ! aws lambda get-function --function-name "$FUNCTION" >/dev/null 2>&1; then
+            echo "::notice::The function does not exist yet. Deploy infra/aws/exports.yml with ImageTag=$GITHUB_SHA."
+            exit 0
+          fi
+          aws lambda update-function-code --function-name "$FUNCTION" --image-uri "$IMAGE" \
+            --query LastUpdateStatus --output text
+          aws lambda wait function-updated-v2 --function-name "$FUNCTION"
+          aws lambda get-function --function-name "$FUNCTION" --query Code.ImageUri --output text
+      - name: Run the new image once
+        # Lambda fetches a new image piece by piece as files are first read. Measured: 53 seconds
+        # for the first export on a new image, 3 seconds for a fresh container after that. This
+        # run takes that wait, so a customer does not. It never fails the deploy.
+        run: |
+          if ! aws lambda get-function --function-name "$FUNCTION" >/dev/null 2>&1; then
+            exit 0
+          fi
+          started="$(date +%s)"
+          if aws lambda invoke --function-name "$FUNCTION" \
+            --cli-binary-format raw-in-base64-out --cli-read-timeout 150 \
+            --payload '{"warm":true}' /tmp/warm.json >/dev/null; then
+            cat /tmp/warm.json
+            echo
+            echo "First run took $(( $(date +%s) - started )) seconds."
+            grep -q '"warm": true' /tmp/warm.json ||
+              echo "::warning::The first run of the new image did not answer as a warm-up."
+          else
+            echo "::warning::The first run of the new image failed. The first export will be slow."
+          fi

@@ -26,12 +26,14 @@ describe('the per-language sitemaps', () => {
       '/pricing',
       '/mcp',
       '/image-to-3d-api',
+      '/ecommerce',
       '/models',
       '/compare',
       '/compare/360-vs-3d',
       '/compare/3d-modeler-vs-ai',
       '/compare/meshy',
       '/compare/photogrammetry-software',
+      '/compare/polycam',
       '/compare/tripo',
       '/privacy',
       '/terms',
@@ -43,11 +45,13 @@ describe('the per-language sitemaps', () => {
       '/es/precios',
       '/es/mcp',
       '/es/api-imagen-a-3d',
+      '/es/ecommerce',
       '/es/modelos',
       '/es/comparativas',
       '/es/comparativas/360-vs-3d',
       '/es/comparativas/meshy',
       '/es/comparativas/modelador-3d-o-ia',
+      '/es/comparativas/polycam',
       '/es/comparativas/software-de-fotogrametria',
       '/es/comparativas/tripo',
       '/es/privacidad',
@@ -156,6 +160,16 @@ describe('the per-language sitemaps', () => {
         (item) => item.path === (locale === 'en' ? '/image-to-3d-api' : '/es/api-imagen-a-3d'),
       );
       expect(entry?.alternates).toEqual({ en: '/image-to-3d-api', es: '/es/api-imagen-a-3d' });
+    }
+  });
+
+  it('publishes the e-commerce page with reciprocal English and Spanish alternates', () => {
+    for (const [locale, path] of [
+      ['en', '/ecommerce'],
+      ['es', '/es/ecommerce'],
+    ] as const) {
+      const entry = localeEntries(locale, BEFORE_GUIDES).find((item) => item.path === path);
+      expect(entry?.alternates).toEqual({ en: '/ecommerce', es: '/es/ecommerce' });
     }
   });
 

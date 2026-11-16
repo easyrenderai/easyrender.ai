@@ -9,6 +9,7 @@ export * from './config';
 export * from './credit-quote';
 export * from './credits';
 export * from './errors';
+export * from './first-model-experiment';
 export * from './google-measurement';
 export * from './google-outbox';
 export type { MailingCatalog, MailingCopy, MailingLocale, MailingRoute } from './mailing/policy';
@@ -24,6 +25,7 @@ export {
   unsubscribeMailing,
 } from './mailing/service';
 export type { MailingSystemCopy } from './mailing/transport';
+export * from './model-exports';
 export * from './oauth';
 export { flushPosthogEvents } from './posthog-outbox';
 export * from './pricing-experiment';

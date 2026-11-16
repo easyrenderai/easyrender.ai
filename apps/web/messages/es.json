@@ -51,7 +51,8 @@
       "privacy": "Política de privacidad",
       "terms": "Términos del servicio",
       "editorial": "Equipo editorial",
-      "comparisons": "Comparativas"
+      "comparisons": "Comparativas",
+      "ecommerce": "Plugins para e-commerce"
     },
     "copyright": "© 2026 easyrender. Con la tecnología de Genfeed.",
     "pricesNote": "Consulta la moneda y el total antes de pagar. Los créditos no caducan."
@@ -127,6 +128,17 @@
     },
     "customer": {
       "label": "Utilizado por"
+    },
+    "motionHero": {
+      "title": "Tu producto. En todas sus dimensiones.",
+      "description": "Empieza con una foto. Revisa los ángulos gratis y decide después si quieres crear el modelo 3D.",
+      "label": "Ejemplo existente: una foto se convierte en vistas y después en un modelo 3D con textura que gira. Los tiempos son ilustrativos.",
+      "play": "Reproducir el proceso",
+      "pause": "Pausar el proceso",
+      "photo": "Foto",
+      "angles": "Ángulos gratis",
+      "model": "Modelo 3D",
+      "example": "Explorar este ejemplo"
     }
   },
   "Landing": {
@@ -355,7 +367,8 @@
       "start": "No se pudo iniciar el render",
       "sheet": "No se pudo generar la hoja de ángulos",
       "redraw": "No se pudo redibujar la hoja de ángulos",
-      "upscale": "No se pudo ampliar esta imagen. Inténtalo de nuevo en un minuto."
+      "upscale": "No se pudo ampliar esta imagen. Inténtalo de nuevo en un minuto.",
+      "export": "No se pudo convertir el modelo. Vuelve a intentarlo en un minuto."
     },
     "generateSheet": "Generar hoja de ángulos ({credits} créditos)",
     "fixSheetLabel": "¿Algún ángulo no es correcto?",
@@ -419,6 +432,89 @@
       "confirmTitle": "Confirmar los nuevos ángulos",
       "confirmBody": "Se regenerarán los ángulos por {credits} créditos. No se creará el modelo 3D.",
       "back": "Editar instrucciones"
+    },
+    "nextSteps": {
+      "title": "Tu modelo está listo. Dale uso.",
+      "formats": "Descarga GLB para webs y escenas 3D, o USDZ para aplicaciones Apple compatibles.",
+      "choose": "¿Dónde quieres utilizarlo?",
+      "createAnother": "Crear otro modelo",
+      "web": {
+        "title": "En una web",
+        "action": "Abrir el editor de model-viewer",
+        "steps": {
+          "download": {
+            "title": "Descarga el GLB",
+            "body": "Guarda el modelo con el botón GLB de arriba."
+          },
+          "prepare": {
+            "title": "Prepara el visor",
+            "body": "Abre el editor y arrastra tu GLB. Ajusta la cámara y la iluminación."
+          },
+          "use": {
+            "title": "Llévalo a tu web",
+            "body": "Exporta el visor y sus archivos. Pide a quien gestione tu web que los incorpore."
+          }
+        }
+      },
+      "shop": {
+        "title": "En una tienda Shopify",
+        "action": "Ver los pasos de Shopify",
+        "steps": {
+          "download": {
+            "title": "Descarga el GLB",
+            "body": "Guarda el modelo con el botón GLB de arriba."
+          },
+          "prepare": {
+            "title": "Abre tu producto",
+            "body": "En Shopify, entra en Productos y elige el producto al que corresponde el modelo."
+          },
+          "use": {
+            "title": "Añade el modelo",
+            "body": "Sube el GLB en Multimedia. Revisa la ficha antes de publicarla."
+          }
+        }
+      },
+      "design": {
+        "title": "En un proyecto de diseño",
+        "action": "Ver la guía de importación de Blender",
+        "steps": {
+          "download": {
+            "title": "Descarga el GLB",
+            "body": "Guarda el modelo con sus materiales usando el botón GLB de arriba."
+          },
+          "prepare": {
+            "title": "Impórtalo en Blender",
+            "body": "Elige Archivo → Importar → glTF 2.0 y selecciona tu GLB."
+          },
+          "use": {
+            "title": "Ajústalo a tu escena",
+            "body": "Revisa orientación, materiales y escala. El modelo generado no conserva las medidas reales."
+          }
+        }
+      },
+      "video": {
+        "illustration": "Demostración ilustrativa · modelo de ejemplo e interfaces simplificadas.",
+        "readSteps": "Ver los pasos por escrito",
+        "captions": "Subtítulos de los pasos",
+        "error": "No se ha podido cargar el vídeo. Consulta los pasos debajo."
+      }
+    },
+    "journey": {
+      "photo": "Tu foto recibida",
+      "angles": "Revisa los ángulos",
+      "model": "Tu modelo 3D",
+      "draftingTitle": "Preparando tus ángulos gratis",
+      "draftingBody": "Estamos trabajando con tu foto. Después podrás revisar la forma antes de gastar créditos.",
+      "preview_readyTitle": "Tus ángulos están listos para revisar",
+      "preview_readyBody": "Compara la forma y los detalles con tu foto. Crea el modelo 3D cuando estés conforme con ellos.",
+      "renderingTitle": "Creando tu modelo 3D",
+      "renderingBody": "Tus vistas se están convirtiendo en geometría y texturas. Esta página se actualiza cuando esté listo.",
+      "readyTitle": "Listo para explorar",
+      "readyBody": "Gira tu modelo, comprueba los materiales y elige cómo usarlo.",
+      "failedTitle": "El proceso se ha detenido",
+      "failedBody": "Revisa el error que aparece abajo antes de probar otra foto.",
+      "connection": "Se ha interrumpido la conexión. Seguiremos comprobando; tu trabajo continúa en el servidor.",
+      "buildCost": "Crear este modelo utiliza {credits} créditos. Tú decides cuándo empezar."
     }
   },
   "PromptBar": {
@@ -463,7 +559,9 @@
     "uploadingHint": "La vista previa real empieza tras la subida. Verás su estado en la siguiente pantalla.",
     "previewNote": "Vista previa de ángulos gratis. Crear el modelo 3D descargable consume créditos.",
     "guestNote": "Vista previa de ángulos gratis · sin cuenta ni tarjeta. Se aplican límites diarios.",
-    "seeExample": "O explora un ejemplo terminado:"
+    "seeExample": "O explora un ejemplo terminado:",
+    "startPreview": "Subir una foto",
+    "compactNote": "Vista previa sin cuenta ni tarjeta. El modelo 3D utiliza créditos."
   },
   "Library": {
     "metaTitle": "Biblioteca · easyrender",
@@ -1312,6 +1410,11 @@
       "embed": "Copiar código de inserción",
       "copied": "Código copiado",
       "copyFailed": "No se pudo copiar. Inténtalo de nuevo"
+    },
+    "usage": {
+      "title": "Cómo usar este modelo",
+      "body": "Descarga el GLB y elige dónde usarlo. Comprueba la escala y los materiales antes de publicarlo.",
+      "create": "Crear uno con mi foto"
     }
   },
   "Blog": {
@@ -1343,13 +1446,13 @@
       },
       "related": "Sigue leyendo",
       "promo": {
-        "title": "¿Te piden más fotos?",
+        "title": "Una foto no lo muestra todo.",
         "button": "Prueba tu foto gratis",
         "disclosure": "Vista previa gratis. El modelo 3D es de pago.",
-        "solution": "Enséñalo en 3D. Desde una foto.",
-        "visual": "Ejemplo de un modelo generado de butaca girando",
-        "play": "Reproducir vídeo del producto",
-        "pause": "Pausar vídeo del producto"
+        "solution": "Crea en 3D. Explora cada ángulo.",
+        "visual": "Demostración visual: una butaca aparece en un salón y se muestra desde varios ángulos",
+        "play": "Reproducir demostración",
+        "pause": "Pausar demostración"
       },
       "priceReference": "Los precios del artículo son referencias en USD. Consulta Precios para ver tu moneda y oferta actuales."
     },
@@ -1496,7 +1599,7 @@
     "details": "Detalles de cookies",
     "intro": "Cómo usamos el almacenamiento del navegador, la medición opcional de Google y la analítica de producto sin cookies.",
     "anonTitle": "er_anon",
-    "anon": "Esta cookie propia identifica tus previsualizaciones anónimas, aplica el límite diario gratuito y te permite asociarlas a tu cuenta. También mantiene tus precios durante una prueba de precios, aunque rechaces las analíticas. Se crea en tu primera visita y dura un año.",
+    "anon": "Esta cookie propia identifica tus previsualizaciones anónimas, aplica el límite diario gratuito y te permite asociarlas a tu cuenta. También mantiene tus precios durante una prueba de precios, aunque rechaces las analíticas. Se crea en tu primera visita y dura un año. También conserva tu oferta de prueba y evita canjes duplicados durante el experimento del primer modelo.",
     "consentTitle": "er_consent",
     "consent": "Guarda por un año tus decisiones separadas de analítica y medición publicitaria, su fecha y versión, solo cuando eliges. Una aceptación antigua de analítica nunca autoriza publicidad.",
     "gaTitle": "Google Analytics 4: _ga y _ga_*",
@@ -2805,5 +2908,266 @@
       "body": "No se ha podido completar tu trabajo de renderizado. Abre easyrender para ver su estado y los siguientes pasos disponibles.",
       "action": "Revisar mi trabajo"
     }
+  },
+  "LandingIntent": {
+    "photo": {
+      "title": "Descubre en qué puede convertirse tu foto",
+      "body": "Sube una foto de producto y revisa los ángulos gratis antes de decidir si generas el modelo."
+    },
+    "commerce": {
+      "title": "Pruébalo primero con un producto",
+      "body": "Comprueba la forma y los materiales y usa el GLB en tu ficha de producto o escena 3D."
+    },
+    "format": {
+      "title": "Inspecciona un archivo real antes de empezar",
+      "body": "Abre el ejemplo existente de la mesa para comparar la foto, las vistas y el modelo interactivo."
+    },
+    "tools": {
+      "title": "Compara el mismo producto, además de las funciones",
+      "body": "Prueba con tu foto y valora la silueta, las superficies ocultas y la textura según el uso que le darás."
+    },
+    "precision": {
+      "title": "Comprueba si el resultado encaja con tu trabajo",
+      "body": "La IA de una foto infiere las superficies ocultas. Revisa las proporciones; si necesitas medidas exactas, utiliza modelado con mediciones."
+    },
+    "interactive": {
+      "title": "Decide qué necesita hacer tu comprador",
+      "body": "Un modelo 3D permite girar libremente e incorporarlo a una escena. Empieza por inspeccionar un ejemplo existente."
+    },
+    "scan": {
+      "title": "Prueba la opción de una sola foto",
+      "body": "La IA infiere la geometría de una imagen. Para reconstruir con medidas, compara un proceso de captura con varias fotos."
+    },
+    "inspect": "Inspeccionar el ejemplo",
+    "upload": "Subir mi foto",
+    "qualityTitle": "Valora el resultado, además del nombre del modelo",
+    "qualityBody": "Compara la foto y el resultado. Los detalles finos, las superficies transparentes y los lados ocultos pueden necesitar correcciones; la geometría generada no es un modelo CAD con medidas verificadas.",
+    "sample": "Inspeccionar un ejemplo",
+    "evals": "Ver controles de calidad",
+    "create": "Crear uno con mi foto",
+    "galleryBody": "Abre el resultado para comparar la foto y el modelo 3D. Puedes inspeccionar los ejemplos públicos; las descargas dependen de la propiedad."
+  },
+  "EcommerceLanding": {
+    "meta": {
+      "title": "3D y realidad aumentada para Shopify, WooCommerce y PrestaShop · easyrender",
+      "description": "Añade un botón «Verlo en tu casa» a tus fichas de producto. easyrender convierte las fotos de tu catálogo en modelos 3D que el comprador abre en realidad aumentada, en Shopify, WooCommerce, PrestaShop o cualquier otra tienda."
+    },
+    "breadcrumb": "E-commerce",
+    "home": "Inicio",
+    "hero": {
+      "eyebrow": "E-commerce",
+      "title": "Un botón «Verlo en tu casa» en cada ficha de producto.",
+      "subtitle": "easyrender convierte las fotos que ya tienes en tu catálogo en modelos 3D y añade un botón de realidad aumentada y un código QR a cada ficha. Elige tu plataforma para ver cómo se instala."
+    },
+    "picker": {
+      "label": "Elige la plataforma de tu tienda"
+    },
+    "platforms": {
+      "shopify": {
+        "name": "Shopify",
+        "title": "easyrender para Shopify",
+        "steps": {
+          "one": "Instala la app",
+          "two": "Conecta tu cuenta de easyrender",
+          "three": "Genera el catálogo",
+          "four": "Añade el bloque a tu tema"
+        },
+        "path": "Tienda online › Temas › Personalizar › Producto › Agregar bloque",
+        "cta": "Pide la app de Shopify",
+        "secondary": "Crea tu cuenta",
+        "note": "Se instala desde un enlace que te enviamos; todavía no está en la Shopify App Store. Requiere un tema Online Store 2.0."
+      },
+      "woocommerce": {
+        "name": "WooCommerce",
+        "title": "easyrender para WooCommerce",
+        "steps": {
+          "one": "Sube el plugin",
+          "two": "Pega tu clave de API",
+          "three": "Genera el catálogo",
+          "four": "El botón aparece solo"
+        },
+        "path": "WooCommerce › 3D y RA",
+        "cta": "Descarga el plugin de WooCommerce",
+        "secondary": "Crea tu clave de API",
+        "note": "Un zip que subes tú; todavía no está en el directorio de WordPress.org. WordPress 6.0+, PHP 7.4+, fotos por https."
+      },
+      "prestashop": {
+        "name": "PrestaShop",
+        "title": "easyrender para PrestaShop",
+        "steps": {
+          "one": "Sube el módulo",
+          "two": "Pega tu clave de API",
+          "three": "Genera el catálogo",
+          "four": "El botón aparece solo"
+        },
+        "path": "Módulos › Gestor de módulos › easyrender 3D & AR › Configurar",
+        "cta": "Descarga el módulo de PrestaShop",
+        "secondary": "Crea tu clave de API",
+        "note": "Un zip que subes tú; todavía no está en PrestaShop Addons. PrestaShop 1.7.7+ u 8.x, fotos por https."
+      },
+      "tiendanube": {
+        "name": "Tiendanube",
+        "title": "easyrender para Tiendanube",
+        "steps": {
+          "one": "Crea tu cuenta",
+          "two": "Pasa tus productos a 3D",
+          "three": "Copia el id del modelo",
+          "four": "Pégalo en la descripción del producto"
+        },
+        "path": "Productos › Editar › Descripción › HTML",
+        "cta": "Crea tu cuenta",
+        "secondary": "Pide la app de Tiendanube",
+        "note": "Todavía no hay app de Tiendanube: el botón son dos líneas de HTML que se pegan en la descripción de cada producto o en tu tema. El modelo tiene que ser público o estar compartido por enlace."
+      },
+      "other": {
+        "name": "Otra plataforma",
+        "title": "easyrender en cualquier otra tienda",
+        "steps": {
+          "one": "Crea tu cuenta",
+          "two": "Pasa tus productos a 3D",
+          "three": "Copia el id del modelo",
+          "four": "Pega el botón"
+        },
+        "path": "Tu plantilla de producto",
+        "cta": "Crea tu clave de API",
+        "secondary": "Guía de la API REST",
+        "note": "Sirve en Magento, BigCommerce, Wix, Squarespace o una tienda a medida. El modelo tiene que ser público o estar compartido por enlace."
+      }
+    },
+    "snippet": {
+      "label": "Plantilla de producto (HTML)",
+      "copy": "Copiar",
+      "copied": "Copiado",
+      "error": "No se pudo copiar",
+      "placeholder": "ID_DE_TU_MODELO"
+    },
+    "mock": {
+      "adminLabel": "En tu panel",
+      "generate": "Generar 3D para {count} productos ({credits} créditos)",
+      "storeLabel": "En tu ficha de producto",
+      "domain": "tutienda.com",
+      "productName": "Mesa auxiliar de roble",
+      "productMeta": "Roble macizo · En stock",
+      "addToCart": "Añadir al carrito",
+      "added": "Añadido por easyrender",
+      "button": "Verlo en tu casa",
+      "qrCaption": "Escanea con el móvil para verlo en tu casa",
+      "qrAlt": "Código QR que abre esta mesa en realidad aumentada en un móvil",
+      "photoAlt": "Foto de producto de una mesa auxiliar de roble",
+      "live": "Demo real: el botón y el código QR abren un modelo de verdad."
+    },
+    "shopper": {
+      "title": "Lo que ve tu comprador",
+      "phone": {
+        "title": "En el móvil: un toque",
+        "body": "El botón abre el visor de realidad aumentada del propio teléfono. Sin instalar ninguna app."
+      },
+      "desktop": {
+        "title": "En el ordenador: un código QR",
+        "body": "El código QR lleva la página al móvil del comprador."
+      },
+      "quiet": {
+        "title": "Sin modelo, sin botón",
+        "body": "Los productos sin modelo terminado no muestran nada."
+      }
+    },
+    "faq": {
+      "title": "Preguntas de quienes tienen tienda",
+      "items": {
+        "photos": {
+          "q": "¿Qué fotos utiliza?",
+          "a": "La foto principal de cada producto. Los productos sin foto se saltan y se cuentan en la página del plugin, y si una foto no sirve se avisa para que la cambies."
+        },
+        "cost": {
+          "q": "¿Cuándo se me cobra?",
+          "a": "Los créditos se gastan cuando empieza a generarse cada modelo 3D, nunca antes de que hagas clic. El botón muestra el total de la tanda, y si un modelo falla se devuelven sus créditos."
+        },
+        "theme": {
+          "q": "¿Cambia mi tema?",
+          "a": "No. En Shopify añades un bloque en el editor de temas y allí mismo lo puedes quitar. En WooCommerce y PrestaShop el botón se añade con los hooks de la propia plataforma, sin editar archivos del tema."
+        },
+        "devices": {
+          "q": "¿Qué teléfonos abren la vista en realidad aumentada?",
+          "a": "Los iPhone y iPad mediante Quick Look y los teléfonos Android compatibles con Scene Viewer. En un dispositivo sin realidad aumentada, la página muestra el modelo 3D y el código QR."
+        },
+        "accuracy": {
+          "q": "¿Cuánto se parece el modelo al producto real?",
+          "a": "El modelo se genera a partir de una sola foto, así que los lados que la foto no enseña son una estimación. Revisa cada modelo antes de darlo por bueno y toma las medidas como aproximadas."
+        },
+        "remove": {
+          "q": "¿Qué pasa si lo desinstalo?",
+          "a": "El botón desaparece de tus fichas de producto y se olvida la lista de productos de la tienda. Los modelos siguen en tu cuenta de easyrender."
+        }
+      }
+    },
+    "closing": {
+      "title": "Lleva tu catálogo a la casa de tu comprador.",
+      "cta": "Crea tu cuenta"
+    },
+    "cost": {
+      "title": "Cuánto cuesta",
+      "install": "Plugin y borrador de vista previa",
+      "model": "Por modelo 3D · {credits} créditos",
+      "catalogue": "Un catálogo de {count} productos",
+      "note": "El total aparece en el botón antes de hacer clic. Si un modelo falla, se devuelven sus créditos."
+    }
+  },
+  "FirstModel": {
+    "title": "Tu primer modelo 3D es gratis",
+    "body": "Genera tu modelo y descarga el GLB. Sin tarjeta.",
+    "signup": "Crear cuenta y generar",
+    "verify": "Verificar email",
+    "verifyHint": "Verifica tu email para desbloquear tu modelo.",
+    "sent": "Abre el correo, verifica tu dirección y vuelve aquí.",
+    "check": "Comprobar verificación",
+    "build": "Generar mi modelo gratis",
+    "terms": "Un modelo por cuenta verificada. Los siguientes usan créditos.",
+    "loading": "Comprobando tu oferta…",
+    "loadError": "No pudimos comprobar tu oferta. Tu vista previa está guardada.",
+    "retry": "Reintentar",
+    "rateLimited": "Espera unos minutos antes de solicitar otro correo.",
+    "sendError": "No pudimos enviar el correo. Vuelve a intentarlo en unos minutos."
+  },
+  "FirstModelAdmin": {
+    "title": "Experimento del primer modelo",
+    "description": "A: ángulos gratis y 3D de pago. B: un modelo 3D gratis tras verificar la cuenta. El reparto empieza en la vista de ángulos, antes del registro.",
+    "start": "Iniciar piloto de 14 días",
+    "pause": "Pausar nuevas ofertas",
+    "resume": "Reanudar incorporaciones",
+    "cap": "Personas que recibirán un modelo gratis",
+    "status": "Estado",
+    "inactive": "Sin iniciar",
+    "active": "Admitiendo participantes",
+    "paused": "Pausado",
+    "ended": "Cupo cerrado",
+    "rule": "La muestra es el doble del cupo, repartida al 50/50. Pausar respeta las ofertas existentes. El cupo y la fecha límite se fijan al iniciar.",
+    "cost": "Hasta {amount} USD de coste estimado de proveedor para el grupo gratuito, incluidas las vistas previas. Reintentos e infraestructura van aparte.",
+    "error": "No se pudo actualizar el experimento. Comprueba el envío de emails de verificación y vuelve a intentarlo.",
+    "busy": "Guardando…",
+    "back": "Analítica",
+    "window": "Ventana de observación",
+    "days": "{days} días",
+    "variant": "Grupo",
+    "control": "A · 3D de pago",
+    "free_model": "B · Primer modelo gratis",
+    "matureVisitors": "Visitantes con ventana completa",
+    "signups": "Registros",
+    "firstModels": "Primer modelo",
+    "secondModels": "Segundo modelo",
+    "payers": "Usuarios que pagan",
+    "conversion": "Conversión a pago",
+    "cohorts": "Conversión por cohorte",
+    "caveat": "Métrica principal: conversión a pago a 30 días por visitante asignado, incluidos quienes no se registran. Solo se comparan ventanas completas. Este piloto no demuestra LTV ni significancia estadística.",
+    "economics": "Totales del piloto hasta hoy",
+    "enrolled": "Asignados",
+    "granted": "Modelos bonificados",
+    "providerCost": "Coste de renders registrado (USD)",
+    "revenue": "Ingresos cobrados",
+    "net": "Ingresos menos coste de renders registrado (USD)",
+    "costCaveat": "Estos totales tienen tiempos de seguimiento distintos y solo sirven de diagnóstico. Los costes son estimaciones, pueden omitir trabajo fallido del proveedor y no incluyen comisiones ni infraestructura. Las monedas se separan; no se calcula un margen combinado.",
+    "download": "Descargar informe detallado",
+    "pricing": "El informe también separa las cohortes por el experimento de precios existente.",
+    "unknown": "No disponible",
+    "end": "Fin de incorporaciones"
   }
 }

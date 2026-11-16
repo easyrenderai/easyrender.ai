@@ -16,8 +16,16 @@ export type PromoCopy = {
   disclosure: string;
 };
 
-/** Pain → a product turning → one action. Copy stays readable in every frame and locale. */
-export function ArticlePromo({ locale, copy }: { locale: Locale; copy: PromoCopy }) {
+/** Photo limitation → a model revealed in a room → one action. Copy stays readable in every frame and locale. */
+export function ArticlePromo({
+  locale,
+  copy,
+  href,
+}: {
+  locale: Locale;
+  copy: PromoCopy;
+  href?: string;
+}) {
   return (
     <Card className="gap-0 overflow-hidden py-0 shadow-none" data-article-promo="">
       <p className="px-4 py-4 text-xl leading-tight font-semibold tracking-tight text-balance">
@@ -27,7 +35,7 @@ export function ArticlePromo({ locale, copy }: { locale: Locale; copy: PromoCopy
       <div className="space-y-3 p-4">
         <p className="text-sm leading-snug font-medium">{copy.solution}</p>
         <Button asChild className="h-auto min-h-9 w-full whitespace-normal text-center">
-          <Link href={`${ROUTES.home.paths[locale]}#try`} data-cta="article-sidebar">
+          <Link href={href ?? `${ROUTES.home.paths[locale]}#try`} data-cta="article-sidebar">
             {copy.button}
             <ArrowRight className="shrink-0" aria-hidden />
           </Link>

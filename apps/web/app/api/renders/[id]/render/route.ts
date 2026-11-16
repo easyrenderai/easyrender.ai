@@ -23,6 +23,7 @@ export const POST = (request: Request, { params }: RouteContext<'/api/renders/[i
     );
     const text = bounded ? await new Response(bounded).text() : '';
     let maxCredits: number | undefined;
+    let isUsingFreeModel = false;
     if (text.trim()) {
       let body: unknown;
       try {
@@ -33,6 +34,10 @@ export const POST = (request: Request, { params }: RouteContext<'/api/renders/[i
       if (!body || typeof body !== 'object' || Array.isArray(body))
         throw new AppError('Send a JSON object with optional maxCredits', 400, 'bad_body');
       const value = (body as Record<string, unknown>).maxCredits;
+      const trial = (body as Record<string, unknown>).useFreeModel;
+      if (trial !== undefined && typeof trial !== 'boolean')
+        throw new AppError('useFreeModel must be a boolean', 400, 'bad_body');
+      isUsingFreeModel = trial === true;
       if (value !== undefined) {
         if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0)
           throw new AppError(
@@ -43,7 +48,9 @@ export const POST = (request: Request, { params }: RouteContext<'/api/renders/[i
         maxCredits = value;
       }
     }
-    return NextResponse.json(toView(await startBuild(id, { ...actor, maxCredits })));
+    return NextResponse.json(
+      toView(await startBuild(id, { ...actor, maxCredits, isUsingFreeModel })),
+    );
   });
 
 export const OPTIONS = apiOptions;

@@ -1,0 +1,210 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: easyrender.ai model exports. The Blender converter (services/model-export) as an on-demand Lambda function, its image registry, and the roles that may start it and ship it.
+
+Parameters:
+  ExportsBucket:
+    Type: String
+    Description: The ExportsBucket output of the easyrenderai-storage stack. The converter reads and writes exports/* there and nothing else.
+  VercelRoleName:
+    Type: String
+    Description: Name (not ARN) of the Vercel OIDC role from the easyrenderai-storage stack. It gains the right to start the converter and to write the model it converts.
+  ImageTag:
+    Type: String
+    Default: ""
+    Description: >-
+      Tag of the image in the registry that the function runs, a commit SHA. Empty on the first
+      deploy: the registry has to exist before CI can push to it, and the function cannot exist
+      before an image does. After that, CI moves the function to each new image itself.
+  GitHubSubjectPrefix:
+    Type: String
+    Default: repo:easyrenderai@354822750/easyrender.ai@1451843595
+    Description: >-
+      Start of the OIDC subject GitHub issues for the repository whose main branch may push images
+      and update the function. This repository uses GitHub's immutable subject, which carries the
+      owner id and the repository id: repo:OWNER@OWNER_ID/REPO@REPO_ID. Read it with
+      gh api repos/OWNER/REPO/actions/oidc/customization/sub (sub_claim_prefix).
+  MemoryMb:
+    Type: Number
+    Default: 2048
+    Description: Measured peak for a 5.7 MB render with a 2048 px texture is about 600 MB.
+  TimeoutSeconds:
+    Type: Number
+    Default: 120
+    Description: A conversion takes about a second. This is the stop for a stuck one.
+
+Conditions:
+  HasImage: !Not [!Equals [!Ref ImageTag, ""]]
+
+Resources:
+  Repository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: easyrender-model-export
+      ImageTagMutability: IMMUTABLE
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Keep the last 10 images",
+                "selection": { "tagStatus": "any", "countType": "imageCountMoreThan", "countNumber": 10 },
+                "action": { "type": "expire" }
+              }
+            ]
+          }
+      RepositoryPolicyText:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: LambdaPullsTheImage
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action:
+              - ecr:BatchGetImage
+              - ecr:GetDownloadUrlForLayer
+            Condition:
+              StringLike:
+                aws:sourceArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:easyrender-model-export
+
+  ConverterLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: /aws/lambda/easyrender-model-export
+      RetentionInDays: 30
+
+  # What the converter itself may do: write its log and touch exports/* in the one private bucket.
+  ConverterRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: logs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub ${ConverterLogGroup.Arn}:*
+        - PolicyName: exports
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: !Sub arn:aws:s3:::${ExportsBucket}/exports/*
+
+  Converter:
+    Type: AWS::Lambda::Function
+    Condition: HasImage
+    Properties:
+      FunctionName: easyrender-model-export
+      Description: Converts one GLB to OBJ, FBX or BLEND per run. Started by the web app, no public endpoint.
+      PackageType: Image
+      Code:
+        ImageUri: !Sub ${Repository.RepositoryUri}:${ImageTag}
+      Architectures: [x86_64]
+      Role: !GetAtt ConverterRole.Arn
+      MemorySize: !Ref MemoryMb
+      Timeout: !Ref TimeoutSeconds
+      EphemeralStorage:
+        Size: 2048
+      LoggingConfig:
+        LogGroup: !Ref ConverterLogGroup
+      Environment:
+        Variables:
+          EXPORTS_BUCKET: !Ref ExportsBucket
+
+  # The web app (through its Vercel OIDC role) writes the model to convert and starts one run.
+  # It already reads exports/* and the signing key through the storage stack.
+  VercelExportsPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: exports-convert
+      Roles:
+        - !Ref VercelRoleName
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: WriteTheModelToConvert
+            Effect: Allow
+            Action: s3:PutObject
+            Resource: !Sub arn:aws:s3:::${ExportsBucket}/exports/*
+          - Sid: StartOneConversion
+            Effect: Allow
+            Action: lambda:InvokeFunction
+            Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:easyrender-model-export
+
+  # GitHub Actions on main: push a new image, point the function at it and run it once (the
+  # first run of a new image is slow). Nothing else.
+  DeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: easyrender-exports-deploy
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub ${GitHubSubjectPrefix}:ref:refs/heads/main
+      Policies:
+        - PolicyName: push-image
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: ecr:GetAuthorizationToken
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:BatchGetImage
+                  - ecr:CompleteLayerUpload
+                  - ecr:DescribeImages
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                Resource: !GetAtt Repository.Arn
+        - PolicyName: update-function
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:GetFunction
+                  - lambda:GetFunctionConfiguration
+                  - lambda:InvokeFunction
+                  - lambda:UpdateFunctionCode
+                Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:easyrender-model-export
+
+Outputs:
+  RepositoryUri:
+    Value: !GetAtt Repository.RepositoryUri
+  DeployRoleArn:
+    Description: The role .github/workflows/model-export.yml assumes on main.
+    Value: !GetAtt DeployRole.Arn
+  FunctionName:
+    Condition: HasImage
+    Description: Set as MODEL_EXPORT_FUNCTION for the web app.
+    Value: !Ref Converter

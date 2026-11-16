@@ -2,6 +2,7 @@ import { LIMITS } from '@easyrender/harness';
 import { ArrowRight, FlaskConical } from 'lucide-react';
 import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
+import { QualityEvidence } from '@/components/quality-evidence';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,14 @@ const DATE_FORMAT = { year: 'numeric', month: 'long', day: 'numeric' } as const;
 export async function EvalsView({ locale }: { locale: Locale }) {
   const [t, format] = await Promise.all([getTranslations('Evals'), getFormatter()]);
   const runs = listRuns();
+  const quality = await getTranslations('LandingIntent');
+  const qualityCopy = {
+    title: quality('qualityTitle'),
+    body: quality('qualityBody'),
+    upload: quality('upload'),
+    sample: quality('sample'),
+    evals: quality('evals'),
+  };
 
   // The numbers are the live guardrail limits, so this list cannot drift from what runs.
   const checks = [
@@ -46,6 +55,7 @@ export async function EvalsView({ locale }: { locale: Locale }) {
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{t('title')}</h1>
         <p className="max-w-2xl text-lg text-muted-foreground text-pretty">{t('description')}</p>
       </header>
+      <QualityEvidence locale={locale} copy={qualityCopy} />
 
       <section className="mt-12 space-y-4" aria-labelledby="evals-results">
         <h2 id="evals-results" className="text-2xl font-semibold tracking-tight">

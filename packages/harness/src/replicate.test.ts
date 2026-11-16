@@ -1,3 +1,4 @@
+import sharp from 'sharp';
 import { afterEach, expect, it, vi } from 'vitest';
 import { createReplicate, download, ProviderRequestError } from './replicate';
 
@@ -74,3 +75,35 @@ it.each([401, 402, 403])(
     expect(error.message).toContain('token or billing');
   },
 );
+
+// Replicate answers 500 to any prediction whose image input is a URL, so uploads stay inline.
+it("hands images over as a data URI and never calls Replicate's file store", async () => {
+  const calls: string[] = [];
+  const fetchImpl = (async (url: string) => {
+    calls.push(String(url));
+    return Response.json({});
+  }) as typeof fetch;
+  const bytes = new Uint8Array([1, 2, 3]);
+  const reference = await createReplicate('test', fetchImpl).upload(bytes, 'a.png', 'image/png');
+  expect(reference).toBe('data:image/png;base64,AQID');
+  expect(calls).toEqual([]);
+});
+
+it('re-encodes a large image to a bounded JPEG before inlining it', async () => {
+  const noise = Buffer.alloc(3000 * 3000 * 3);
+  for (let i = 0; i < noise.length; i++) noise[i] = (i * 2654435761) >>> 24;
+  const big = await sharp(noise, { raw: { width: 3000, height: 3000, channels: 3 } })
+    .png({ compressionLevel: 0 })
+    .toBuffer();
+  expect(big.byteLength).toBeGreaterThan(3 * 1024 * 1024);
+  const reference = await createReplicate('test', fetch).upload(
+    new Uint8Array(big),
+    'big.png',
+    'image/png',
+  );
+  expect(reference.startsWith('data:image/jpeg;base64,')).toBe(true);
+  const out = Buffer.from(reference.split(',')[1] as string, 'base64');
+  const { width, height } = await sharp(out).metadata();
+  expect(Math.max(width ?? 0, height ?? 0)).toBeLessThanOrEqual(2048);
+  expect(reference.length).toBeLessThan(6 * 1024 * 1024);
+});

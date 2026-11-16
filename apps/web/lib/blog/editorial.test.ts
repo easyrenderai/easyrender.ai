@@ -8,19 +8,21 @@ import { readComparePages } from '@/lib/compare/pages';
 import { parseBlocks } from './markdown';
 
 describe.each(LOCALES)('editorial decisions in %s', (locale) => {
-  it('offers a localized pain-led CTA with a lightweight video and static fallback', async () => {
+  it('offers a localized generic photo-to-3D CTA with a lightweight video and static fallback', async () => {
     const messages = (await import(`../../messages/${locale}.json`)).default;
     const html = renderToStaticMarkup(
       createElement(ArticlePromo, { locale, copy: messages.Blog.post.promo }),
     );
     expect(html).toContain(locale === 'en' ? 'href="/#try"' : `href="/${locale}#try"`);
-    expect(html).toContain('product-turn.jpg');
+    expect(html).toContain('room-reveal.jpg');
     expect(html).toContain(messages.Blog.post.promo.title);
+    expect(html).toContain(messages.Blog.post.promo.solution);
+    expect(html).toContain('width="600" height="400"');
     expect(html).toContain('preload="none"');
     expect(html).toContain('playsInline');
     expect(html).toContain(messages.Blog.post.promo.disclosure);
     expect(html).toContain('<video');
-    expect(html).not.toContain('src="/blog/promo/product-turn.mp4"');
+    expect(html).not.toContain('src="/blog/promo/room-reveal.mp4"');
   });
   it('makes choices and limitations readable without interaction', async () => {
     const messages = (await import(`../../messages/${locale}.json`)).default;

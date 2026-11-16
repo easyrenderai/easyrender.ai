@@ -16,7 +16,7 @@ separately authorized release owner.
 3. Review the package README for each platform. Create Render starts a private **free
    preview**, not a finished model. A build needs separate authorization in easyrender.
    Model Ready watches one selected render ID; it is not an account-wide completion feed.
-4. Use the easyrender name, homepage `https://easyrender.ai`, and the supplied brand icon.
+4. Use the public display name `Easy Render | Photo to 3D`, homepage `https://easyrender.ai`, and the supplied brand icon.
    Supply a monitored support contact, currently `info@easyrender.ai`, privacy policy
    `https://easyrender.ai/privacy`, and terms `https://easyrender.ai/terms`.
 5. Keep API keys only in platform credential stores. The needed scopes are `read` and
@@ -37,13 +37,15 @@ is sufficient for development; Cloud discovery needs verification.
 2. From `integrations/n8n`, run `npm ci`, `npm run lint`, `npm test`, and
    `npm pack --dry-run`. Inspect the tarball file list for both nodes, credentials,
    icons, README and MIT license. Test using `npm run dev` and the README workflow.
-3. Prepare a **manual GitHub Actions publishing workflow** using the example below.
-   It is documentation only; this PR does not install an active publish workflow.
-   Review and pin action revisions according to repository policy before enabling it.
+3. The **manual-only GitHub Actions publishing workflow** is now installed at
+   [publish-easyrender-n8n.yml](../../.github/workflows/publish-easyrender-n8n.yml).
+   It uses pinned action revisions and only `workflow_dispatch`; pushes and tags do
+   not trigger publication. Installing it does not run it or publish the package.
 4. For an existing npm package, configure its **Publish access → Trusted Publishers →
    GitHub Actions** with owner `easyrenderai`, repository `easyrender.ai`, and the exact
-   workflow filename. For the first publish, when no package settings exist yet, use
-   an appropriately scoped npm granular publishing token as a GitHub secret; publish
+   workflow filename `publish-easyrender-n8n.yml`. For the first publish, when no package
+   settings exist yet, use an appropriately scoped npm granular publishing token as
+   the GitHub Actions secret `NPM_TOKEN`; publish
    from Actions with provenance, then configure trusted publishing and remove the token.
 5. After explicit release approval, run that workflow for the reviewed commit. Verify
    the npm package, source repository, files, and provenance attestation. Publishing
@@ -62,7 +64,7 @@ The package uses the official CLI, TypeScript, MIT, English copy, no runtime dep
 and no node access to filesystem or environment variables. Since May 1, 2026,
 verification requires GitHub Actions publication with npm provenance.
 
-Example future workflow (`.github/workflows/publish-easyrender-n8n.yml`):
+Installed manual-only workflow (`.github/workflows/publish-easyrender-n8n.yml`):
 
 ```yaml
 name: Publish easyrender n8n
@@ -74,7 +76,6 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    environment: npm-release # Configure required reviewers before enabling.
     defaults:
       run:
         working-directory: integrations/n8n
@@ -91,8 +92,10 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm publish --provenance --access public
-        # First publication only: add NODE_AUTH_TOKEN from a GitHub Actions secret.
-        # Once trusted publishing is configured, use OIDC without a long-lived token.
+        env:
+          # First publish only; remove once npm Trusted Publishing is configured
+          # for this exact workflow filename: publish-easyrender-n8n.yml.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
 
 Increment the package version and refresh its lockfile before each subsequent release.
@@ -172,12 +175,14 @@ and [review statuses](https://developers.make.com/custom-apps-documentation/app-
 
 ## English listing copy
 
-Use `easyrender` as the application name. These descriptions intentionally avoid
-pricing, allowance and plan claims, engine-vendor names, and unearned endorsement claims.
+Use `Easy Render | Photo to 3D` as the public application name. Keep identifiers unchanged:
+`n8n-nodes-easyrender`, Make app name `easyrender`, Zapier register/app key `easyrender`,
+and package `easyrender-zapier`. These descriptions intentionally avoid pricing, allowance
+and plan claims, engine-vendor names, and unearned endorsement claims.
 
 ### n8n
 
-**Short:** Connect product photos to easyrender previews and 3D model workflows in n8n.
+**Short:** Turn any Product Photo into a 3D model
 
 **Long:** Create a private free preview from a product image URL, retrieve render status,
 list your renders, and read your account balance. Watch a selected render and continue
@@ -187,7 +192,7 @@ you can review the result before starting a build in easyrender.
 
 ### Zapier
 
-**Short:** easyrender is a product visualization tool that turns product photos into 3D models and AR-ready assets.
+**Short:** Turn any Product Photo into a 3D model
 
 **Long:** easyrender helps teams prepare product visuals from a single photo. Create a
 private free preview from an image URL, look up a render, list existing renders, and
@@ -197,7 +202,7 @@ separately in easyrender.
 
 ### Make
 
-**Short:** Automate product preview creation and selected-model readiness workflows with easyrender.
+**Short:** Turn any Product Photo into a 3D model
 
 **Long:** Connect easyrender to your product operations. Create private free previews
 from image URLs, retrieve render status, list renders, and read your account balance.

@@ -1,3 +1,4 @@
+import '@/components/blog/editorial.css';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
@@ -9,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Markdown, type TocEntry, tocOf } from '@/lib/blog/markdown';
 import { isLiveBlogLink, readingMinutes } from '@/lib/blog/posts';
 import type { ComparePage } from '@/lib/compare/pages';
+import { landingIntent } from '@/lib/landing-intent';
 import { ROUTES } from '@/lib/seo/routes';
 
 function TocList({ entries }: { entries: TocEntry[] }) {
@@ -40,10 +42,12 @@ export async function CompareView({ page }: { page: ComparePage }) {
     getFormatter({ locale: page.locale }),
   ]);
   const home = ROUTES.home.paths[page.locale];
+  const intent = landingIntent(page.group, page.locale);
+  const nextT = await getTranslations({ locale: page.locale, namespace: 'LandingIntent' });
   const toc = tocOf(page.body);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pt-10 pb-20 sm:px-6 sm:pt-14 sm:pb-28">
+    <div className="mx-auto max-w-7xl px-4 pt-10 pb-20 sm:px-6 sm:pt-14 sm:pb-28">
       <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
         <ol className="flex items-center gap-2">
           <li className="shrink-0">
@@ -103,7 +107,7 @@ export async function CompareView({ page }: { page: ComparePage }) {
           )}
         </header>
 
-        <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-16 xl:gap-24">
+        <div className="mt-14 lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-14 xl:gap-20">
           <div className="min-w-0">
             {toc.length > 0 && (
               <details className="group mb-10 rounded-xl border lg:hidden">
@@ -120,13 +124,14 @@ export async function CompareView({ page }: { page: ComparePage }) {
             <div className="mb-10 max-w-sm lg:hidden">
               <ArticlePromo
                 locale={page.locale}
+                href={intent.href}
                 copy={{
                   title: t('post.promo.title'),
                   solution: t('post.promo.solution'),
                   visual: t('post.promo.visual'),
                   play: t('post.promo.play'),
                   pause: t('post.promo.pause'),
-                  button: t('post.promo.button'),
+                  button: nextT(intent.action),
                   disclosure: t('post.promo.disclosure'),
                 }}
               />
@@ -155,7 +160,7 @@ export async function CompareView({ page }: { page: ComparePage }) {
               />
             )}
 
-            <div className="text-base leading-7 sm:text-lg sm:leading-8 [&>*:first-child]:mt-0 [&>:not([data-wide])]:max-w-xl">
+            <div className="editorial-body text-base sm:text-lg">
               <Markdown
                 source={page.body}
                 isLive={isLiveBlogLink(page.locale)}
@@ -165,14 +170,14 @@ export async function CompareView({ page }: { page: ComparePage }) {
 
             <aside className="mt-20 max-w-xl rounded-2xl border bg-muted/40 p-6 sm:p-10">
               <p className="text-2xl font-semibold tracking-tight text-balance">
-                {t('post.cta.title')}
+                {nextT(`${intent.key}.title`)}
               </p>
               {page.cta && (
                 <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">{page.cta}</p>
               )}
               <Button asChild size="lg" className="mt-6">
-                <Link href={`${home}#try`}>
-                  {t('post.cta.button')}
+                <Link href={intent.href}>
+                  {nextT(intent.action)}
                   <ArrowRight />
                 </Link>
               </Button>
@@ -193,13 +198,14 @@ export async function CompareView({ page }: { page: ComparePage }) {
                 </nav>
                 <ArticlePromo
                   locale={page.locale}
+                  href={intent.href}
                   copy={{
                     title: t('post.promo.title'),
                     solution: t('post.promo.solution'),
                     visual: t('post.promo.visual'),
                     play: t('post.promo.play'),
                     pause: t('post.promo.pause'),
-                    button: t('post.promo.button'),
+                    button: nextT(intent.action),
                     disclosure: t('post.promo.disclosure'),
                   }}
                 />

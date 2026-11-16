@@ -1,7 +1,26 @@
-# Blog promotional video
+# Article promo media
 
-`product-turn.mp4` adapts the owner's existing `easyrender-chat-butaca.mp4` marketing video. It is an illustrative generated armchair rotation, not a new quality benchmark.
+`room-reveal.mp4` is an 8.17-second, silent, 600 × 400 (3:2) excerpt of the owner's
+existing `Downloads/easyrender-ar-tienda.mp4` marketing video. It shows an empty room,
+the chair reveal, camera movement and the chair being turned. This is a staged
+promotional visualization, not a recording of the live product UI or generation time.
 
-The original 1080 × 1920 recording is trimmed from 3.6 to 5.6 seconds, cropped to 920 × 840 at (80, 520), slowed to four seconds and resized to 480 × 438 at 24 fps. H.264, CRF 24, yuv420p, faststart; no audio. The crop removes baked-in English copy so the card can translate the hook and action. `product-turn.jpg` is the first frame, used before playback and for reduced motion.
+The 1080 × 1920 source is trimmed from 0.5 to 8.65 seconds, cropped to
+1080 × 720 at (0, 560), scaled to 600 × 400, and encoded as H.264, 24 fps,
+yuv420p, CRF 25, with faststart and no audio. The crop removes every baked-in
+shopping headline, platform claim and AR interface control. Generic, localized
+copy lives outside the video in `Blog.post.promo` in all six message files.
+The clip does not advertise an in-app AR action.
 
-The source stays outside the repository. Both assets are served locally, with no third-party video player or tracking.
+`room-reveal.jpg` is the 3.7-second still, used for reduced motion, loading and
+playback failure. The card keeps its free-preview / paid-model disclosure.
+
+Rebuild the MP4 with:
+
+```sh
+ffmpeg -ss 0.5 -t 8.15 -i easyrender-ar-tienda.mp4 \
+  -vf 'crop=1080:720:0:560,scale=600:400,fps=24' \
+  -an -c:v libx264 -crf 25 -preset slow -pix_fmt yuv420p \
+  -movflags +faststart room-reveal.mp4
+ffmpeg -ss 3.7 -i room-reveal.mp4 -frames:v 1 -q:v 3 room-reveal.jpg
+```
