@@ -82,6 +82,14 @@ const PAGE_LABELS: Record<string, { title: string; note: string }> = {
   [ROUTES.api.paths.es]: { title: es.ApiLanding.meta.title, note: es.ApiLanding.meta.description },
   [ROUTES.mcp.paths.en]: { title: en.McpLanding.meta.title, note: en.McpLanding.meta.description },
   [ROUTES.mcp.paths.es]: { title: es.McpLanding.meta.title, note: es.McpLanding.meta.description },
+  [ROUTES.ecommerce.paths.en]: {
+    title: en.EcommerceLanding.meta.title,
+    note: en.EcommerceLanding.meta.description,
+  },
+  [ROUTES.ecommerce.paths.es]: {
+    title: es.EcommerceLanding.meta.title,
+    note: es.EcommerceLanding.meta.description,
+  },
   [ROUTES.models.paths.en]: {
     title: 'Models',
     note: 'The three models behind every render, their settings and what each step costs in credits.',

@@ -215,6 +215,35 @@ export async function mcpGraph(locale: Locale) {
   ];
 }
 
+/** E-commerce landing: the visible FAQ and schema share their localized content. */
+export async function ecommerceMetadata(locale: Locale): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'EcommerceLanding.meta' });
+  return pageMetadata({
+    locale,
+    path: ROUTES.ecommerce.paths[locale],
+    title: t('title'),
+    description: t('description'),
+    alternates: livePaths('ecommerce'),
+  });
+}
+
+export async function ecommerceGraph(locale: Locale) {
+  const { ecommerceFaqItems } = await import('@/components/ecommerce/ecommerce-view');
+  const [t, items] = await Promise.all([
+    getTranslations({ locale, namespace: 'EcommerceLanding' }),
+    ecommerceFaqItems(locale),
+  ]);
+  return [
+    organization(),
+    webPage(locale, ROUTES.ecommerce.paths[locale], t('meta.title'), t('meta.description')),
+    breadcrumbList([
+      { name: t('home'), path: ROUTES.home.paths[locale] },
+      { name: t('breadcrumb'), path: ROUTES.ecommerce.paths[locale] },
+    ]),
+    faqPage(items, `${absoluteUrl(ROUTES.ecommerce.paths[locale])}#faq`),
+  ];
+}
+
 /** REST API landing: the visible FAQ and schema share their localized content. */
 export async function apiMetadata(locale: Locale): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: 'ApiLanding.meta' });

@@ -16,6 +16,7 @@ const COLUMNS = [
       { route: 'blog', key: 'guides' },
       { route: 'compare', key: 'comparisons' },
       { route: 'author', key: 'editorial' },
+      { route: 'ecommerce', key: 'ecommerce' },
       { href: '/hub', key: 'hub' },
       { href: '/explore', key: 'gallery' },
       { route: 'pricing', key: 'pricing' },

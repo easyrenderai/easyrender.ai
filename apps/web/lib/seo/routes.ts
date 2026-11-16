@@ -104,6 +104,22 @@ export const ROUTES = {
     priority: 0.8,
     changeFrequency: 'monthly',
   },
+  // The store plugins: Shopify, WooCommerce, PrestaShop and the two-line button for any other
+  // platform. /shopify is taken by the app that runs inside the Shopify admin, so this is the
+  // public page for all of them.
+  ecommerce: {
+    paths: {
+      en: '/ecommerce',
+      es: '/es/ecommerce',
+      de: '/de/e-commerce',
+      fr: '/fr/e-commerce',
+      it: '/it/e-commerce',
+      pt: '/pt/e-commerce',
+    },
+    published: ['en', 'es'],
+    priority: 0.8,
+    changeFrequency: 'monthly',
+  },
   // What runs under the product, and how it is checked. Open in English and Spanish like the
   // pricing and guides; the other four wait for reviewed copy. /evals stays out of the sitemap
   // until a run is published (see lib/evals.ts), so a page with nothing to measure is never

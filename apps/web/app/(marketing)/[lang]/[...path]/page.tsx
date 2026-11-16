@@ -7,6 +7,7 @@ import { BlogPostView } from '@/components/blog/blog-post-view';
 import { CompareIndexView } from '@/components/compare/compare-index-view';
 import { CompareView } from '@/components/compare/compare-view';
 import { CookiesPage } from '@/components/cookies-page';
+import { EcommerceView } from '@/components/ecommerce/ecommerce-view';
 import { EvalsView } from '@/components/evals/evals-view';
 import { LegalPage } from '@/components/legal-page';
 import { McpView } from '@/components/mcp/mcp-view';
@@ -28,6 +29,8 @@ import {
   comparePageGraph,
   comparePageMetadata,
   cookiesMetadata,
+  ecommerceGraph,
+  ecommerceMetadata,
   evalsGraph,
   evalsMetadata,
   legalMetadata,
@@ -58,6 +61,7 @@ type Match =
   | { kind: 'pricing'; locale: Locale }
   | { kind: 'api'; locale: Locale }
   | { kind: 'mcp'; locale: Locale }
+  | { kind: 'ecommerce'; locale: Locale }
   | { kind: 'models'; locale: Locale }
   | { kind: 'evals'; locale: Locale }
   | { kind: 'privacy' | 'terms'; locale: Locale }
@@ -86,6 +90,9 @@ function resolve(lang: string, segments: string[]): Match {
   }
   if (isPublished('api', locale) && path === ROUTES.api.paths[locale]) {
     return { kind: 'api', locale };
+  }
+  if (isPublished('ecommerce', locale) && path === ROUTES.ecommerce.paths[locale]) {
+    return { kind: 'ecommerce', locale };
   }
   if (isPublished('mcp', locale) && path === ROUTES.mcp.paths[locale]) {
     return { kind: 'mcp', locale };
@@ -136,6 +143,7 @@ export async function generateMetadata({
   if (match.kind === 'pricing') return pricingMetadata(match.locale);
   if (match.kind === 'api') return apiMetadata(match.locale);
   if (match.kind === 'mcp') return mcpMetadata(match.locale);
+  if (match.kind === 'ecommerce') return ecommerceMetadata(match.locale);
   if (match.kind === 'models') return modelsMetadata(match.locale);
   if (match.kind === 'evals') return evalsMetadata(match.locale);
   return {};
@@ -202,6 +210,14 @@ export default async function LocalePage({ params }: PageProps<'/[lang]/[...path
       <>
         <JsonLd graph={await apiGraph(match.locale)} />
         <ApiView locale={match.locale} />
+      </>
+    );
+  }
+  if (match.kind === 'ecommerce') {
+    return (
+      <>
+        <JsonLd graph={await ecommerceGraph(match.locale)} />
+        <EcommerceView locale={match.locale} />
       </>
     );
   }

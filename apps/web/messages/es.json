@@ -51,7 +51,8 @@
       "privacy": "Política de privacidad",
       "terms": "Términos del servicio",
       "editorial": "Equipo editorial",
-      "comparisons": "Comparativas"
+      "comparisons": "Comparativas",
+      "ecommerce": "Plugins para e-commerce"
     },
     "copyright": "© 2026 easyrender. Con la tecnología de Genfeed.",
     "pricesNote": "Consulta la moneda y el total antes de pagar. Los créditos no caducan."
@@ -2945,5 +2946,170 @@
     "evals": "Ver controles de calidad",
     "create": "Crear uno con mi foto",
     "galleryBody": "Abre el resultado para comparar la foto y el modelo 3D. Puedes inspeccionar los ejemplos públicos; las descargas dependen de la propiedad."
+  },
+  "EcommerceLanding": {
+    "meta": {
+      "title": "3D y realidad aumentada para Shopify, WooCommerce y PrestaShop · easyrender",
+      "description": "Añade un botón «Verlo en tu casa» a tus fichas de producto. easyrender convierte las fotos de tu catálogo en modelos 3D que el comprador abre en realidad aumentada, en Shopify, WooCommerce, PrestaShop o cualquier otra tienda."
+    },
+    "breadcrumb": "E-commerce",
+    "home": "Inicio",
+    "hero": {
+      "eyebrow": "E-commerce",
+      "title": "Un botón «Verlo en tu casa» en cada ficha de producto.",
+      "subtitle": "easyrender convierte las fotos que ya tienes en tu catálogo en modelos 3D y añade un botón de realidad aumentada y un código QR a cada ficha. Elige tu plataforma para ver cómo se instala."
+    },
+    "picker": {
+      "label": "Elige la plataforma de tu tienda"
+    },
+    "platforms": {
+      "shopify": {
+        "name": "Shopify",
+        "title": "easyrender para Shopify",
+        "steps": {
+          "one": "Instala la app",
+          "two": "Conecta tu cuenta de easyrender",
+          "three": "Genera el catálogo",
+          "four": "Añade el bloque a tu tema"
+        },
+        "path": "Tienda online › Temas › Personalizar › Producto › Agregar bloque",
+        "cta": "Pide la app de Shopify",
+        "secondary": "Crea tu cuenta",
+        "note": "Se instala desde un enlace que te enviamos; todavía no está en la Shopify App Store. Requiere un tema Online Store 2.0."
+      },
+      "woocommerce": {
+        "name": "WooCommerce",
+        "title": "easyrender para WooCommerce",
+        "steps": {
+          "one": "Sube el plugin",
+          "two": "Pega tu clave de API",
+          "three": "Genera el catálogo",
+          "four": "El botón aparece solo"
+        },
+        "path": "WooCommerce › 3D y RA",
+        "cta": "Descarga el plugin de WooCommerce",
+        "secondary": "Crea tu clave de API",
+        "note": "Un zip que subes tú; todavía no está en el directorio de WordPress.org. WordPress 6.0+, PHP 7.4+, fotos por https."
+      },
+      "prestashop": {
+        "name": "PrestaShop",
+        "title": "easyrender para PrestaShop",
+        "steps": {
+          "one": "Sube el módulo",
+          "two": "Pega tu clave de API",
+          "three": "Genera el catálogo",
+          "four": "El botón aparece solo"
+        },
+        "path": "Módulos › Gestor de módulos › easyrender 3D & AR › Configurar",
+        "cta": "Descarga el módulo de PrestaShop",
+        "secondary": "Crea tu clave de API",
+        "note": "Un zip que subes tú; todavía no está en PrestaShop Addons. PrestaShop 1.7.7+ u 8.x, fotos por https."
+      },
+      "tiendanube": {
+        "name": "Tiendanube",
+        "title": "easyrender para Tiendanube",
+        "steps": {
+          "one": "Crea tu cuenta",
+          "two": "Pasa tus productos a 3D",
+          "three": "Copia el id del modelo",
+          "four": "Pégalo en la descripción del producto"
+        },
+        "path": "Productos › Editar › Descripción › HTML",
+        "cta": "Crea tu cuenta",
+        "secondary": "Pide la app de Tiendanube",
+        "note": "Todavía no hay app de Tiendanube: el botón son dos líneas de HTML que se pegan en la descripción de cada producto o en tu tema. El modelo tiene que ser público o estar compartido por enlace."
+      },
+      "other": {
+        "name": "Otra plataforma",
+        "title": "easyrender en cualquier otra tienda",
+        "steps": {
+          "one": "Crea tu cuenta",
+          "two": "Pasa tus productos a 3D",
+          "three": "Copia el id del modelo",
+          "four": "Pega el botón"
+        },
+        "path": "Tu plantilla de producto",
+        "cta": "Crea tu clave de API",
+        "secondary": "Guía de la API REST",
+        "note": "Sirve en Magento, BigCommerce, Wix, Squarespace o una tienda a medida. El modelo tiene que ser público o estar compartido por enlace."
+      }
+    },
+    "snippet": {
+      "label": "Plantilla de producto (HTML)",
+      "copy": "Copiar",
+      "copied": "Copiado",
+      "error": "No se pudo copiar",
+      "placeholder": "ID_DE_TU_MODELO"
+    },
+    "mock": {
+      "adminLabel": "En tu panel",
+      "generate": "Generar 3D para {count} productos ({credits} créditos)",
+      "storeLabel": "En tu ficha de producto",
+      "domain": "tutienda.com",
+      "productName": "Mesa auxiliar de roble",
+      "productMeta": "Roble macizo · En stock",
+      "addToCart": "Añadir al carrito",
+      "added": "Añadido por easyrender",
+      "button": "Verlo en tu casa",
+      "qrCaption": "Escanea con el móvil para verlo en tu casa",
+      "qrAlt": "Código QR que abre esta mesa en realidad aumentada en un móvil",
+      "photoAlt": "Foto de producto de una mesa auxiliar de roble",
+      "live": "Demo real: el botón y el código QR abren un modelo de verdad."
+    },
+    "shopper": {
+      "title": "Lo que ve tu comprador",
+      "phone": {
+        "title": "En el móvil: un toque",
+        "body": "El botón abre el visor de realidad aumentada del propio teléfono. Sin instalar ninguna app."
+      },
+      "desktop": {
+        "title": "En el ordenador: un código QR",
+        "body": "El código QR lleva la página al móvil del comprador."
+      },
+      "quiet": {
+        "title": "Sin modelo, sin botón",
+        "body": "Los productos sin modelo terminado no muestran nada."
+      }
+    },
+    "faq": {
+      "title": "Preguntas de quienes tienen tienda",
+      "items": {
+        "photos": {
+          "q": "¿Qué fotos utiliza?",
+          "a": "La foto principal de cada producto. Los productos sin foto se saltan y se cuentan en la página del plugin, y si una foto no sirve se avisa para que la cambies."
+        },
+        "cost": {
+          "q": "¿Cuándo se me cobra?",
+          "a": "Los créditos se gastan cuando empieza a generarse cada modelo 3D, nunca antes de que hagas clic. El botón muestra el total de la tanda, y si un modelo falla se devuelven sus créditos."
+        },
+        "theme": {
+          "q": "¿Cambia mi tema?",
+          "a": "No. En Shopify añades un bloque en el editor de temas y allí mismo lo puedes quitar. En WooCommerce y PrestaShop el botón se añade con los hooks de la propia plataforma, sin editar archivos del tema."
+        },
+        "devices": {
+          "q": "¿Qué teléfonos abren la vista en realidad aumentada?",
+          "a": "Los iPhone y iPad mediante Quick Look y los teléfonos Android compatibles con Scene Viewer. En un dispositivo sin realidad aumentada, la página muestra el modelo 3D y el código QR."
+        },
+        "accuracy": {
+          "q": "¿Cuánto se parece el modelo al producto real?",
+          "a": "El modelo se genera a partir de una sola foto, así que los lados que la foto no enseña son una estimación. Revisa cada modelo antes de darlo por bueno y toma las medidas como aproximadas."
+        },
+        "remove": {
+          "q": "¿Qué pasa si lo desinstalo?",
+          "a": "El botón desaparece de tus fichas de producto y se olvida la lista de productos de la tienda. Los modelos siguen en tu cuenta de easyrender."
+        }
+      }
+    },
+    "closing": {
+      "title": "Lleva tu catálogo a la casa de tu comprador.",
+      "cta": "Crea tu cuenta"
+    },
+    "cost": {
+      "title": "Cuánto cuesta",
+      "install": "Plugin y borrador de vista previa",
+      "model": "Por modelo 3D · {credits} créditos",
+      "catalogue": "Un catálogo de {count} productos",
+      "note": "El total aparece en el botón antes de hacer clic. Si un modelo falla, se devuelven sus créditos."
+    }
   }
 }
