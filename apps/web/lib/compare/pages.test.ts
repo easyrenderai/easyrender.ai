@@ -23,7 +23,14 @@ import {
 // If one of these fails, either the copy broke a rule or a compare URL is missing from the
 // sitemap, llms.txt or the places we chose to link it from.
 
-const REVIEW_SLUGS = ['360-vs-3d', '3d-modeler-vs-ai', 'meshy', 'photogrammetry-software', 'tripo'];
+const REVIEW_SLUGS = [
+  '360-vs-3d',
+  '3d-modeler-vs-ai',
+  'meshy',
+  'photogrammetry-software',
+  'polycam',
+  'tripo',
+];
 
 const pages = readComparePages();
 const ROOT = process.cwd();
@@ -42,6 +49,13 @@ describe.each(readComparePages('es').map((page) => [page.slug, page] as const))(
         .split('\n')
         .map(parseImage)
         .find((item) => item?.src === expected);
+      if (page.group === 'compare-polycam') {
+        expect(image?.caption).toContain('muestra existente');
+        expect(comparePageMetadata(page).openGraph?.images).toEqual([
+          expect.objectContaining({ url: `https://easyrender.ai${expected}` }),
+        ]);
+        return;
+      }
       expect(image?.alt).toMatch(/^Ilustración de /);
       expect(image?.caption).toMatch(/^Ilustración conceptual:/);
       expect(comparePageMetadata(page).openGraph?.images).toEqual([
@@ -67,11 +81,11 @@ function filesUnder(dir: string, extensions: string[]): string[] {
 }
 
 describe('the published comparisons', () => {
-  it('are the five English pages, plus an index', () => {
+  it('are the six English pages, plus an index', () => {
     expect(pages.map((page) => page.slug)).toEqual(REVIEW_SLUGS);
     expect(isComparePublished()).toBe(true);
     expect(isCompareInReview()).toBe(false);
-    expect(listComparePages()).toHaveLength(5);
+    expect(listComparePages()).toHaveLength(6);
     expect(COMPARE_INDEX.en.title.length).toBeLessThanOrEqual(60);
     expect(postTitle(COMPARE_INDEX.en.title).length).toBeLessThanOrEqual(60);
     expect(COMPARE_INDEX.en.description.length).toBeLessThanOrEqual(160);
@@ -101,6 +115,12 @@ describe.each(pages.map((page) => [page.slug, page] as const))('compare page %s'
   it('keeps its illustration and puts the choice table first on alternative pages', () => {
     const blocks = parseBlocks(page.body);
     expect(blocks[0]?.kind).toBe('paragraph');
+    if (slug === 'polycam') {
+      expect(blocks[2]?.kind).toBe('table');
+      expect(schemaImage(page.body)?.src).toBe('/showcase/vase-angles.jpg');
+      expect(page.body).toContain('not a Polycam benchmark');
+      return;
+    }
     const src = `/compare/illustrations/${slug}/hero.webp`;
     if (slug === 'meshy' || slug === 'tripo') {
       expect(blocks[2]?.kind).toBe('table');

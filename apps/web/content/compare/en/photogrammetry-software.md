@@ -13,6 +13,8 @@ Photogrammetry software builds a 3D model from many overlapping photos of an obj
 
 ![Illustration of a cracked marble bust, one half in its real stone and the other half in matte grey clay covered by a white wireframe mesh, with thin white camera frustums around it on a dark background](/compare/illustrations/photogrammetry-software/hero.webp "Illustration, not an easyrender result: a marble bust drawn half as carved stone, half as a clay-and-wireframe mesh, with camera frustums around it.")
 
+For phone capture, free exports and single-photo workflows, compare the [Polycam alternatives](/compare/polycam).
+
 ## Do you need photogrammetry software at all?
 
 Ask one question first: can you walk round the object? Photogrammetry only measures what the camera saw, so it needs the piece in your hands, a free afternoon and a clear space. Epic's RealityScan guide puts it plainly: what is not visible in multiple images won't show up in the model.

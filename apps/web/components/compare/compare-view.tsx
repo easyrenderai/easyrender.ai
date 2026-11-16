@@ -1,3 +1,4 @@
+import '@/components/blog/editorial.css';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
@@ -46,7 +47,7 @@ export async function CompareView({ page }: { page: ComparePage }) {
   const toc = tocOf(page.body);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pt-10 pb-20 sm:px-6 sm:pt-14 sm:pb-28">
+    <div className="mx-auto max-w-7xl px-4 pt-10 pb-20 sm:px-6 sm:pt-14 sm:pb-28">
       <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
         <ol className="flex items-center gap-2">
           <li className="shrink-0">
@@ -106,7 +107,7 @@ export async function CompareView({ page }: { page: ComparePage }) {
           )}
         </header>
 
-        <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-16 xl:gap-24">
+        <div className="mt-14 lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-14 xl:gap-20">
           <div className="min-w-0">
             {toc.length > 0 && (
               <details className="group mb-10 rounded-xl border lg:hidden">
@@ -125,8 +126,8 @@ export async function CompareView({ page }: { page: ComparePage }) {
                 locale={page.locale}
                 href={intent.href}
                 copy={{
-                  title: nextT(`${intent.key}.title`),
-                  solution: nextT(`${intent.key}.body`),
+                  title: t('post.promo.title'),
+                  solution: t('post.promo.solution'),
                   visual: t('post.promo.visual'),
                   play: t('post.promo.play'),
                   pause: t('post.promo.pause'),
@@ -159,7 +160,7 @@ export async function CompareView({ page }: { page: ComparePage }) {
               />
             )}
 
-            <div className="text-base leading-7 sm:text-lg sm:leading-8 [&>*:first-child]:mt-0 [&>:not([data-wide])]:max-w-xl">
+            <div className="editorial-body text-base sm:text-lg">
               <Markdown
                 source={page.body}
                 isLive={isLiveBlogLink(page.locale)}
@@ -199,8 +200,8 @@ export async function CompareView({ page }: { page: ComparePage }) {
                   locale={page.locale}
                   href={intent.href}
                   copy={{
-                    title: nextT(`${intent.key}.title`),
-                    solution: nextT(`${intent.key}.body`),
+                    title: t('post.promo.title'),
+                    solution: t('post.promo.solution'),
                     visual: t('post.promo.visual'),
                     play: t('post.promo.play'),
                     pause: t('post.promo.pause'),

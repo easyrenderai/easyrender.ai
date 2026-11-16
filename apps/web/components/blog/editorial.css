@@ -1,0 +1,85 @@
+/* Shared long-form rhythm. The site's semantic tokens keep both OS themes dark. */
+.editorial-body {
+  --reading-width: 65ch;
+  line-height: 1.8;
+}
+.editorial-body > :not([data-wide]) {
+  max-width: var(--reading-width);
+}
+.editorial-body > :first-child {
+  margin-top: 0;
+}
+.editorial-body > p {
+  margin-top: 1.5rem;
+  color: color-mix(in srgb, var(--foreground) 86%, var(--background));
+}
+.editorial-body strong {
+  color: var(--foreground);
+  font-weight: 650;
+}
+.editorial-body > h2,
+.editorial-body > [data-faq] > h2 {
+  max-width: none;
+  margin-top: 6rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+.editorial-body > h3 {
+  margin-top: 3.5rem;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+.editorial-body > blockquote {
+  max-width: none;
+  margin-block: 3rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border-left: 2px solid var(--foreground);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--card);
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+.editorial-body > [data-wide] {
+  margin-top: 2.5rem;
+}
+.editorial-body [data-slot="table-container"] {
+  max-height: 42rem;
+  scrollbar-width: thin;
+}
+.editorial-body [data-slot="table-header"] {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--secondary);
+}
+.editorial-body [data-slot="table-body"] [data-slot="table-row"]:nth-child(even) {
+  background: color-mix(in srgb, var(--card) 65%, var(--background));
+}
+.editorial-body [data-slot="table-row"] > :first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 8rem;
+  max-width: 12rem;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+}
+.editorial-body [data-slot="table-header"] [data-slot="table-row"] > :first-child {
+  background: var(--secondary);
+}
+.editorial-body figcaption {
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--border);
+}
+@media (max-width: 639px) {
+  .editorial-body > h2,
+  .editorial-body > [data-faq] > h2 {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+  }
+}
