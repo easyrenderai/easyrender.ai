@@ -2314,7 +2314,7 @@
   },
   "MailingUI": {
     "title": "Practical ideas for your 3D projects",
-    "description": "Optional email lessons with stories, examples and useful next steps. Up to six emails, ending 30 days after your registration.",
+    "description": "Optional email lessons with stories, examples and useful next steps. Up to six messages during the 30 days from your first confirmation.",
     "scope": "This is only the educational series. It does not subscribe you to a newsletter or future offers.",
     "language": "Choose the language for these emails",
     "spanish": "Español",
@@ -2333,7 +2333,7 @@
     "stopped": "Your choice has been saved.",
     "failed": "We could not save your choice. Try again later.",
     "rateLimited": "Please wait before requesting another confirmation email.",
-    "expires": "This series ends on {date}, even if you subscribe later.",
+    "expires": "This series ends on {date}. Subscribing again does not restart the window.",
     "languagesOnly": "Available in Spanish and English.",
     "privacy": "Privacy policy",
     "confirmTitle": "Confirm your email lessons",
@@ -2342,7 +2342,7 @@
     "unsubscribeDescription": "Stop the educational series for the address associated with this link. Access, security and purchase emails are unaffected.",
     "confirmButton": "Confirm my subscription",
     "unsubscribeButton": "Unsubscribe",
-    "confirmed": "Your subscription is confirmed. Lessons are sent only during the first 30 days after registration.",
+    "confirmed": "Your subscription is confirmed. The series ends 30 days after your first confirmation.",
     "removed": "You are unsubscribed from the educational series.",
     "invalidLink": "This link is invalid or expired. You can manage your choice from your account.",
     "tokenFailed": "We could not complete this request. Please try again later.",
@@ -2352,11 +2352,12 @@
   },
   "MailingSystem": {
     "confirmSubject": "Confirm your easyrender email lessons",
-    "confirmBody": "You requested practical email lessons from easyrender. Confirm your choice below. The series includes up to six educational emails and ends 30 days after your account was created. It does not include a newsletter or future offers. If you did not request it, ignore this message.",
+    "confirmBody": "You requested practical emails from easyrender. Confirm your choice below. The series includes up to six educational messages during the 30 days from your first confirmation. It does not include a newsletter or future offers. If you did not request this, ignore this message.",
     "confirmAction": "Confirm my email lessons",
-    "footerReason": "You receive this educational series because you requested and confirmed it. It ends 30 days after registration.",
+    "footerReason": "You receive this educational series because you requested and confirmed it. It ends 30 days after your first confirmation.",
     "unsubscribeLabel": "Stop these emails",
-    "preferencesLabel": "Manage email preferences"
+    "preferencesLabel": "Manage email preferences",
+    "educationalActionLabel": "Continue in easyrender"
   },
   "MailingEmails": {
     "ecommerce_d00": {
@@ -2458,7 +2459,7 @@
     "agency_d20": {
       "subject": "Who had budgeted for the meeting?",
       "preheader": "A deliverable costs more than the work inside the files.",
-      "body": "Illustrative story with hypothetical figures to explain the calculation.\n\nInés had counted model production and review. Then came other tasks: gathering comments, speaking to the approver and adapting the delivery.\n\nShe opened the quote. Those hours were missing.\n\nImagine a €300 project with €40 in tools and €120 in direct work. That leaves €140 before other costs and taxes. If coordination and adaptation add €100, €40 remains under the same assumptions.\n\nThe price had not changed. The amount of work counted had.\n\nTo judge what you can repeat, separate preparation, production, review, coordination, adaptation and delivery. Work done with easyrender sits alongside the time spent on the other stages.\n\nIf you completed a project, use your observations. If you are preparing one, label your estimates as estimates.\n\nIt also helps to know who gathers comments and who approves the work. That organisation is part of the service you are pricing, even when it produces no new file.\n\nAdd one previously uncounted coordination or delivery task to a real or example quote.",
+      "body": "Illustrative story.\n\nInés had counted model production and review. Then came other tasks: gathering comments, speaking to the approver and adapting the delivery.\n\nShe opened the quote. Those hours were missing.\n\nInés had subtracted tools and direct work from the project fee. Once she included coordination and adaptation, the expected margin shrank. The calculation was incomplete because tasks were missing, not because the project had changed.\n\nThe price had not changed. The amount of work counted had.\n\nTo judge what you can repeat, separate preparation, production, review, coordination, adaptation and delivery. Work done with easyrender sits alongside the time spent on the other stages.\n\nIf you completed a project, use your observations. If you are preparing one, label your estimates as estimates.\n\nIt also helps to know who gathers comments and who approves the work. That organisation is part of the service you are pricing, even when it produces no new file.\n\nAdd one previously uncounted coordination or delivery task to a real or example quote.",
       "action": "Add one previously uncounted coordination or delivery task to a real or example quote."
     },
     "agency_d28": {
@@ -2602,7 +2603,7 @@
     "api_d20": {
       "subject": "Diego changed the number he was dividing by",
       "preheader": "An example of calculating the cost of a usable asset.",
-      "body": "Illustrative story with hypothetical figures, not easyrender prices.\n\nDiego was comparing processes by their cost per request.\n\nHis colleague asked another question:\n\n“What does it cost us to get a piece we can actually use?”\n\nThey opened the pilot sheet. The example was simple:\n\nGeneration: €100.\nReview and preparation: €200.\nAccepted assets: 50.\n\nCost per accepted asset: (€100 + €200) / 50 = €6.\n\nCounting only requests would have excluded much of the work. A complete comparison also needs relevant storage, operations and adaptation costs, with refunds accounted for once.\n\nThis calculation does not require the whole process to be automated. It helps reveal where human work is concentrated and which change is worth trying next.\n\nIf you do not yet have accepted assets, the unit cost remains unknown. Dividing by attempts does not replace it.\n\nDiego could now compare processes using a unit his colleague recognised.\n\nIf you have a reviewed sample, calculate its cost per accepted asset. If not, prepare the sheet with generation, review and accepted assets, leaving missing figures blank.",
+      "body": "Illustrative story.\n\nDiego was comparing processes by their cost per request.\n\nHis colleague asked another question:\n\n“What does it cost us to get a piece we can actually use?”\n\nThey opened the pilot sheet and separated generation, review, preparation and accepted assets.\n\nCost per accepted asset = total process costs / number of accepted assets.\n\nEach team needs to fill in that calculation with its actual costs and reviewed pieces it can use.\n\nCounting only requests would have excluded much of the work. A complete comparison also needs relevant storage, operations and adaptation costs, with refunds accounted for once.\n\nThis calculation does not require the whole process to be automated. It helps reveal where human work is concentrated and which change is worth trying next.\n\nIf you do not yet have accepted assets, the unit cost remains unknown. Dividing by attempts does not replace it.\n\nDiego could now compare processes using a unit his colleague recognised.\n\nIf you have a reviewed sample, calculate its cost per accepted asset. If not, prepare the sheet with generation, review and accepted assets, leaving missing figures blank.",
       "action": "If you have a reviewed sample, calculate its cost per accepted asset. If not, prepare the sheet with generation, review and accepted assets, leaving missing figures blank."
     },
     "api_d28": {
@@ -2682,6 +2683,61 @@
       "preheader": "Decide on reuse, even if the first test is still pending.",
       "body": "Illustrative story.\n\nValeria’s model had several possible applications. When she reviewed the work, only some had actually been used.\n\nShe divided the sheet into three lines:\n\nCreation: work needed to obtain and review the asset.\nAdaptation: additional work for each destination.\nConfirmed use: where that version had actually been used.\n\nA possibility on a list was not yet a saving.\n\nIf you have used a model, complete these lines from your observations. This helps distinguish a second application that reuses previous work from one that nearly requires starting again.\n\nIf you have not tested yet, choose the destination still to be checked and note its main requirement. You do not need to assign value to applications that do not yet exist.\n\nThe next decision might be to reuse, adapt or postpone. It depends on the use you need and the work you can justify, not on the number of available formats.\n\nValeria ended with a priority destination and a clear outstanding check.\n\nWrite down what you will do with your next asset and what evidence you need before investing in another destination.",
       "action": "Choose whether to reuse, adapt or postpone a destination using a verifiable criterion."
+    }
+  },
+  "AuthService": {
+    "forgotLink": "Forgot your password?",
+    "forgotTitle": "Reset your password",
+    "forgotDescription": "Enter the email you use for easyrender. If an account matches, we will request a recovery email.",
+    "email": "Email",
+    "requestReset": "Request recovery email",
+    "requested": "If an account matches this address, a recovery email has been requested. Check your inbox and spam folder. If it does not arrive, try again later.",
+    "unavailable": "Email recovery is temporarily unavailable. Please try again later. Google sign-in remains available for accounts created with Google.",
+    "busy": "Please wait…",
+    "failed": "We could not complete this request. Please try again later.",
+    "rateLimited": "Too many requests. Please wait a few minutes before trying again.",
+    "signIn": "Back to sign in",
+    "resetTitle": "Choose a new password",
+    "resetDescription": "Use at least 8 characters. Changing your password signs out existing sessions.",
+    "password": "New password",
+    "confirmPassword": "Repeat new password",
+    "passwordMismatch": "The passwords do not match.",
+    "resetAction": "Save new password",
+    "resetDone": "Your password has been changed. Sign in with your new password.",
+    "invalidLink": "This link is invalid or has expired. Request a new email to continue.",
+    "verifyTitle": "Verify your email",
+    "verifyDescription": "Confirm that you control the email address for your easyrender account. This does not subscribe you to marketing emails.",
+    "verifyAction": "Verify my email",
+    "verifyDone": "Your email is verified. You can return to your account.",
+    "account": "Go to account",
+    "verificationTitle": "Email verification",
+    "verified": "Your email address is verified.",
+    "notVerified": "Your email is not verified yet. You can keep using easyrender while you verify it.",
+    "resend": "Send verification email",
+    "verificationSent": "Verification email requested. Check your inbox and spam folder.",
+    "verificationUnavailable": "Verification emails are temporarily unavailable. Your existing access is unchanged.",
+    "newLink": "Request another recovery email"
+  },
+  "ServiceEmails": {
+    "verify_email": {
+      "subject": "Verify your easyrender email",
+      "body": "Thanks for creating your easyrender account. Confirm that this email address belongs to you using the link below.\n\nThe link expires in one hour. If you did not create this account, ignore this message. This is an account email, not a marketing subscription.",
+      "action": "Verify my email"
+    },
+    "reset_password": {
+      "subject": "Reset your easyrender password",
+      "body": "A password reset was requested for your easyrender account. Use the link below to choose a new password.\n\nThe link expires in one hour and can only be used once. If you did not request this, ignore this email; your password will stay the same.",
+      "action": "Choose a new password"
+    },
+    "render_ready": {
+      "subject": "Your easyrender result is ready",
+      "body": "Your rendering job has finished. Open easyrender to review the result and its available options.",
+      "action": "View my result"
+    },
+    "render_failed": {
+      "subject": "Your easyrender job could not finish",
+      "body": "Your rendering job could not be completed. Open easyrender to see its status and any available next steps.",
+      "action": "Review my job"
     }
   }
 }

@@ -31,6 +31,19 @@ const nextConfig: NextConfig = {
   // adds a generateMetadata to it, which matters most for the ad landings.
   async headers() {
     return [
+      ...[
+        '/reset-password',
+        '/verify-email',
+        '/api/auth/reset-password',
+        '/api/auth/verify-email',
+      ].map((source) => ({
+        source,
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+          { key: 'Referrer-Policy', value: 'no-referrer' },
+          { key: 'Cache-Control', value: 'private, no-store' },
+        ],
+      })),
       {
         source: '/email/:path*',
         headers: [

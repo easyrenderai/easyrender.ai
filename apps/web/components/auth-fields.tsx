@@ -54,7 +54,13 @@ export function AuthFields({
             email,
             password,
             name: email.split('@')[0],
-            fetchOptions: { body: { attribution: attribution() }, headers: attributionHeaders() },
+            fetchOptions: {
+              body: { attribution: attribution() },
+              headers: {
+                ...attributionHeaders(),
+                'x-easyrender-email-locale': locale === 'es' ? 'es' : 'en',
+              },
+            },
           })
         : await authClient.signIn.email({ email, password });
     if (result.error) {
@@ -76,7 +82,12 @@ export function AuthFields({
     const result = await authClient.signIn.social({
       provider: 'google',
       additionalData: { attribution: attribution() },
-      fetchOptions: { headers: attributionHeaders() },
+      fetchOptions: {
+        headers: {
+          ...attributionHeaders(),
+          'x-easyrender-email-locale': locale === 'es' ? 'es' : 'en',
+        },
+      },
       callbackURL: target,
       newUserCallbackURL: target,
       errorCallbackURL: `/sign-in?error=oauth&next=${encodeURIComponent(target)}`,

@@ -34,6 +34,13 @@ export * from './render-materials';
 export * from './render-quality';
 export * from './renders';
 export * from './report';
+export type { ServiceEmailCopy, ServiceEmailInput, ServiceEmailTexts } from './service-email';
+export {
+  handleServiceEmailWebhook,
+  queueServiceEmail,
+  runServiceEmails,
+  serviceEmailAvailable,
+} from './service-email';
 export * from './shopify';
 export * from './shopify-app';
 export * from './signup-attribution';

@@ -1,6 +1,7 @@
 import type { MailingCopy } from './policy';
 import { escapeMailHtml } from './security';
 export type MailingSystemCopy = {
+  educationalActionLabel?: string;
   confirmSubject: string;
   confirmBody: string;
   confirmAction: string;
@@ -8,8 +9,7 @@ export type MailingSystemCopy = {
   unsubscribeLabel: string;
   preferencesLabel: string;
 };
-export type MailingConfig = {
-  secret: string;
+export type ResendConfig = {
   appUrl: string;
   apiKey: string;
   from: string;
@@ -25,17 +25,16 @@ export type MailPayload = {
   html: string;
   headers: Record<string, string>;
 };
+export type MailingConfig = ResendConfig & { secret: string };
 /** Fail closed in previews, local development, or incomplete sender setup. */
-export function mailingConfig(): MailingConfig | null {
+export function resendConfig(): ResendConfig | null {
   const env = process.env;
-  if (env.EMAIL_ONBOARDING_ENABLED !== 'true' || env.VERCEL_ENV !== 'production') return null;
-  const secret = env.EMAIL_TOKEN_SECRET ?? '';
+  if (env.VERCEL_ENV !== 'production') return null;
   const apiKey = env.RESEND_API_KEY ?? '';
   const from = env.EMAIL_FROM ?? '';
   const replyTo = env.EMAIL_REPLY_TO ?? '';
   const identity = env.EMAIL_LEGAL_IDENTITY ?? '';
   if (
-    secret.length < 32 ||
     !apiKey ||
     !env.RESEND_WEBHOOK_SECRET ||
     !from.includes('@') ||
@@ -55,13 +54,23 @@ export function mailingConfig(): MailingConfig | null {
       url.hash
     )
       return null;
-    return { secret, apiKey, from, replyTo, identity, appUrl: url.origin };
+    return { apiKey, from, replyTo, identity, appUrl: url.origin };
   } catch {
     return null;
   }
 }
+export function mailingConfig(): MailingConfig | null {
+  const config = resendConfig();
+  const secret = process.env.EMAIL_TOKEN_SECRET ?? '';
+  return config && process.env.EMAIL_ONBOARDING_ENABLED === 'true' && secret.length >= 32
+    ? { ...config, secret }
+    : null;
+}
 export function recipientAllowed(email: string): boolean {
-  if (!mailingConfig()) return false;
+  return Boolean(mailingConfig()) && resendRecipientAllowed(email);
+}
+export function resendRecipientAllowed(email: string): boolean {
+  if (!resendConfig() || /[\r\n]/.test(email)) return false;
   const list = (process.env.EMAIL_ALLOWED_RECIPIENTS ?? '')
     .split(',')
     .map((v) => v.trim().toLowerCase())
@@ -71,17 +80,31 @@ export function recipientAllowed(email: string): boolean {
 export function buildMailPayload(
   copy: MailingCopy,
   recipient: string,
-  links: { unsubscribe: string; preferences: string; confirm?: string },
+  links: {
+    unsubscribe: string;
+    preferences: string;
+    confirm?: string;
+    action?: { url: string; label: string };
+  },
   text: MailingSystemCopy,
 ): MailPayload {
   const config = mailingConfig();
   if (!config) throw new Error('Email delivery is not configured');
   if (/[\r\n]/.test(copy.subject + recipient)) throw new Error('Invalid email header');
-  for (const link of Object.values(links)) {
+  for (const link of [
+    links.unsubscribe,
+    links.preferences,
+    links.confirm,
+    links.action?.url,
+  ].filter((v): v is string => Boolean(v))) {
     const url = new URL(link);
     if (url.origin !== config.appUrl) throw new Error('Invalid email destination');
   }
-  const content = [copy.body, links.confirm ? `${text.confirmAction}: ${links.confirm}` : '']
+  const content = [
+    copy.body,
+    links.confirm ? `${text.confirmAction}: ${links.confirm}` : '',
+    links.action ? `${links.action.label}: ${links.action.url}` : '',
+  ]
     .filter(Boolean)
     .join('\n\n');
   const footer = [
@@ -104,7 +127,7 @@ export function buildMailPayload(
     reply_to: config.replyTo,
     subject: copy.subject,
     text: `${content}\n\n${footer}`,
-    html: `<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0"><div style="display:none;max-height:0;overflow:hidden">${escapeMailHtml(copy.preheader)}</div><main style="max-width:600px;margin:0 auto;padding:24px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;overflow-wrap:anywhere">${paragraphs}${links.confirm ? `<p><a href="${escapeMailHtml(links.confirm)}">${escapeMailHtml(text.confirmAction)}</a></p>` : ''}<p>${escapeMailHtml(config.identity)}</p><p>${links.confirm ? '' : escapeMailHtml(text.footerReason)}</p><p><a href="${escapeMailHtml(links.preferences)}">${escapeMailHtml(text.preferencesLabel)}</a> · <a href="${escapeMailHtml(links.unsubscribe)}">${escapeMailHtml(text.unsubscribeLabel)}</a></p></main></body></html>`,
+    html: `<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0"><div style="display:none;max-height:0;overflow:hidden">${escapeMailHtml(copy.preheader)}</div><main style="max-width:600px;margin:0 auto;padding:24px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;overflow-wrap:anywhere">${paragraphs}${links.action ? `<p><a href="${escapeMailHtml(links.action.url)}" style="display:inline-block;padding:12px 18px;border:1px solid currentColor;border-radius:8px;font-weight:bold">${escapeMailHtml(links.action.label)}</a></p>` : ''}${links.confirm ? `<p><a href="${escapeMailHtml(links.confirm)}">${escapeMailHtml(text.confirmAction)}</a></p>` : ''}<p>${escapeMailHtml(config.identity)}</p><p>${links.confirm ? '' : escapeMailHtml(text.footerReason)}</p><p><a href="${escapeMailHtml(links.preferences)}">${escapeMailHtml(text.preferencesLabel)}</a> · <a href="${escapeMailHtml(links.unsubscribe)}">${escapeMailHtml(text.unsubscribeLabel)}</a></p></main></body></html>`,
     headers: {
       'List-Unsubscribe': `<${oneClick}>`,
       'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
@@ -119,6 +142,14 @@ export async function sendMail(
   const config = mailingConfig();
   if (!config || payload.to.length !== 1 || !recipientAllowed(payload.to[0]))
     return { status: 'failed' };
+  return sendResendMail(payload, `mailing/${id}`, config, fetcher);
+}
+export async function sendResendMail(
+  payload: MailPayload,
+  key: string,
+  config: ResendConfig,
+  fetcher: typeof fetch = fetch,
+): Promise<{ status: 'accepted' | 'retry' | 'failed'; providerId?: string }> {
   try {
     const response = await fetcher('https://api.resend.com/emails', {
       method: 'POST',
@@ -127,7 +158,7 @@ export async function sendMail(
       headers: {
         Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
-        'Idempotency-Key': `mailing/${id}`,
+        'Idempotency-Key': key,
       },
       body: JSON.stringify(payload),
     });

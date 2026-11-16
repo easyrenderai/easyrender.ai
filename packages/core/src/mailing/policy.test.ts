@@ -29,8 +29,33 @@ describe('onboarding send policy', () => {
 });
 it('sends result-dependent lessons only when a real owned result exists', async () => {
   const { isLessonEligible } = await import('./policy');
-  expect(isLessonEligible('api_d10', { hasTask: true, hasResult: false })).toBe(false);
-  expect(isLessonEligible('mcp_d05', { hasTask: true, hasResult: true })).toBe(true);
-  expect(isLessonEligible('mcp_d10', { hasTask: false, hasResult: false })).toBe(false);
-  expect(isLessonEligible('formats_d05', { hasTask: false, hasResult: false })).toBe(true);
+  expect(isLessonEligible('api_d10', { hasTask: true, hasResult: false, hasPurchase: false })).toBe(
+    false,
+  );
+  expect(isLessonEligible('mcp_d05', { hasTask: true, hasResult: true, hasPurchase: false })).toBe(
+    true,
+  );
+  expect(
+    isLessonEligible('mcp_d10', { hasTask: false, hasResult: false, hasPurchase: false }),
+  ).toBe(false);
+  expect(
+    isLessonEligible('formats_d05', { hasTask: false, hasResult: false, hasPurchase: false }),
+  ).toBe(true);
+});
+
+it('omits first-trial lessons for customers with a model or a paid purchase but preserves later education', async () => {
+  const { isLessonEligible } = await import('./policy');
+  for (const activity of [
+    { hasTask: true, hasResult: true, hasPurchase: false },
+    { hasTask: false, hasResult: false, hasPurchase: true },
+  ]) {
+    expect(isLessonEligible('general_d00', activity)).toBe(false);
+    expect(isLessonEligible('ecommerce_d02', activity)).toBe(false);
+    expect(isLessonEligible('api_d02', activity)).toBe(false);
+    expect(isLessonEligible('general_d05', activity)).toBe(true);
+    expect(isLessonEligible('ecommerce_d20', activity)).toBe(true);
+  }
+  expect(
+    isLessonEligible('formats_d02', { hasTask: true, hasResult: true, hasPurchase: true }),
+  ).toBe(true);
 });

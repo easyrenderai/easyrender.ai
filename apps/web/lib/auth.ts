@@ -1,21 +1,67 @@
 import 'server-only';
 import { dash } from '@better-auth/infra';
-import { signupAttribution } from '@easyrender/core';
+import { reportError, serviceEmailAvailable, signupAttribution } from '@easyrender/core';
 import { normalizeAttribution } from '@easyrender/core/attribution';
 import { db } from '@easyrender/db';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { addOAuthServerContext, createAuthMiddleware, getOAuthState } from 'better-auth/api';
+import {
+  APIError,
+  addOAuthServerContext,
+  createAuthMiddleware,
+  getOAuthState,
+  getSessionFromCtx,
+} from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
 import { privacyRegion } from '@/lib/analytics/privacy-region';
+import { queueAuthServiceEmail } from '@/lib/service-email';
 
 function createAuth() {
   return betterAuth({
     database: prismaAdapter(db(), { provider: 'postgresql' }),
     // Existing Better Auth state cookie carries only its CSRF nonce; attribution stays in DB state.
     account: { storeStateStrategy: 'database' },
+    // Hash recovery bearer tokens without changing OAuth state identifiers.
+    verification: {
+      storeIdentifier: { default: 'plain', overrides: { 'reset-password:': 'hashed' } },
+    },
     hooks: {
       before: createAuthMiddleware(async (ctx) => {
+        if (ctx.path === '/send-verification-email') {
+          const session = await getSessionFromCtx(ctx);
+          if (!session)
+            throw new APIError('UNAUTHORIZED', {
+              code: 'UNAUTHORIZED',
+              message: 'Sign in to request verification',
+            });
+          if (
+            typeof ctx.body?.email !== 'string' ||
+            ctx.body.email.trim().toLowerCase() !== session.user.email.toLowerCase()
+          )
+            throw new APIError('FORBIDDEN', {
+              code: 'EMAIL_MISMATCH',
+              message: 'Use your account email',
+            });
+        }
+        if (ctx.path === '/request-password-reset' || ctx.path === '/send-verification-email') {
+          // Check before looking up an address: unavailable is the same for every account.
+          if (!serviceEmailAvailable())
+            throw new APIError('SERVICE_UNAVAILABLE', {
+              code: 'SERVICE_EMAIL_UNAVAILABLE',
+              message: 'Service email is temporarily unavailable',
+            });
+          const callback =
+            ctx.path === '/request-password-reset' ? ctx.body?.redirectTo : ctx.body?.callbackURL;
+          if (callback) {
+            const base = new URL(process.env.APP_URL ?? ctx.context.baseURL);
+            const target = new URL(callback, base.origin);
+            if (target.origin !== base.origin || target.username || target.password)
+              throw new APIError('FORBIDDEN', {
+                code: 'INVALID_CALLBACK_URL',
+                message: 'Invalid callback origin',
+              });
+          }
+        }
         if (ctx.path !== '/sign-in/social') return;
         const h = ctx.headers ?? new Headers();
         await addOAuthServerContext({
@@ -57,7 +103,47 @@ function createAuth() {
         },
       },
     },
-    emailAndPassword: { enabled: true, minPasswordLength: 8 },
+    emailAndPassword: {
+      enabled: true,
+      minPasswordLength: 8,
+      requireEmailVerification: false,
+      resetPasswordTokenExpiresIn: 3600,
+      revokeSessionsOnPasswordReset: true,
+      sendResetPassword: async (data, request) => {
+        try {
+          await queueAuthServiceEmail('reset_password', data, request);
+        } catch {
+          reportError(new Error('Password recovery email could not be queued'));
+        }
+      },
+    },
+    emailVerification: {
+      sendOnSignUp: serviceEmailAvailable(),
+      sendOnSignIn: false,
+      autoSignInAfterVerification: false,
+      expiresIn: 3600,
+      sendVerificationEmail: async (data, request) => {
+        try {
+          await queueAuthServiceEmail('verify_email', data, request);
+        } catch {
+          reportError(new Error('Account verification email could not be queued'));
+          // Signup and social sign-in remain usable; an explicit authenticated resend is honest.
+          if (request && new URL(request.url).pathname.endsWith('/send-verification-email'))
+            throw new APIError('SERVICE_UNAVAILABLE', {
+              code: 'SERVICE_EMAIL_UNAVAILABLE',
+              message: 'Service email is temporarily unavailable',
+            });
+        }
+      },
+    },
+    rateLimit: {
+      enabled: true,
+      customRules: {
+        '/request-password-reset': { window: 300, max: 5 },
+        '/send-verification-email': { window: 300, max: 3 },
+        '/reset-password': { window: 300, max: 10 },
+      },
+    },
     // Callback: ${BETTER_AUTH_URL}/api/auth/callback/google. Set GOOGLE_CLIENT_ID and
     // GOOGLE_CLIENT_SECRET in Vercel; without them Google sign in is simply not registered.
     socialProviders:

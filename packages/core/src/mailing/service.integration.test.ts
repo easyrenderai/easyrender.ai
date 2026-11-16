@@ -33,6 +33,7 @@ const system = {
   footerReason: 'Requested lessons',
   unsubscribeLabel: 'Stop lessons',
   preferencesLabel: 'Preferences',
+  educationalActionLabel: 'Continue in easyrender',
 };
 const texts = { en: system, es: system };
 const catalog: MailingCatalog = {
@@ -116,18 +117,22 @@ describe.skipIf(!url)('mailing outbox (real scratch database, fake delivery)', (
   afterEach(async () => {
     vi.restoreAllMocks();
     await db().emailProviderEvent.deleteMany({ where: { id: { in: receiptIds.splice(0) } } });
+    await db().serviceEmailSuppression.deleteMany({
+      where: { email: { in: ids.map((id) => `${id}@example.com`) } },
+    });
     await db().render.deleteMany({ where: { userId: { in: ids } } });
     await db().user.deleteMany({ where: { id: { in: ids.splice(0) } } });
     vi.useRealTimers();
     vi.unstubAllEnvs();
   });
-  it('queues one confirmation for simultaneous explicit requests and never extends the registration deadline', async () => {
+  it('queues one confirmation for simultaneous explicit requests with a 24-hour confirmation deadline', async () => {
     const id = await user(2);
     const results = await Promise.allSettled([subscribe(id), subscribe(id)]);
     expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(1);
     const s = await sub(id);
     expect(s.status).toBe('pending');
-    expect(s.expiresAt).toEqual(new Date(+now + 28 * DAY));
+    expect(s.expiresAt).toEqual(new Date(+now + DAY));
+    expect(s.confirmExpiresAt).toEqual(new Date(+now + DAY));
     expect(await db().emailDelivery.count({ where: { subscriptionId: s.id } })).toBe(1);
     expect(
       await db().emailConsentEvent.count({ where: { subscriptionId: s.id, event: 'requested' } }),
@@ -147,10 +152,24 @@ describe.skipIf(!url)('mailing outbox (real scratch database, fake delivery)', (
       }),
     ).toBe(1);
   });
-  it('refuses a new registration sequence at day thirty', async () => {
-    const id = await user(30);
-    await expect(subscribe(id)).rejects.toMatchObject({ code: 'mailing_expired' });
-    expect(await db().emailSubscription.count({ where: { userId: id } })).toBe(0);
+  it('allows an old account to opt in explicitly and starts thirty full days at first confirmation', async () => {
+    const id = await user(365);
+    expect(await mailingStatus(id)).toMatchObject({
+      status: 'none',
+      expiresAt: null,
+      isAvailable: true,
+    });
+    await subscribe(id);
+    const confirmationAt = new Date(+now + DAY / 2);
+    vi.setSystemTime(confirmationAt);
+    expect(await confirmMailing(await token(id))).toBe(true);
+    expect(await sub(id)).toMatchObject({
+      confirmedAt: confirmationAt,
+      expiresAt: new Date(+confirmationAt + 30 * DAY),
+    });
+    expect((await mailingStatus(id)).expiresAt).toBe(
+      new Date(+confirmationAt + 30 * DAY).toISOString(),
+    );
   });
   it('throttles resends, rotates confirmation tokens only on a new explicit request and caps requests', async () => {
     const id = await user();
@@ -214,15 +233,61 @@ describe.skipIf(!url)('mailing outbox (real scratch database, fake delivery)', (
       }),
     ).toBe(0);
   });
-  it('does not catch up a missed slot or reset thirty days on confirmation', async () => {
-    const id = await user(1.2);
+  it('does not catch up a missed confirmation-based slot', async () => {
+    const id = await user(40);
     await activate(id);
+    vi.setSystemTime(+now + 1.2 * DAY);
     await runMailing(catalog, texts, fakeFetch);
     expect(vi.mocked(fakeFetch)).not.toHaveBeenCalled();
-    const late = await user(29.9);
-    await subscribe(late);
-    vi.setSystemTime(+now + 0.2 * DAY);
-    expect(await confirmMailing(await token(late))).toBe(false);
+  });
+  it('preserves the first confirmation anchor across resubscribe and rejects a restart after thirty days', async () => {
+    const id = await user(40);
+    await activate(id);
+    await stopMailing(id);
+    vi.setSystemTime(+now + 2 * DAY);
+    await subscribe(id);
+    expect((await sub(id)).confirmedAt).toEqual(now);
+    expect(await confirmMailing(await token(id))).toBe(true);
+    expect(await sub(id)).toMatchObject({ confirmedAt: now, expiresAt: new Date(+now + 30 * DAY) });
+    await runMailing(catalog, texts, fakeFetch);
+    expect(
+      (
+        await db().emailDelivery.findFirstOrThrow({
+          where: { subscriptionId: (await sub(id)).id, kind: 'onboarding' },
+        })
+      ).messageKey,
+    ).toBe('d02');
+    vi.setSystemTime(+now + 30 * DAY);
+    await stopMailing(id);
+    await expect(subscribe(id)).rejects.toMatchObject({ code: 'mailing_expired' });
+  });
+  it('keeps expired pending links renewable and does not consume program days before confirmation', async () => {
+    const id = await user(100);
+    await subscribe(id);
+    const old = await token(id);
+    vi.setSystemTime(+now + 2 * DAY);
+    expect(await confirmMailing(old)).toBe(false);
+    expect(await mailingStatus(id)).toMatchObject({
+      status: 'pending',
+      isAvailable: true,
+      confirmExpiresAt: new Date(+now + DAY).toISOString(),
+    });
+    await subscribe(id);
+    expect(await confirmMailing(await token(id))).toBe(true);
+    expect((await sub(id)).expiresAt).toEqual(new Date(+now + 32 * DAY));
+  });
+  it('uses the existing confirmation anchor for legacy subscriptions with a registration-based expiry', async () => {
+    const id = await user(29);
+    await activate(id);
+    await db().emailSubscription.update({
+      where: { userId: id },
+      data: { expiresAt: new Date(+now + DAY) },
+    });
+    vi.setSystemTime(+now + 5 * DAY);
+    expect((await mailingStatus(id)).status).toBe('active');
+    await runMailing(catalog, texts, fakeFetch);
+    expect(vi.mocked(fakeFetch)).toHaveBeenCalledTimes(1);
+    expect((await sub(id)).expiresAt).toEqual(new Date(+now + 30 * DAY));
   });
   it('holds queued mail when the current account email no longer matches', async () => {
     const id = await user();
@@ -415,6 +480,10 @@ describe.skipIf(!url)('mailing outbox (real scratch database, fake delivery)', (
   it('measures pressure from late acceptance as well as the first attempt', async () => {
     const id = await user(2);
     await activate(id);
+    await db().emailSubscription.update({
+      where: { userId: id },
+      data: { confirmedAt: new Date(+now - 2 * DAY) },
+    });
     const s = await sub(id);
     await db().emailDelivery.create({
       data: {
@@ -651,4 +720,207 @@ describe.skipIf(!url)('mailing outbox (real scratch database, fake delivery)', (
       'suppressed',
     );
   });
+  it.each(['model', 'purchase'] as const)(
+    'skips introductory lessons after a %s but keeps later education',
+    async (kind) => {
+      const id = await user();
+      await activate(id);
+      if (kind === 'model')
+        await db().render.create({
+          data: { userId: id, sourceKey: 'owned-input', status: 'ready', glbKey: 'owned-model' },
+        });
+      else
+        await db().purchase.create({
+          data: {
+            userId: id,
+            stripeSessionId: `test-${randomUUID()}`,
+            packId: 'test',
+            credits: 100,
+            amountCents: 100,
+            status: 'paid',
+            paidAt: now,
+          },
+        });
+      await runMailing(catalog, texts, fakeFetch);
+      expect(vi.mocked(fakeFetch)).not.toHaveBeenCalled();
+      vi.setSystemTime(+now + 2 * DAY);
+      await runMailing(catalog, texts, fakeFetch);
+      expect(vi.mocked(fakeFetch)).not.toHaveBeenCalled();
+      vi.setSystemTime(+now + 5 * DAY);
+      await runMailing(catalog, texts, fakeFetch);
+      expect(vi.mocked(fakeFetch)).toHaveBeenCalledTimes(1);
+    },
+  );
+  it.each(['model', 'preview', 'empty'] as const)(
+    'links education to an owned %s or the real dashboard without expiring asset URLs',
+    async (kind) => {
+      const id = await user();
+      const other = await user();
+      await activate(id);
+      await db().render.create({
+        data: {
+          userId: other,
+          sourceKey: 'other-input',
+          status: 'ready',
+          glbKey: 'other-model',
+          updatedAt: new Date(+now + DAY),
+        },
+      });
+      let expected = 'https://example.com/dashboard';
+      if (kind !== 'empty') {
+        const render = await db().render.create({
+          data: {
+            userId: id,
+            sourceKey: 'private-source',
+            sheetKey: 'private-preview',
+            status: kind === 'model' ? 'ready' : 'preview_ready',
+            glbKey: kind === 'model' ? 'private-model' : null,
+          },
+        });
+        expected = `https://example.com/r/${render.id}`;
+      }
+      vi.setSystemTime(+now + 5 * DAY);
+      await runMailing(catalog, texts, fakeFetch);
+      const payload = (
+        await db().emailDelivery.findFirstOrThrow({
+          where: { subscriptionId: (await sub(id)).id, kind: 'onboarding' },
+        })
+      ).payload as { text: string; html: string };
+      expect(payload.text).toContain(`Continue in easyrender: ${expected}`);
+      expect(payload.html).toContain(`href="${expected}"`);
+      expect(JSON.stringify(payload)).not.toMatch(
+        /private-source|private-preview|private-model|other-model/,
+      );
+    },
+  );
+  it.each(['purchase', 'model'] as const)(
+    'rechecks a new %s after claim before sending a first-trial lesson',
+    async (kind) => {
+      const id = await user();
+      await activate(id);
+      const original = db().$transaction.bind(db());
+      type Transaction = (
+        fn: (tx: Prisma.TransactionClient) => Promise<unknown>,
+      ) => Promise<unknown>;
+      let hasProgressed = false;
+      const intercept: Transaction = async (fn) => {
+        const value = await (original as unknown as Transaction)(fn);
+        if (
+          !hasProgressed &&
+          value &&
+          typeof value === 'object' &&
+          'status' in value &&
+          value.status === 'sending'
+        ) {
+          hasProgressed = true;
+          if (kind === 'model') {
+            await db().render.create({
+              data: {
+                userId: id,
+                sourceKey: 'just-finished-input',
+                status: 'ready',
+                glbKey: 'just-finished-model',
+              },
+            });
+          } else {
+            await db().purchase.create({
+              data: {
+                userId: id,
+                stripeSessionId: `test-${randomUUID()}`,
+                packId: 'test',
+                credits: 100,
+                amountCents: 100,
+                status: 'paid',
+                paidAt: now,
+              },
+            });
+          }
+        }
+        return value;
+      };
+      vi.spyOn(db(), '$transaction').mockImplementation(intercept as typeof original);
+      await runMailing(catalog, texts, fakeFetch);
+      expect(hasProgressed).toBe(true);
+      expect(vi.mocked(fakeFetch)).not.toHaveBeenCalled();
+      expect(
+        (
+          await db().emailDelivery.findFirstOrThrow({
+            where: { subscriptionId: (await sub(id)).id, kind: 'onboarding' },
+          })
+        ).status,
+      ).toBe('cancelled');
+    },
+  );
+  it('refuses educational opt-in for an address already suppressed by service email, case insensitively', async () => {
+    const id = await user();
+    await db().user.update({ where: { id }, data: { email: `${id}@example.com`.toUpperCase() } });
+    await db().serviceEmailSuppression.create({
+      data: { email: `${id}@example.com`, reason: 'bounced' },
+    });
+    expect(await mailingStatus(id)).toMatchObject({ status: 'suppressed', isAvailable: false });
+    await expect(subscribe(id)).rejects.toMatchObject({ code: 'mailing_suppressed' });
+    expect(await db().emailSubscription.count({ where: { userId: id } })).toBe(0);
+  });
+  it('suppresses an active educational subscription before its first educational attempt after a service complaint', async () => {
+    const id = await user();
+    await activate(id);
+    await db().serviceEmailSuppression.create({
+      data: { email: `${id}@example.com`, reason: 'complained' },
+    });
+    await runMailing(catalog, texts, fakeFetch);
+    expect(vi.mocked(fakeFetch)).not.toHaveBeenCalled();
+    expect((await sub(id)).status).toBe('suppressed');
+    expect(
+      await db().emailDelivery.count({
+        where: { subscriptionId: (await sub(id)).id, kind: 'onboarding' },
+      }),
+    ).toBe(0);
+    expect(
+      await db().emailConsentEvent.count({
+        where: { subscriptionId: (await sub(id)).id, event: 'unsubscribed' },
+      }),
+    ).toBe(0);
+  });
+  it.each(['before_claim', 'after_claim'] as const)(
+    'rechecks cross-stream provider suppression %s',
+    async (stage) => {
+      const id = await user();
+      await activate(id);
+      const original = db().$transaction.bind(db());
+      type Transaction = (
+        fn: (tx: Prisma.TransactionClient) => Promise<unknown>,
+      ) => Promise<unknown>;
+      let hasSuppression = false;
+      const intercept: Transaction = async (fn) => {
+        const value = await (original as unknown as Transaction)(fn);
+        const isTarget =
+          stage === 'before_claim'
+            ? value === true
+            : value && typeof value === 'object' && 'status' in value && value.status === 'sending';
+        if (!hasSuppression && isTarget) {
+          hasSuppression = true;
+          await db().serviceEmailSuppression.create({
+            data: { email: `${id}@example.com`, reason: 'bounced' },
+          });
+        }
+        return value;
+      };
+      vi.spyOn(db(), '$transaction').mockImplementation(intercept as typeof original);
+      await runMailing(catalog, texts, fakeFetch);
+      expect(hasSuppression).toBe(true);
+      expect(vi.mocked(fakeFetch)).not.toHaveBeenCalled();
+      expect(
+        (
+          await db().emailDelivery.findFirstOrThrow({
+            where: { subscriptionId: (await sub(id)).id, kind: 'onboarding' },
+          })
+        ).status,
+      ).toBe('cancelled');
+      expect(
+        await db().emailConsentEvent.count({
+          where: { subscriptionId: (await sub(id)).id, event: 'unsubscribed' },
+        }),
+      ).toBe(0);
+    },
+  );
 });

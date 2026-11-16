@@ -6,6 +6,19 @@ import {
 } from './mailing-privacy';
 
 describe('mail token privacy', () => {
+  it('also protects account verification and recovery tokens', () => {
+    for (const path of [
+      '/verify-email',
+      '/reset-password',
+      '/api/auth/verify-email',
+      '/api/auth/reset-password',
+      '/api/email/verify-account',
+    ]) {
+      expect(isMailingTokenLocation(`${path}?token=private`)).toBe(true);
+      expect(filterMailingTelemetry({ request: { url: `${path}?token=private` } })).toBeNull();
+    }
+    expect(isMailingTokenLocation('/reset-password-guide')).toBe(false);
+  });
   it('recognizes only token action routes', () => {
     expect(isMailingTokenLocation('https://easyrender.ai/email/confirm?token=private')).toBe(true);
     expect(isMailingTokenLocation('/api/email/unsubscribe?token=private')).toBe(true);

@@ -39,6 +39,7 @@ import { AppError, notFound } from './errors';
 import { type RenderEditView, toEditView } from './render-edits';
 import { type RenderQuality, withQuality } from './render-quality';
 import { reportError } from './report';
+import { queueRenderServiceEmail } from './service-email';
 import { getFile, putFile } from './storage';
 
 // Who is asking: a signed-in user, an anonymous visitor (cookie), or both.
@@ -392,6 +393,7 @@ async function fail(id: string, error: unknown, expected?: Pick<Render, 'status'
         renderId: id,
       });
     }
+    if (!isRedraw) await queueRenderServiceEmail(id, tx);
     return true;
   });
   if (!changed || (render.status === 'drafting' && render.sheetKey)) return;
@@ -581,15 +583,19 @@ export async function advance(id: string): Promise<Render | null> {
         throw new TerminalRenderError(`model rejected (${quality.code}): ${quality.message}`);
       const glbKey = await putFile('models/model.glb', glb, 'model/gltf-binary');
       const completedAt = render.completedAt ?? new Date();
-      const { count } = await db().render.updateMany({
-        where: renderStage(render),
-        data: {
-          status: 'ready',
-          completedAt,
-          glbKey,
-          quality: withQuality(render, { glb: quality.measures }),
-          costUsd: { increment: buildCostUsd(prediction.metrics?.predict_time) },
-        },
+      const { count } = await db().$transaction(async (tx) => {
+        const result = await tx.render.updateMany({
+          where: renderStage(render),
+          data: {
+            status: 'ready',
+            completedAt,
+            glbKey,
+            quality: withQuality(render, { glb: quality.measures }),
+            costUsd: { increment: buildCostUsd(prediction.metrics?.predict_time) },
+          },
+        });
+        if (result.count) await queueRenderServiceEmail(id, tx);
+        return result;
       });
       if (count)
         await captureRender(

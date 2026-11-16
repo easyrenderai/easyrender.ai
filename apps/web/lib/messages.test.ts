@@ -14,7 +14,13 @@ import pt from '@/messages/pt.json';
 
 const MESSAGES = { en, es, de, fr, it: itMessages, pt };
 const EMAIL_LOCALES: ReadonlySet<string> = new Set(['en', 'es']);
-const EMAIL_ONLY_NAMESPACES = new Set(['MailingEmails', 'MailingSystem', 'MailingUI']);
+const EMAIL_ONLY_NAMESPACES = new Set([
+  'MailingEmails',
+  'MailingSystem',
+  'MailingUI',
+  'AuthService',
+  'ServiceEmails',
+]);
 
 type Tree = { [key: string]: string | Tree };
 
