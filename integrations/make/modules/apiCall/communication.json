@@ -1,0 +1,18 @@
+{
+  "url": "https://easyrender.ai/api{{parameters.url}}",
+  "method": "{{parameters.method}}",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "qs": {
+    "{{...}}": "{{toCollection(parameters.qs, \"key\", \"value\")}}"
+  },
+  "type": "text",
+  "body": "{{parameters.body}}",
+  "response": {
+    "output": {
+      "body": "{{body}}",
+      "statusCode": "{{statusCode}}"
+    }
+  }
+}

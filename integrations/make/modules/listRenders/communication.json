@@ -1,0 +1,31 @@
+{
+  "url": "/renders",
+  "method": "GET",
+  "qs": {
+    "limit": 100,
+    "status": "{{parameters.status}}"
+  },
+  "response": {
+    "iterate": "{{body.renders}}",
+    "limit": "{{parameters.limit}}",
+    "output": {
+      "id": "{{item.id}}",
+      "status": "{{item.status}}",
+      "name": "{{item.name}}",
+      "prompt": "{{item.prompt}}",
+      "error": "{{item.error}}",
+      "hasModel": "{{item.hasModel}}",
+      "hasPreview": "{{item.hasPreview}}",
+      "hasSheet": "{{item.hasSheet}}",
+      "isPublic": "{{item.isPublic}}",
+      "createdAt": "{{parseDate(item.createdAt)}}",
+      "modelVersion": "{{item.modelVersion}}"
+    }
+  },
+  "pagination": {
+    "qs": {
+      "cursor": "{{body.nextCursor}}"
+    },
+    "condition": "{{!!body.nextCursor}}"
+  }
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "name": "id",
+    "label": "Render ID",
+    "type": "text",
+    "required": true,
+    "validate": {
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "help": "The render ID returned by Create a Render or shown in easyrender."
+  }
+]

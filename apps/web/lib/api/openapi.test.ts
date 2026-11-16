@@ -133,7 +133,24 @@ describe('public API contract', () => {
     expect(accepts('CreateRenderMultipart', { image: 'binary', upload_id: 'u_123' })).toBe(false);
     expect(accepts('CreateRenderMultipart', {})).toBe(false);
     expect(accepts('CreateRenderJson', { upload_id: 'u_123', isPublic: false })).toBe(true);
-    expect(accepts('CreateRenderJson', { image_url: 'https://example.com/photo.jpg' })).toBe(false);
+    expect(accepts('CreateRenderJson', { image_url: 'https://example.com/photo.jpg' })).toBe(true);
+    expect(
+      accepts('CreateRenderJson', {
+        image_url: 'https://example.com/photo.jpg',
+        upload_id: 'u_123',
+      }),
+    ).toBe(false);
+    expect(accepts('CreateRenderJson', { upload_id: 'u_123', image: 'binary' })).toBe(false);
+    expect(accepts('CreateRenderJson', { image_url: 'http://example.com/photo.jpg' })).toBe(false);
+    expect(accepts('CreateRenderMultipart', { image_url: 'https://example.com/photo.jpg' })).toBe(
+      true,
+    );
+    expect(
+      accepts('CreateRenderMultipart', {
+        image_url: 'https://example.com/photo.jpg',
+        image: 'binary',
+      }),
+    ).toBe(false);
     const upload = {
       id: 'u_123',
       contentType: 'image/png',

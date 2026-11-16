@@ -1,0 +1,47 @@
+{
+  "name": "n8n-nodes-easyrender",
+  "version": "0.1.0",
+  "description": "Create product previews and automate easyrender 3D model workflows.",
+  "license": "MIT",
+  "homepage": "https://easyrender.ai",
+  "keywords": [
+    "n8n-community-node-package"
+  ],
+  "author": {
+    "name": "easyrender",
+    "email": "info@easyrender.ai"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/easyrenderai/easyrender.ai.git",
+    "directory": "integrations/n8n"
+  },
+  "scripts": {
+    "build": "n8n-node build",
+    "dev": "n8n-node dev",
+    "lint": "n8n-node lint",
+    "test": "npm run build && node --test test/*.test.cjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "strict": true,
+    "credentials": [
+      "dist/credentials/EasyrenderApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Easyrender/Easyrender.node.js",
+      "dist/nodes/Easyrender/EasyrenderTrigger.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@n8n/node-cli": "0.56.4",
+    "typescript": "5.9.3",
+    "n8n-workflow": "2.16.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}

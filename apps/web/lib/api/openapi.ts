@@ -21,14 +21,25 @@ const renderStatus = {
   enum: ['drafting', 'preview_ready', 'rendering', 'ready', 'failed'],
 };
 const imageType = { type: 'string', enum: ['image/jpeg', 'image/png', 'image/webp'] };
-const sourceFields = { image: binary, upload_id: { type: 'string', minLength: 1 } };
+const urlSource = { type: 'string', format: 'uri', pattern: '^https://', minLength: 1 };
+const sourceFields = {
+  image: binary,
+  upload_id: { type: 'string', minLength: 1 },
+  image_url: urlSource,
+};
+const exclusiveSources = (names: string[]) =>
+  names.map((name) => ({
+    required: [name],
+    not: {
+      anyOf: ['image', 'upload_id', 'image_url']
+        .filter((other) => other !== name)
+        .map((other) => ({ required: [other] })),
+    },
+  }));
 const metadata = { prompt: { type: 'string', maxLength: 500 }, name: string, isPublic: boolean };
 const imageSource: Schema = {
   ...object({ ...sourceFields, ...metadata }, []),
-  oneOf: [
-    { required: ['image'], not: { required: ['upload_id'] } },
-    { required: ['upload_id'], not: { required: ['image'] } },
-  ],
+  oneOf: exclusiveSources(['image', 'upload_id', 'image_url']),
 };
 const query = (name: string, schema: Schema, required = false) => ({
   name,
@@ -449,9 +460,13 @@ export const openapi = {
         expiresAt: date,
       }),
       CreateRenderMultipart: imageSource,
-      CreateRenderJson: object({ upload_id: { type: 'string', minLength: 1 }, ...metadata }, [
-        'upload_id',
-      ]),
+      CreateRenderJson: {
+        ...object(
+          { upload_id: { type: 'string', minLength: 1 }, image_url: urlSource, ...metadata },
+          [],
+        ),
+        oneOf: exclusiveSources(['upload_id', 'image_url']),
+      },
       RenderPageQuery: object(
         {
           limit: { type: 'integer', minimum: 1, maximum: 100 },

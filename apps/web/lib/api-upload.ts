@@ -1,4 +1,10 @@
-import { type Actor, AppError, getUploadedImage, MAX_UPLOAD_BYTES } from '@easyrender/core';
+import {
+  type Actor,
+  AppError,
+  fetchRemoteImage,
+  getUploadedImage,
+  MAX_UPLOAD_BYTES,
+} from '@easyrender/core';
 
 // Bound actual bytes even without Content-Length. Multipart overhead gets 64 KiB, not unbounded JSON/base64.
 export async function parseApiPhoto(request: Request, actor: Actor, allowReference = true) {
@@ -30,14 +36,25 @@ export async function parseApiPhoto(request: Request, actor: Actor, allowReferen
     if (received > MAX_UPLOAD_BYTES + 64 * 1024)
       throw new AppError('Upload request is too large', 413, 'too_large');
     if (error instanceof AppError) throw error;
-    throw new AppError('Send multipart image or JSON upload_id', 400, 'bad_body');
+    throw new AppError('Send multipart image or JSON upload_id/image_url', 400, 'bad_body');
   }
   const image = value.image;
   const uploadId = value.upload_id;
-  if (!allowReference && uploadId !== undefined)
+  const imageUrl = value.image_url;
+  if (!allowReference && (uploadId !== undefined || imageUrl !== undefined))
     throw new AppError('Attach an image file', 400, 'invalid_image_input');
-  if ((image instanceof File ? 1 : 0) + (typeof uploadId === 'string' && uploadId ? 1 : 0) !== 1) {
-    throw new AppError('Pass exactly one image file or upload_id', 400, 'invalid_image_input');
+  if ([image, uploadId, imageUrl].filter((source) => source !== undefined).length !== 1)
+    throw new AppError(
+      'Pass exactly one image file, upload_id or image_url',
+      400,
+      'invalid_image_input',
+    );
+  for (const [field, source] of [
+    ['upload_id', uploadId],
+    ['image_url', imageUrl],
+  ] as const) {
+    if (source !== undefined && (typeof source !== 'string' || !source.trim()))
+      throw new AppError(`${field} must be a non-empty string`, 400, 'bad_body');
   }
   if (image !== undefined && !(image instanceof File))
     throw new AppError('image must be a file', 400, 'bad_body');
@@ -62,7 +79,9 @@ export async function parseApiPhoto(request: Request, actor: Actor, allowReferen
   return {
     ...(image instanceof File
       ? { bytes: new Uint8Array(await image.arrayBuffer()), contentType: image.type }
-      : await getUploadedImage(uploadId as string, actor)),
+      : typeof imageUrl === 'string'
+        ? await fetchRemoteImage(imageUrl)
+        : await getUploadedImage(uploadId as string, actor)),
     prompt: typeof value.prompt === 'string' ? value.prompt : null,
     name: typeof value.name === 'string' ? value.name : null,
     isPublic: visibility === undefined ? undefined : visibility === true || visibility === 'true',
