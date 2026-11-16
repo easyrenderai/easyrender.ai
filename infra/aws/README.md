@@ -3,9 +3,9 @@
 CloudFormation for everything easyrender.ai keeps in AWS. Nothing here is applied by a Vercel
 deploy or by a merge: a change to a template reaches AWS only when someone deploys the stack.
 
-| Template | Stack | Region | What it holds |
-| --- | --- | --- | --- |
-| `storage.yml` | `easyrenderai-storage` | eu-west-1 | Assets bucket, exports bucket, the CloudFront distribution, the Vercel OIDC role |
+| Template              | Stack                        | Region    | What it holds                                                                               |
+| --------------------- | ---------------------------- | --------- | ------------------------------------------------------------------------------------------- |
+| `storage.yml`         | `easyrenderai-storage`       | eu-west-1 | Assets bucket, exports bucket, the CloudFront distribution, the Vercel OIDC role            |
 | `cdn-certificate.yml` | `easyrender-cdn-certificate` | us-east-1 | The certificate for `cdn.easyrender.ai` (CloudFront reads certificates from us-east-1 only) |
 
 ## What is public and what is private
@@ -50,8 +50,8 @@ To rotate the key: `put-secret-value` with a new private key, then deploy with t
 
 ## Outputs the app uses
 
-| Output | Vercel variable |
-| --- | --- |
-| `S3Bucket`, `AwsRoleArn` | `S3_BUCKET`, `AWS_ROLE_ARN` |
-| `AssetsCdnUrl` | `ASSETS_CDN_URL`. Leave the `*.cloudfront.net` value in place: stored asset URLs and upload clean-up match on it |
-| `ExportsBucket`, `ExportsUrl`, `ExportsKeyPairId` | Read by the export routes when they ship. None is a secret |
+| Output                                            | Vercel variable                                                                                                  |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `S3Bucket`, `AwsRoleArn`                          | `S3_BUCKET`, `AWS_ROLE_ARN`                                                                                      |
+| `AssetsCdnUrl`                                    | `ASSETS_CDN_URL`. Leave the `*.cloudfront.net` value in place: stored asset URLs and upload clean-up match on it |
+| `ExportsBucket`, `ExportsUrl`, `ExportsKeyPairId` | Read by the export routes when they ship. None is a secret                                                       |
