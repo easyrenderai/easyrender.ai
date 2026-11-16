@@ -1,8 +1,8 @@
 {
   "name": "easyrender",
-  "label": "easyrender",
+  "label": "Easy Render | Photo to 3D",
   "version": 1,
-  "description": "Turn product photos into 3D workflows with easyrender.",
+  "description": "Turn any Product Photo into a 3D model",
   "theme": "#17211e",
   "language": "en",
   "modules": [

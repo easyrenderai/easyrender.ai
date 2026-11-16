@@ -16,7 +16,7 @@ separately authorized release owner.
 3. Review the package README for each platform. Create Render starts a private **free
    preview**, not a finished model. A build needs separate authorization in easyrender.
    Model Ready watches one selected render ID; it is not an account-wide completion feed.
-4. Use the easyrender name, homepage `https://easyrender.ai`, and the supplied brand icon.
+4. Use the public display name `Easy Render | Photo to 3D`, homepage `https://easyrender.ai`, and the supplied brand icon.
    Supply a monitored support contact, currently `info@easyrender.ai`, privacy policy
    `https://easyrender.ai/privacy`, and terms `https://easyrender.ai/terms`.
 5. Keep API keys only in platform credential stores. The needed scopes are `read` and
@@ -175,12 +175,14 @@ and [review statuses](https://developers.make.com/custom-apps-documentation/app-
 
 ## English listing copy
 
-Use `easyrender` as the application name. These descriptions intentionally avoid
-pricing, allowance and plan claims, engine-vendor names, and unearned endorsement claims.
+Use `Easy Render | Photo to 3D` as the public application name. Keep identifiers unchanged:
+`n8n-nodes-easyrender`, Make app name `easyrender`, Zapier register/app key `easyrender`,
+and package `easyrender-zapier`. These descriptions intentionally avoid pricing, allowance
+and plan claims, engine-vendor names, and unearned endorsement claims.
 
 ### n8n
 
-**Short:** Connect product photos to easyrender previews and 3D model workflows in n8n.
+**Short:** Turn any Product Photo into a 3D model
 
 **Long:** Create a private free preview from a product image URL, retrieve render status,
 list your renders, and read your account balance. Watch a selected render and continue
@@ -190,7 +192,7 @@ you can review the result before starting a build in easyrender.
 
 ### Zapier
 
-**Short:** easyrender is a product visualization tool that turns product photos into 3D models and AR-ready assets.
+**Short:** Turn any Product Photo into a 3D model
 
 **Long:** easyrender helps teams prepare product visuals from a single photo. Create a
 private free preview from an image URL, look up a render, list existing renders, and
@@ -200,7 +202,7 @@ separately in easyrender.
 
 ### Make
 
-**Short:** Automate product preview creation and selected-model readiness workflows with easyrender.
+**Short:** Turn any Product Photo into a 3D model
 
 **Long:** Connect easyrender to your product operations. Create private free previews
 from image URLs, retrieve render status, list renders, and read your account balance.

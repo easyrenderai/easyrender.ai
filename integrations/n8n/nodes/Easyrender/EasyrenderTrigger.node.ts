@@ -9,14 +9,14 @@ import { apiRequest, renderIdPath } from './transport';
 
 export class EasyrenderTrigger implements INodeType {
   description: INodeTypeDescription = {
-    displayName: 'easyrender Trigger',
+    displayName: 'Easy Render | Photo to 3D Trigger',
     name: 'easyrenderTrigger',
     icon: { light: 'file:easyrender.svg', dark: 'file:easyrender.dark.svg' },
     group: ['trigger'],
     version: 1,
     subtitle: 'Model Ready',
-    description: 'Trigger when a selected easyrender model is ready',
-    defaults: { name: 'easyrender Trigger' },
+    description: 'Turn any Product Photo into a 3D model',
+    defaults: { name: 'Easy Render | Photo to 3D Trigger' },
     inputs: [],
     outputs: [NodeConnectionTypes.Main],
     polling: true,

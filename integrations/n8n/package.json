@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-easyrender",
-  "version": "0.1.0",
-  "description": "Create product previews and automate easyrender 3D model workflows.",
+  "version": "0.1.1",
+  "description": "Turn any Product Photo into a 3D model",
   "license": "MIT",
   "homepage": "https://easyrender.ai",
   "keywords": [

@@ -122,7 +122,7 @@ function asset(operationId: string, summary: string, mediaType: string, isPublic
 export const openapi = {
   openapi: '3.1.0',
   info: {
-    title: 'easyrender API',
+    title: 'Easy Render | Photo to 3D API',
     version: '1.0.0',
     description:
       'Photo-to-3D REST contract. Existing /api paths are retained. Long-running jobs return immediately: poll their ID. Amounts are credits unless explicitly labeled as currency. MCP uses /api/mcp and tools/list, not these REST operation IDs. See docs/api.md for safe retry and spending rules.',
