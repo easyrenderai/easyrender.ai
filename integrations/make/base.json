@@ -1,0 +1,23 @@
+{
+  "baseUrl": "https://easyrender.ai/api",
+  "headers": {
+    "authorization": "Bearer {{connection.apiKey}}",
+    "accept": "application/json"
+  },
+  "response": {
+    "error": {
+      "message": "[{{statusCode}}] {{body.error}} ({{body.code}}; request: {{body.request_id}})",
+      "401": {
+        "type": "InvalidAccessTokenError",
+        "message": "Reconnect easyrender with a valid API key."
+      },
+      "429": {
+        "type": "RateLimitError",
+        "message": "easyrender rate limit reached. Retry after {{headers.`retry-after`}} seconds. Request: {{body.request_id}}"
+      }
+    }
+  },
+  "log": {
+    "sanitize": ["request.headers.authorization"]
+  }
+}

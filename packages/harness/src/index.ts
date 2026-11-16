@@ -3,6 +3,7 @@ export * from './guardrails';
 export * from './materials';
 export * from './models';
 export * from './note';
+export * from './packshot';
 export * from './pricing';
 export * from './remote';
 export * from './replicate';

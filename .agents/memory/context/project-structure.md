@@ -17,4 +17,5 @@
   checks), watermark, skills, remote config loader.
 - `packages/mcp`: the MCP server. Tools: `create_render`, `get_render`, `render_3d`, `get_credits`.
 - `packages/db`: Prisma schema, client, `db:deploy` script used by the Vercel build.
-- `infra/aws`: CloudFormation for storage.
+- `infra/aws`: CloudFormation for storage (public assets, private signed exports) and the CDN
+  certificate. See `infra/aws/README.md`.

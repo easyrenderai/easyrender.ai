@@ -23,7 +23,7 @@ import type { Scope } from '../scope';
 const ORDER = [
   'swivel-chair',
   'lamp',
-  'armchair',
+  'bedside-table',
   'crate',
   'coffee-table',
   'sneaker',

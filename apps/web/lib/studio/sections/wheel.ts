@@ -18,7 +18,7 @@ import {
 } from '../engine/studio';
 import type { Scope } from '../scope';
 
-const ITEMS = ['armchair', 'lamp', 'coffee-table'];
+const ITEMS = ['bedside-table', 'lamp', 'coffee-table'];
 const LAP = 17; // seconds per turn
 const START = -135; // degrees: the first stop sits top left
 const RADIUS = 250; // in the 600×600 ring viewBox

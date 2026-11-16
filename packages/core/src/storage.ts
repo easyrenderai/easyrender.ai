@@ -1,7 +1,9 @@
 import { randomBytes } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
+import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve, sep } from 'node:path';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { Readable } from 'node:stream';
+import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { awsCredentialsProvider } from '@vercel/oidc-aws-credentials-provider';
 
 const LOCAL_PREFIX = 'local:';
@@ -53,7 +55,9 @@ export async function putFile(
         Key: key,
         Body: bytes,
         ContentType: contentType,
-        CacheControl: 'public, max-age=31536000, immutable',
+        CacheControl: pathname.startsWith('uploads/')
+          ? 'private, no-store, max-age=0'
+          : 'public, max-age=31536000, immutable',
       }),
     );
     return `${cdn.replace(/\/+$/, '')}/${key}`;
@@ -68,12 +72,40 @@ export async function putFile(
 }
 
 export async function getFile(key: string): Promise<Uint8Array> {
+  return new Uint8Array(await new Response(await getFileStream(key)).arrayBuffer());
+}
+
+/** Pass through unchanged model assets without retaining a second full GLB in server memory. */
+export async function getFileStream(key: string): Promise<ReadableStream<Uint8Array>> {
   if (key.startsWith(LOCAL_PREFIX)) {
     const target = resolve(localRoot(), key.slice(LOCAL_PREFIX.length));
     if (!target.startsWith(localRoot() + sep)) throw new Error('invalid storage key');
-    return new Uint8Array(await readFile(/* turbopackIgnore: true */ target));
+    await stat(/* turbopackIgnore: true */ target);
+    return Readable.toWeb(
+      createReadStream(/* turbopackIgnore: true */ target),
+    ) as ReadableStream<Uint8Array>;
   }
-  const response = await fetch(key);
-  if (!response.ok) throw new Error(`storage read failed: ${response.status}`);
-  return new Uint8Array(await response.arrayBuffer());
+  const response = await fetch(key, { signal: AbortSignal.timeout(60_000) });
+  if (!response.ok || !response.body) throw new Error(`storage read failed: ${response.status}`);
+  return response.body;
+}
+
+/** Cleanup is deliberately limited to our temporary upload namespace. */
+export async function deleteUploadFile(key: string): Promise<void> {
+  const isUpload = (path: string) => /^uploads\/[a-zA-Z0-9_-]+\.(png|jpg|jpeg|webp)$/.test(path);
+  if (key.startsWith(LOCAL_PREFIX)) {
+    const path = key.slice(LOCAL_PREFIX.length);
+    if (!isUpload(path)) throw new Error('invalid temporary upload key');
+    await rm(join(localRoot(), path), { force: true });
+    return;
+  }
+  const base = process.env.ASSETS_CDN_URL?.replace(/\/+$/, '');
+  const prefix = base ? `${base}/${S3_PREFIX}/` : null;
+  const path = prefix && key.startsWith(prefix) ? key.slice(prefix.length) : null;
+  if (!process.env.S3_BUCKET || !path || !isUpload(path))
+    throw new Error('invalid temporary upload key');
+  await s3Client().send(
+    new DeleteObjectCommand({ Bucket: process.env.S3_BUCKET, Key: `${S3_PREFIX}/${path}` }),
+    { abortSignal: AbortSignal.timeout(10_000) },
+  );
 }

@@ -1,5 +1,6 @@
 import { type CatalogItem, db } from '@easyrender/db';
 import { RENDER_CREDITS } from '@easyrender/harness';
+import { actorForApiKey, assertActorScope } from './api-access';
 import { config } from './config';
 import { getBalance } from './credits';
 import { AppError } from './errors';
@@ -134,7 +135,11 @@ export async function submitCatalog(
   scope: CatalogScope,
   items: CatalogInput[],
   maxCredits: number,
+  apiKeyId?: string,
 ): Promise<{ queued: number; skipped: number; quote: CatalogQuote }> {
+  const authorization = await actorForApiKey(scope.userId, apiKeyId);
+  for (const permission of ['write', 'spend', 'share'] as const)
+    assertActorScope(authorization, permission);
   const existing = await db().catalogItem.findMany({
     where: { ...scope, externalId: { in: items.map((item) => item.externalId) } },
     select: { externalId: true, state: true },
@@ -152,32 +157,46 @@ export async function submitCatalog(
       'quote_changed',
     );
   }
-  await db().$transaction(
-    todo.map((item) =>
-      db().catalogItem.upsert({
-        where: {
-          userId_platform_store_externalId: { ...scope, externalId: item.externalId },
-        },
-        create: {
-          ...scope,
-          externalId: item.externalId,
-          title: item.title,
-          imageUrl: item.imageUrl,
-          note: item.note ?? null,
-        },
-        update: {
-          title: item.title,
-          imageUrl: item.imageUrl,
-          note: item.note ?? null,
-          state: 'queued',
-          renderId: null,
-          error: null,
-        },
-      }),
-    ),
-  );
+  const queued = await db().$transaction(async (tx) => {
+    let accepted = 0;
+    // Stable row order avoids deadlocks when batches overlap in a different caller order.
+    for (const item of [...todo].sort((a, b) => a.externalId.localeCompare(b.externalId))) {
+      const values = {
+        apiKeyId: apiKeyId ?? null,
+        title: item.title,
+        imageUrl: item.imageUrl,
+        note: item.note ?? null,
+      };
+      // A concurrent submission may already have queued or started this externalId since
+      // the quote read. Never overwrite that generation or its retained authorization.
+      const inserted = await tx.catalogItem.createMany({
+        data: { ...scope, ...values, externalId: item.externalId },
+        skipDuplicates: true,
+      });
+      if (inserted.count) {
+        accepted += inserted.count;
+        continue;
+      }
+      const retried = await tx.catalogItem.updateMany({
+        where: { ...scope, externalId: item.externalId, state: { in: ['failed', 'needs_info'] } },
+        data: { ...values, state: 'queued', renderId: null, error: null },
+      });
+      accepted += retried.count;
+    }
+    return accepted;
+  });
   await tickCatalog(scope);
-  return { queued: todo.length, skipped: items.length - todo.length, quote };
+  const totalCredits = queued * RENDER_CREDITS;
+  return {
+    queued,
+    skipped: items.length - queued,
+    quote: {
+      ...quote,
+      items: queued,
+      totalCredits,
+      missingCredits: Math.max(0, totalCredits - quote.balance),
+    },
+  };
 }
 
 const IN_FLIGHT_STATES = ['drafting', 'building', 'needs_credits'];
@@ -196,7 +215,7 @@ async function advanceItem(item: CatalogItem, canPay: boolean) {
     let render = await advance(item.renderId);
     if (!render) return await setState(item, 'failed', 'The render was removed');
     if (render.status === 'preview_ready') {
-      render = await startBuild(render.id, { userId: item.userId });
+      render = await startBuild(render.id, await actorForApiKey(item.userId, item.apiKeyId));
     }
     if (render.status === 'ready') return await setState(item, 'ready');
     if (render.status === 'failed') {
@@ -204,6 +223,12 @@ async function advanceItem(item: CatalogItem, canPay: boolean) {
     }
     return await setState(item, render.status === 'rendering' ? 'building' : 'drafting');
   } catch (error) {
+    if (
+      error instanceof AppError &&
+      ['insufficient_scope', 'key_budget_exceeded'].includes(error.code)
+    ) {
+      return await setState(item, 'needs_info', error.message);
+    }
     if (error instanceof AppError && error.code === 'insufficient_credits') {
       return await setState(item, 'needs_credits', 'Add credits to finish this model');
     }
@@ -214,9 +239,12 @@ async function advanceItem(item: CatalogItem, canPay: boolean) {
 
 async function startItem(item: CatalogItem): Promise<void> {
   try {
+    const actor = await actorForApiKey(item.userId, item.apiKeyId);
+    for (const permission of ['write', 'spend', 'share'] as const)
+      assertActorScope(actor, permission);
     const image = await fetchRemoteImage(item.imageUrl);
     const render = await createDraft({
-      actor: { userId: item.userId },
+      actor,
       ...image,
       prompt: item.note,
       name: item.title,

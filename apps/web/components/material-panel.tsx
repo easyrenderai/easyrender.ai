@@ -7,6 +7,7 @@ import {
   type MaterialEdit,
 } from '@easyrender/harness/glb';
 import { Loader2, RotateCcw } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -84,6 +85,7 @@ function toEdits(materials: GlbMaterial[], draft: Look[]): MaterialEdit[] {
 // The generated file is never changed; what is saved here is applied when the model is served.
 export function MaterialPanel({ renderId, viewer }: Props) {
   const t = useTranslations('Render.materials');
+  const router = useRouter();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [draft, setDraft] = useState<Look[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -153,6 +155,8 @@ export function MaterialPanel({ renderId, viewer }: Props) {
         material_count: edits.length,
       });
       setMessage({ tone: 'saved', text: edits.length ? t('saved') : t('resetDone') });
+      // The history on the render page lists this change.
+      router.refresh();
     } else {
       setMessage({ tone: 'error', text: t('saveFailed') });
     }

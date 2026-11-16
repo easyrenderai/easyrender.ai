@@ -1,0 +1,8 @@
+{
+  "name": "easyrender-make-definitions",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/*.test.cjs",
+    "build": "node --test test/*.test.cjs"
+  }
+}

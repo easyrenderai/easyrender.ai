@@ -8,17 +8,11 @@ export type ShellRender = {
   createdAt: string;
 };
 
-export type ShellKey = { id: string; name: string; lastUsedAt: string | null };
-
 export type ShellData = {
-  balance: number;
   email: string;
   name: string;
   stats: { total: number; ready: number; inFlight: number; byAgent: number };
-  keys: ShellKey[];
   renders: ShellRender[];
-  // Credit prices come from the harness, never typed into a component.
-  costs: { render: number; sheet: number };
   // When the server read this, in ms. Relative times use it so server and client markup agree.
   now: number;
 };

@@ -1,0 +1,29 @@
+{
+  "url": "/renders",
+  "method": "POST",
+  "type": "json",
+  "headers": {
+    "Idempotency-Key": "{{parameters.idempotencyKey}}"
+  },
+  "body": {
+    "image_url": "{{parameters.imageUrl}}",
+    "name": "{{parameters.name}}",
+    "prompt": "{{parameters.prompt}}",
+    "isPublic": false
+  },
+  "response": {
+    "output": {
+      "id": "{{body.id}}",
+      "status": "{{body.status}}",
+      "name": "{{body.name}}",
+      "prompt": "{{body.prompt}}",
+      "error": "{{body.error}}",
+      "hasModel": "{{body.hasModel}}",
+      "hasPreview": "{{body.hasPreview}}",
+      "hasSheet": "{{body.hasSheet}}",
+      "isPublic": "{{body.isPublic}}",
+      "createdAt": "{{parseDate(body.createdAt)}}",
+      "modelVersion": "{{body.modelVersion}}"
+    }
+  }
+}

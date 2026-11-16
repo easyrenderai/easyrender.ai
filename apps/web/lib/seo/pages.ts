@@ -11,7 +11,7 @@ import {
   modifiedDate,
   postLivePaths,
 } from '@/lib/blog/posts';
-import { COMPARE_INDEX, type ComparePage } from '@/lib/compare/pages';
+import { COMPARE_INDEX, type ComparePage, compareLivePaths } from '@/lib/compare/pages';
 import { hasPublishedRuns } from '@/lib/evals';
 import { formatCount, formatMoney } from '@/lib/price-format';
 import {
@@ -29,6 +29,60 @@ import { absoluteUrl } from './site';
 
 // The head and the structured data of every indexable page, in one place, so the home in English
 // and the home in Spanish are built the same way and only the words differ.
+
+export async function authorMetadata(locale: Locale): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'Author' });
+  return pageMetadata({
+    locale,
+    path: ROUTES.author.paths[locale],
+    title: t('metaTitle'),
+    description: t('bio'),
+    alternates: livePaths('author'),
+  });
+}
+
+export async function authorGraph(locale: Locale) {
+  const t = await getTranslations({ locale, namespace: 'Author' });
+  const url = absoluteUrl(ROUTES.author.paths[locale]);
+  return [
+    organization(),
+    {
+      '@type': 'ProfilePage',
+      '@id': url,
+      url,
+      mainEntity: {
+        '@type': 'Person',
+        '@id': `${url}#person`,
+        name: 'Jorge Rodríguez',
+        url,
+        description: t('bio'),
+        affiliation: { '@id': `${absoluteUrl('/')}/#organization` },
+      },
+    },
+  ];
+}
+
+export async function legalMetadata(kind: 'privacy' | 'terms', locale: Locale): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: `Legal.${kind}` });
+  return pageMetadata({
+    locale,
+    path: ROUTES[kind].paths[locale],
+    title: t('metaTitle'),
+    description: t('metaDescription'),
+    alternates: livePaths(kind),
+  });
+}
+
+export async function cookiesMetadata(locale: Locale): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'Analytics' });
+  return pageMetadata({
+    locale,
+    path: ROUTES.cookies.paths[locale],
+    title: t('metaTitle'),
+    description: t('metaDescription'),
+    alternates: livePaths('cookies'),
+  });
+}
 
 export async function homeMetadata(locale: Locale): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: 'Home.meta' });
@@ -48,11 +102,12 @@ export async function homeGraph(locale: Locale) {
     getTranslations({ locale, namespace: 'Home.meta' }),
     faqItems(),
   ]);
+  const pricing = await currentPricing();
   return [
     organization(),
     website(locale),
     webPage(locale, ROUTES.home.paths[locale], t('title'), t('description')),
-    softwareApplication(locale, t('description'), (await currentPricing()).variant),
+    softwareApplication(locale, t('description'), pricing.variant, pricing.currency),
     faqPage(items),
   ];
 }
@@ -99,7 +154,7 @@ export async function pricingGraph(locale: Locale) {
   return [
     organization(),
     webPage(locale, ROUTES.pricing.paths[locale], t('metaTitle'), description),
-    softwareApplication(locale, description, pricing.variant),
+    softwareApplication(locale, description, pricing.variant, pricing.currency),
     breadcrumbList([
       { name: t('home'), path: ROUTES.home.paths[locale] },
       { name: t('breadcrumb'), path: ROUTES.pricing.paths[locale] },
@@ -285,46 +340,49 @@ export async function postGraph(post: BlogPost) {
   ];
 }
 
-/** The English comparisons hub. */
-export function compareIndexMetadata(): Metadata {
+/** The comparisons hub of one language. */
+export async function compareIndexMetadata(locale: Locale = 'en'): Promise<Metadata> {
+  const copy = COMPARE_INDEX[locale];
   return pageMetadata({
-    locale: 'en',
-    path: ROUTES.compare.paths.en,
-    title: postTitle(COMPARE_INDEX.title),
-    description: COMPARE_INDEX.description,
+    locale,
+    path: ROUTES.compare.paths[locale],
+    title: postTitle(copy.title),
+    description: copy.description,
     alternates: livePaths('compare'),
   });
 }
 
-export function compareIndexGraph() {
+export async function compareIndexGraph(locale: Locale = 'en') {
+  const t = await getTranslations({ locale, namespace: 'Blog' });
   return [
     breadcrumbList([
-      { name: 'Home', path: ROUTES.home.paths.en },
-      { name: 'Comparisons', path: ROUTES.compare.paths.en },
+      { name: t('breadcrumb.home'), path: ROUTES.home.paths[locale] },
+      { name: t('comparisons.title'), path: ROUTES.compare.paths[locale] },
     ]),
   ];
 }
 
-/** One English comparison page, with its illustration as the Open Graph image when present. */
+/** One comparison page, with its illustration as the Open Graph image when present. */
 export function comparePageMetadata(page: ComparePage): Metadata {
   const image = schemaImage(page.body);
   return pageMetadata({
-    locale: 'en',
+    locale: page.locale,
     path: page.path,
     title: postTitle(page.title),
     description: page.description,
-    alternates: { en: page.path },
+    alternates: compareLivePaths(page.group),
     type: 'article',
     modifiedTime: page.updated,
     ...(image ? { image: image.src, imageSize: { width: image.width, height: image.height } } : {}),
   });
 }
 
-export function comparePageGraph(page: ComparePage) {
+export async function comparePageGraph(page: ComparePage) {
+  const t = await getTranslations({ locale: page.locale, namespace: 'Blog' });
   return [
     breadcrumbList([
-      { name: 'Home', path: ROUTES.home.paths.en },
-      { name: 'Comparisons', path: ROUTES.compare.paths.en },
+      { name: t('breadcrumb.home'), path: ROUTES.home.paths[page.locale] },
+      { name: t('comparisons.title'), path: ROUTES.compare.paths[page.locale] },
       { name: page.title, path: page.path },
     ]),
     ...(page.faq.length ? [faqPage(page.faq, `${absoluteUrl(page.path)}#faq`)] : []),

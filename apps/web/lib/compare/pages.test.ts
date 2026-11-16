@@ -2,14 +2,16 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { LOCALES } from '@/i18n/config';
-import { BLOG_IMAGES, parseImage } from '@/lib/blog/images';
+import { BLOG_IMAGES, parseImage, schemaImage } from '@/lib/blog/images';
 import { heroSource, parseBlocks } from '@/lib/blog/markdown';
 import { llmsFullTxt, llmsTxt } from '@/lib/seo/llms';
 import { isNoindexPath } from '@/lib/seo/noindex';
-import { postTitle } from '@/lib/seo/pages';
+import { comparePageMetadata, postTitle } from '@/lib/seo/pages';
+import { ROUTES } from '@/lib/seo/routes';
 import { localeSitemapXml } from '@/lib/seo/sitemap';
 import {
   COMPARE_INDEX,
+  compareHref,
   getComparePage,
   isCompareInReview,
   isComparePublished,
@@ -28,6 +30,31 @@ const ROOT = process.cwd();
 const raw = (slug: string) =>
   readFileSync(join(ROOT, 'content', 'compare', 'en', `${slug}.md`), 'utf8');
 
+describe.each(readComparePages('es').map((page) => [page.slug, page] as const))(
+  'Spanish comparison image %s',
+  (_, page) => {
+    it('shows its own translated illustration and uses it for the sharing card', () => {
+      const english = pages.find((candidate) => candidate.group === page.group);
+      const expected = schemaImage(english?.body ?? '')?.src;
+      expect(expected).toBeDefined();
+      expect(schemaImage(page.body)?.src).toBe(expected);
+      const image = page.body
+        .split('\n')
+        .map(parseImage)
+        .find((item) => item?.src === expected);
+      expect(image?.alt).toMatch(/^Ilustración de /);
+      expect(image?.caption).toMatch(/^Ilustración conceptual:/);
+      expect(comparePageMetadata(page).openGraph?.images).toEqual([
+        expect.objectContaining({
+          url: `https://easyrender.ai${expected}`,
+          width: 1280,
+          height: 720,
+        }),
+      ]);
+    });
+  },
+);
+
 /** Every file under a directory, recursively, with one of the given extensions. */
 function filesUnder(dir: string, extensions: string[]): string[] {
   const out: string[] = [];
@@ -45,10 +72,14 @@ describe('the published comparisons', () => {
     expect(isComparePublished()).toBe(true);
     expect(isCompareInReview()).toBe(false);
     expect(listComparePages()).toHaveLength(5);
-    expect(COMPARE_INDEX.title.length).toBeLessThanOrEqual(60);
-    expect(postTitle(COMPARE_INDEX.title).length).toBeLessThanOrEqual(60);
-    expect(COMPARE_INDEX.description.length).toBeLessThanOrEqual(160);
+    expect(COMPARE_INDEX.en.title.length).toBeLessThanOrEqual(60);
+    expect(postTitle(COMPARE_INDEX.en.title).length).toBeLessThanOrEqual(60);
+    expect(COMPARE_INDEX.en.description.length).toBeLessThanOrEqual(160);
     for (const slug of REVIEW_SLUGS) expect(getComparePage(slug)?.path).toBe(`/compare/${slug}`);
+    expect(compareHref('es', 'meshy')).toBe('/es/comparativas/meshy');
+    expect(compareHref('de', 'vergleich-meshy')).toBe('/de/vergleich/vergleich-meshy');
+    expect(compareHref('fr', 'javascript:alert(1)')).toBe('/fr/comparatifs');
+    expect(compareHref('it', '../file-glb')).toBe('/it/confronti');
     expect(getComparePage('does-not-exist')).toBeNull();
   });
 });
@@ -67,12 +98,16 @@ describe.each(pages.map((page) => [page.slug, page] as const))('compare page %s'
     expect(page.faq.length).toBeLessThanOrEqual(6);
   });
 
-  it('opens with its own illustration directly under the first paragraph', () => {
+  it('keeps its illustration and puts the choice table first on alternative pages', () => {
     const blocks = parseBlocks(page.body);
     expect(blocks[0]?.kind).toBe('paragraph');
-    const hero = heroSource(blocks);
     const src = `/compare/illustrations/${slug}/hero.webp`;
-    expect(hero).toBe(src);
+    if (slug === 'meshy' || slug === 'tripo') {
+      expect(blocks[2]?.kind).toBe('table');
+      expect(schemaImage(page.body)?.src).toBe(src);
+    } else {
+      expect(heroSource(blocks)).toBe(src);
+    }
     expect(BLOG_IMAGES[src]).toEqual({ width: 1280, height: 720 });
     expect(
       statSync(join(ROOT, 'public', 'compare', 'illustrations', slug, 'hero.webp')).isFile(),
@@ -128,13 +163,47 @@ describe.each(pages.map((page) => [page.slug, page] as const))('compare page %s'
   });
 });
 
+describe.each(LOCALES)('alternative choices in %s', (locale) => {
+  it('offers four alternatives before the artwork and shows the trial evidence', () => {
+    const alternatives = readComparePages(locale).filter((page) =>
+      ['compare-meshy', 'compare-tripo'].includes(page.group),
+    );
+    expect(alternatives).toHaveLength(2);
+    for (const page of alternatives) {
+      const blocks = parseBlocks(page.body);
+      const table = blocks[2];
+      expect(table?.kind, page.path).toBe('table');
+      if (table?.kind !== 'table') continue;
+      for (const tool of ['easyrender', 'Meshy', 'Tripo', 'Rodin', 'Sloyd']) {
+        expect(
+          table.rows.some((row) => row[0]?.includes(tool)),
+          `${page.path}: ${tool}`,
+        ).toBe(true);
+      }
+      const images = blocks.flatMap((block) => (block.kind === 'media' ? block.items : []));
+      for (const src of [
+        '/showcase/armchair.jpg',
+        '/showcase/armchair-angles.jpg',
+        '/benchmarks/2026-11-15/meshy-viewer.jpg',
+        '/benchmarks/2026-11-15/tripo-viewer.jpg',
+      ]) {
+        expect(
+          images.some((item) => item.src === src && item.caption),
+          page.path,
+        ).toBe(true);
+      }
+      expect(page.body).toContain('/benchmarks/2026-11-15/measurements.json');
+    }
+  });
+});
+
 describe('once they are published', () => {
   it('are indexable at the hub and at every slug', () => {
     expect(isNoindexPath('/compare')).toBe(false);
     for (const page of pages) expect(isNoindexPath(page.path), page.path).toBe(false);
   });
 
-  it('appear in the English sitemap and in llms.txt, and nowhere else', () => {
+  it('appear in every language’s sitemap, with hreflang only where that file exists', () => {
     const english = [localeSitemapXml('en'), llmsTxt(), llmsFullTxt()].join('\n');
     expect(english).toContain('/compare<');
     expect(english).toMatch(/https:\/\/easyrender\.ai\/compare['"\s<]/);
@@ -142,9 +211,16 @@ describe('once they are published', () => {
       expect(english, page.path).toContain(page.path);
     }
     for (const locale of LOCALES.filter((item) => item !== 'en')) {
-      expect(localeSitemapXml(locale)).not.toMatch(/\/compare\b/);
+      const xml = localeSitemapXml(locale);
+      expect(xml, locale).toContain(
+        `<loc>https://easyrender.ai${ROUTES.compare.paths[locale]}</loc>`,
+      );
+      // The English hub is an alternate of the localized hub, not a second canonical.
+      expect(xml, locale).toContain('hreflang="en" href="https://easyrender.ai/compare"');
     }
-  });
+    // Renders every language's sitemap and both llms files, which is the whole corpus several
+    // times over. It takes about 1.5 s alone and has passed 5 s on a busy CI runner.
+  }, 20_000);
 
   it('are linked from the English guides hub and from related guides, not from chrome', () => {
     const hub = readFileSync(join(ROOT, 'components', 'blog', 'blog-index-view.tsx'), 'utf8');

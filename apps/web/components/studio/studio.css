@@ -7,29 +7,9 @@
    stylesheets loaded after navigation.
    ───────────────────────────────────────────── */
 
-/* The page chrome (header, footer, shadcn components) follows the studio palette while a
-   studio page is mounted, whatever the system colour scheme. */
+/* Studio pages retain their radius and typography; colours come from globals.css. */
 body:has(.er-studio) {
   --radius: 0.5rem;
-  --background: #0a0a0b;
-  --foreground: #ecebe7;
-  --card: #131315;
-  --card-foreground: #ecebe7;
-  --popover: #1c1c1f;
-  --popover-foreground: #ecebe7;
-  --primary: #ecebe7;
-  --primary-foreground: #0a0a0b;
-  --secondary: #1c1c1f;
-  --secondary-foreground: #ecebe7;
-  --muted: #1c1c1f;
-  --muted-foreground: #909095;
-  --accent: #1c1c1f;
-  --accent-foreground: #ecebe7;
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: rgb(236 235 231 / 10%);
-  --input: rgb(236 235 231 / 16%);
-  --ring: #909095;
-  color-scheme: dark;
 
   /* The header and footer pick up the studio typeface on these pages. */
   & > :where(header, footer) {
@@ -38,17 +18,17 @@ body:has(.er-studio) {
 }
 
 .er-studio {
-  --carbon: #0a0a0b;
-  --graphite: #131315;
-  --slate: #1c1c1f;
+  --carbon: var(--background);
+  --graphite: var(--card);
+  --slate: var(--muted);
   --steel: #26262a;
-  --line: rgb(236 235 231 / 10%);
+  --line: var(--border);
   --line-strong: rgb(236 235 231 / 22%);
-  --bone: #ecebe7;
-  --ash: #909095;
+  --bone: var(--foreground);
+  --ash: var(--muted-foreground);
   --smoke: #606065;
   --paper: #f3f2ee;
-  --ink: #0a0a0b;
+  --ink: var(--primary-foreground);
   --ink-soft: #55555a;
   --axis-x: #f2555a;
   --axis-y: #8bd450;
@@ -271,12 +251,13 @@ body:has(.er-studio) {
     grid-template-columns: minmax(250px, 0.82fr) minmax(0, 1.5fr) minmax(190px, 0.7fr);
     align-items: center;
     gap: clamp(20px, 2.4vw, 40px);
-    min-height: calc(100svh - var(--nav-h));
+    /* Reserve the first screen's last row for compatibility, below the hero. */
+    min-height: calc(100svh - var(--nav-h) - 64px);
     padding: clamp(28px, 4vh, 56px) var(--gutter) clamp(36px, 6vh, 72px);
   }
   .hero__copy {
     align-self: center;
-    padding-top: 16vh;
+    padding-top: 8vh;
   }
   .hero h1 {
     max-width: 9.6em;
@@ -298,7 +279,7 @@ body:has(.er-studio) {
   .hero__cta {
     justify-self: center;
     align-self: center;
-    padding-top: 16vh;
+    padding-top: 8vh;
     text-align: center;
   }
   .hero__note {
@@ -311,11 +292,53 @@ body:has(.er-studio) {
     color: var(--ash);
   }
 
+  .hero--upload {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    max-width: 1440px;
+    margin-inline: auto;
+  }
+  .hero--upload .hero__copy {
+    padding-top: 0;
+    min-width: 0;
+  }
+  .hero--upload .hero__keyword {
+    max-width: none;
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--ash);
+  }
+  .hero__benefit {
+    margin-top: 12px;
+    max-width: 16em;
+    font-size: clamp(30px, 3.4vw, 48px);
+    line-height: 1.08;
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  .hero__upload {
+    margin-top: 24px;
+    scroll-margin-top: 80px;
+  }
+  @media (max-width: 1080px) {
+    .hero.hero--upload {
+      grid-template-columns: 1fr;
+    }
+    .hero--upload .stack {
+      width: min(100%, 420px);
+    }
+    .hero--upload .hero__keyword {
+      font-size: 14px;
+    }
+  }
+
   /* stack of passes */
   .stack {
     position: relative;
     justify-self: center;
-    width: min(100%, calc((100svh - var(--nav-h) - 130px) * 1.1));
+    width: min(100%, calc((100svh - var(--nav-h) - 194px) * 1.1));
     aspect-ratio: 1.1 / 1;
     touch-action: pan-y;
     cursor: grab;
@@ -1428,10 +1451,16 @@ body:has(.er-studio) {
     color: var(--ash);
   }
   .marquee {
-    margin: clamp(56px, 7vw, 96px) calc(var(--gutter) * -1) 0;
+    margin: 0;
+    padding-block: 16px;
+    border-block: 1px solid var(--line);
     overflow: hidden;
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
     mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .marquee:focus-visible {
+    outline: 2px solid var(--bone);
+    outline-offset: -2px;
   }
   .marquee__row {
     display: flex;
@@ -1439,13 +1468,15 @@ body:has(.er-studio) {
     gap: clamp(40px, 5vw, 80px);
     padding-right: clamp(40px, 5vw, 80px);
     font-size: clamp(20px, 2vw, 28px);
+    line-height: 28px;
     font-weight: 560;
     font-stretch: 112%;
     letter-spacing: -0.03em;
     white-space: nowrap;
     animation: er-marquee 38s linear infinite;
   }
-  .marquee:hover .marquee__row {
+  .marquee:hover .marquee__row,
+  .marquee:focus .marquee__row {
     animation-play-state: paused;
   }
   .marquee__row li:nth-child(3n + 1) {
@@ -1670,9 +1701,9 @@ body:has(.er-studio) {
     .hero {
       grid-template-columns: 1fr;
       align-items: start;
-      gap: 28px;
+      gap: 16px;
       min-height: 0;
-      padding-top: 36px;
+      padding-block: 20px;
     }
     .hero__copy,
     .hero__cta {
@@ -1680,10 +1711,17 @@ body:has(.er-studio) {
     }
     .hero h1 {
       max-width: 12em;
-      font-size: clamp(38px, 7.4vw, 60px);
+      font-size: clamp(32px, 5.5vw, 52px);
     }
     .stack {
-      width: min(100%, 680px);
+      width: min(100%, calc(clamp(140px, 26svh, 320px) * 1.1));
+    }
+    .hero__lead {
+      margin-top: 12px;
+      font-size: 15px;
+    }
+    .hero .btn--xl {
+      padding: 16px 24px;
     }
     .hero__cta {
       justify-self: start;
@@ -1856,12 +1894,14 @@ body:has(.er-studio) {
     }
     .marquee__row {
       animation: none;
-      flex-wrap: wrap;
-      width: auto;
-      row-gap: 16px;
+      width: max-content;
       padding-inline: var(--gutter);
     }
+    .marquee__row [aria-hidden] {
+      display: none;
+    }
     .marquee {
+      overflow-x: auto;
       -webkit-mask-image: none;
       mask-image: none;
     }

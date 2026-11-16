@@ -166,3 +166,10 @@ describe('guide structured data', () => {
     expect(node.dateModified).toBe('2026-11-23T00:00:00.000Z');
   });
 });
+
+it('advertises only PAYG and Pro priced offers in either experiment arm', () => {
+  for (const variant of ['control', 'test'] as const) {
+    const offers = softwareApplication('en', 'Pricing', variant).offers as Node[];
+    expect(offers.map((offer) => offer.name)).toEqual(['Pay as you go', 'Pro']);
+  }
+});

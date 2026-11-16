@@ -2,9 +2,9 @@
 
 import { ArrowRight, Box } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import type { CSSProperties } from 'react';
+import { SiteLink as Link } from '@/components/site-link';
 import { type ItemId, itemOf, photoUrl } from '@/lib/studio/catalog';
 import { createFormat } from '@/lib/studio/format';
 import { DemoCursor } from './icons';
@@ -16,7 +16,7 @@ const FIRST_DROP = itemOf('barrel');
 
 // Hub pieces in the interior render, pinned where they sit in the frame.
 const PINS: { id: ItemId; x: string; y: string; left?: boolean }[] = [
-  { id: 'armchair', x: '85%', y: '49%', left: true },
+  { id: 'bedside-table', x: '85%', y: '49%', left: true },
   { id: 'coffee-table', x: '42%', y: '77%' },
   { id: 'vase', x: '42%', y: '57%' },
   { id: 'lamp', x: '25.5%', y: '39%' },

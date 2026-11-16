@@ -1,0 +1,45 @@
+{
+  "url": "/renders/{{encodeURL(parameters.id)}}",
+  "method": "GET",
+  "response": {
+    "valid": "{{statusCode < 400 && body.status !== \"failed\"}}",
+    "error": {
+      "message": "[{{statusCode}}] {{body.error}} ({{body.code}}; request: {{body.request_id}})",
+      "401": {
+        "type": "InvalidAccessTokenError",
+        "message": "Reconnect easyrender with a valid API key."
+      },
+      "429": {
+        "type": "RateLimitError",
+        "message": "easyrender rate limit reached. Retry after {{headers.`retry-after`}} seconds. Request: {{body.request_id}}"
+      },
+      "200": {
+        "type": "RuntimeError",
+        "message": "Render {{body.id}} failed. Inspect it in easyrender before retrying."
+      }
+    },
+    "iterate": {
+      "container": "{{add(emptyarray, body)}}",
+      "condition": "{{item.status === \"ready\" && item.hasModel === true}}"
+    },
+    "trigger": {
+      "type": "id",
+      "id": "{{item.id}}",
+      "order": "desc"
+    },
+    "limit": "{{parameters.limit}}",
+    "output": {
+      "id": "{{item.id}}",
+      "status": "{{item.status}}",
+      "name": "{{item.name}}",
+      "prompt": "{{item.prompt}}",
+      "error": "{{item.error}}",
+      "hasModel": "{{item.hasModel}}",
+      "hasPreview": "{{item.hasPreview}}",
+      "hasSheet": "{{item.hasSheet}}",
+      "isPublic": "{{item.isPublic}}",
+      "createdAt": "{{parseDate(item.createdAt)}}",
+      "modelVersion": "{{item.modelVersion}}"
+    }
+  }
+}

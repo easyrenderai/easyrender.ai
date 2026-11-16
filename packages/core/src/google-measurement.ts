@@ -1,10 +1,11 @@
-export type GoogleContext = { clientId: string; sessionId: string };
+export type GoogleContext = { clientId: string; sessionId: string; adMeasurementAllowed?: boolean };
 type Purchase = {
   id: string;
   packId: string;
   amountCents: number;
   currency: string;
   updatedAt: Date;
+  paidAt?: Date | null;
 };
 export function isGoogleMeasurementConfigured() {
   return (
@@ -28,8 +29,11 @@ export function parseGoogleContext(value: unknown, isAllowed: boolean): GoogleCo
 export function googlePurchasePayload(purchase: Purchase, checkout: GoogleContext) {
   return {
     client_id: checkout.clientId,
-    timestamp_micros: purchase.updatedAt.getTime() * 1000,
-    consent: { ad_user_data: 'DENIED', ad_personalization: 'DENIED' },
+    timestamp_micros: (purchase.paidAt ?? purchase.updatedAt).getTime() * 1000,
+    consent: {
+      ad_user_data: checkout.adMeasurementAllowed === true ? 'GRANTED' : 'DENIED',
+      ad_personalization: 'DENIED',
+    },
     events: [
       {
         name: 'purchase',

@@ -122,4 +122,22 @@ describe('sheet', () => {
     expect(meta.format).toBe('webp');
     expect(meta.width).toBe(1024);
   });
+
+  it('draws the brand mark over the preview, as shapes that need no fonts', async () => {
+    const sheet = await sharp({
+      create: { width: 1024, height: 1024, channels: 3, background: '#ffffff' },
+    })
+      .png()
+      .toBuffer();
+    const preview = await sharp(await watermark(new Uint8Array(sheet)))
+      .raw()
+      .toBuffer({
+        resolveWithObject: true,
+      });
+    // A plain white sheet has no darker pixels; the mark puts some on it.
+    const dark = [...preview.data].filter((value, index) => index % 3 === 0 && value < 235).length;
+    expect(dark).toBeGreaterThan(5000);
+    // The marks are sparse, so most of the image is still the photo.
+    expect(dark).toBeLessThan((1024 * 1024) / 4);
+  });
 });

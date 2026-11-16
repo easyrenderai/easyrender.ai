@@ -2,9 +2,13 @@ import { ArrowRight, Box, ChevronDownIcon, Code2, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { CodeSnippet } from '@/components/code-snippet';
+import { IntegrationCosts } from '@/components/integrations/costs';
+import { IntegrationLink } from '@/components/integrations/link';
+import { IntegrationResult } from '@/components/integrations/result';
 import { Pricing, Section } from '@/components/landing';
+import { ResourceLinks } from '@/components/resource-links';
 import { StudioHero } from '@/components/studio/hero';
-import { StudioClosing } from '@/components/studio/proof';
+import { StudioClosing, StudioCompatibility } from '@/components/studio/proof';
 import { StudioShell } from '@/components/studio/shell';
 import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
@@ -31,6 +35,7 @@ export async function ApiView({ locale }: { locale: Locale }) {
     currentUser().catch(() => null),
     apiFaqItems(locale),
   ]);
+  const examples = await getTranslations({ locale, namespace: 'IntegrationLanding.examples' });
   const accountHref = user ? '/connectors' : '/sign-up?next=%2Fconnectors';
   const copyLabels = {
     copyLabel: t('examples.copy'),
@@ -49,15 +54,17 @@ export async function ApiView({ locale }: { locale: Locale }) {
           note: t('hero.note'),
         }}
       />
-      <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-y px-5 py-6 text-sm">
-        <p className="text-muted-foreground">{t('formatsLabel')}</p>
-        <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-          {(['auth', 'upload', 'status', 'output'] as const).map((key) => (
-            <li key={key}>{t(`formats.${key}`)}</li>
-          ))}
-        </ul>
-      </div>
+      <StudioCompatibility />
+      <IntegrationResult locale={locale} kind="api" />
       <Section title={t('intro.title')} description={t('intro.description')}>
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 pb-8 text-sm">
+          <p className="text-muted-foreground">{t('formatsLabel')}</p>
+          <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+            {(['auth', 'upload', 'status', 'output'] as const).map((key) => (
+              <li key={key}>{t(`formats.${key}`)}</li>
+            ))}
+          </ul>
+        </div>
         <div className="grid gap-8 md:grid-cols-3">
           {USE_CASES.map(({ key, icon: Icon }) => (
             <div key={key} className="space-y-3 border-t pt-6">
@@ -70,6 +77,7 @@ export async function ApiView({ locale }: { locale: Locale }) {
           ))}
         </div>
       </Section>
+      <IntegrationCosts locale={locale} kind="api" />
       <Section
         id="how-it-works"
         title={t('workflow.title')}
@@ -97,9 +105,9 @@ export async function ApiView({ locale }: { locale: Locale }) {
               {t('connect.accountBody')}
             </p>
             <Button asChild size="lg">
-              <Link href={accountHref}>
+              <IntegrationLink channel="api" action="setup" href={accountHref}>
                 {t('connect.cta')} <ArrowRight aria-hidden="true" />
-              </Link>
+              </IntegrationLink>
             </Button>
             <div className="space-y-2 pt-4">
               <p className="text-sm text-muted-foreground">{t('connect.mcpTitle')}</p>
@@ -140,6 +148,25 @@ export async function ApiView({ locale }: { locale: Locale }) {
           {t('examples.polling')}
         </p>
       </Section>
+      <Section id="runnable-examples" title={examples('title')} description={examples('body')}>
+        <div className="flex flex-wrap justify-center gap-3">
+          {(['python', 'typescript', 'reference'] as const).map((kind) => (
+            <Button key={kind} variant="outline" asChild>
+              <IntegrationLink
+                channel="api"
+                action={kind === 'reference' ? 'reference' : `example_${kind}`}
+                href={
+                  kind === 'reference'
+                    ? '/api/openapi.json'
+                    : `https://github.com/easyrenderai/easyrender.ai/blob/main/examples/rest/${kind === 'python' ? 'render.py' : 'render.ts'}`
+                }
+              >
+                {examples(kind)} <ArrowRight aria-hidden="true" />
+              </IntegrationLink>
+            </Button>
+          ))}
+        </div>
+      </Section>
       <Pricing />
       <Section id="faq" title={t('faq.title')} narrow>
         <div className="sec__column">
@@ -157,6 +184,7 @@ export async function ApiView({ locale }: { locale: Locale }) {
           ))}
         </div>
       </Section>
+      <ResourceLinks locale={locale} context="api" />
       <StudioClosing title={t('closing.title')} label={t('closing.cta')} href={accountHref} />
     </StudioShell>
   );

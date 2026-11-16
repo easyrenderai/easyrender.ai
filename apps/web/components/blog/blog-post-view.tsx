@@ -1,6 +1,8 @@
 import { ArrowLeft, ArrowRight, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
+import { ArticlePromo } from '@/components/blog/article-promo';
+import { ResourceLinks } from '@/components/resource-links';
 import { Button } from '@/components/ui/button';
 import { Markdown, type TocEntry, tocOf } from '@/lib/blog/markdown';
 import {
@@ -61,6 +63,13 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
       </nav>
 
       <article>
+        {/\$|USD/.test(post.body) && (
+          <p className="mt-6 text-sm text-muted-foreground">
+            <Link href={ROUTES.pricing.paths[post.locale]} className="underline underline-offset-4">
+              {t('post.priceReference')}
+            </Link>
+          </p>
+        )}
         <header className="mt-10 max-w-4xl sm:mt-14">
           <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground tabular-nums">
             {t('post.readingTime', { minutes: readingMinutes(post.body) })}
@@ -72,9 +81,18 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
             {post.description}
           </p>
           <p className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 border-t pt-5 text-sm text-muted-foreground tabular-nums">
-            <span className="font-medium text-foreground">
-              {t('post.by', { author: post.author.name })}
-            </span>
+            {post.author.url ? (
+              <Link
+                href={post.author.url}
+                className="font-medium text-foreground underline underline-offset-4"
+              >
+                {t('post.by', { author: post.author.name })}
+              </Link>
+            ) : (
+              <span className="font-medium text-foreground">
+                {t('post.by', { author: post.author.name })}
+              </span>
+            )}
             <span aria-hidden>·</span>
             <time dateTime={post.date}>
               {t('post.published', { date: format.dateTime(new Date(post.date), DATE_FORMAT) })}
@@ -104,6 +122,21 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
               </details>
             )}
 
+            <div className="mb-10 max-w-sm lg:hidden">
+              <ArticlePromo
+                locale={post.locale}
+                copy={{
+                  title: t('post.promo.title'),
+                  solution: t('post.promo.solution'),
+                  visual: t('post.promo.visual'),
+                  play: t('post.promo.play'),
+                  pause: t('post.promo.pause'),
+                  button: t('post.promo.button'),
+                  disclosure: t('post.promo.disclosure'),
+                }}
+              />
+            </div>
+
             <div className="text-base leading-7 sm:text-lg sm:leading-8 [&>*:first-child]:mt-0 [&>:not([data-wide])]:max-w-xl">
               <Markdown
                 source={post.body}
@@ -131,16 +164,34 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
 
           {toc.length > 0 && (
             <aside className="hidden lg:block">
-              <nav aria-label={t('post.toc')} className="sticky top-24 border-l pl-6">
-                <p className="mb-4 font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                  {t('post.toc')}
-                </p>
-                <TocList entries={toc} />
-              </nav>
+              <div className="sticky top-24 max-h-[calc(100dvh-7rem)] space-y-5 overflow-y-auto pb-4">
+                <nav
+                  aria-label={t('post.toc')}
+                  className="max-h-[min(26dvh,14rem)] overflow-y-auto border-l pl-5 pr-2"
+                >
+                  <p className="mb-4 font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                    {t('post.toc')}
+                  </p>
+                  <TocList entries={toc} />
+                </nav>
+                <ArticlePromo
+                  locale={post.locale}
+                  copy={{
+                    title: t('post.promo.title'),
+                    solution: t('post.promo.solution'),
+                    visual: t('post.promo.visual'),
+                    play: t('post.promo.play'),
+                    pause: t('post.promo.pause'),
+                    button: t('post.promo.button'),
+                    disclosure: t('post.promo.disclosure'),
+                  }}
+                />
+              </div>
             </aside>
           )}
         </div>
       </article>
+      <ResourceLinks locale={post.locale} context="article" />
 
       {related.length > 0 && (
         <section aria-labelledby="related-guides" className="mt-24 border-t pt-10">

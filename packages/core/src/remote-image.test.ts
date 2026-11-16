@@ -16,11 +16,23 @@ describe('isPrivateAddress', () => {
     'fd00::1',
     'fe80::1',
     '::ffff:127.0.0.1',
+    '::ffff:7f00:1',
+    '2002:7f00:1::',
+    '2001:db8::1',
+    '::',
+    'ff02::1',
   ])('refuses %s', (address) => {
     expect(isPrivateAddress(address)).toBe(true);
   });
 
-  it.each(['8.8.8.8', '172.32.0.1', '151.101.1.1', '2606:4700::1111'])('allows %s', (address) => {
+  it.each([
+    '8.8.8.8',
+    '172.32.0.1',
+    '151.101.1.1',
+    '2606:4700::1111',
+    '2001:4860:4860::8888',
+    '::ffff:0808:0808',
+  ])('allows %s', (address) => {
     expect(isPrivateAddress(address)).toBe(false);
   });
 });

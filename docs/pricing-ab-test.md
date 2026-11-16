@@ -1,6 +1,79 @@
 # Pricing A/B test — November 2026
 
-Status: **off by default**. This PR does not create a flag, change Vercel variables, create Stripe prices, or merge/deploy anything. Wait until production deploys are healthy.
+Status (2026-11-14): **wired, waiting for the PostHog flag.** The four `*_TEST` Stripe prices exist in the live account (each with EUR `currency_options`), and the production Vercel variables are set: the four `STRIPE_PRICE_*_TEST` IDs, `POSTHOG_PROJECT_ID`, `POSTHOG_API_HOST`, `POSTHOG_PERSONAL_API_KEY` and `PRICING_AB_ENABLED=1`. Until the `pricing-test-2026-11` flag exists and is enabled in PostHog, every visitor stays on control. Next: create the flag (50/50, 100% rollout), check checkout for both arms, then switch it on.
+
+## Three public options and existing subscribers
+
+Public pricing, the home teaser, Credits, MCP and structured offers sell **Pay as you go, Pro,
+and Enterprise**. Free previews remain available through “Try it free” without a card. Pro keeps
+its name in EN/ES/DE/FR/IT/PT and its existing Stripe price: control $49 (EUR €46) for 5,500
+credits/month, $0.008909 per credit (€0.008364). Creator's old control rate is $19/2,000 =
+$0.0095, so retaining Pro preserves the better value. If the existing experiment is enabled,
+Pro remains $79 (EUR €74) for 4,500 credits, $0.017556 (€0.016444) per credit.
+
+`PUBLIC_PLAN_IDS` controls new sales; `PLAN_IDS` still includes Creator and Scale for invoices,
+portal changes, account status and historical reporting. New checkout requests for Creator or
+Scale are rejected. Existing subscriptions and already-created Stripe sessions still receive
+credits through their original price IDs and variant. No subscription is migrated or repriced.
+Keep all old price environment mappings, including `*_TEST`, for renewals. Existing free
+accounts retain previews and their balance; there never was a recurring Free Stripe product.
+Scale is now a legacy billing plan; new high-volume buyers contact Enterprise.
+
+No manually provisioned Stripe product or price, new environment variable or schema is required. Before merging, review
+the existing billing portal configuration: keep payment management and cancellation available,
+and remove Creator/Scale from **new plan-switch destinations** if switching is enabled. Do not
+archive their prices or cancel existing subscriptions. No live settings were changed by this PR.
+
+### Monthly subscriber top-ups
+
+Active and trialing subscribers buy extra credits at **their existing plan's exact per-credit
+rate**. The server reads the user's linked subscription from Stripe on both quote and checkout,
+including when the DB's last status webhook is stale. The actual subscription item price ID
+selects Creator, Pro or Scale and control/test; stale metadata and the current pricing flag cannot
+change that contract. Unknown/unavailable or unlinked live contracts fail closed. Local simulated
+checkout uses the DB plan/status only. `past_due`, `canceled`, `incomplete`, `incomplete_expired`,
+`unpaid` and `paused` do not qualify. An active subscription scheduled for cancellation qualifies
+until its status changes; `past_due` still retains portal access and duplicate-plan protection.
+
+| Plan             | Control USD / credit | Control EUR / credit | Test USD / credit | Test EUR / credit |
+| ---------------- | -------------------: | -------------------: | ----------------: | ----------------: |
+| PAYG             |            $0.010000 |            €0.010000 |         $0.020000 |         €0.020000 |
+| Creator (legacy) |            $0.009500 |            €0.009000 |         $0.018125 |         €0.016875 |
+| Pro              |            $0.008909 |            €0.008364 |         $0.017556 |         €0.016444 |
+| Scale (legacy)   |            $0.008278 |            €0.007722 |         $0.016583 |         €0.015417 |
+
+Table rates are approximate. The shared harness calculates
+`round(credits × plan.priceCents / plan.monthlyCredits)` using the appropriate fixed USD/EUR
+catalogue, rounding once, half up, for the whole purchase. For 1,000 control credits, Pro pays
+$8.91/€8.36, Creator $9.50/€9.00, Scale $8.28/€7.72; PAYG still pays $10/€10.
+The 500–100,000 credit bounds and non-expiring balances are unchanged.
+
+`PaygPicker` → `POST /api/checkout` → `createCheckoutDetails` creates `mode: payment`.
+Eligible subscribers use server-computed inline `price_data`, `unit_amount` equal to the rounded
+pack total, and `quantity: 1`. Stripe creates inline price/product data during checkout; there
+are **no new manually configured products, price IDs, env vars or schema changes**. Existing
+`STRIPE_PRICE_CREATOR/PRO/SCALE` and `*_TEST` mappings identify contracts; keep all of them.
+Non-subscribers keep the existing `STRIPE_PRICE_PAYG`/`STRIPE_PRICE_PAYG_TEST` and credit quantity.
+Adaptive Pricing remains off. Subscribers retain their subscription currency (USD/EUR), including
+when traveling or when the EUR visitor kill switch changes; PAYG retains the existing buyer and
+Stripe-customer currency logic.
+
+Credits/account and the six localized pricing pages share the same server quote and display
+rounded preset pack prices plus the plan-rate hint. The UI sends its displayed amount/currency
+only as a stale-page guard: mismatches return 409 and request refresh. Client-supplied rates,
+plan claims or amounts never set the charge. Subscription state is re-read at checkout; an
+already-created session retains its quoted price even if the subscription changes afterward.
+
+The server snapshots credits, rounded amount and currency in `Purchase`; discounted purchases
+use `topup_<plan>[:test]` for correct USD list-revenue reporting. Session metadata also records
+the credits and plan for support. Signature-verified completed/async-success webhooks require
+paid status, and discounted top-ups additionally require the stored amount/currency/owner to
+match. They grant the **stored credits**, never the amount paid or metadata quantity, through
+`credits.ts`'s transaction/ledger and `stripe:<session id>` idempotency key. Replay, delayed
+payment, cancellation and elapsed time do not add credits twice or expire them.
+
+No live Stripe settings or charges are needed for this follow-up. Keep the existing webhook
+and plan mappings. The previously requested billing-portal review still applies before merge.
 
 ## Price catalogue
 
@@ -12,9 +85,9 @@ Status: **off by default**. This PR does not create a flag, change Vercel variab
 | Model at PAYG rate | $0.64                    | $1.28                    |
 | Minimum purchase   | 500 credits / $5         | 500 credits / $10        |
 | Maximum purchase   | 100,000 credits / $1,000 | 100,000 credits / $2,000 |
-| Creator / month    | $19 / 2,000 credits      | $29 / 1,600 credits      |
+| Creator (legacy)   | $19 / 2,000 credits      | $29 / 1,600 credits      |
 | Pro / month        | $49 / 5,500 credits      | $79 / 4,500 credits      |
-| Scale / month      | $149 / 18,000 credits    | $199 / 12,000 credits    |
+| Scale (legacy)     | $149 / 18,000 credits    | $199 / 12,000 credits    |
 | Enterprise         | Book a call              | Book a call              |
 
 The target was approximately $1.20/model. Two whole cents per credit yields $1.28, keeps Stripe quantities and the $10 minimum exact, and preserves all existing credits' purchasing power. Raising render deductions would devalue existing balances. Test plan effective model rates are $1.16, approximately $1.124, and $1.061; their monthly allocations buy 25, 70, and 187 whole models respectively, with leftovers rolling over. The control cost-plus-70%-margin calculation still determines render credits. The test deliberately experiments with the selling price of new credits, rather than provider costs.

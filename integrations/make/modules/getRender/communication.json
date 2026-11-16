@@ -1,0 +1,19 @@
+{
+  "url": "/renders/{{encodeURL(parameters.id)}}",
+  "method": "GET",
+  "response": {
+    "output": {
+      "id": "{{body.id}}",
+      "status": "{{body.status}}",
+      "name": "{{body.name}}",
+      "prompt": "{{body.prompt}}",
+      "error": "{{body.error}}",
+      "hasModel": "{{body.hasModel}}",
+      "hasPreview": "{{body.hasPreview}}",
+      "hasSheet": "{{body.hasSheet}}",
+      "isPublic": "{{body.isPublic}}",
+      "createdAt": "{{parseDate(body.createdAt)}}",
+      "modelVersion": "{{body.modelVersion}}"
+    }
+  }
+}

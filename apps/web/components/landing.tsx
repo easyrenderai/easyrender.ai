@@ -1,10 +1,11 @@
 import { RENDER_CREDITS } from '@easyrender/harness';
 import { ArrowRight, ChevronDownIcon } from 'lucide-react';
-import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { PlanCards } from '@/components/pricing/plan-cards';
 import { PricingExposure } from '@/components/pricing-exposure';
+import { SiteLink as Link } from '@/components/site-link';
+import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
 import { FAQ_KEYS } from '@/lib/faq';
 import { formatMoney } from '@/lib/price-format';
@@ -72,6 +73,12 @@ export async function Pricing() {
       }
     >
       <PricingExposure variant={pricing.variant} subject={pricing.subject} />
+      <div className="mb-6 flex flex-wrap items-center gap-3">
+        <Button asChild>
+          <Link href={`${ROUTES.home.paths[locale as Locale]}#try`}>{t('tryFree')}</Link>
+        </Button>
+        <p className="text-sm text-muted-foreground">{t('noCard')}</p>
+      </div>
       <PlanCards />
     </Section>
   );

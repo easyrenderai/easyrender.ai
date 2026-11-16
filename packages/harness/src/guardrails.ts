@@ -43,6 +43,15 @@ export const LIMITS = {
   // view differs by under 0.01.
   duplicateViewDistance: 0.015,
   maxDuplicateViews: 3,
+  // Product views: each view is checked on its own before it is kept. A view that fails is drawn
+  // again on its own (up to `viewMaxRetries` times) and, if it still fails, kept and flagged.
+  viewMinObjectSide: 240, // longest side of the object, in pixels of the drawn view
+  viewMinBorderWhite: 0.9, // share of the view's edge that is white
+  viewMinBackground: 225, // the edge's median brightness; lower is a grey or tinted backdrop
+  viewEdgeMargin: 0.01, // the object may not come closer to the edge than this share of the side
+  viewMaxColourDrift: 0.22, // colour distance to the photo (0 same, 1 opposite), object pixels only
+  viewMinSharpness: 20, // Laplacian variance over the object: real views measure 370+, a visibly soft one under 10
+  viewMaxRetries: 1,
 };
 
 export type Limits = typeof LIMITS;

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { isLocale } from '@/i18n/config';
 import {
   attribution,
   attributionHeaders,
@@ -16,6 +17,7 @@ import {
   captureSignup,
 } from '@/lib/analytics/browser';
 import { authClient } from '@/lib/auth-client';
+import { ROUTES } from '@/lib/seo/routes';
 
 export type AuthMode = 'sign-in' | 'sign-up';
 
@@ -35,6 +37,7 @@ export function AuthFields({
   const t = useTranslations('Auth');
   const a = useTranslations('Analytics');
   const locale = useLocale();
+  const legalLocale = isLocale(locale) ? locale : 'en';
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,8 +53,14 @@ export function AuthFields({
         ? await authClient.signUp.email({
             email,
             password,
-            name: String(form.get('name') || email.split('@')[0]),
-            fetchOptions: { body: { attribution: attribution() }, headers: attributionHeaders() },
+            name: email.split('@')[0],
+            fetchOptions: {
+              body: { attribution: attribution() },
+              headers: {
+                ...attributionHeaders(),
+                'x-easyrender-email-locale': locale === 'es' ? 'es' : 'en',
+              },
+            },
           })
         : await authClient.signIn.email({ email, password });
     if (result.error) {
@@ -73,10 +82,15 @@ export function AuthFields({
     const result = await authClient.signIn.social({
       provider: 'google',
       additionalData: { attribution: attribution() },
-      fetchOptions: { headers: attributionHeaders() },
+      fetchOptions: {
+        headers: {
+          ...attributionHeaders(),
+          'x-easyrender-email-locale': locale === 'es' ? 'es' : 'en',
+        },
+      },
       callbackURL: target,
       newUserCallbackURL: target,
-      errorCallbackURL: '/sign-in?error=oauth',
+      errorCallbackURL: `/sign-in?error=oauth&next=${encodeURIComponent(target)}`,
     });
     // On success the browser is already redirecting to Google.
     if (result.error) {
@@ -87,6 +101,20 @@ export function AuthFields({
 
   return (
     <div className="grid gap-4">
+      <p className="text-center text-xs leading-relaxed text-muted-foreground">
+        {t.rich('legalNotice', {
+          terms: (chunks) => (
+            <Link href={ROUTES.terms.paths[legalLocale]} className="underline underline-offset-4">
+              {chunks}
+            </Link>
+          ),
+          privacy: (chunks) => (
+            <Link href={ROUTES.privacy.paths[legalLocale]} className="underline underline-offset-4">
+              {chunks}
+            </Link>
+          ),
+        })}
+      </p>
       <Button type="button" variant="outline" className="w-full" disabled={busy} onClick={google}>
         <GoogleIcon />
         {t('google')}
@@ -97,17 +125,6 @@ export function AuthFields({
         <Separator className="flex-1" />
       </div>
       <form onSubmit={submit} className="grid gap-4">
-        {mode === 'sign-up' && (
-          <div className="grid gap-2">
-            <Label htmlFor={`${mode}-name`}>{t('name')}</Label>
-            <Input
-              id={`${mode}-name`}
-              name="name"
-              autoComplete="name"
-              placeholder={t('namePlaceholder')}
-            />
-          </div>
-        )}
         <div className="grid gap-2">
           <Label htmlFor={`${mode}-email`}>{t('email')}</Label>
           <Input

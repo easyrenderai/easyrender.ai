@@ -7,8 +7,8 @@ import { absoluteUrl } from './site';
 // `published` is not rendered, not linked and not listed.
 //
 // Slugs come from canales/04-seo/ARQUITECTURA-SEO.md table 1.1 and equivalencias-hreflang.csv.
-// They are provisional for de/fr/it/pt until the native reviewer signs them off, which is also
-// why those locales are unpublished: the slug can still change without breaking a live URL.
+// Guides and comparisons are open in every language that has reviewed copy. A locale missing
+// from `published` is not rendered, not linked and not listed.
 
 export type ChangeFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
@@ -30,10 +30,23 @@ export type RouteEntry = {
 };
 
 export const ROUTES = {
+  author: {
+    paths: {
+      en: '/authors/jorge-rodriguez',
+      es: '/es/autores/jorge-rodriguez',
+      de: '/de/autoren/jorge-rodriguez',
+      fr: '/fr/auteurs/jorge-rodriguez',
+      it: '/it/autori/jorge-rodriguez',
+      pt: '/pt/autores/jorge-rodriguez',
+    },
+    published: LOCALES,
+    priority: 0.4,
+    changeFrequency: 'monthly',
+  },
   home: {
     paths: { en: '/', es: '/es', de: '/de', fr: '/fr', it: '/it', pt: '/pt' },
-    // de, fr, it and pt open with the home only (Jorge, 10-nov-2026). Their guides, pricing,
-    // comparisons, services and legal pages wait for reviewed copy.
+    // All six homes, pricing and legal pages are public. Other translated marketing pages
+    // open individually as their copy is reviewed. Legal pages use an English source.
     published: ['en', 'es', 'de', 'fr', 'it', 'pt'],
     priority: 1,
     changeFrequency: 'weekly',
@@ -47,7 +60,7 @@ export const ROUTES = {
       it: '/it/guide',
       pt: '/pt/guias',
     },
-    published: ['en', 'es'],
+    published: ['en', 'es', 'de', 'fr', 'it', 'pt'],
     priority: 0.7,
     changeFrequency: 'daily',
   },
@@ -60,7 +73,7 @@ export const ROUTES = {
       it: '/it/prezzi',
       pt: '/pt/precos',
     },
-    published: ['en', 'es'],
+    published: LOCALES,
     priority: 0.8,
     changeFrequency: 'monthly',
   },
@@ -123,9 +136,9 @@ export const ROUTES = {
   },
   // Declared so the slugs are agreed and reserved. Adding a locale here without a page under
   // app/ would 404, so each one lands with its route.
-  // English comparisons are published and indexable (Jorge, 11-nov-2026): /compare and
-  // /compare/{slug} answer 200, appear in the sitemap and llms.txt, and may be linked from
-  // the guides. Other locales wait for reviewed copy.
+  // Comparisons are published in every language that has reviewed copy: /compare and
+  // /compare/{slug} in English, and the native hub plus slug everywhere else. A locale
+  // with no file for a slug 404s. Hreflang only lists the versions that exist.
   compare: {
     paths: {
       en: '/compare',
@@ -135,7 +148,7 @@ export const ROUTES = {
       it: '/it/confronti',
       pt: '/pt/comparacoes',
     },
-    published: ['en'],
+    published: ['en', 'es', 'de', 'fr', 'it', 'pt'],
     priority: 0.6,
     changeFrequency: 'monthly',
   },
@@ -161,7 +174,7 @@ export const ROUTES = {
       it: '/it/privacy',
       pt: '/pt/privacidade',
     },
-    published: [],
+    published: ['en', 'es', 'de', 'fr', 'it', 'pt'],
     priority: 0.3,
     changeFrequency: 'yearly',
   },
@@ -174,7 +187,7 @@ export const ROUTES = {
       it: '/it/termini',
       pt: '/pt/termos',
     },
-    published: [],
+    published: ['en', 'es', 'de', 'fr', 'it', 'pt'],
     priority: 0.3,
     changeFrequency: 'yearly',
   },

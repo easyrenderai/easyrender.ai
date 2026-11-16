@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { ACCOUNT_NAV, APP_NAV, isActivePath } from './nav';
+import { ACCOUNT_NAV, APP_NAV, isActivePath, SETTINGS_NAV } from './nav';
 
 // The page name lives here, so the pages themselves carry no title or description. Nested pages
 // add a crumb each: the module first, then the page.
@@ -17,6 +17,11 @@ export function AppBreadcrumb() {
   ];
   // A render's page is one level inside the Library.
   if (pathname.startsWith('/r/')) crumbs.push({ href: pathname, label: t('model') });
+  // Credits and Connectors sit one level inside Account.
+  const setting = SETTINGS_NAV.find(
+    (item) => item.href !== ACCOUNT_NAV.href && pathname === item.href,
+  );
+  if (setting) crumbs.push({ href: setting.href, label: nav(setting.key) });
   return (
     <nav aria-label={t('breadcrumb')} className="min-w-0">
       <ol className="flex items-center gap-1.5 text-sm">

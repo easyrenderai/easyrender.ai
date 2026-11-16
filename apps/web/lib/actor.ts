@@ -1,6 +1,14 @@
 import 'server-only';
 import { createHash } from 'node:crypto';
-import { type Actor, bearerToken, verifyApiKey } from '@easyrender/core';
+import {
+  type Actor,
+  type ApiKeyScope,
+  AppError,
+  assertActorScope,
+  bearerToken,
+  consumeApiRateLimit,
+  verifyApiKeyPrincipal,
+} from '@easyrender/core';
 import { headers as nextHeaders } from 'next/headers';
 import { privacyRegion } from '@/lib/analytics/privacy-region';
 import { auth } from './auth';
@@ -22,7 +30,7 @@ function ipHash(headers: Headers): string | null {
 }
 
 // A request is made by an API key holder, a signed-in user, an anonymous visitor, or a mix.
-export async function resolveActor(headers?: Headers): Promise<Actor> {
+export async function resolveActor(headers?: Headers, scope: ApiKeyScope = 'read'): Promise<Actor> {
   const h = headers ?? (await nextHeaders());
   const base = {
     anonId: readCookie(h, ANON_COOKIE),
@@ -30,9 +38,37 @@ export async function resolveActor(headers?: Headers): Promise<Actor> {
     geoCountry: privacyRegion(h).country,
   };
   const token = bearerToken(h);
-  if (token) return { ...base, userId: await verifyApiKey(token) };
+  if (h.has('authorization')) {
+    const principal = await verifyApiKeyPrincipal(token);
+    if (!principal) throw new AppError('Invalid or expired API key', 401, 'unauthorized');
+    const actor = {
+      ...base,
+      userId: principal.userId,
+      apiKeyId: principal.id,
+      source: 'api' as const,
+      apiKeyScopes: principal.scopes,
+    };
+    assertActorScope(actor, scope);
+    await consumeApiRateLimit(`api:${principal.id}`, 120);
+    return actor;
+  }
   const session = await auth().api.getSession({ headers: h });
-  return { ...base, userId: session?.user.id ?? null };
+  return { ...base, userId: session?.user.id ?? null, source: 'web' };
+}
+
+// Pages are for people. A request with a stale or wrong Authorization header (a crawler, an agent
+// replaying a key) is shown the page as an anonymous visitor instead of failing the render with a
+// 500. API routes keep calling `resolveActor`, which still rejects a bad key.
+export async function resolveViewerActor(): Promise<Actor> {
+  const h = await nextHeaders();
+  try {
+    return await resolveActor(h);
+  } catch (error) {
+    if (!(error instanceof AppError) || error.status !== 401) throw error;
+    const withoutKey = new Headers(h);
+    withoutKey.delete('authorization');
+    return resolveActor(withoutKey);
+  }
 }
 
 export async function currentUser() {

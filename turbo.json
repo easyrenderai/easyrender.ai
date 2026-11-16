@@ -35,14 +35,27 @@
         "ANALYTICS_LOCAL_TEST",
         "GA_MEASUREMENT_ID",
         "GA_MEASUREMENT_API_SECRET",
-        "CRON_SECRET"
+        "CRON_SECRET",
+        "EMAIL_ONBOARDING_ENABLED",
+        "RESEND_API_KEY",
+        "RESEND_WEBHOOK_SECRET",
+        "EMAIL_TOKEN_SECRET",
+        "EMAIL_FROM",
+        "EMAIL_REPLY_TO",
+        "EMAIL_LEGAL_IDENTITY",
+        "EMAIL_ALLOWED_RECIPIENTS",
+        "SERVICE_EMAIL_ENABLED",
+        "SERVICE_EMAIL_ENCRYPTION_SECRET"
       ],
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
-    "test": {},
+    "test": {
+      "env": ["TEST_DATABASE_URL"],
+      "cache": false
+    },
     "dev": {
       "cache": false,
       "persistent": true

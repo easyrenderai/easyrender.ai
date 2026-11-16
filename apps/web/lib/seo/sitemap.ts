@@ -1,4 +1,5 @@
 import { LOCALES, type Locale } from '@/i18n/config';
+import { parseImage } from '@/lib/blog/images';
 import {
   indexableBlogIndexPaths,
   isBlogIndexIndexable,
@@ -6,7 +7,7 @@ import {
   modifiedDate,
   postLivePaths,
 } from '@/lib/blog/posts';
-import { isComparePublished, listComparePages } from '@/lib/compare/pages';
+import { compareLivePaths, isComparePublished, listComparePages } from '@/lib/compare/pages';
 import { hasPublishedRuns } from '@/lib/evals';
 import {
   type ChangeFrequency,
@@ -29,7 +30,19 @@ export type SitemapEntry = {
   priority: number;
   /** Equivalents in other languages, for xhtml:link. */
   alternates: Partial<Record<Locale, string>>;
+  /** Public images rendered in this page, including still posters for embedded models. */
+  images?: string[];
 };
+
+function contentImages(body: string): string[] {
+  const images = new Set<string>();
+  for (const line of body.split('\n')) {
+    const image = parseImage(line);
+    if (!image?.size || image.diagram) continue;
+    images.add(image.model?.poster ?? image.src);
+  }
+  return [...images];
+}
 
 /** Everything a locale publishes today: its registry pages and its live posts. */
 export function localeEntries(locale: Locale, now: Date = new Date()): SitemapEntry[] {
@@ -43,23 +56,33 @@ export function localeEntries(locale: Locale, now: Date = new Date()): SitemapEn
     if (key === 'evals' && !hasPublishedRuns()) continue;
     const entry = ROUTES[key];
     const posts = key === 'blog' ? listPosts(locale, now) : [];
+    const comparisons =
+      key === 'compare' && isComparePublished(locale) ? listComparePages(locale) : [];
+    // Publication order is not update order: editing an older guide changes the hub too.
+    const lastModified = [
+      ...posts.map(modifiedDate),
+      ...comparisons.flatMap((page) => (page.updated ? [page.updated] : [])),
+    ]
+      .sort()
+      .at(-1);
     entries.push({
       path: entry.paths[locale],
       changeFrequency: entry.changeFrequency,
       priority: entry.priority,
       // The hub's alternates are the other indexable hubs only: never a noindex page.
       alternates: key === 'blog' ? indexableBlogIndexPaths(now) : livePaths(key),
-      // The guides index changes when its newest guide does.
-      ...(posts[0] ? { lastModified: modifiedDate(posts[0]) } : {}),
+      ...(lastModified ? { lastModified } : {}),
     });
-    // Individual comparisons live under /compare/{slug}, like guides under /learn/{slug}.
-    if (key === 'compare' && isComparePublished() && locale === 'en') {
-      for (const page of listComparePages()) {
+    // Individual comparisons live under the locale hub, like guides under /learn/{slug}.
+    // Alternates are only the translations that exist, so a missing file is never listed.
+    if (key === 'compare') {
+      for (const page of comparisons) {
         entries.push({
           path: page.path,
           changeFrequency: 'monthly',
           priority: 0.6,
-          alternates: { en: page.path },
+          alternates: compareLivePaths(page.group),
+          images: contentImages(page.body),
           ...(page.updated ? { lastModified: page.updated } : {}),
         });
       }
@@ -73,6 +96,7 @@ export function localeEntries(locale: Locale, now: Date = new Date()): SitemapEn
       changeFrequency: 'monthly',
       priority: 0.6,
       alternates: postLivePaths(post.group, now),
+      images: contentImages(post.body),
     });
   }
 
@@ -103,6 +127,10 @@ function urlNode(entry: SitemapEntry): string {
     `    <changefreq>${entry.changeFrequency}</changefreq>`,
     `    <priority>${entry.priority}</priority>`,
     ...links,
+    ...(entry.images ?? []).map(
+      (path) =>
+        `    <image:image><image:loc>${escapeXml(absoluteUrl(path))}</image:loc></image:image>`,
+    ),
     '  </url>',
   ].join('\n');
 }
@@ -110,7 +138,7 @@ function urlNode(entry: SitemapEntry): string {
 export function localeSitemapXml(locale: Locale, now: Date = new Date()): string {
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
     ...localeEntries(locale, now).map(urlNode),
     '</urlset>',
     '',

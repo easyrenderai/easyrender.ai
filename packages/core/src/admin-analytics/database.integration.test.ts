@@ -32,9 +32,93 @@ describe.skipIf(!url)('read-only analytics against Postgres', () => {
     expect(view.tables).toHaveLength(0);
   });
   it('loads deployed attribution without changing schema', async () => {
-    const columns = await attributionColumns();
-    const s = await loadDatabase(true, [], columns);
-    expect(s.columns).toEqual(columns);
-    if (columns.user) expect(s.attribution.length).toBe(s.users.length);
+    const id = `analytics-${crypto.randomUUID()}`;
+    await db().user.create({
+      data: {
+        id,
+        name: 'Attribution fixture',
+        email: `${id}@example.invalid`,
+        utm_campaign: 'integration-check',
+        utm_source: 'test',
+      },
+    });
+    try {
+      const columns = await attributionColumns();
+      const s = await loadDatabase(true, [], columns);
+      expect(s.columns).toEqual(columns);
+      expect(columns.user).toBe(true);
+      // Other suites insert/delete their own users concurrently. Verify our stable fixture,
+      // not equality between two global queries made at different instants.
+      expect(s.users.find((user) => user.id === id)?.email).toBe(`${id}@example.invalid`);
+      expect(s.attribution.find((user) => user.id === id)).toMatchObject({
+        utm_campaign: 'integration-check',
+        utm_source: 'test',
+      });
+      expect(await attributionColumns()).toEqual(columns);
+      expect(await db().user.findUnique({ where: { id } })).toMatchObject({
+        utm_campaign: 'integration-check',
+        utm_source: 'test',
+      });
+    } finally {
+      await db().user.delete({ where: { id } });
+    }
+  });
+  it('loads advanced provider estimates once per operation and applies the same team exclusions', async () => {
+    const id = `costs-${crypto.randomUUID()}`;
+    const email = `${id}@example.invalid`;
+    const at = new Date('2032-01-02');
+    await db().user.create({ data: { id, name: 'Cost fixture', email } });
+    try {
+      const render = await db().render.create({
+        data: { userId: id, sourceKey: 'fixture', costUsd: 2, createdAt: at },
+      });
+      const set = await db().viewSet.create({
+        data: { userId: id, sourceKey: 'fixture', renderId: render.id, costUsd: 3, createdAt: at },
+      });
+      const upscale = await db().upscale.create({
+        data: {
+          userId: id,
+          sourceKey: 'fixture',
+          viewSetId: set.id,
+          kind: 'view',
+          scale: 2,
+          credits: 100,
+          costUsd: 1,
+          createdAt: at,
+        },
+      });
+      const included = await loadDatabase(true, [email], { user: false, Render: false });
+      expect(included.viewSets.filter((row) => row.id === set.id)).toMatchObject([
+        { costUsd: 3, createdAt: at },
+      ]);
+      expect(included.upscales.filter((row) => row.id === upscale.id)).toMatchObject([
+        { costUsd: 1, createdAt: at },
+      ]);
+      const excluded = await loadDatabase(false, [email], { user: false, Render: false });
+      expect(excluded.viewSets.some((row) => row.userId === id)).toBe(false);
+      expect(excluded.upscales.some((row) => row.userId === id)).toBe(false);
+      const period = periodRange(
+        { period: 'custom', from: '2032-01-01', to: '2032-01-03' },
+        new Date('2032-01-04'),
+        undefined,
+        'UTC',
+      );
+      const scoped = {
+        ...included,
+        renders: included.renders.filter((row) => row.userId === id),
+        viewSets: included.viewSets.filter((row) => row.userId === id),
+        upscales: included.upscales.filter((row) => row.userId === id),
+      };
+      const report = buildReport('overview', scoped, period, databaseFinance(scoped), {
+        visits: null,
+        previousVisits: null,
+        uniqueVisitors: null,
+        previousUniqueVisitors: null,
+        dimensions: {},
+      });
+      expect(report.metrics.find((metric) => metric.key === 'providerCost')?.value).toBe(6);
+    } finally {
+      await db().user.delete({ where: { id } });
+    }
   });
 });

@@ -1,7 +1,7 @@
 import {
   CREDIT_USD,
   PAYG,
-  PLAN_IDS,
+  PUBLIC_PLAN_IDS,
   RENDER_CREDITS,
   SUBSCRIPTION_PLANS,
 } from '@easyrender/harness';
@@ -21,9 +21,9 @@ import { absoluteUrl, SITE_NAME } from './site';
 import { localeEntries, sitemapLocales } from './sitemap';
 
 // /llms.txt and /llms-full.txt (https://llmstxt.org): the site described for AI assistants, in
-// plain markdown. Both are built from the same sources as the sitemaps, so they list exactly the
+// plain markdown. Their marketing listings come from the sitemaps, so they list exactly the
 // indexable URLs: never the gallery, model pages, hub, ad landings, auth or the app, and a guide
-// appears on the day it is published, with no deploy.
+// appears on the day it is published, with no deploy. Agent entry points are listed separately.
 //
 // Every product statement here follows decisiones/claims.md: one photo, a free angle sheet, a 3D
 // model as GLB and USDZ, AR coming soon. No real-world size or scale, no other formats, no
@@ -61,6 +61,15 @@ const PAGE_LABELS: Record<string, { title: string; note: string }> = {
     title: 'easyrender em português (Portugal)',
     note: 'A mesma página em português de Portugal: de uma imagem para 3D com uma só fotografia.',
   },
+  ...Object.fromEntries(
+    (['de', 'fr', 'it', 'pt'] as const).map((locale) => [
+      ROUTES.pricing.paths[locale],
+      {
+        title: { de, fr, it, pt }[locale].Pricing.breadcrumb,
+        note: { de, fr, it, pt }[locale].Pricing.title,
+      },
+    ]),
+  ),
   [ROUTES.pricing.paths.en]: {
     title: 'Pricing',
     note: 'Pay as you go credits and the monthly plans, as currently charged.',
@@ -91,15 +100,48 @@ const PAGE_LABELS: Record<string, { title: string; note: string }> = {
   },
   [ROUTES.blog.paths.en]: { title: 'Guides', note: 'Guides on photos, 3D files and formats.' },
   [ROUTES.blog.paths.es]: { title: 'Guías', note: 'Guías en español.' },
+  [ROUTES.blog.paths.de]: {
+    title: 'Ratgeber',
+    note: 'Ratgeber zu Fotos, 3D-Dateien und Formaten.',
+  },
+  [ROUTES.blog.paths.fr]: {
+    title: 'Guides',
+    note: 'Guides sur les photos, les fichiers 3D et les formats.',
+  },
+  [ROUTES.blog.paths.it]: { title: 'Guide', note: 'Guide su foto, file 3D e formati.' },
+  [ROUTES.blog.paths.pt]: {
+    title: 'Guias',
+    note: 'Guias sobre fotografias, ficheiros 3D e formatos.',
+  },
   [ROUTES.compare.paths.en]: {
-    title: COMPARE_INDEX.title,
-    note: COMPARE_INDEX.description,
+    title: COMPARE_INDEX.en.title,
+    note: COMPARE_INDEX.en.description,
+  },
+  [ROUTES.compare.paths.es]: {
+    title: COMPARE_INDEX.es.title,
+    note: COMPARE_INDEX.es.description,
+  },
+  [ROUTES.compare.paths.de]: {
+    title: COMPARE_INDEX.de.title,
+    note: COMPARE_INDEX.de.description,
+  },
+  [ROUTES.compare.paths.fr]: {
+    title: COMPARE_INDEX.fr.title,
+    note: COMPARE_INDEX.fr.description,
+  },
+  [ROUTES.compare.paths.it]: {
+    title: COMPARE_INDEX.it.title,
+    note: COMPARE_INDEX.it.description,
+  },
+  [ROUTES.compare.paths.pt]: {
+    title: COMPARE_INDEX.pt.title,
+    note: COMPARE_INDEX.pt.description,
   },
 };
 
 function summary(): string[] {
   const modelPrice = usd(RENDER_CREDITS * CREDIT_USD);
-  const plans = PLAN_IDS.map((id) => {
+  const plans = PUBLIC_PLAN_IDS.map((id) => {
     const plan = SUBSCRIPTION_PLANS[id];
     return `${plan.label} ${usd(plan.priceCents / 100)} for ${plan.monthlyCredits.toLocaleString('en-US')} credits`;
   }).join(', ');
@@ -112,12 +154,31 @@ function summary(): string[] {
     '',
     '- Input: one photo of a single object (furniture, decor, building exterior).',
     '- Free step: an angle sheet that draws the object from every side, so you can check the shape before paying.',
-    `- Paid step: a finished, textured 3D model for ${RENDER_CREDITS} credits (${modelPrice}). Credits cost ${usd(CREDIT_USD)} each, from ${PAYG.min.toLocaleString('en-US')} credits; monthly plans: ${plans}. Credits never expire. If a 3D build fails, its credits are refunded.`,
+    `- Paid step: a finished, textured 3D model for ${RENDER_CREDITS} credits (${modelPrice}). Credits cost ${usd(CREDIT_USD)} each, from ${PAYG.min.toLocaleString('en-US')} credits; monthly plan: ${plans}. Enterprise offers custom volume pricing by contacting the team. Monthly subscribers can top up at the displayed pay-as-you-go rate from Credits without changing plans. Credits never expire. If a 3D build fails, its credits are refunded.`,
     '- Downloads: GLB and USDZ.',
     '- Augmented reality (see the model in your room from a phone) is coming soon.',
     '- Limits: one object at a time, not whole interior rooms. The model keeps shape and materials, not real-world measurements or scale.',
-    '- Finished models appear in a public gallery by default.',
+    '- Web-created models appear in the public gallery by default. New API and MCP renders are private unless explicitly shared.',
     '- For agents: easyrender is also an MCP server, so Claude, Cursor, VS Code and other MCP clients can create models with an API key.',
+    '',
+  ];
+}
+
+function forAgentsSection(): string[] {
+  return [
+    '## For agents',
+    '',
+    `- [MCP server (English)](${absoluteUrl(ROUTES.mcp.paths.en)}): setup and tools.`,
+    `- [MCP server (Spanish)](${absoluteUrl(ROUTES.mcp.paths.es)}): setup and tools in Spanish.`,
+    `- [Remote MCP endpoint](${absoluteUrl('/api/mcp')}): streamable HTTP; initialize, notifications/initialized, ping and tools/list are public without credentials. All tools/call requests require OAuth or an API key in Authorization: Bearer; missing or invalid credentials return a JSON-RPC unauthorized error with status 401.`,
+    '- [Official MCP Registry entry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.easyrenderai/easyrender): io.github.easyrenderai/easyrender.',
+    `- [REST API (English)](${absoluteUrl(ROUTES.api.paths.en)}): image-to-3D API overview.`,
+    `- [REST API (Spanish)](${absoluteUrl(ROUTES.api.paths.es)}): image-to-3D API overview in Spanish.`,
+    `- [REST OpenAPI contract](${absoluteUrl('/api/openapi.json')}): versioned request, response, authentication and capability schemas.`,
+    '- [Agent skill on GitHub](https://github.com/easyrenderai/easyrender-image-to-3d): installation and usage.',
+    '- [Agent skill on skills.sh](https://www.skills.sh/easyrenderai/easyrender-image-to-3d/easyrender-image-to-3d): skill listing.',
+    '- [Agent skill on ClawHub](https://clawhub.ai/jorgerl02/skills/easyrender-image-to-3d): skill listing.',
+    '- [Gemini CLI extension](https://github.com/easyrenderai/easyrender-image-to-3d/blob/main/gemini-extension.json): the same skill repo includes gemini-extension.json.',
     '',
   ];
 }
@@ -131,7 +192,7 @@ function indexableLinks(now: Date): { pages: Link[]; guides: Link[] } {
     const posts = new Map<string, BlogPost>(
       listPosts(locale, now).map((post) => [post.path, post]),
     );
-    const compares = new Map(listComparePages().map((page) => [page.path, page]));
+    const compares = new Map(listComparePages(locale).map((page) => [page.path, page]));
     for (const entry of localeEntries(locale, now)) {
       const post = posts.get(entry.path);
       if (post) {
@@ -161,11 +222,12 @@ function indexableLinks(now: Date): { pages: Link[]; guides: Link[] } {
 
 const linkLine = ({ url, title, note }: Link) => `- [${title}](${url})${note ? `: ${note}` : ''}`;
 
-/** /llms.txt: the summary and the indexable pages, nothing else. */
+/** /llms.txt: the summary, agent entry points and indexable pages. */
 export function llmsTxt(now: Date = new Date()): string {
   const { pages, guides } = indexableLinks(now);
   return [
     ...summary(),
+    ...forAgentsSection(),
     '## Pages',
     '',
     ...pages.map(linkLine),
@@ -196,7 +258,7 @@ export function faqText(locale: Locale): { question: string; answer: string }[] 
 
 /** /llms-full.txt: llms.txt plus the FAQ of each live home and the full text of every guide. */
 export function llmsFullTxt(now: Date = new Date()): string {
-  const lines = [...summary()];
+  const lines = [...summary(), ...forAgentsSection()];
   const faqTitles: Record<Locale, string> = {
     en: 'FAQ (English)',
     es: 'Preguntas frecuentes (español)',

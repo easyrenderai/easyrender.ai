@@ -44,7 +44,7 @@ for (const variant of ['control', 'test'] as const) {
       { name: 'er_home_locale', value: 'en', url: base },
     ]);
     const model = variant === 'test' ? '1.28' : '0.64';
-    const firstPlan = variant === 'test' ? '$29' : '$19';
+    const firstPlan = variant === 'test' ? '$79' : '$49';
     await page.goto(`${base}/credits?__geo=DE`);
     await expect(page.locator('html')).toHaveAttribute('data-pricing-variant', variant);
     await expect(page.getByRole('heading', { name: 'Credits', exact: true })).toBeVisible();
@@ -71,7 +71,7 @@ for (const variant of ['control', 'test'] as const) {
         model.replace('.', locale === 'en' ? '.' : ','),
       );
       const offers = await page.locator('script[type="application/ld+json"]').allTextContents();
-      expect(offers.join('')).toContain(variant === 'test' ? '29.00' : '19.00');
+      expect(offers.join('')).toContain(variant === 'test' ? '79.00' : '49.00');
       const faq = page.locator('#faq');
       await expect(faq).toContainText(model.replace('.', locale === 'en' ? '.' : ','));
     }
@@ -117,9 +117,9 @@ for (const variant of ['control', 'test'] as const) {
         { exact: true },
       ),
     ).toBeVisible();
-    await page.getByRole('button', { name: 'Subscribe to Creator', exact: true }).click();
+    await page.getByRole('button', { name: 'Subscribe to Pro', exact: true }).click();
     await expect(
-      page.getByText(new RegExp(`You have ${variant === 'test' ? '1,600' : '2,000'} credits`)),
+      page.getByText(new RegExp(`You have ${variant === 'test' ? '4,500' : '5,500'} credits`)),
     ).toBeVisible();
     expect(analytics).toEqual([]);
   });

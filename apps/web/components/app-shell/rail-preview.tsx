@@ -7,7 +7,7 @@ import type { ReactNode } from 'react';
 import { StatusDot } from './status-dot';
 import { displayName, type ShellData } from './types';
 
-type Kind = 'overview' | 'library' | 'connectors' | 'credits' | 'account';
+type Kind = 'overview' | 'library' | 'account';
 
 function Kpi({ value, label }: { value: string; label: string }) {
   return (
@@ -54,7 +54,7 @@ export function RailPreview({
 
   if (kind === 'overview') {
     kpis = [
-      { value: num(data.balance), label: t('preview.credits') },
+      { value: num(stats.total), label: t('preview.models') },
       { value: num(stats.inFlight), label: t('preview.inProgress') },
       { value: num(stats.ready), label: t('preview.ready') },
     ];
@@ -75,33 +75,6 @@ export function RailPreview({
           meta={ago(render.createdAt)}
         />
       ));
-  } else if (kind === 'connectors') {
-    kpis = [
-      { value: num(data.keys.filter((key) => key.lastUsedAt).length), label: t('preview.agents') },
-      { value: num(data.keys.length), label: t('preview.keys') },
-      { value: num(stats.byAgent), label: t('preview.byAgents') },
-    ];
-    caption = t('preview.keysCaption');
-    lines =
-      data.keys.length === 0 ? (
-        <Line text={t('preview.noKeys')} />
-      ) : (
-        data.keys
-          .slice(0, 3)
-          .map((key) => (
-            <Line
-              key={key.id}
-              text={key.name}
-              meta={key.lastUsedAt ? ago(key.lastUsedAt) : t('preview.neverUsed')}
-            />
-          ))
-      );
-  } else if (kind === 'credits') {
-    kpis = [
-      { value: num(data.balance), label: t('preview.balance') },
-      { value: num(data.costs.sheet), label: t('preview.sheet') },
-      { value: num(data.costs.render), label: t('preview.build') },
-    ];
   } else {
     kpis = [];
     caption = t('preview.signedIn');

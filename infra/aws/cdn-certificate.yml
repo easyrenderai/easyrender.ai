@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: easyrender.ai CDN certificate. Deploy in us-east-1, the only region CloudFront reads certificates from.
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: cdn.easyrender.ai
+  HostedZoneId:
+    Type: AWS::Route53::HostedZone::Id
+    Description: Route 53 zone that holds DomainName. The stack writes the validation record there and waits for the certificate.
+
+Resources:
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          HostedZoneId: !Ref HostedZoneId
+
+Outputs:
+  CertificateArn:
+    Description: Pass it to storage.yml as CertificateArn.
+    Value: !Ref Certificate

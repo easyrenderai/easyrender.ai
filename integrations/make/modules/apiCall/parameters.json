@@ -1,0 +1,44 @@
+[
+  {
+    "name": "url",
+    "label": "URL",
+    "type": "text",
+    "required": true,
+    "validate": {
+      "pattern": "^/[A-Za-z0-9][A-Za-z0-9/_-]*$"
+    },
+    "help": "Enter the path after https://easyrender.ai/api, for example /credits. Add query parameters below."
+  },
+  {
+    "name": "method",
+    "label": "Method",
+    "type": "select",
+    "required": true,
+    "default": "GET",
+    "options": ["GET", "POST", "PATCH", "DELETE"]
+  },
+  {
+    "name": "qs",
+    "label": "Query String",
+    "type": "array",
+    "spec": [
+      {
+        "name": "key",
+        "label": "Key",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "value",
+        "label": "Value",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "name": "body",
+    "label": "Body",
+    "type": "text",
+    "help": "JSON body for mutations. Paid operations require explicit authorization and an approved maxCredits ceiling; do not automatically replay an uncertain submission."
+  }
+]

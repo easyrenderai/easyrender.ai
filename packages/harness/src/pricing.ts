@@ -20,6 +20,27 @@ export const BUILD_COST_USD = 0.09;
 export const RENDER_COST_USD = FINAL_SHEET_COST_USD + BUILD_COST_USD;
 export const RENDER_CREDITS = creditsFor(RENDER_COST_USD);
 
+// The upscaler, per output image. It is the paid Upscale action (one finished picture, a product
+// view or the angle sheet of a paid render, enlarged to print size, at a flat price because the
+// upscaler charges per picture) and the upscale step inside product views.
+export const ENLARGE_COST_USD = 0.006;
+export const UPSCALE_CREDITS = creditsFor(ENLARGE_COST_USD);
+
+// Product views: one photo in, nine packshots out on white, with no 3D build. The 2K sheet is drawn
+// once, each view is upscaled to the packshot size, and the price keeps room for one view the
+// checks send back for a redraw (a 1K single view plus its upscale). Nothing in it is 3D.
+export const PRODUCT_VIEW_COUNT = 9;
+export const VIEW_REDRAW_COST_USD = SHEET_COST_USD + ENLARGE_COST_USD;
+export const PRODUCT_VIEWS_COST_USD =
+  FINAL_SHEET_COST_USD + PRODUCT_VIEW_COUNT * ENLARGE_COST_USD + VIEW_REDRAW_COST_USD;
+export const PRODUCT_VIEWS_CREDITS = creditsFor(PRODUCT_VIEWS_COST_USD);
+// Polishing one view: the owner describes what is wrong and that view is drawn again.
+export const VIEW_POLISH_CREDITS = creditsFor(VIEW_REDRAW_COST_USD);
+// A 3D build from a finished set reuses its 2K sheet, so it only charges for what is left of a
+// full render: the 3D step.
+export const FINAL_SHEET_CREDITS = creditsFor(FINAL_SHEET_COST_USD);
+export const BUILD_FROM_VIEWS_CREDITS = RENDER_CREDITS - FINAL_SHEET_CREDITS;
+
 // Pay as you go: buy any number of credits at CREDIT_USD each, through one Stripe price of $0.01.
 export const PAYG = { min: 500, max: 100_000, presets: [1000, 2500, 5000, 10_000] };
 
@@ -34,7 +55,10 @@ export const SUBSCRIPTION_PLANS = {
 } as const;
 
 export type PlanId = keyof typeof SUBSCRIPTION_PLANS;
+// Keep every billed plan for renewals, portal changes and historical reporting.
 export const PLAN_IDS = Object.keys(SUBSCRIPTION_PLANS) as PlanId[];
+// Only Pro is offered to new subscribers. Creator and Scale are grandfathered.
+export const PUBLIC_PLAN_IDS: readonly PlanId[] = ['pro'];
 export const isPlanId = (value: unknown): value is PlanId =>
   typeof value === 'string' && Object.hasOwn(SUBSCRIPTION_PLANS, value);
 
@@ -132,5 +156,35 @@ export const isValidPaygCredits = (credits: number, variant: PricingVariant = 'c
 
 export const paygPriceCents = (credits: number, variant: PricingVariant = 'control') =>
   Math.round(credits * pricingFor(variant).creditUsd * 100);
+
+/** A rational rate: retain the plan's exact cents/credits until the whole pack is rounded. */
+export function topupPricing(
+  subscription: { status: string | null; plan: string | null; variant: PricingVariant } | null,
+  paygVariant: PricingVariant = 'control',
+  currency: ChargeCurrency = 'usd',
+) {
+  const plan =
+    subscription &&
+    (subscription.status === 'active' || subscription.status === 'trialing') &&
+    isPlanId(subscription.plan)
+      ? subscription.plan
+      : null;
+  const variant = plan && subscription ? subscription.variant : paygVariant;
+  return {
+    plan,
+    variant,
+    currency,
+    priceCents: unitAmountCents(plan ?? 'payg', variant, currency),
+    creditsPerUnit: plan ? pricingFor(variant).plans[plan].monthlyCredits : 1,
+  };
+}
+
+/** Round once, half up to the nearest cent; never round the per-credit rate first. */
+export function topupAmountCents(
+  credits: number,
+  rate: Pick<ReturnType<typeof topupPricing>, 'priceCents' | 'creditsPerUnit'>,
+) {
+  return Math.round((credits * rate.priceCents) / rate.creditsPerUnit);
+}
 
 export const rendersFor = (credits: number) => Math.floor(credits / RENDER_CREDITS);

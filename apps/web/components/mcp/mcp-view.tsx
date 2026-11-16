@@ -1,11 +1,15 @@
 import { config } from '@easyrender/core';
 import { ArrowRight, Box, ChevronDownIcon, Code2, Repeat2 } from 'lucide-react';
-import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { Pricing, Section } from '@/components/landing';
+import { IntegrationCosts } from '@/components/integrations/costs';
+import { IntegrationLink } from '@/components/integrations/link';
+import { IntegrationResult } from '@/components/integrations/result';
+import { Section } from '@/components/landing';
+import { McpSkill } from '@/components/mcp/mcp-skill';
 import { McpSetup } from '@/components/mcp-setup';
+import { ResourceLinks } from '@/components/resource-links';
 import { StudioHero } from '@/components/studio/hero';
-import { StudioClosing } from '@/components/studio/proof';
+import { StudioClosing, StudioCompatibility } from '@/components/studio/proof';
 import { StudioShell } from '@/components/studio/shell';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -47,16 +51,17 @@ export async function McpView({ locale }: { locale: Locale }) {
           note: t('hero.note'),
         }}
       />
-      <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-y px-5 py-6 text-sm">
-        <p className="text-muted-foreground">{t('clientsLabel')}</p>
-        <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-          {CLIENTS.map((client) => (
-            <li key={client}>{client}</li>
-          ))}
-        </ul>
-      </div>
-
+      <StudioCompatibility />
+      <IntegrationResult locale={locale} kind="mcp" />
       <Section title={t('intro.title')} description={t('intro.description')}>
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 pb-8 text-sm">
+          <p className="text-muted-foreground">{t('clientsLabel')}</p>
+          <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+            {CLIENTS.map((client) => (
+              <li key={client}>{client}</li>
+            ))}
+          </ul>
+        </div>
         <div className="grid gap-8 md:grid-cols-3">
           {USE_CASES.map(({ key, icon: Icon }) => (
             <div key={key} className="space-y-3 border-t pt-6">
@@ -70,6 +75,7 @@ export async function McpView({ locale }: { locale: Locale }) {
         </div>
       </Section>
 
+      <IntegrationCosts locale={locale} kind="mcp" />
       <Section
         id="how-it-works"
         title={t('workflow.title')}
@@ -125,10 +131,15 @@ export async function McpView({ locale }: { locale: Locale }) {
               {t('connect.accountBody')}
             </p>
             <Button asChild size="lg">
-              <Link href={accountHref}>
+              <IntegrationLink channel="mcp" action="setup" href={accountHref}>
                 {t('connect.cta')} <ArrowRight aria-hidden="true" />
-              </Link>
+              </IntegrationLink>
             </Button>
+            <div>
+              <Button variant="outline" asChild>
+                <a href="#agent-skill">{t('skill.cta')}</a>
+              </Button>
+            </div>
             <dl className="space-y-2 pt-3 text-sm">
               <dt className="text-muted-foreground">{t('connect.endpoint')}</dt>
               <dd className="break-all font-mono text-xs">{mcpUrl}</dd>
@@ -144,7 +155,7 @@ export async function McpView({ locale }: { locale: Locale }) {
         </div>
       </Section>
 
-      <Pricing />
+      <McpSkill locale={locale} />
       <Section id="faq" title={t('faq.title')} narrow>
         <div className="sec__column">
           {items.map((item) => (
@@ -161,6 +172,7 @@ export async function McpView({ locale }: { locale: Locale }) {
           ))}
         </div>
       </Section>
+      <ResourceLinks locale={locale} context="mcp" />
       <StudioClosing title={t('closing.title')} label={t('closing.cta')} href={accountHref} />
     </StudioShell>
   );

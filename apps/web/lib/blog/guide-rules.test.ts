@@ -43,11 +43,15 @@ const textOnly = (body: string) =>
 
 const decode = (html: string) =>
   html
+    // A closing block tag is a space in the reading order. Stripping it with nothing joins
+    // two FAQ paragraphs into one word, so a multi-paragraph answer never matches.
+    .replace(/<\/(p|li|h[1-6]|blockquote|figcaption)>/gi, ' ')
     .replace(/<[^>]+>/g, '')
     .replace(/&#x27;|&#39;/g, "'")
     .replace(/&quot;/g, '"')
     .replace(/&amp;/g, '&')
-    .replace(/\s+/g, ' ');
+    .replace(/\s+/g, ' ')
+    .trim();
 
 describe.each(guides.map((post) => [`${post.locale}/${post.slug}`, post] as const))(
   'guide %s',

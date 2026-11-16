@@ -1,8 +1,8 @@
 'use client';
 
 import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
+import { SiteLink as Link } from '@/components/site-link';
 import { photoUrl } from '@/lib/studio/catalog';
 import { useSection } from './use-section';
 
@@ -45,7 +45,7 @@ export function StudioWheel() {
             {/* biome-ignore lint/performance/noImgElement: swapped by the 3D code on every lap */}
             <img
               data-er="photo"
-              src={photoUrl('armchair')}
+              src={photoUrl('bedside-table')}
               alt=""
               width={720}
               height={720}

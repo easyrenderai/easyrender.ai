@@ -2,6 +2,7 @@ import { withSentryConfig } from '@sentry/nextjs/config';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import { gaMeasurementId } from './lib/analytics/config';
+import { PUBLIC_PHOTO_VERSION } from './lib/public-models';
 import { NOINDEX_HEADER_PATHS } from './lib/seo/noindex';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
@@ -10,7 +11,13 @@ const STATIC_MEDIA_PATHS = ['/studio/:path*', '/showcase/:path*'];
 
 const nextConfig: NextConfig = {
   env: { NEXT_PUBLIC_GA_MEASUREMENT_ID: gaMeasurementId() },
-  images: { qualities: [75, 85] },
+  images: {
+    qualities: [75, 85],
+    localPatterns: [
+      { pathname: '/**', search: '' },
+      { pathname: '/showcase/armchair.jpg', search: `?v=${PUBLIC_PHOTO_VERSION}` },
+    ],
+  },
   transpilePackages: [
     '@easyrender/core',
     '@easyrender/db',
@@ -25,6 +32,27 @@ const nextConfig: NextConfig = {
   // adds a generateMetadata to it, which matters most for the ad landings.
   async headers() {
     return [
+      ...[
+        '/reset-password',
+        '/verify-email',
+        '/api/auth/reset-password',
+        '/api/auth/verify-email',
+      ].map((source) => ({
+        source,
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+          { key: 'Referrer-Policy', value: 'no-referrer' },
+          { key: 'Cache-Control', value: 'private, no-store' },
+        ],
+      })),
+      {
+        source: '/email/:path*',
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+          { key: 'Referrer-Policy', value: 'no-referrer' },
+          { key: 'Cache-Control', value: 'private, no-store' },
+        ],
+      },
       {
         source: '/admin/:path*',
         headers: [
@@ -48,8 +76,9 @@ const nextConfig: NextConfig = {
       },
       // The studio models, photos and showcase files in public/ are served with max-age=0 by
       // default, so every visit revalidated megabytes of GLB. Their names carry no content hash,
-      // so they get a day of freshness and a week of stale-while-revalidate, not `immutable`:
-      // a replaced file shows up within a day.
+      // so they get a day of freshness and a week of stale-while-revalidate, not `immutable`.
+      // A browser can keep painting the previous bytes through that window. When a GLB is
+      // replaced, bump PUBLIC_MODEL_VERSION in lib/public-models.ts so the page requests a new URL.
       ...STATIC_MEDIA_PATHS.map((source) => ({
         source,
         headers: [

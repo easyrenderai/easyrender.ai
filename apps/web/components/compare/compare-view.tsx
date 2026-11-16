@@ -1,7 +1,10 @@
 import { ArrowRight, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
+import { ArticlePromo } from '@/components/blog/article-promo';
 import { DATE_FORMAT } from '@/components/blog/post-card';
+import { ComparisonChoices } from '@/components/compare/comparison-choices';
+import { ResourceLinks } from '@/components/resource-links';
 import { Button } from '@/components/ui/button';
 import { Markdown, type TocEntry, tocOf } from '@/lib/blog/markdown';
 import { isLiveBlogLink, readingMinutes } from '@/lib/blog/posts';
@@ -32,8 +35,11 @@ function TocList({ entries }: { entries: TocEntry[] }) {
  * from the content file or from the Blog strings it shares with the guides.
  */
 export async function CompareView({ page }: { page: ComparePage }) {
-  const [t, format] = await Promise.all([getTranslations('Blog'), getFormatter()]);
-  const home = ROUTES.home.paths.en;
+  const [t, format] = await Promise.all([
+    getTranslations({ locale: page.locale, namespace: 'Blog' }),
+    getFormatter({ locale: page.locale }),
+  ]);
+  const home = ROUTES.home.paths[page.locale];
   const toc = tocOf(page.body);
 
   return (
@@ -47,8 +53,8 @@ export async function CompareView({ page }: { page: ComparePage }) {
           </li>
           <li aria-hidden>/</li>
           <li className="shrink-0">
-            <Link href={ROUTES.compare.paths.en} className="hover:text-foreground">
-              Comparisons
+            <Link href={ROUTES.compare.paths[page.locale]} className="hover:text-foreground">
+              {t('comparisons.title')}
             </Link>
           </li>
           <li aria-hidden>/</li>
@@ -70,13 +76,29 @@ export async function CompareView({ page }: { page: ComparePage }) {
           <p className="mt-6 max-w-3xl text-lg leading-relaxed text-muted-foreground text-pretty sm:text-xl">
             {page.description}
           </p>
-          {page.updated && (
-            <p className="mt-8 border-t pt-5 text-sm text-muted-foreground tabular-nums">
-              <time dateTime={page.updated}>
-                {t('post.updated', {
-                  date: format.dateTime(new Date(`${page.updated}T00:00:00Z`), DATE_FORMAT),
-                })}
-              </time>
+          {(page.author || page.updated) && (
+            <p className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 border-t pt-5 text-sm text-muted-foreground tabular-nums">
+              {page.author &&
+                (page.author.url ? (
+                  <Link
+                    href={page.author.url}
+                    className="font-medium text-foreground underline underline-offset-4"
+                  >
+                    {t('post.by', { author: page.author.name })}
+                  </Link>
+                ) : (
+                  <span className="font-medium text-foreground">
+                    {t('post.by', { author: page.author.name })}
+                  </span>
+                ))}
+              {page.author && page.updated && <span aria-hidden>·</span>}
+              {page.updated && (
+                <time dateTime={page.updated}>
+                  {t('post.updated', {
+                    date: format.dateTime(new Date(`${page.updated}T00:00:00Z`), DATE_FORMAT),
+                  })}
+                </time>
+              )}
             </p>
           )}
         </header>
@@ -95,8 +117,50 @@ export async function CompareView({ page }: { page: ComparePage }) {
               </details>
             )}
 
+            <div className="mb-10 max-w-sm lg:hidden">
+              <ArticlePromo
+                locale={page.locale}
+                copy={{
+                  title: t('post.promo.title'),
+                  solution: t('post.promo.solution'),
+                  visual: t('post.promo.visual'),
+                  play: t('post.promo.play'),
+                  pause: t('post.promo.pause'),
+                  button: t('post.promo.button'),
+                  disclosure: t('post.promo.disclosure'),
+                }}
+              />
+            </div>
+
+            {['compare-meshy', 'compare-tripo'].includes(page.group) && (
+              <ComparisonChoices
+                copy={{
+                  title: t('comparisons.choices.title'),
+                  photo: {
+                    need: t('comparisons.choices.photo.need'),
+                    tools: t('comparisons.choices.photo.tools'),
+                    check: t('comparisons.choices.photo.check'),
+                  },
+                  views: {
+                    need: t('comparisons.choices.views.need'),
+                    tools: t('comparisons.choices.views.tools'),
+                    check: t('comparisons.choices.views.check'),
+                  },
+                  animation: {
+                    need: t('comparisons.choices.animation.need'),
+                    tools: t('comparisons.choices.animation.tools'),
+                    check: t('comparisons.choices.animation.check'),
+                  },
+                }}
+              />
+            )}
+
             <div className="text-base leading-7 sm:text-lg sm:leading-8 [&>*:first-child]:mt-0 [&>:not([data-wide])]:max-w-xl">
-              <Markdown source={page.body} isLive={isLiveBlogLink('en')} locale="en" />
+              <Markdown
+                source={page.body}
+                isLive={isLiveBlogLink(page.locale)}
+                locale={page.locale}
+              />
             </div>
 
             <aside className="mt-20 max-w-xl rounded-2xl border bg-muted/40 p-6 sm:p-10">
@@ -117,16 +181,34 @@ export async function CompareView({ page }: { page: ComparePage }) {
 
           {toc.length > 0 && (
             <aside className="hidden lg:block">
-              <nav aria-label={t('post.toc')} className="sticky top-24 border-l pl-6">
-                <p className="mb-4 font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                  {t('post.toc')}
-                </p>
-                <TocList entries={toc} />
-              </nav>
+              <div className="sticky top-24 max-h-[calc(100dvh-7rem)] space-y-5 overflow-y-auto pb-4">
+                <nav
+                  aria-label={t('post.toc')}
+                  className="max-h-[min(26dvh,14rem)] overflow-y-auto border-l pl-5 pr-2"
+                >
+                  <p className="mb-4 font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                    {t('post.toc')}
+                  </p>
+                  <TocList entries={toc} />
+                </nav>
+                <ArticlePromo
+                  locale={page.locale}
+                  copy={{
+                    title: t('post.promo.title'),
+                    solution: t('post.promo.solution'),
+                    visual: t('post.promo.visual'),
+                    play: t('post.promo.play'),
+                    pause: t('post.promo.pause'),
+                    button: t('post.promo.button'),
+                    disclosure: t('post.promo.disclosure'),
+                  }}
+                />
+              </div>
             </aside>
           )}
         </div>
       </article>
+      <ResourceLinks locale={page.locale} context="article" />
     </div>
   );
 }

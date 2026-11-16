@@ -1,3 +1,4 @@
+import { createTranslator } from 'next-intl';
 import { describe, expect, it } from 'vitest';
 import { LOCALES } from '@/i18n/config';
 import de from '@/messages/de.json';
@@ -7,10 +8,19 @@ import fr from '@/messages/fr.json';
 import itMessages from '@/messages/it.json';
 import pt from '@/messages/pt.json';
 
-// Every language answers for the same keys with the same ICU arguments, so a missing string can
-// never throw on a live page and a price placeholder can never be replaced by a typed number.
+// Every app language answers for the same keys with the same ICU arguments.
+// Email-only copy is deliberately limited to the two explicitly selectable email languages;
+// it is passed as props from en/es rather than requested from the active app locale.
 
 const MESSAGES = { en, es, de, fr, it: itMessages, pt };
+const EMAIL_LOCALES: ReadonlySet<string> = new Set(['en', 'es']);
+const EMAIL_ONLY_NAMESPACES = new Set([
+  'MailingEmails',
+  'MailingSystem',
+  'MailingUI',
+  'AuthService',
+  'ServiceEmails',
+]);
 
 type Tree = { [key: string]: string | Tree };
 
@@ -34,16 +44,24 @@ describe('the message files', () => {
 
   // A translation may leave an argument out (Spanish does not need every number), but it may
   // never use one the code does not pass: that string would throw at render time.
-  it.each(LOCALES)('%s has exactly the English keys, and no unknown ICU argument', (locale) => {
-    const messages = flatten(MESSAGES[locale]);
-    expect([...messages.keys()].sort()).toEqual([...reference.keys()].sort());
-    for (const [key, value] of reference) {
-      const allowed = argumentsOf(value);
-      for (const name of argumentsOf(messages.get(key) ?? '')) {
-        expect(allowed, `${locale}: ${key} uses {${name}}`).toContain(name);
+  it.each(LOCALES)(
+    '%s has exactly its supported English keys, and no unknown ICU argument',
+    (locale) => {
+      const messages = flatten(MESSAGES[locale]);
+      const scopedReference = new Map(
+        [...reference].filter(
+          ([key]) => EMAIL_LOCALES.has(locale) || !EMAIL_ONLY_NAMESPACES.has(key.split('.')[0]),
+        ),
+      );
+      expect([...messages.keys()].sort()).toEqual([...scopedReference.keys()].sort());
+      for (const [key, value] of scopedReference) {
+        const allowed = argumentsOf(value);
+        for (const name of argumentsOf(messages.get(key) ?? '')) {
+          expect(allowed, `${locale}: ${key} uses {${name}}`).toContain(name);
+        }
       }
-    }
-  });
+    },
+  );
 
   it.each(['de', 'fr', 'it', 'pt'] as const)(
     '%s writes no credit amount by hand on the home',
@@ -59,8 +77,41 @@ describe('the message files', () => {
     },
   );
 
+  it.each(LOCALES)('%s keeps MCP copy and metadata free of amounts and plans', (locale) => {
+    const messages = MESSAGES[locale];
+    const copy = JSON.stringify([
+      messages.McpLanding,
+      messages.IntegrationLanding.costs.mcp,
+      messages.IntegrationLanding.result,
+      messages.AgentDemo,
+    ]);
+    expect(copy).not.toMatch(
+      /[$€]|\d[\d.,\s]*\s*(credits|créditos|crédits|crediti)|\{credits\}|5,500|Go Pro|Buy credits|monthly plans/i,
+    );
+    expect(messages.McpLanding.meta.description).not.toMatch(/credit|crédit|[$€]|plan/i);
+  });
+
   it('keeps pt in European Portuguese', () => {
     const text = JSON.stringify(pt);
     expect(text).not.toMatch(/\bvocê\b|\bcelular\b|\bbaixar\b|\bcadastr/i);
+  });
+
+  it.each(LOCALES)('%s names MRRAMOS INMUEBLES SL with its CIF and fiscal address', (locale) => {
+    const t = createTranslator({ locale, messages: MESSAGES[locale], namespace: 'Legal' });
+    expect(t('operator.name')).toContain('MRRAMOS INMUEBLES SL');
+    expect(t('operator.taxId')).toBe('CIF/NIF: B75763383');
+    expect(t('operator.address')).toBe(
+      'Registered address / domicilio fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (Spain)',
+    );
+    expect(t('operator.contact')).toBe('Contact email: info@easyrender.ai');
+    expect(t('terms.intro')).toContain('operated by MRRAMOS INMUEBLES SL');
+    expect(t('terms.sections.law.body')).toContain('governed by Spanish law');
+    expect(t('terms.sections.law.body')).toContain('courts of Spain');
+    expect(t('privacy.sections.rights.body')).toContain(
+      'Agencia Española de Protección de Datos (AEPD)',
+    );
+    const legal = JSON.stringify(MESSAGES[locale].Legal);
+    expect(legal).not.toMatch(/Smithii|smithii\.io|Ras Al Khaimah|\bUAE\b|\bPDPL\b|\(ICO\)/);
+    expect(legal).not.toMatch(/CIF_MRRAMOS|DOMICILIO_MRRAMOS|registered office/i);
   });
 });

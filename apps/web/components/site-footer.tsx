@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { BrandMark } from '@/components/brand-mark';
+import { SiteLink as Link } from '@/components/site-link';
 import { Separator } from '@/components/ui/separator';
 import type { Locale } from '@/i18n/config';
 import { isPublished, ROUTES } from '@/lib/seo/routes';
@@ -14,6 +14,8 @@ const COLUMNS = [
       { hash: '#how-it-works', key: 'howItWorks' },
       { hash: '#try', key: 'try' },
       { route: 'blog', key: 'guides' },
+      { route: 'compare', key: 'comparisons' },
+      { route: 'author', key: 'editorial' },
       { href: '/hub', key: 'hub' },
       { href: '/explore', key: 'gallery' },
       { route: 'pricing', key: 'pricing' },
@@ -36,6 +38,8 @@ const COLUMNS = [
       { href: '/dashboard', key: 'dashboard' },
       { href: '/sign-up', key: 'signUp' },
       { href: '/sign-in', key: 'signIn' },
+      { route: 'privacy', key: 'privacy' },
+      { route: 'terms', key: 'terms' },
       { route: 'cookies', key: 'cookies' },
     ],
   },

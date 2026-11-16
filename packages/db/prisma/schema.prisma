@@ -35,15 +35,21 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  emailSubscription EmailSubscription?
+  serviceEmailDeliveries ServiceEmailDelivery[]
+
   sessions  Session[]
   accounts  Account[]
   renders   Render[]
   ledger    CreditLedger[]
   purchases Purchase[]
   googleCheckouts GoogleCheckout[]
+  posthogDeliveries PosthogDelivery[]
   apiKeys   ApiKey[]
   catalogItems CatalogItem[]
   shopifyShops ShopifyShop[]
+  viewSets  ViewSet[]
+  upscales  Upscale[]
 
   @@map("user")
 }
@@ -130,6 +136,12 @@ model Render {
   status            RenderStatus @default(drafting)
   sourceKey         String
   sourceUrl         String?
+  // Idempotent creation is scoped to a user (or anonymous visitor), never an API token.
+  requestScope      String?
+  requestKey        String?
+  requestHash       String?
+  // Throttles status polling without changing the generation's updatedAt deadline.
+  pollAfter         DateTime?
   sheetKey          String?
   glbKey            String?
   // Material changes made by the owner, as a list of { index, baseColor?, roughness?, metalness? }
@@ -138,10 +150,17 @@ model Render {
   // What the guardrails measured at each stage (photo, draft sheet, final sheet, model), for
   // comparing quality across renders. Never read to decide anything; see render-quality.ts.
   quality           Json?
+  // What the owner asked to fix in the angle sheet, and how many redraws they have paid for. The
+  // note joins the prompt in every later sheet, including the final one of the paid build.
+  sheetNote         String?
+  sheetRedraws      Int          @default(0)
   sheetPredictionId String?      @unique
   buildPredictionId String?      @unique
   // A paid build redraws the sheet with the final model before the 3D build; this is that prediction.
   finalSheetPredictionId String? @unique
+  // True when the sheet is already the final 2K sheet (it came from a product views set), so the
+  // paid build skips the redraw and only charges for the 3D step.
+  hasFinalSheet     Boolean      @default(false)
   // Set by whichever call starts the 3D build, so webhook and polling cannot start it twice.
   buildClaimedAt    DateTime?
   costUsd           Float        @default(0)
@@ -156,11 +175,145 @@ model Render {
   source            String       @default("web")
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
+  // Immutable successful GLB completion; null for historical rows with no observed time.
+  completedAt       DateTime?
+  previewCompletedAt DateTime?
+  edits             RenderEdit[]
 
+  @@unique([requestScope, requestKey])
   @@index([userId, createdAt])
   @@index([anonId, createdAt])
   @@index([ipHash, createdAt])
   @@index([isPublic, status, createdAt])
+  @@index([completedAt, id])
+  @@index([previewCompletedAt, id])
+}
+
+// What the owner did to a render after the free preview, newest last: the angle sheet drawn, a
+// redraw with its note, the 3D build, a material change. One row per paid or saved step, written
+// when the step starts, so the History tab on the render page can list them. A render made
+// before this table existed simply has none.
+model RenderEdit {
+  id        String   @id @default(cuid())
+  renderId  String
+  render    Render   @relation(fields: [renderId], references: [id], onDelete: Cascade)
+  // sheet | sheet_redraw | build | material
+  kind      String
+  // The owner's words for a redraw; null for the rest.
+  note      String?
+  // What the step cost. Zero for a material change.
+  credits   Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([renderId, createdAt])
+}
+
+// Product views: one photo in, nine packshots out on white, with no 3D build. A set is paid for
+// when it is created; its views can be polished one by one afterwards.
+enum ViewSetStatus {
+  drafting
+  processing
+  ready
+  failed
+}
+
+enum ProductViewStatus {
+  drawing
+  upscaling
+  ready
+}
+
+model ViewSet {
+  id                String        @id @default(cuid())
+  userId            String
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name              String?
+  prompt            String?
+  status            ViewSetStatus @default(drafting)
+  sourceKey         String
+  sourceUrl         String?
+  // The 3x3 sheet the views were cut from, and how many sheets were drawn (one automatic retry).
+  sheetKey          String?
+  sheetPredictionId String?       @unique
+  sheetAttempts     Int           @default(1)
+  // What the guardrails measured on the sheet and on each view, for comparing quality over time.
+  quality           Json?
+  credits           Int           @default(0)
+  costUsd           Float         @default(0)
+  error             String?
+  // The 3D render made from these views, once the owner chose to build one.
+  renderId          String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  views             ProductView[]
+
+  @@index([userId, createdAt])
+}
+
+model ProductView {
+  id           String            @id @default(cuid())
+  setId        String
+  set          ViewSet           @relation(fields: [setId], references: [id], onDelete: Cascade)
+  // One of the nine sheet positions: front, front_right, ..., top.
+  view         String
+  status       ProductViewStatus @default(drawing)
+  // Durable processing lease; provider ids survive temporary download failures.
+  advanceAfter DateTime?
+  // The finished packshot (white background, fixed canvas). Empty until the first one is made.
+  key          String?
+  // The drawn view before it was upscaled and finished.
+  rawKey       String?
+  predictionId String?           @unique
+  // Redraws tried for this stage; the automatic ones stop at the harness limit.
+  attempts     Int               @default(0)
+  // What the owner asked to fix, and how many polishes they have paid for.
+  note         String?
+  polishes     Int               @default(0)
+  // True while the current stage is a paid polish, so a failed one is refunded and reverted.
+  isPolishing  Boolean           @default(false)
+  // The checks that ran on the current picture: the problems found, if any.
+  qa           Json?
+  version      Int               @default(0)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@unique([setId, view])
+}
+
+// A paid enlargement of one picture the owner already has: a product view, or the angle sheet of
+// a paid render. The original is never touched; the larger file is stored beside it.
+enum UpscaleStatus {
+  processing
+  ready
+  failed
+}
+
+model Upscale {
+  id           String        @id @default(cuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // view | sheet
+  kind         String
+  // The render (sheet) or the views set and view name (view) it was made from.
+  renderId     String?
+  viewSetId    String?
+  view         String?
+  status       UpscaleStatus @default(processing)
+  sourceKey    String
+  // The enlarged picture, once there is one.
+  key          String?
+  predictionId String?       @unique
+  scale        Int
+  width        Int?
+  height       Int?
+  credits      Int
+  costUsd      Float         @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([renderId])
+  @@index([viewSetId, view])
 }
 
 model CreditLedger {
@@ -190,7 +343,30 @@ model Purchase {
   status          String   @default("pending")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  paidAt          DateTime?
   googleDelivery GooglePurchaseDelivery?
+  @@index([paidAt, id])
+}
+
+model ImageUpload {
+  id          String   @id @default(cuid())
+  userId      String
+  sourceKey   String
+  contentType String
+  size        Int
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([expiresAt])
+}
+
+model ApiRateWindow {
+  id        String   @id
+  count     Int      @default(1)
+  expiresAt DateTime
+
+  @@index([expiresAt])
 }
 
 model ApiKey {
@@ -202,14 +378,31 @@ model ApiKey {
   hash       String    @unique
   lastUsedAt DateTime?
   createdAt  DateTime  @default(now())
+  // OAuth keys are bound to this easyrender service; manual and existing keys remain unscoped.
+  resource   String?
+  scopes     String[]  @default(["read", "write", "spend", "share"])
+  creditLimit Int?
+  spentCredits Int     @default(0)
+  expiresAt  DateTime?
 
   @@index([userId])
+}
+
+// A consumed authorization code must stay consumed even after its API key is revoked.
+// Only a digest is stored, never the code, verifier or access token.
+model OAuthCodeRedemption {
+  codeHash  String   @id
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
 }
 
 // One product of a connected store (Shopify, WooCommerce, ...) that is turned into a 3D model.
 // A plugin sends its products; the server walks each one from photo to finished model.
 model CatalogItem {
   id         String   @id @default(cuid())
+  apiKeyId   String?
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   platform   String
@@ -254,6 +447,7 @@ model GoogleCheckout {
   user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
   clientId    String
   sessionId   String
+  adMeasurementAllowed Boolean @default(false)
   invoiceId   String? @unique
   createdAt   DateTime @default(now())
   expiresAt   DateTime
@@ -271,7 +465,156 @@ model GooglePurchaseDelivery {
   attempts    Int @default(0)
   nextAttemptAt DateTime @default(now())
   leaseUntil  DateTime?
+  leaseToken  String?
   deliveredAt DateTime?
   lastError   String?
   @@index([deliveredAt, nextAttemptAt])
+}
+
+// Business events are immutable after enqueue; no emails, prompts or source URLs are stored.
+model PosthogDelivery {
+  id            String @id
+  userId        String?
+  user          User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event         String
+  distinctId    String
+  subjectId     String @default("")
+  alias         String?
+  properties    Json
+  occurredAt    DateTime
+  createdAt     DateTime @default(now())
+  attempts      Int @default(0)
+  nextAttemptAt DateTime @default(now())
+  leaseUntil    DateTime?
+  leaseToken    String?
+  deliveredAt   DateTime?
+  deadAt        DateTime?
+  lastError     String?
+  @@index([deliveredAt, deadAt, nextAttemptAt])
+  @@index([event, subjectId])
+  @@index([userId])
+}
+
+model AdvertisingSpend {
+  id           String @id @default(cuid())
+  date         DateTime @db.Date
+  platform     String @default("google_ads")
+  accountId    String
+  campaignId   String
+  campaignName String
+  currency     String
+  costCents    Int
+  clicks       Int
+  impressions  Int
+  importedAt   DateTime @default(now())
+  @@unique([platform, accountId, campaignId, date, currency])
+  @@index([date])
+}
+
+// Voluntary commercial onboarding only; no enrollment inferred from analytics consent.
+model EmailSubscription {
+  id String @id @default(cuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email String
+  locale String
+  route String
+  timezone String
+  status String @default("pending")
+  consentVersion String
+  consentNonce String
+  unsubscribeNonce String
+  requestedAt DateTime
+  confirmExpiresAt DateTime
+  confirmedAt DateTime?
+  expiresAt DateTime
+  isPaused Boolean @default(false)
+  nextCheckAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deliveries EmailDelivery[]
+  events EmailConsentEvent[]
+  @@index([status, nextCheckAt])
+}
+model EmailConsentEvent {
+  id String @id @default(cuid())
+  subscriptionId String
+  subscription EmailSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  event String
+  version String
+  occurredAt DateTime @default(now())
+  @@index([subscriptionId, occurredAt])
+}
+model EmailDelivery {
+  id String @id @default(cuid())
+  subscriptionId String
+  subscription EmailSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  kind String
+  messageKey String
+  status String @default("pending")
+  payload Json
+  recipient String
+  consentNonce String
+  expiresAt DateTime
+  firstAttemptAt DateTime?
+  lastAttemptAt DateTime?
+  nextAttemptAt DateTime @default(now())
+  attempts Int @default(0)
+  leaseToken String?
+  leaseUntil DateTime?
+  providerId String? @unique
+  acceptedAt DateTime?
+  deliveredAt DateTime?
+  bouncedAt DateTime?
+  complainedAt DateTime?
+  lastError String?
+  createdAt DateTime @default(now())
+  @@unique([subscriptionId, kind, messageKey])
+  @@index([status, nextAttemptAt])
+}
+
+// Authenticated provider facts are retained without message bodies or recipient PII.
+// They may arrive before the send response supplies providerId to EmailDelivery.
+model EmailProviderEvent {
+  id String @id
+  providerId String
+  type String
+  occurredAt DateTime
+  receivedAt DateTime @default(now())
+  @@index([providerId, occurredAt])
+}
+
+// Service messages are independent of promotional consent. Auth payloads are encrypted.
+model ServiceEmailDelivery {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose String
+  dedupeKey String @unique
+  email String
+  locale String @default("en")
+  renderId String?
+  payloadEncrypted String?
+  status String @default("queued")
+  attempts Int @default(0)
+  firstAttemptAt DateTime?
+  nextAttemptAt DateTime @default(now())
+  leaseUntil DateTime?
+  leaseToken String?
+  providerId String? @unique
+  acceptedAt DateTime?
+  deliveredAt DateTime?
+  expiresAt DateTime
+  lastError String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([status, nextAttemptAt])
+  @@index([userId, purpose])
+  @@index([email, firstAttemptAt])
+}
+
+model ServiceEmailSuppression {
+  email String @id
+  reason String
+  createdAt DateTime @default(now())
 }

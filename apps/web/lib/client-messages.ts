@@ -8,8 +8,8 @@
 type Messages = { [key: string]: string | Messages };
 
 export const CLIENT_NAMESPACES = [
-  'AgentDemo',
   'Analytics',
+  'AdminGift',
   'ShopifyApp',
   'ShopifyConnect',
   'Ar',
@@ -17,6 +17,7 @@ export const CLIENT_NAMESPACES = [
   'BuyButton',
   'Catalog',
   'ConnectorsPanel',
+  'ConnectionCheck',
   'AppHome',
   'AppShell',
   'DashboardNav',
@@ -25,6 +26,9 @@ export const CLIENT_NAMESPACES = [
   'Library',
   'McpSetup',
   'PaygPicker',
+  'Pricing.calculator',
+  'ProductViews',
+  'Upscale',
   'PromptBar',
   'Render',
   'Showcase',

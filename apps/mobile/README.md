@@ -62,8 +62,9 @@ Test builds without the stores: `bunx eas-cli build --platform all --profile pre
 ## Error monitoring (Sentry)
 
 `lib/sentry.ts` starts `@sentry/react-native` from the root layout and wraps it with `Sentry.wrap`.
-It is off until `EXPO_PUBLIC_SENTRY_DSN` is set for the build (EAS env var, `eas env:create`; the DSN
-is public). Use a separate Sentry project from `easyrender-web`. The SDK is native code, so it
+It is off until `EXPO_PUBLIC_SENTRY_DSN` is set for the build. `eas.json` sets it for every build
+profile (the DSN is public, project `easyrender-mobile` in the `easyrenderai` Sentry org, separate
+from the web project). The SDK is native code, so it
 needs a new EAS build; Expo Go and OTA updates are not enough. Source maps and readable native
 stack traces need the Sentry Expo config plugin and Metro plugin plus `SENTRY_AUTH_TOKEN` as an
 EAS secret; that is not wired yet.

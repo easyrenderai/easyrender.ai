@@ -17,6 +17,8 @@ const state = vi.hoisted(() => ({
   customer: vi.fn(),
   customerId: null as string | null,
   lastCurrency: null as string | null,
+  subscriptionStatus: null as string | null,
+  subscription: vi.fn(),
 }));
 vi.mock('./pricing-experiment', async (original) => ({
   ...(await original<typeof import('./pricing-experiment')>()),
@@ -28,7 +30,9 @@ vi.mock('@easyrender/db', () => ({
       findUnique: async () => ({
         email: 'qa@example.invalid',
         stripeCustomerId: state.customerId,
-        subscriptionStatus: null,
+        subscriptionStatus: state.subscriptionStatus,
+        subscriptionPlan: state.subscriptionStatus ? 'pro' : null,
+        subscriptionId: state.subscriptionStatus ? 'sub_existing' : null,
       }),
     },
     purchase: {
@@ -40,11 +44,12 @@ vi.mock('@easyrender/db', () => ({
 vi.mock('stripe', () => ({
   default: class {
     prices = { retrieve: state.price };
+    subscriptions = { retrieve: state.subscription };
     customers = { retrieve: state.customer };
     checkout = { sessions: { create: state.session } };
   },
 }));
-const price = (plan: 'payg' | 'creator', variant: PricingVariant = 'test') =>
+const price = (plan: 'payg' | 'pro', variant: PricingVariant = 'test') =>
   ({
     id: `price_${plan}_${variant}`,
     active: true,
@@ -64,14 +69,52 @@ beforeEach(() => {
   state.variant = 'test';
   state.customerId = null;
   state.lastCurrency = null;
-  vi.stubEnv('STRIPE_SECRET_KEY', 'local-only');
-  vi.stubEnv('STRIPE_PRICE_PAYG_TEST', 'price_payg_test');
+  state.subscriptionStatus = null;
+  state.subscription.mockResolvedValue({
+    status: 'active',
+    customer: 'cus_existing',
+    currency: 'usd',
+    items: { data: [{ price: { id: 'price_pro_control' } }] },
+  });
+  vi.stubEnv('STRIPE_PRICE_PAYG', 'price_payg_control');
+  vi.stubEnv('STRIPE_PRICE_SCALE', 'price_scale_control');
+  vi.stubEnv('STRIPE_PRICE_SCALE_TEST', 'price_scale_test');
   vi.stubEnv('STRIPE_PRICE_CREATOR_TEST', 'price_creator_test');
   vi.stubEnv('STRIPE_PRICE_CREATOR', 'price_creator_control');
+  vi.stubEnv('STRIPE_SECRET_KEY', 'local-only');
+  vi.stubEnv('STRIPE_PRICE_PAYG_TEST', 'price_payg_test');
+  vi.stubEnv('STRIPE_PRICE_PRO_TEST', 'price_pro_test');
+  vi.stubEnv('STRIPE_PRICE_PRO', 'price_pro_control');
   state.session.mockResolvedValue({ id: 'cs_local', url: 'https://checkout.stripe.com/local' });
   state.price.mockResolvedValue(price('payg'));
 });
 afterEach(() => vi.unstubAllEnvs());
+it('preserves the render on both checkout return URLs', async () => {
+  await createCheckout('user', { plan: 'payg', credits: 500, next: '/r/render_123' });
+  const checkout = state.session.mock.calls[0][0];
+  expect(new URL(checkout.success_url).searchParams.get('next')).toBe('/r/render_123');
+  expect(new URL(checkout.cancel_url).searchParams.get('next')).toBe('/r/render_123');
+});
+it.each(['/views', '/views/set_123'])(
+  'preserves existing product-view return navigation: %s',
+  async (next) => {
+    await createCheckout('user', { plan: 'payg', credits: 500, next });
+    const checkout = state.session.mock.calls[0][0];
+    expect(new URL(checkout.success_url).searchParams.get('next')).toBe(next);
+    expect(new URL(checkout.cancel_url).searchParams.get('next')).toBe(next);
+  },
+);
+it.each([
+  '//evil.example',
+  '/\\evil.example',
+  'https://evil.example',
+  '/r/../account',
+  '/r/test?next=evil',
+])('never forwards an unsafe checkout destination: %s', async (next) => {
+  await createCheckout('user', { plan: 'payg', credits: 500, next });
+  const checkout = state.session.mock.calls[0][0];
+  expect(new URL(checkout.success_url).searchParams.has('next')).toBe(false);
+});
 it('ignores forged prices and variants, charges the assigned price and snapshots the credits', async () => {
   const body = {
     plan: 'payg',
@@ -105,16 +148,16 @@ it('validates quantity again at the authoritative checkout entry point', async (
     });
   }
   expect(state.session).not.toHaveBeenCalled();
-  expect(parseCheckout({ plan: 'creator', credits: 999999 }, 'test')).toEqual({ plan: 'creator' });
+  expect(parseCheckout({ plan: 'pro', credits: 999999 }, 'test')).toEqual({ plan: 'pro' });
 });
 it('snapshots subscription metadata and validates the Stripe monthly price', async () => {
-  state.price.mockResolvedValue(price('creator'));
-  await createCheckout('user', { plan: 'creator' });
+  state.price.mockResolvedValue(price('pro'));
+  await createCheckout('user', { plan: 'pro' });
   expect(state.session.mock.calls[0][0]).toMatchObject({
     mode: 'subscription',
-    line_items: [{ price: 'price_creator_test', quantity: 1 }],
-    metadata: { plan: 'creator', pricing_variant: 'test' },
-    subscription_data: { metadata: { plan: 'creator', pricing_variant: 'test' } },
+    line_items: [{ price: 'price_pro_test', quantity: 1 }],
+    metadata: { plan: 'pro', pricing_variant: 'test' },
+    subscription_data: { metadata: { plan: 'pro', pricing_variant: 'test' } },
   });
 });
 it('fails closed for a misconfigured Stripe amount, currency, billing scheme or interval', async () => {
@@ -132,8 +175,8 @@ it('fails closed for a misconfigured Stripe amount, currency, billing scheme or 
   }
   expect(() =>
     validateCheckoutPrice(
-      { ...price('creator'), recurring: { interval: 'year' } } as Stripe.Price,
-      'creator',
+      { ...price('pro'), recurring: { interval: 'year' } } as Stripe.Price,
+      'pro',
       'test',
     ),
   ).toThrow();
@@ -223,4 +266,142 @@ it('keeps a returning buyer in the currency of their last paid order', async () 
   state.lastCurrency = 'eur';
   await createCheckout('user', { plan: 'payg', credits: 500 }, { country: 'US' });
   expect(state.session.mock.calls[1][0]).toMatchObject({ currency: 'eur' });
+});
+
+it.each(['active', 'trialing'])(
+  'charges a %s Pro subscriber their contracted rate even after flag reassignment',
+  async (status) => {
+    state.subscriptionStatus = status;
+    state.customerId = 'cus_existing';
+    state.customer.mockResolvedValue({ id: 'cus_existing', currency: 'usd' });
+    state.subscription.mockResolvedValue({
+      status,
+      customer: 'cus_existing',
+      currency: 'usd',
+      items: { data: [{ price: { id: 'price_pro_control' } }] },
+    });
+    await createCheckout('user', { plan: 'payg', credits: 2500 });
+    expect(state.session.mock.calls[0][0]).toMatchObject({
+      mode: 'payment',
+      customer: 'cus_existing',
+      line_items: [{ quantity: 1, price_data: { currency: 'usd', unit_amount: 2227 } }],
+      metadata: { topup_plan: 'pro', credits: '2500', pricing_variant: 'control' },
+    });
+    expect(state.session.mock.calls[0][0]).not.toHaveProperty('subscription_data');
+    expect(state.purchase.mock.calls[0][0].data).toMatchObject({
+      credits: 2500,
+      amountCents: 2227,
+      currency: 'usd',
+    });
+  },
+);
+it('rejects a second monthly subscription but preserves the top-up path', async () => {
+  state.subscriptionStatus = 'active';
+  state.price.mockResolvedValue(price('pro'));
+  await expect(createCheckout('user', { plan: 'pro' })).rejects.toMatchObject({
+    code: 'already_subscribed',
+  });
+  expect(state.session).not.toHaveBeenCalled();
+});
+
+it.each([
+  ['creator', 'control', 'usd', 950],
+  ['creator', 'control', 'eur', 900],
+  ['pro', 'control', 'usd', 891],
+  ['pro', 'control', 'eur', 836],
+  ['scale', 'control', 'usd', 828],
+  ['scale', 'control', 'eur', 772],
+  ['creator', 'test', 'usd', 1813],
+  ['creator', 'test', 'eur', 1688],
+  ['pro', 'test', 'usd', 1756],
+  ['pro', 'test', 'eur', 1644],
+  ['scale', 'test', 'usd', 1658],
+  ['scale', 'test', 'eur', 1542],
+] as const)(
+  'quotes and charges %s %s %s identically',
+  async (plan, variant, currency, amountCents) => {
+    const { createCheckoutDetails, getTopupPricing } = await import('./billing');
+    const { topupAmountCents } = await import('@easyrender/harness');
+    state.subscriptionStatus = 'active';
+    state.customerId = 'cus_existing';
+    state.customer.mockResolvedValue({ id: 'cus_existing', currency });
+    state.subscription.mockResolvedValue({
+      status: 'active',
+      customer: 'cus_existing',
+      currency,
+      // Portal switches update the actual price, not the old metadata or DB plan.
+      metadata: { plan: 'pro', pricing_variant: 'control' },
+      items: { data: [{ price: { id: `price_${plan}_${variant}` } }] },
+    });
+    const quote = await getTopupPricing('user', state.variant, currency);
+    expect(topupAmountCents(1000, quote)).toBe(amountCents);
+    const body = {
+      plan: 'payg',
+      credits: 1000,
+      expectedAmountCents: amountCents,
+      expectedCurrency: currency,
+      topup_plan: 'scale',
+      amountCents: 1,
+      rate: 0.0001,
+    };
+    const checkout = await createCheckoutDetails('user', body);
+    expect(checkout.analytics).toMatchObject({
+      value: amountCents / 100,
+      currency: currency.toUpperCase(),
+    });
+    expect(state.session.mock.calls[0][0]).toMatchObject({
+      currency,
+      adaptive_pricing: { enabled: false },
+      line_items: [{ quantity: 1, price_data: { unit_amount: amountCents, currency } }],
+    });
+    expect(state.purchase.mock.calls[0][0].data).toMatchObject({
+      credits: 1000,
+      amountCents,
+      currency,
+      packId: `topup_${plan}${variant === 'test' ? ':test' : ''}`,
+    });
+  },
+);
+
+it.each(['canceled', 'past_due', 'incomplete', 'unpaid', 'paused'])(
+  'uses PAYG for Stripe status %s even if DB still says active',
+  async (status) => {
+    state.subscriptionStatus = 'active';
+    state.customerId = 'cus_existing';
+    state.customer.mockResolvedValue({ id: 'cus_existing', currency: 'usd' });
+    state.subscription.mockResolvedValue({ status, customer: 'cus_existing' });
+    await createCheckout('user', { plan: 'payg', credits: 1000 });
+    expect(state.session.mock.calls[0][0]).toMatchObject({
+      line_items: [{ price: 'price_payg_test', quantity: 1000 }],
+    });
+    expect(state.purchase.mock.calls[0][0].data.amountCents).toBe(2000);
+  },
+);
+it('rejects stale displayed pack amounts/currencies and forged low amounts', async () => {
+  for (const guard of [{ expectedAmountCents: 1 }, { expectedCurrency: 'eur' }]) {
+    await expect(
+      createCheckout('user', { plan: 'payg', credits: 1000, ...guard }),
+    ).rejects.toMatchObject({ code: 'pricing_changed' });
+  }
+  expect(state.session).not.toHaveBeenCalled();
+});
+it('fails closed on an unknown or unavailable live subscription', async () => {
+  state.subscriptionStatus = 'active';
+  state.customerId = 'cus_existing';
+  state.customer.mockResolvedValue({ id: 'cus_existing', currency: 'usd' });
+  state.subscription.mockResolvedValue({
+    status: 'active',
+    customer: 'cus_existing',
+    currency: 'usd',
+    metadata: { plan: 'pro' },
+    items: { data: [{ price: { id: 'price_unknown' } }] },
+  });
+  await expect(createCheckout('user', { plan: 'payg', credits: 1000 })).rejects.toMatchObject({
+    code: 'price_mismatch',
+  });
+  state.subscription.mockRejectedValue(new Error('Stripe unavailable'));
+  await expect(createCheckout('user', { plan: 'payg', credits: 1000 })).rejects.toThrow(
+    'Stripe unavailable',
+  );
+  expect(state.session).not.toHaveBeenCalled();
 });

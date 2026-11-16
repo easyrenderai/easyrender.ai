@@ -1,4 +1,4 @@
-import { AppError, canAccess, getBalance, getRender, toView } from '@easyrender/core';
+import { AppError, canAccess, getBalance, getRender, listEdits, toView } from '@easyrender/core';
 import { Globe, Sparkles } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -8,7 +8,7 @@ import { ModelView } from '@/components/model-view';
 import { DATE_FORMAT, RenderDetail } from '@/components/render-detail';
 import { RenderView } from '@/components/render-view';
 import { Button } from '@/components/ui/button';
-import { currentUser, resolveActor } from '@/lib/actor';
+import { currentUser, resolveViewerActor } from '@/lib/actor';
 import { noindexMetadata } from '@/lib/seo/metadata';
 import { findShowcase } from '@/lib/showcase';
 
@@ -55,7 +55,6 @@ export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
         }
         meta={[
           { label: t('Render.meta.status'), value: t('Render.status.ready') },
-          { label: t('Render.meta.engine'), value: demo.engine },
           { label: t('Render.meta.dimensions'), value: demo.dimensions },
           { label: t('Render.meta.formats'), value: 'GLB · USDZ' },
           {
@@ -74,7 +73,7 @@ export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
         ]}
         actions={
           <Button className="w-full" asChild>
-            <Link href="/#top">
+            <Link href="/#try">
               <Sparkles />
               {t('Render.makeYourOwn')}
             </Link>
@@ -84,18 +83,23 @@ export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
     );
   }
 
-  const actor = await resolveActor();
+  const actor = await resolveViewerActor();
   const render = await getRender(id, actor).catch((error) => {
     if (error instanceof AppError && error.status === 404) notFound();
     throw error;
   });
   const balance = actor.userId ? await getBalance(actor.userId) : 0;
+  const isOwner = canAccess(render, actor);
+  // The history is the owner's to read; a failed read leaves the tab empty rather than the page broken.
+  const edits = isOwner && actor.userId ? await listEdits(id, actor).catch(() => []) : [];
   return (
     <RenderView
       initial={toView(render)}
+      edits={edits}
+      now={Date.now()}
       signedIn={Boolean(actor.userId)}
       balance={balance}
-      owner={canAccess(render, actor)}
+      owner={isOwner}
     />
   );
 }

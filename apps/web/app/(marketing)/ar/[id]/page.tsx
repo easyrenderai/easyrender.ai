@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { ArView } from '@/components/ar-view';
-import { resolveActor } from '@/lib/actor';
+import { resolveViewerActor } from '@/lib/actor';
 import { noindexMetadata } from '@/lib/seo/metadata';
 
 export const dynamic = 'force-dynamic';
@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 // gallery's public ones and for their owner.
 export default async function ArPage({ params }: PageProps<'/ar/[id]'>) {
   const { id } = await params;
-  const [t, actor] = await Promise.all([getTranslations('Ar'), resolveActor()]);
+  const [t, actor] = await Promise.all([getTranslations('Ar'), resolveViewerActor()]);
   const render = await getRender(id, actor).catch((error) => {
     if (error instanceof AppError && error.status === 404) notFound();
     throw error;

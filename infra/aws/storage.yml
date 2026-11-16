@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: easyrender.ai asset storage (private S3 bucket behind CloudFront) and a Vercel OIDC role that can write to it.
+Description: easyrender.ai storage. Public assets and private, signed model exports (two private S3 buckets behind one CloudFront distribution), and a Vercel OIDC role.
 
 Parameters:
   VercelProject:
@@ -18,13 +18,34 @@ Parameters:
   CertificateArn:
     Type: String
     Default: ""
-    Description: ACM certificate for CdnDomain. CloudFront only accepts certificates from us-east-1.
+    Description: ACM certificate for CdnDomain. CloudFront only accepts certificates from us-east-1 (cdn-certificate.yml).
+  HostedZoneId:
+    Type: String
+    Default: ""
+    Description: Optional Route 53 zone that holds CdnDomain. When set, the stack creates the DNS record for it.
+
+  ExportsPublicKey:
+    Type: String
+    Default: ""
+    Description: >-
+      PEM public key (RSA 2048) whose private half signs export download URLs. Empty keeps the
+      exports path off: the bucket exists but nothing can be read from it. The private half is the
+      Secrets Manager secret easyrender/exports/signing-private-key. Never pass it here.
+  ExportsKeyVersion:
+    Type: String
+    Default: "1"
+    AllowedPattern: "[0-9]+"
+    Description: Raise it together with a new ExportsPublicKey. CloudFront key names are unique, so a rotation needs a new one.
 
 Conditions:
   MakeProvider: !Equals [!Ref CreateOidcProvider, "true"]
   HasDomain: !And
     - !Not [!Equals [!Ref CdnDomain, ""]]
     - !Not [!Equals [!Ref CertificateArn, ""]]
+  HasDns: !And
+    - !Condition HasDomain
+    - !Not [!Equals [!Ref HostedZoneId, ""]]
+  HasExports: !Not [!Equals [!Ref ExportsPublicKey, ""]]
 
 Resources:
   AssetsBucket:
@@ -44,6 +65,55 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
+
+  # Converted models (OBJ, FBX, BLEND) are private and temporary. They live in their own bucket so
+  # that no policy or cache rule written for the public assets can ever expose them.
+  ExportsBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          # S3 runs lifecycle rules once a day, so an object lives between 24 and 48 hours. The app
+          # enforces the real expiry on the download link.
+          - Id: expire-exports
+            Status: Enabled
+            ExpirationInDays: 1
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
+
+  ExportsSigningKey:
+    Type: AWS::CloudFront::PublicKey
+    Condition: HasExports
+    Properties:
+      PublicKeyConfig:
+        CallerReference: !Sub "${AWS::StackName}-exports-${ExportsKeyVersion}"
+        Name: !Sub "${AWS::StackName}-exports-${ExportsKeyVersion}"
+        Comment: Verifies signed easyrender.ai export download URLs.
+        EncodedKey: !Ref ExportsPublicKey
+
+  ExportsKeyGroup:
+    Type: AWS::CloudFront::KeyGroup
+    Condition: HasExports
+    Properties:
+      KeyGroupConfig:
+        Name: !Sub "${AWS::StackName}-exports-${ExportsKeyVersion}"
+        Comment: Keys allowed to sign easyrender.ai export download URLs.
+        Items:
+          - !Ref ExportsSigningKey
 
   OriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
@@ -75,6 +145,28 @@ Resources:
             OriginAccessControlId: !GetAtt OriginAccessControl.Id
             S3OriginConfig:
               OriginAccessIdentity: ""
+          - !If
+            - HasExports
+            - Id: exports
+              DomainName: !GetAtt ExportsBucket.RegionalDomainName
+              OriginAccessControlId: !GetAtt OriginAccessControl.Id
+              S3OriginConfig:
+                OriginAccessIdentity: ""
+            - !Ref "AWS::NoValue"
+        # /exports/* is the only private path: CloudFront answers 403 unless the URL carries a
+        # signature made with a key from the group. Nothing is cached, so a deleted file is gone.
+        CacheBehaviors: !If
+          - HasExports
+          - - PathPattern: exports/*
+              TargetOriginId: exports
+              ViewerProtocolPolicy: https-only
+              AllowedMethods: [GET, HEAD]
+              Compress: false
+              # Managed CachingDisabled policy.
+              CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+              TrustedKeyGroups:
+                - !Ref ExportsKeyGroup
+          - !Ref "AWS::NoValue"
         DefaultCacheBehavior:
           TargetOriginId: assets
           ViewerProtocolPolicy: redirect-to-https
@@ -98,6 +190,35 @@ Resources:
             Condition:
               StringEquals:
                 AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}"
+
+  ExportsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ExportsBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: CloudFrontSignedRead
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${ExportsBucket.Arn}/exports/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}"
+
+  CdnRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: HasDns
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref CdnDomain
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt Distribution.DomainName
+        # The fixed hosted zone of every CloudFront distribution.
+        HostedZoneId: Z2FDTNDATAQYW2
 
   VercelOidcProvider:
     Type: AWS::IAM::OIDCProvider
@@ -133,6 +254,35 @@ Resources:
               - Effect: Allow
                 Action: s3:PutObject
                 Resource: !Sub "${AssetsBucket.Arn}/*"
+              - Effect: Allow
+                Action: s3:DeleteObject
+                Resource: !Sub "${AssetsBucket.Arn}/renders/uploads/*"
+        # The app only asks whether a finished export exists. It never writes or deletes one.
+        - PolicyName: exports-read
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource: !Sub "${ExportsBucket.Arn}/exports/*"
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt ExportsBucket.Arn
+                Condition:
+                  StringLike:
+                    s3:prefix: exports/*
+        # The private half of ExportsPublicKey lives in Secrets Manager, not in a Vercel variable, so
+        # a rotation never needs a redeploy and the key is never pasted anywhere.
+        - !If
+          - HasExports
+          - PolicyName: exports-sign
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action: secretsmanager:GetSecretValue
+                  Resource: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:easyrender/exports/signing-private-key-*"
+          - !Ref "AWS::NoValue"
 
 Outputs:
   S3Bucket:
@@ -146,3 +296,15 @@ Outputs:
     Value: !GetAtt Distribution.DomainName
   AwsRoleArn:
     Value: !GetAtt VercelRole.Arn
+  ExportsBucket:
+    Value: !Ref ExportsBucket
+  ExportsUrl:
+    Description: Base of signed export links. Objects are stored under exports/ in ExportsBucket.
+    Value: !If
+      - HasDomain
+      - !Sub "https://${CdnDomain}/exports"
+      - !Sub "https://${Distribution.DomainName}/exports"
+  ExportsKeyPairId:
+    Condition: HasExports
+    Description: The Key-Pair-Id the app puts in a signed export link. Not a secret.
+    Value: !Ref ExportsSigningKey

@@ -1,85 +1,119 @@
 'use client';
 
-import { Coins, PanelLeft, PanelRight, Plus } from 'lucide-react';
+import { PanelLeft, PanelRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
+import { useDefaultLayout, usePanelRef } from 'react-resizable-panels';
 import { BrandMark } from '@/components/brand-mark';
 import { Button } from '@/components/ui/button';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { AppBreadcrumb } from './app-breadcrumb';
-import { ACCOUNT_NAV, APP_NAV, isActivePath } from './nav';
+import { ACCOUNT_NAV, APP_NAV, isActivePath, isSettingsPath } from './nav';
+import { RailItem } from './rail-item';
 import { RailPreview } from './rail-preview';
 import { RendersPanel } from './renders-panel';
-import { StatusDot } from './status-dot';
-import { displayName, isInFlight, isKnownStatus, type ShellData } from './types';
+import {
+  MD_QUERY,
+  PanelSlotProvider,
+  useMediaQuery,
+  usePanelSlotState,
+  XL_QUERY,
+} from './shell-context';
+import { isInFlight, type ShellData } from './types';
 
-const SIDEBAR_KEY = 'er-sidebar';
-const PANEL_KEY = 'er-renders-panel';
-const RECENTS = 8;
-// One easing and one duration for every drawer in the shell (DESIGN.md: 150-250ms).
-const DRAWER = 'duration-200 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none';
+const LAYOUT_KEY = 'er-shell';
+// Drawer widths are in pixels. The page keeps at least MAIN_MIN, so the drawers cannot crowd it out.
+const LEFT = { initial: 288, min: 220, max: 480 };
+const RIGHT = { initial: 360, min: 280, max: 560 };
+const MAIN_MIN = 360;
 
-type RailKind = 'overview' | 'library' | 'connectors' | 'credits' | 'account';
+// Drawer widths are remembered per browser. Storage can be missing (server render) or blocked
+// (private windows), and then the drawers simply start at their default width.
+const layoutStorage = {
+  getItem(key: string) {
+    try {
+      return window.localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  setItem(key: string, value: string) {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch {
+      // Not persisted; the drawers still resize for this visit.
+    }
+  },
+};
+
+type RailKind = 'overview' | 'library' | 'account';
 const RAIL_KINDS: Record<string, RailKind> = {
   overview: 'overview',
   library: 'library',
-  connectors: 'connectors',
-  credits: 'credits',
   account: 'account',
 };
 
-// A drawer remembered per browser. It starts in its default and is read after mount so the
-// server and client markup match.
-function useDrawer(key: string, initial: boolean) {
-  const [isOpen, setIsOpen] = useState(initial);
-  useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(key);
-      if (stored) setIsOpen(stored === 'open');
-    } catch {
-      // Storage can be blocked; the drawer then keeps its default.
-    }
-  }, [key]);
-  const toggle = useCallback(() => {
-    setIsOpen((current) => {
-      try {
-        window.localStorage.setItem(key, current ? 'closed' : 'open');
-      } catch {
-        // Not persisted; still works for this visit.
-      }
-      return !current;
-    });
-  }, [key]);
-  return [isOpen, toggle] as const;
-}
-
-// The signed-in app: a thin rail of destinations that peek at their page on hover, a collapsible
-// sidebar, the page in one rounded block with a renders panel beside it, and no marketing header.
-// Below `md` the rail becomes a bottom bar and the drawers are hidden.
+// The signed-in app: a thin rail of destinations that peek at their page on hover, then the page
+// in one rounded block. Left drawer: the renders list. Right drawer: what a page offers as its
+// context (a render's parts). Both drawers resize by dragging, remember their width, and collapse.
+// Settings pages (Account, Credits, Connectors) are full pages with no drawers. Below `md` the
+// rail becomes a bottom bar and the drawers are hidden.
 export function AppShell({ data, children }: { data: ShellData; children: ReactNode }) {
   const t = useTranslations('AppShell');
   const nav = useTranslations('DashboardNav');
-  const format = useFormatter();
   const pathname = usePathname();
-  const [isSidebarOpen, toggleSidebar] = useDrawer(SIDEBAR_KEY, true);
-  const [isPanelOpen, togglePanel] = useDrawer(PANEL_KEY, false);
+  const isMd = useMediaQuery(MD_QUERY);
+  const isXl = useMediaQuery(XL_QUERY);
+  const { setLeftNode, setRightNode, hasLeftContext, hasRightContext, slot } = usePanelSlotState();
+  const isSettings = isSettingsPath(pathname);
+  const hasLeft = isMd && !isSettings;
+  const hasRight = isXl && !isSettings && hasRightContext;
+  // A render page also offers its edit history, so the left drawer gets a second tab.
+  const [leftTab, setLeftTab] = useState('history');
+
+  const leftRef = usePanelRef();
+  const rightRef = usePanelRef();
+  const [isLeftOpen, setIsLeftOpen] = useState(true);
+  const [isRightOpen, setIsRightOpen] = useState(true);
+  const panelIds = ['main', ...(hasLeft ? ['left'] : []), ...(hasRight ? ['right'] : [])].sort();
+  const { defaultLayout, onLayoutChanged } = useDefaultLayout({
+    id: LAYOUT_KEY,
+    panelIds,
+    storage: layoutStorage,
+  });
+
+  const toggle = useCallback((panel: typeof leftRef) => {
+    const handle = panel.current;
+    if (!handle) return;
+    if (handle.isCollapsed()) handle.expand();
+    else handle.collapse();
+  }, []);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'b') {
         event.preventDefault();
-        toggleSidebar();
+        toggle(leftRef);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [toggleSidebar]);
+  }, [toggle, leftRef]);
 
   const inFlight = data.renders.filter((render) => isInFlight(render.status)).length;
-  const recents = data.renders.slice(0, RECENTS);
   const account = ACCOUNT_NAV;
+
+  const page = (
+    <main className="h-full min-w-0 overflow-y-auto">
+      <div className="mx-auto flex min-h-full max-w-5xl flex-col px-4 py-6 sm:px-6 lg:py-8">
+        {children}
+      </div>
+    </main>
+  );
 
   return (
     <div className="flex h-dvh flex-col bg-muted/40 md:flex-row">
@@ -97,7 +131,20 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
           const isActive = isActivePath(pathname, item.href);
           const isBottom = item.href === account.href;
           return (
-            <div key={item.href} className={cn('group/rail relative', isBottom && 'mt-auto')}>
+            <RailItem
+              key={item.href}
+              isActive={isActive}
+              isBottom={isBottom}
+              className={cn('relative', isBottom && 'mt-auto')}
+              preview={
+                <RailPreview
+                  kind={RAIL_KINDS[item.key] ?? 'overview'}
+                  label={nav(item.key)}
+                  href={item.href}
+                  data={data}
+                />
+              }
+            >
               <Button
                 variant="ghost"
                 size="icon"
@@ -121,138 +168,125 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
                   )}
                 </Link>
               </Button>
-              <div
-                className={cn(
-                  'invisible absolute left-12 z-40 w-72 -translate-x-1 rounded-xl border bg-card p-3.5 text-card-foreground opacity-0 shadow-lg transition-[opacity,transform,visibility] delay-100',
-                  DRAWER,
-                  'group-focus-within/rail:visible group-focus-within/rail:translate-x-0 group-focus-within/rail:opacity-100 group-hover/rail:visible group-hover/rail:translate-x-0 group-hover/rail:opacity-100',
-                  isBottom ? 'bottom-0' : '-top-1.5',
-                )}
-              >
-                <RailPreview
-                  kind={RAIL_KINDS[item.key] ?? 'overview'}
-                  label={nav(item.key)}
-                  href={item.href}
-                  data={data}
-                />
-              </div>
-            </div>
+            </RailItem>
           );
         })}
       </aside>
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header className="flex h-12 shrink-0 items-center gap-2 px-3 md:pl-1">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className="hidden md:inline-flex"
-            onClick={toggleSidebar}
-            aria-label={t('toggleSidebar')}
-            aria-pressed={isSidebarOpen}
-            title={t('toggleSidebar')}
-          >
-            <PanelLeft />
-          </Button>
+          {hasLeft && (
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => toggle(leftRef)}
+              aria-label={t('toggleSidebar')}
+              aria-pressed={isLeftOpen}
+              title={t('toggleSidebar')}
+            >
+              <PanelLeft />
+            </Button>
+          )}
           <Link href="/dashboard" className="flex items-center gap-2 font-semibold md:hidden">
             <BrandMark className="size-[1.375rem]" />
           </Link>
           <AppBreadcrumb />
-          <div className="ml-auto flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="hidden xl:inline-flex"
-              onClick={togglePanel}
-              aria-label={t('toggleRenders')}
-              aria-pressed={isPanelOpen}
-              title={t('toggleRenders')}
-            >
-              <PanelRight />
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/credits">
-                <Coins />
-                <span className="tabular-nums">{format.number(data.balance)}</span> {t('credits')}
-              </Link>
-            </Button>
-          </div>
+          {hasRight && (
+            <div className="ml-auto flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => toggle(rightRef)}
+                aria-label={t('toggleContext')}
+                aria-pressed={isRightOpen}
+                title={t('toggleContext')}
+              >
+                <PanelRight />
+              </Button>
+            </div>
+          )}
         </header>
 
         <div className="flex min-h-0 flex-1 overflow-hidden border-t bg-background md:mr-2 md:mb-2 md:rounded-lg md:border">
-          {/* Each drawer keeps a fixed inner width and only its outer width animates, so the
-              content does not reflow while it opens or closes. inert keeps focus out when shut. */}
-          <div
-            inert={!isSidebarOpen}
-            className={cn(
-              'hidden shrink-0 overflow-hidden border-r transition-[width,border-color] md:block',
-              DRAWER,
-              isSidebarOpen ? 'w-60' : 'w-0 border-transparent',
-            )}
-          >
-            <nav
-              aria-label={t('sidebar')}
-              className={cn(
-                'flex h-full w-60 flex-col gap-4 overflow-y-auto p-2 transition-opacity',
-                DRAWER,
-                !isSidebarOpen && 'opacity-0',
-              )}
-            >
-              <div className="flex flex-col gap-0.5">
-                <Button variant="ghost" className="justify-start" asChild>
-                  <Link href="/dashboard">
-                    <Plus />
-                    {t('newModel')}
-                  </Link>
-                </Button>
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <p className="px-3 pb-1 text-xs text-muted-foreground">{t('recents')}</p>
-                {recents.length === 0 ? (
-                  <p className="px-3 text-sm text-muted-foreground">{t('noRecents')}</p>
-                ) : (
-                  recents.map((item) => (
-                    <Button
-                      key={item.id}
-                      variant="ghost"
-                      className={cn(
-                        'justify-start font-normal',
-                        pathname === `/r/${item.id}` && 'bg-accent',
-                      )}
-                      asChild
+          <PanelSlotProvider value={slot}>
+            {isMd && !isSettings ? (
+              <ResizablePanelGroup
+                orientation="horizontal"
+                id={LAYOUT_KEY}
+                defaultLayout={defaultLayout}
+                onLayoutChanged={onLayoutChanged}
+              >
+                <ResizablePanel
+                  id="left"
+                  panelRef={leftRef}
+                  defaultSize={LEFT.initial}
+                  minSize={LEFT.min}
+                  maxSize={LEFT.max}
+                  collapsible
+                  collapsedSize={0}
+                  groupResizeBehavior="preserve-pixel-size"
+                  onResize={(size) => setIsLeftOpen(size.inPixels > 0)}
+                >
+                  <aside
+                    aria-label={t('panel.title')}
+                    inert={!isLeftOpen}
+                    className="h-full overflow-hidden"
+                  >
+                    {hasLeftContext ? (
+                      <Tabs value={leftTab} onValueChange={setLeftTab} className="h-full gap-0">
+                        <TabsList className="m-2 grid grid-cols-2">
+                          <TabsTrigger value="renders">{t('panel.title')}</TabsTrigger>
+                          <TabsTrigger value="history">{t('history.title')}</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="renders" className="min-h-0">
+                          <RendersPanel renders={data.renders} now={data.now} />
+                        </TabsContent>
+                        {/* Kept mounted so the page can draw its history into it. */}
+                        <TabsContent
+                          value="history"
+                          forceMount
+                          className="min-h-0 overflow-y-auto data-[state=inactive]:hidden"
+                        >
+                          <div ref={setLeftNode} />
+                        </TabsContent>
+                      </Tabs>
+                    ) : (
+                      <RendersPanel renders={data.renders} now={data.now} />
+                    )}
+                  </aside>
+                </ResizablePanel>
+                <ResizableHandle />
+                <ResizablePanel id="main" minSize={MAIN_MIN}>
+                  {page}
+                </ResizablePanel>
+                {hasRight && (
+                  <>
+                    <ResizableHandle />
+                    <ResizablePanel
+                      id="right"
+                      panelRef={rightRef}
+                      defaultSize={RIGHT.initial}
+                      minSize={RIGHT.min}
+                      maxSize={RIGHT.max}
+                      collapsible
+                      collapsedSize={0}
+                      groupResizeBehavior="preserve-pixel-size"
+                      onResize={(size) => setIsRightOpen(size.inPixels > 0)}
                     >
-                      <Link
-                        href={`/r/${item.id}`}
-                        aria-current={pathname === `/r/${item.id}` ? 'page' : undefined}
-                        title={isKnownStatus(item.status) ? t(`status.${item.status}`) : undefined}
-                      >
-                        <StatusDot status={item.status} />
-                        <span className="truncate">{displayName(item) || t('untitled')}</span>
-                      </Link>
-                    </Button>
-                  ))
+                      <aside
+                        aria-label={t('context.title')}
+                        inert={!isRightOpen}
+                        ref={setRightNode}
+                        className="h-full overflow-y-auto"
+                      />
+                    </ResizablePanel>
+                  </>
                 )}
-              </div>
-            </nav>
-          </div>
-          <main className="min-w-0 flex-1 overflow-y-auto">
-            <div className="mx-auto flex min-h-full max-w-5xl flex-col px-4 py-6 sm:px-6 lg:py-8">
-              {children}
-            </div>
-          </main>
-          <aside
-            aria-label={t('panel.title')}
-            inert={!isPanelOpen}
-            className={cn(
-              'hidden shrink-0 overflow-hidden border-l transition-[width,border-color] xl:block',
-              DRAWER,
-              isPanelOpen ? 'w-80' : 'w-0 border-transparent',
+              </ResizablePanelGroup>
+            ) : (
+              page
             )}
-          >
-            <div className={cn('h-full transition-opacity', DRAWER, !isPanelOpen && 'opacity-0')}>
-              <RendersPanel renders={data.renders} now={data.now} />
-            </div>
-          </aside>
+          </PanelSlotProvider>
         </div>
       </div>
 

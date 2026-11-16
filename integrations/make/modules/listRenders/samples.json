@@ -1,0 +1,11 @@
+{
+  "id": "r_example",
+  "status": "ready",
+  "name": "Chair",
+  "hasModel": true,
+  "hasPreview": true,
+  "hasSheet": true,
+  "isPublic": false,
+  "createdAt": "2026-11-16T09:00:00Z",
+  "modelVersion": 1794819600000
+}

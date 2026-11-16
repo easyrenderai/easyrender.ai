@@ -1,5 +1,13 @@
 import type { Snapshot } from './database';
-import { bucket, isExcluded, localDate, midnight, type Range } from './helpers';
+import {
+  bucket,
+  isExcluded,
+  localDate,
+  midnight,
+  modelCompletedAt,
+  type Range,
+  sheetCompletedAt,
+} from './helpers';
 import type { Payment } from './report';
 import type { PosthogSummary } from './sources';
 
@@ -33,7 +41,16 @@ export function buildOverviewSeries({
 }: {
   users: Array<Pick<Snapshot['users'][number], 'id' | 'email' | 'createdAt'>>;
   renders: Array<
-    Pick<Snapshot['renders'][number], 'userId' | 'createdAt' | 'status' | 'sheetKey' | 'glbKey'>
+    Pick<
+      Snapshot['renders'][number],
+      | 'userId'
+      | 'createdAt'
+      | 'completedAt'
+      | 'previewCompletedAt'
+      | 'status'
+      | 'sheetKey'
+      | 'glbKey'
+    >
   >;
   payments: Array<Pick<Payment, 'userId' | 'at' | 'gross' | 'currency'>>;
   posthog: Pick<PosthogSummary, 'health' | 'series'>;
@@ -92,12 +109,18 @@ export function buildOverviewSeries({
   }
   for (const r of renders) {
     if (r.userId && excluded.has(r.userId)) continue;
-    // Product counts both outcomes by Render.createdAt (a mutable completion proxy).
-    const row = rowAt(r.createdAt);
-    if (!row) continue;
-    row.sheets += Number(Boolean(r.sheetKey));
-    row.models += Number(r.status === 'ready' && Boolean(r.glbKey));
-    row.uses = row.sheets + row.models;
+    const preview = sheetCompletedAt(r);
+    const sheetRow = preview ? rowAt(preview) : undefined;
+    if (sheetRow) {
+      sheetRow.sheets++;
+      sheetRow.uses++;
+    }
+    const completed = modelCompletedAt(r);
+    const modelRow = completed ? rowAt(completed) : undefined;
+    if (modelRow) {
+      modelRow.models++;
+      modelRow.uses++;
+    }
   }
   for (const u of users) {
     if (excluded.has(u.id)) continue;

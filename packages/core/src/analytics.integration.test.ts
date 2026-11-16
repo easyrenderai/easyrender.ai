@@ -5,10 +5,12 @@ import { db } from '@easyrender/db';
 import { pricingFor, RENDER_CREDITS, SUBSCRIPTION_PLANS } from '@easyrender/harness';
 import Stripe from 'stripe';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { setAnalyticsScheduler } from './analytics';
+import { eventUuid, setAnalyticsScheduler } from './analytics';
+import { reconcileBusinessAnalytics } from './analytics-recovery';
 import { classifyCountry, normalizeAttribution } from './attribution';
 import { confirmedPurchase, handleStripeWebhook } from './billing';
 import { listCatalog, submitCatalog, tickCatalog } from './catalog';
+import { flushPosthogEvents } from './posthog-outbox';
 import { advance, createDraft, startBuild } from './renders';
 import { signupAttribution } from './signup-attribution';
 
@@ -18,7 +20,12 @@ if (url) {
     throw new Error('Analytics integration tests require a local throwaway database');
   process.env.DATABASE_URL = url;
 }
-const provider = vi.hoisted(() => ({ hasFailure: false, get: vi.fn(), sequence: 0 }));
+const provider = vi.hoisted(() => ({
+  hasFailure: false,
+  get: vi.fn(),
+  sequence: 0,
+  predictions: new Map<string, string>(),
+}));
 vi.mock('@easyrender/harness', async (original) => ({
   ...(await original<typeof import('@easyrender/harness')>()),
   checkPhoto: async () => ({
@@ -39,7 +46,11 @@ vi.mock('@easyrender/harness', async (original) => ({
       if (provider.hasFailure) throw new Error('forced provider failure');
       return 'https://provider.invalid/photo';
     },
-    start: async () => ({ id: `qa_prediction_${crypto.randomUUID()}` }),
+    start: async (path: string) => {
+      const id = `qa_prediction_${crypto.randomUUID()}`;
+      provider.predictions.set(id, path);
+      return { id };
+    },
     get: provider.get,
   }),
 }));
@@ -145,6 +156,11 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
       output: 'https://provider.invalid/sheet.png',
     });
     await Promise.all([advance(preview.id), advance(preview.id)]);
+    expect(
+      await db().posthogDelivery.findUnique({
+        where: { id: eventUuid(`preview_ready:${preview.id}`) },
+      }),
+    ).toMatchObject({ event: 'preview_ready' });
     const userId = await newUser();
     await signupAttribution({
       userId,
@@ -169,6 +185,28 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
       output: 'https://provider.invalid/model.glb',
     });
     await Promise.all([advance(preview.id), advance(preview.id)]);
+    const completed = await db().render.findUniqueOrThrow({ where: { id: preview.id } });
+    await db().posthogDelivery.deleteMany({
+      where: {
+        id: {
+          in: [eventUuid(`render_ready:${preview.id}`), eventUuid(`preview_ready:${preview.id}`)],
+        },
+      },
+    });
+    await reconcileBusinessAnalytics();
+    await flushPosthogEvents({
+      eventIds: [eventUuid(`render_ready:${preview.id}`), eventUuid(`preview_ready:${preview.id}`)],
+    });
+    expect(
+      await db().posthogDelivery.findUnique({
+        where: { id: eventUuid(`render_ready:${preview.id}`) },
+      }),
+    ).toMatchObject({ occurredAt: completed.completedAt });
+    expect(
+      await db().posthogDelivery.findUnique({
+        where: { id: eventUuid(`preview_ready:${preview.id}`) },
+      }),
+    ).toMatchObject({ event: 'preview_ready' });
     await drain();
     expect(
       (await db().render.findUniqueOrThrow({ where: { id: preview.id } })).quality,
@@ -280,6 +318,15 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
     'catalogue %s with sheets=%s preserves API events and null-safe attribution',
     async (platform, hasSheet) => {
       provider.hasFailure = false;
+      // Concurrent ticks may reach the next stage in either order. Each prediction must
+      // return its own model's output, just as the real provider does.
+      provider.get.mockImplementation(async (id: string) => ({
+        status: 'succeeded',
+        output:
+          provider.predictions.get(id) === '/predictions'
+            ? 'https://provider.invalid/model.glb'
+            : 'https://provider.invalid/sheet.png',
+      }));
       process.env.SHEET_ENABLED = String(hasSheet);
       try {
         const userId = await newUser();
@@ -299,16 +346,8 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
           consent_region_at_create: 'strict',
         });
         expect(render.first_seen_at).not.toBeNull();
-        provider.get.mockResolvedValue({
-          status: 'succeeded',
-          output: 'https://provider.invalid/sheet.png',
-        });
         await Promise.all([tickCatalog(scope), tickCatalog(scope)]);
         if (hasSheet) await tickCatalog(scope); // final sheet -> 3D
-        provider.get.mockResolvedValue({
-          status: 'succeeded',
-          output: 'https://provider.invalid/model.glb',
-        });
         await Promise.all([tickCatalog(scope), tickCatalog(scope)]);
         expect((await listCatalog(scope)).items[0]).toMatchObject({
           state: 'ready',
@@ -386,10 +425,12 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
     const purchase = await db().purchase.create({
       data: { userId, stripeSessionId: sessionId, packId: 'payg', credits: 500, amountCents: 500 },
     });
-    const send = async (status: string) => {
+    const eventCreated = Math.floor(Date.now() / 1000) - 3600;
+    const send = async (status: string, created = eventCreated) => {
       const body = JSON.stringify({
         id: `evt_${sessionId}`,
         type: 'checkout.session.completed',
+        created,
         data: {
           object: {
             id: sessionId,
@@ -412,7 +453,19 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
       events.filter((e) => e.event === 'purchase' && e.properties.order_id === purchase.id),
     ).toHaveLength(0);
     await send('paid');
-    await send('paid');
+    const recorded = await db().purchase.findUniqueOrThrow({ where: { id: purchase.id } });
+    expect(recorded.paidAt).toEqual(new Date(eventCreated * 1000));
+    // Simulate an enqueue lost after the paid state committed, then repair on signed replay.
+    await db().posthogDelivery.deleteMany({ where: { id: eventUuid(`purchase:${purchase.id}`) } });
+    await send('paid', eventCreated + 3600);
+    expect((await db().purchase.findUniqueOrThrow({ where: { id: purchase.id } })).paidAt).toEqual(
+      recorded.paidAt,
+    );
+    expect(
+      await db().posthogDelivery.findUnique({
+        where: { id: eventUuid(`purchase:${purchase.id}`) },
+      }),
+    ).toMatchObject({ occurredAt: recorded.paidAt });
     await drain();
     const captures = events.filter(
       (e) => e.event === 'purchase' && e.properties.order_id === purchase.id,

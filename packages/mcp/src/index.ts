@@ -1,167 +1,129 @@
 import {
   type Actor,
-  AppError,
-  assignedPricing,
-  config,
+  assertActorScope,
   createDraft,
-  getBalance,
+  getCreditQuote,
   getRender,
-  MAX_UPLOAD_BYTES,
-  reportError,
   startBuild,
   toView,
 } from '@easyrender/core';
-import { ENTERPRISE_BOOKING_URL, PLAN_IDS, pricingFor, RENDER_CREDITS } from '@easyrender/harness';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
+import { registerExtendedTools } from './extended-tools';
+import { imageInputSchema, MAX_INLINE_IMAGE_BYTES, readImage } from './images';
+import {
+  forActor,
+  idSchema,
+  paidActor,
+  quoteSchema,
+  renderSchema,
+  requireBudget,
+  result,
+} from './protocol';
 
-type ToolResult = { content: { type: 'text'; text: string }[]; isError?: boolean };
+export { MAX_INLINE_IMAGE_BYTES } from './images';
 
-const ok = (data: unknown): ToolResult => ({
-  content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
-});
-
-async function run(fn: () => Promise<unknown>): Promise<ToolResult> {
-  try {
-    return ok(await fn());
-  } catch (error) {
-    const message = error instanceof AppError ? error.message : 'Unexpected error';
-    if (!(error instanceof AppError)) reportError(error, { stage: 'mcp-tool' });
-    return { content: [{ type: 'text', text: message }], isError: true };
-  }
-}
-
-function links(id: string) {
-  const base = config.appUrl();
-  return {
-    page: `${base}/r/${id}`,
-    preview: `${base}/api/renders/${id}/preview`,
-    model_glb: `${base}/api/renders/${id}/model`,
-  };
-}
-
-async function fetchImage(url: string): Promise<{ bytes: Uint8Array; contentType: string }> {
-  if (!url.startsWith('https://')) throw new AppError('image_url must be https', 400, 'bad_url');
-  const response = await fetch(url, { redirect: 'follow' });
-  if (!response.ok) throw new AppError(`Could not fetch image: ${response.status}`, 400, 'bad_url');
-  const contentType = response.headers.get('content-type')?.split(';')[0] ?? '';
-  const length = Number(response.headers.get('content-length') ?? 0);
-  if (length > MAX_UPLOAD_BYTES) throw new AppError('Photo is larger than 4 MB', 413, 'too_large');
-  return { bytes: new Uint8Array(await response.arrayBuffer()), contentType };
-}
-
-// One server per request: the actor comes from the caller's API key.
-export function createMcpServer(actor: Actor & { userId: string }) {
-  const server = new McpServer({ name: 'easyrender', version: '0.1.0' });
-
+export function createMcpServer(actor: Actor) {
+  actor = { ...actor, source: 'mcp' };
+  const server = new McpServer(
+    { name: 'easyrender', version: '0.2.0' },
+    { maxToolInputElements: 1000 },
+  );
   server.registerTool(
     'create_render',
     {
       title: 'Create render preview',
-      description:
-        'Upload a photo of an object or building exterior and start a preview: a 9-view turnaround sheet. ' +
-        'Poll get_render until status is preview_ready, then call render_3d to build the 3D model.',
+      description: `Create a private preview from one product photo. Supply exactly one upload_id, image_url or image_base64. Upload larger local photos with authenticated POST /api/uploads (multipart image), then pass its id. Inline images: at most ${MAX_INLINE_IMAGE_BYTES} decoded bytes. URL/upload photos: up to 4 MiB. Reuse idempotency_key after a timeout. Poll get_render, inspect hasSheet, then approve pending_credits before render_3d.`,
       inputSchema: {
-        image_url: z
-          .string()
-          .url()
-          .optional()
-          .describe('Public https URL of a JPEG, PNG or WebP photo'),
-        image_base64: z
-          .string()
-          .optional()
-          .describe('Base64 photo, used when image_url is not given'),
-        content_type: z
-          .enum(['image/jpeg', 'image/png', 'image/webp'])
-          .optional()
-          .describe('Type of image_base64'),
-        prompt: z.string().max(500).optional().describe('Optional notes about the object'),
+        ...imageInputSchema,
+        prompt: z.string().max(500).optional(),
+        name: z.string().max(120).optional(),
+        idempotency_key: z.string().min(1).max(128).optional(),
+        is_public: z.boolean().optional(),
+      },
+      outputSchema: renderSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: true,
       },
     },
-    ({ image_url, image_base64, content_type, prompt }) =>
-      run(async () => {
-        const image = image_url
-          ? await fetchImage(image_url)
-          : image_base64
-            ? {
-                bytes: new Uint8Array(Buffer.from(image_base64, 'base64')),
-                contentType: content_type ?? 'image/jpeg',
-              }
-            : null;
-        if (!image) throw new AppError('Pass image_url or image_base64', 400, 'no_image');
-        const render = await createDraft({ actor, prompt, source: 'mcp', ...image });
-        return { ...toView(render), links: links(render.id) };
+    (input) =>
+      forActor(actor, 'write', async () => {
+        if (input.is_public) assertActorScope(actor, 'share');
+        return result(
+          await createDraft({
+            actor,
+            ...(await readImage(input, actor)),
+            prompt: input.prompt,
+            name: input.name,
+            idempotencyKey: input.idempotency_key,
+            isPublic: input.is_public ?? false,
+            source: 'mcp',
+          }),
+        );
       }),
   );
-
   server.registerTool(
     'get_render',
     {
       title: 'Get render',
-      description: 'Status of a render: drafting, preview_ready, rendering, ready or failed.',
-      inputSchema: { id: z.string() },
+      description:
+        'Read render status, artifact links and pending credits. Poll every 5–15 seconds. This may advance an already-authorized job; it does not authorize another paid generation. Private links need the same bearer authentication.',
+      inputSchema: { id: idSchema },
+      outputSchema: renderSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
-    ({ id }) =>
-      run(async () => {
-        const render = await getRender(id, actor);
-        return { ...toView(render), links: links(render.id) };
-      }),
+    ({ id }) => forActor(actor, 'read', async () => result(await getRender(id, actor))),
   );
-
   server.registerTool(
     'render_3d',
     {
       title: 'Render in 3D',
-      description: `Spend ${RENDER_CREDITS} credits to build the 3D model (GLB) of a preview_ready render. Takes about two minutes.`,
-      inputSchema: { id: z.string() },
+      description:
+        'Build an approved preview for its pending_credits. Send max_credits as the authorized ceiling. Repeating the same running/ready render does not charge again. On timeout query the same id before retrying; never create another paid render automatically.',
+      inputSchema: { id: idSchema, max_credits: z.number().int().nonnegative().optional() },
+      outputSchema: renderSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
-    ({ id }) =>
-      run(async () => {
-        const render = await startBuild(id, actor);
-        return { ...toView(render), links: links(render.id) };
+    ({ id, max_credits }) =>
+      forActor(actor, 'spend', async () => {
+        const view = toView(await getRender(id, actor));
+        requireBudget(
+          max_credits,
+          view.status === 'preview_ready' ? Math.max(0, view.renderCredits - view.credits) : 0,
+        );
+        return result(await startBuild(id, paidActor(actor, max_credits)));
       }),
   );
-
   server.registerTool(
     'get_credits',
     {
       title: 'Get credits',
-      description: 'Credit balance, the cost of one 3D render and the plans for sale.',
+      description:
+        'Balance, current operation costs, buyer currency, public offers and actual account top-up rate. Prices are in currency; no purchase is made.',
       inputSchema: {},
+      outputSchema: quoteSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
-    () =>
-      run(async () => {
-        const {
-          creditUsd: CREDIT_USD,
-          payg: PAYG,
-          plans: SUBSCRIPTION_PLANS,
-          variant,
-        } = pricingFor(await assignedPricing(actor.userId, actor.anonId));
-        return {
-          pricing_variant: variant,
-          balance: await getBalance(actor.userId),
-          render_credits: RENDER_CREDITS,
-          plans: {
-            pay_as_you_go: {
-              usd_per_credit: CREDIT_USD,
-              min_credits: PAYG.min,
-              max_credits: PAYG.max,
-            },
-            ...Object.fromEntries(
-              PLAN_IDS.map((id) => [
-                id,
-                {
-                  usd_per_month: SUBSCRIPTION_PLANS[id].priceCents / 100,
-                  credits_per_month: SUBSCRIPTION_PLANS[id].monthlyCredits,
-                },
-              ]),
-            ),
-            enterprise: { book_a_call: ENTERPRISE_BOOKING_URL },
-          },
-          buy: `${config.appUrl()}/credits`,
-        };
-      }),
+    () => forActor(actor, 'read', (owner) => getCreditQuote(owner)),
   );
-
+  registerExtendedTools(server, actor);
   return server;
 }

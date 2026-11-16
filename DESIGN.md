@@ -5,30 +5,29 @@ name: easyrender.ai
 description: >
 Design system for easyrender.ai: photos of products turned into 3D models and AR, sold to
 e-commerce and real estate teams. Two surfaces share one shadcn token layer. The product
-(dashboard, auth, render pages) is a quiet zinc UI that follows the system colour scheme. The
-marketing studio (landing, hub) is a dark carbon surface where the only colour is the 3D object
-and the XYZ axes inside the viewports.
+(dashboard, auth, render pages) and marketing studio (landing, hub) are always dark, regardless
+of the system colour scheme. Both use the studio carbon palette; colour belongs to the 3D
+object and the XYZ axes inside the viewports.
 
 colors:
-# ── Product surface (apps/web/app/globals.css, shadcn zinc) ─────────────────
+# ── Shared web surface (apps/web/app/globals.css, always dark) ─────────────
 
-# Defined in oklch; hex below is the nearest sRGB value, for reference only.
+# Components use the semantic names, never the values. Document color-scheme is dark.
 
-# Light / Dark pairs. Components use the semantic names, never the values.
-
-background: "#FFFFFF / #09090B"
-foreground: "#09090B / #FAFAFA"
-card: "#FFFFFF / #18181B"
-primary: "#18181B / #E4E4E7"
-primary-foreground: "#FAFAFA / #18181B"
-secondary: "#F4F4F5 / #27272A"
-muted: "#F4F4F5 / #27272A"
-muted-foreground: "#71717A / #A1A1AA"
-accent: "#F4F4F5 / #27272A"
-border: "#E4E4E7 / rgb(255 255 255 / 10%)"
-input: "#E4E4E7 / rgb(255 255 255 / 15%)"
-ring: "#A1A1AA / #71717A"
-destructive: "#E7000B / #FF6467"
+background: "#0A0A0B"
+foreground: "#ECEBE7"
+card: "#131315"
+popover: "#1C1C1F"
+primary: "#ECEBE7"
+primary-foreground: "#0A0A0B"
+secondary: "#1C1C1F"
+muted: "#1C1C1F"
+muted-foreground: "#909095"
+accent: "#1C1C1F"
+border: "rgb(236 235 231 / 10%)"
+input: "rgb(236 235 231 / 16%)"
+ring: "#909095"
+destructive: "#FF6467"
 
 # ── Marketing studio (apps/web/components/studio/studio.css, scoped to .er-studio) ──
 
@@ -49,7 +48,7 @@ axis-z: "#4D8DFF" # XYZ gizmo, blue
 
 # ── Mobile (apps/mobile/lib/theme.ts) ────────────────────────────────────
 
-# Same zinc roles as the product surface, as plain hex for React Native, plus success.
+# Mobile retains its own light/dark zinc roles as plain hex for React Native, plus success.
 
 success: "#16A34A / #4ADE80"
 
@@ -80,14 +79,14 @@ studio-nav: "3.5rem"
 easyrender sells a result a buyer can judge at a glance: a product photo becomes a 3D model that
 spins and opens in AR. The interface stays out of the way of that result.
 
-- The product surface is shadcn (new-york style, zinc base, `lucide` icons). It follows the
-  system light or dark scheme and has no theme switcher.
-- The studio surface is always dark. Chrome is graphite on carbon, type is bone, and colour comes
-  only from the rendered object and the red, green and blue axes of the gizmo.
-- Both surfaces read the same shadcn variables (`--background`, `--primary`, ...). The studio
-  overrides them while a `.er-studio` page is mounted (`body:has(.er-studio)` in `studio.css`),
-  so the shared header, footer and shadcn components follow the studio palette without a second
-  component set.
+- The product surface is shadcn (new-york style, `lucide` icons). Every web route is always dark
+  and has no theme switcher, including localized pages, auth and the signed-in app.
+- Chrome is graphite on carbon, type is bone, and colour comes only from the rendered object
+  and the red, green and blue axes of the gizmo.
+- Both surfaces read the same shadcn variables (`--background`, `--primary`, ...). Studio colour
+  aliases point to these global tokens. `body:has(.er-studio)` only adjusts radius and typography.
+  Existing shadcn `dark:` variants apply unconditionally through the root selector in `globals.css`;
+  no web theme depends on `prefers-color-scheme`.
 
 Source of truth: `apps/web/app/globals.css` for the product tokens, `apps/web/components/studio/studio.css`
 for the studio tokens, `apps/mobile/lib/theme.ts` for mobile. When a value changes there, change it
@@ -115,8 +114,9 @@ CLI (`components.json` is configured), then edit.
 - Use semantic tokens (`bg-background`, `text-muted-foreground`, `border`), never a hex value or a
   Tailwind palette colour such as `bg-zinc-900`, in product components.
 - Do not add `dark:` variants or Tailwind palette colours (`bg-zinc-300`) to product code. The
-  tokens already switch with the scheme. `components/agent-demo.tsx` and `components/prompt-bar.tsx`
-  predate this rule and should be moved onto tokens when next touched.
+  semantic tokens already provide the always-dark palette.
+- Photos, diagrams, angle sheets and QR codes may retain a light canvas inside a rounded,
+  bordered media frame. Preserve image colours and pair any text on paper with ink.
 - Chrome is greyscale. Colour belongs to the 3D object, the axis gizmo, and `destructive` for
   errors. Do not add brand accents, glows or decorative gradients to chrome.
 - Studio: pick a step by its job (carbon canvas, graphite card, slate hover, steel selected). Put
@@ -137,11 +137,19 @@ chrome accents. Chart series also use labels, legends and dashed previous-period
 
 ## Layout
 
-- The signed-in app has its own shell (`components/app-shell`): a thin icon rail, a collapsible
-  sidebar with recents, and the page in one rounded block. It has no marketing header; below `md`
-  the rail becomes a bottom bar. Marketing pages use the site header and footer (`site-chrome.tsx`).
-  Drawers animate their width in 200ms with `cubic-bezier(0.2, 0.7, 0.2, 1)` and a fixed inner
-  width, so content does not reflow, and honour `prefers-reduced-motion`.
+- The signed-in app has its own shell (`components/app-shell`): a thin icon rail (Overview,
+  Library, Product views, Account), a left drawer with the renders list (thumbnails, grouped by
+  state), the page in one rounded block, and a right drawer that a page may fill with its context
+  (a render's parts: photo, angle sheet, details) through `ShellPanel`. It has no marketing
+  header; below `md` the rail becomes a bottom bar and the drawers are hidden (a page's context
+  then follows the page content). Both drawers resize by dragging the handle (shadcn
+  `Resizable`, widths in pixels, saved per browser), snap shut when dragged below their minimum,
+  and toggle from the top bar. Marketing pages use the site header and footer (`site-chrome.tsx`).
+- Settings are full pages with no drawers: Account, Credits and Connectors, linked by one row of
+  tabs and reached from the Account rail item. The credit balance is shown only there, never in
+  the top bar or the rail.
+- The rail peek is a shadcn `HoverCard`: short delays, closes on click and navigation, and never
+  opens for the active item.
 - Product pages sit in a centred column inside that shell. Do not choose columns from viewport
   breakpoints when the page column is what constrains the grid.
 - Controls snap to 32 / 36 / 40px.
@@ -165,7 +173,7 @@ error says what failed and whether credits were refunded.
 
 ## Money and credits
 
-- Credits are the only unit shown in the product. 1 credit = $0.01 (pay as you go); Pro is 5,000
+- Credits are the only unit shown in the product. 1 credit = $0.01 (pay as you go); Pro is 5,500
   credits for $49 a month. Prices come from `@easyrender/harness` pricing, never hard-coded in a
   component.
 - Show the cost on the button that spends it ("Build 3D, 64 credits") before the click.
@@ -179,15 +187,14 @@ string is added to both files in the same PR. Layouts have to survive Spanish, w
 ## Do's and Don'ts
 
 - **Do** reach for an existing shadcn component first.
-- **Do** verify light and dark on product pages, and the studio at 375px and desktop, whenever
-  chrome changes. Say which browser checks were not run.
+- **Do** emulate both light and dark OS preferences and verify the site stays dark at 375px and
+  desktop whenever chrome changes. Say which browser checks were not run.
 - **Do** keep copy in the message files.
 - **Don't** add a raw HTML control, a hex colour, a palette colour or a `dark:` variant to product code.
 - **Don't** add a new font, a new accent colour, or a second component library.
 - **Don't** hard-code a price or a credit amount in a component.
 - **Don't** show a model as done before `get_render` says so.
-- **Don't** put studio classes in product pages, or shadcn overrides in `studio.css` beyond the
-  variable overrides that already exist.
+- **Don't** put studio classes in product pages or duplicate shared colour tokens in `studio.css`.
 
 ## UI review checkpoints
 

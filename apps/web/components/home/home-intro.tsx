@@ -1,6 +1,6 @@
 import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
+import { SiteLink as Link } from '@/components/site-link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 

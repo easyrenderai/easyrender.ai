@@ -1,4 +1,6 @@
 import { isPlanId, PLAN_IDS, SUBSCRIPTION_PLANS } from '@easyrender/harness';
+import { activationTables } from './activation';
+import { advertisingTable } from './ad-spend';
 import type { Snapshot } from './database';
 import {
   bucket,
@@ -6,8 +8,10 @@ import {
   cohorts,
   type DataTable,
   funnel,
+  JOB_REFUND_REASONS,
   kpiFormulas,
   type Metric,
+  modelCompletedAt,
   percentile,
   type Range,
   type Row,
@@ -15,8 +19,10 @@ import {
   referrerHost,
   type Section,
   SIGNAL_MIN_SIGNUPS,
+  sheetCompletedAt,
   type View,
 } from './helpers';
+import { organicLandingTable } from './organic';
 
 export type Payment = {
   id: string;
@@ -85,7 +91,7 @@ export function databaseFinance(snapshot: Snapshot): Finance {
     .map((p) => ({
       id: p.id,
       userId: p.userId,
-      at: iso(p.createdAt),
+      at: iso(p.paidAt ?? p.createdAt),
       product: p.packId,
       currency: p.currency.toUpperCase(),
       gross: p.amountCents / 100,
@@ -141,6 +147,7 @@ export function buildReport(
     notes: [
       'periodDefinitions',
       'mutableRenderTimes',
+      'providerCostScope',
       'boundedSnapshot',
       ...(finance.isStripe ? [] : ['dbFallback']),
       'anonymousTeamCaveat',
@@ -179,8 +186,10 @@ export function buildReport(
   };
   for (const r of s.renders) {
     if (!r.userId) continue;
-    if (r.sheetKey) updateFirst(firstSheet, r.userId, r.createdAt);
-    if (r.status === 'ready' && r.glbKey) updateFirst(firstModel, r.userId, r.updatedAt);
+    const preview = sheetCompletedAt(r);
+    if (preview) updateFirst(firstSheet, r.userId, preview);
+    const completed = modelCompletedAt(r);
+    if (completed) updateFirst(firstModel, r.userId, completed);
   }
   for (const p of finance.payments) if (p.userId) updateFirst(firstPurchase, p.userId, p.at);
   const acquired = (map: Map<string, string>, start: string, end: string) =>
@@ -190,6 +199,14 @@ export function buildReport(
         map.has(u.id) &&
         Date.parse(map.get(u.id) as string) < Date.parse(end),
     ).length;
+  const hasModelBefore = (r: Snapshot['renders'][number], end: string) => {
+    const completed = modelCompletedAt(r);
+    return completed !== null && +completed < Date.parse(end);
+  };
+  const hasSheetBefore = (r: Snapshot['renders'][number], end: string) => {
+    const completed = sheetCompletedAt(r);
+    return completed !== null && +completed < Date.parse(end);
+  };
   const activity = (start: string, end: string) => {
     const rr = s.renders.filter((r) => within(r.createdAt, start, end));
     const pp = finance.payments.filter((p) => within(p.at, start, end));
@@ -197,15 +214,23 @@ export function buildReport(
     const uu = s.users.filter((u) => within(u.createdAt, start, end));
     return {
       signups: uu.length,
-      sheets: rr.filter((r) => r.sheetKey).length,
-      models: rr.filter((r) => r.status === 'ready' && r.glbKey).length,
+      sheets: rr.filter((r) => hasSheetBefore(r, end)).length,
+      models: rr.filter((r) => hasModelBefore(r, end)).length,
       anonymous: rr.filter((r) => !r.userId && r.anonId).length,
       paying: countUsers(pp),
       newPaying: [...firstPurchase.values()].filter((d) => within(d, start, end)).length,
       activatedSheet: acquired(firstSheet, start, end),
       activatedModel: acquired(firstModel, start, end),
       active: countUsers(rr),
-      cost: sum(rr, (r) => r.costUsd),
+      renderCost: sum(rr, (r) => r.costUsd),
+      // Stored operation costs are cumulative estimates allocated to creation cohorts.
+      // ViewSet→Render reuses a sheet but never copies its cost into the new Render.
+      cost:
+        sum(rr, (r) => r.costUsd) +
+        sum(
+          [...s.viewSets, ...s.upscales].filter((r) => within(r.createdAt, start, end)),
+          (r) => r.costUsd,
+        ),
       sold: sum(
         ll.filter((l) => ['purchase', 'subscription'].includes(l.reason) && l.delta > 0),
         (l) => l.delta,
@@ -216,12 +241,15 @@ export function buildReport(
       ),
       free: sum(
         ll.filter(
-          (l) => l.delta > 0 && !['purchase', 'subscription', 'render_failed'].includes(l.reason),
+          (l) =>
+            l.delta > 0 &&
+            !['purchase', 'subscription'].includes(l.reason) &&
+            !JOB_REFUND_REASONS.has(l.reason),
         ),
         (l) => l.delta,
       ),
       returned: sum(
-        ll.filter((l) => l.reason === 'render_failed'),
+        ll.filter((l) => l.delta > 0 && JOB_REFUND_REASONS.has(l.reason)),
         (l) => l.delta,
       ),
       failure: ratio(
@@ -353,13 +381,13 @@ export function buildReport(
       units: pp.some((r) => r.credits === null) ? null : sum(pp, (r) => r.credits ?? 0),
       gross,
       refunds: finance.isStripe ? refund : null,
-      net: gross - refund,
+      net: finance.isStripe ? gross - refund : null,
       average: ratio(gross, pp.length),
     };
   });
   const planRows = finance.subscriptions.map((p) => ({ ...p }));
   const catalog = groups(
-    s.renders.filter((r) => r.userId && r.status === 'ready' && r.glbKey),
+    s.renders.filter((r) => r.userId && hasModelBefore(r, range.end)),
     (r) => r.userId as string,
   ).map(([, rr]) => rr.length);
   const histogram = ['1', '2-5', '6-20', '21-100', '100+'].map((size, i) => ({
@@ -421,7 +449,7 @@ export function buildReport(
         [...firstPurchase.values()].filter((d) => Date.parse(d) < Date.parse(range.end)).length,
         [...firstPurchase.values()].filter((d) => Date.parse(d) < Date.parse(range.start)).length,
       );
-      metric('providerCost', a.cost, b.cost, 'currency', 'postgres', 'measured', 'USD', true);
+      metric('providerCost', a.cost, b.cost, 'currency', 'postgres', 'proxy', 'USD', true);
     }
     for (const currency of currencies) {
       const current = payments.filter((p) => p.currency === currency),
@@ -459,7 +487,15 @@ export function buildReport(
         currency,
         true,
       );
-      metric('net', currentKpi.net, previousKpi.net, 'currency', source, quality, currency);
+      metric(
+        'net',
+        finance.isStripe ? currentKpi.net : null,
+        finance.isStripe ? previousKpi.net : null,
+        'currency',
+        source,
+        finance.isStripe ? quality : 'unavailable',
+        currency,
+      );
       metric(
         'fees',
         finance.isStripe && current.every((p) => p.fees !== null)
@@ -474,8 +510,24 @@ export function buildReport(
         currency,
         true,
       );
-      metric('arpu', currentKpi.arpu, previousKpi.arpu, 'currency', source, 'proxy', currency);
-      metric('arppu', currentKpi.arppu, previousKpi.arppu, 'currency', source, quality, currency);
+      metric(
+        'arpu',
+        finance.isStripe ? currentKpi.arpu : null,
+        finance.isStripe ? previousKpi.arpu : null,
+        'currency',
+        source,
+        finance.isStripe ? 'proxy' : 'unavailable',
+        currency,
+      );
+      metric(
+        'arppu',
+        finance.isStripe ? currentKpi.arppu : null,
+        finance.isStripe ? previousKpi.arppu : null,
+        'currency',
+        source,
+        finance.isStripe ? quality : 'unavailable',
+        currency,
+      );
       metric(
         'mrr',
         sum(
@@ -489,7 +541,14 @@ export function buildReport(
         currency,
       );
       if (currency === 'USD')
-        metric('margin', currentKpi.margin, previousKpi.margin, 'percent', source, 'proxy');
+        metric(
+          'margin',
+          finance.isStripe ? currentKpi.margin : null,
+          finance.isStripe ? previousKpi.margin : null,
+          'percent',
+          source,
+          finance.isStripe ? 'proxy' : 'unavailable',
+        );
     }
     metric(
       'subscribers',
@@ -645,6 +704,12 @@ export function buildReport(
       view.notes.push('attributionMissing');
       return view;
     }
+    view.tables.push(
+      advertisingTable(s.adSpend, finance.payments, [...attributed.values()], range),
+    );
+    view.tables.push(
+      organicLandingTable(s.users, s.attribution, s.renders, finance.payments, range),
+    );
     const dimensions = [
       'channel',
       'utm_source',
@@ -890,12 +955,16 @@ export function buildReport(
         groups(renders, (r) => r.source).map(([source, rr]) => ({
           source,
           renders: rr.length,
-          models: rr.filter((r) => r.status === 'ready' && r.glbKey).length,
+          models: rr.filter((r) => hasModelBefore(r, range.end)).length,
           providerCost: sum(rr, (r) => r.costUsd),
         })),
+        'postgres',
+        'proxy',
+        'renderCostScope',
       ),
     );
     if (section === 'product') {
+      view.tables.push(...activationTables(s.renders, range));
       metric('sheets', a.sheets, b.sheets);
       metric('models', a.models, b.models);
       metric('failure', a.failure, b.failure, 'percent', 'postgres', 'measured', undefined, true);
@@ -905,15 +974,15 @@ export function buildReport(
         b.failure === null ? null : 1 - b.failure,
         'percent',
       );
-      const terminal = renders.filter((r) =>
-        ['ready', 'failed', 'preview_ready'].includes(r.status),
-      );
-      const previousDurations = previousRenders
-        .filter((r) => ['ready', 'failed', 'preview_ready'].includes(r.status))
-        .map((r) => (+new Date(r.updatedAt) - +new Date(r.createdAt)) / 60000);
-      const durations = terminal.map(
-        (r) => (+new Date(r.updatedAt) - +new Date(r.createdAt)) / 60000,
-      );
+      const durationsBefore = (rows: typeof renders, end: string) =>
+        rows.flatMap((r) => {
+          const completed = modelCompletedAt(r);
+          return completed && +completed < Date.parse(end)
+            ? [(+completed - +r.createdAt) / 60000]
+            : [];
+        });
+      const previousDurations = durationsBefore(previousRenders, range.previousEnd);
+      const durations = durationsBefore(renders, range.end);
       metric(
         'generationMedian',
         percentile(durations, 0.5),
@@ -936,8 +1005,8 @@ export function buildReport(
       );
       metric(
         'costModel',
-        ratio(a.cost, a.models),
-        ratio(b.cost, b.models),
+        ratio(a.renderCost, a.models),
+        ratio(b.renderCost, b.models),
         'currency',
         'postgres',
         'proxy',
@@ -1003,8 +1072,8 @@ export function buildReport(
           ready: rr.filter((r) => r.status === 'ready' || r.status === 'preview_ready').length,
           failed: rr.filter((r) => r.status === 'failed').length,
           inProgress: rr.filter((r) => r.status === 'rendering' || r.status === 'drafting').length,
-          sheets: rr.filter((r) => r.sheetKey).length,
-          models: rr.filter((r) => r.status === 'ready' && r.glbKey).length,
+          sheets: rr.filter((r) => hasSheetBefore(r, range.end)).length,
+          models: rr.filter((r) => hasModelBefore(r, range.end)).length,
         }))
         .sort((a, b) => a.date.localeCompare(b.date));
       view.charts.push(
@@ -1058,7 +1127,7 @@ export function buildReport(
             .map(([id, rr]) => ({
               email: s.users.find((u) => u.id === id)?.email ?? 'unknown',
               renders: rr.length,
-              models: rr.filter((r) => r.status === 'ready' && r.glbKey).length,
+              models: rr.filter((r) => hasModelBefore(r, range.end)).length,
               consumed: -sum(
                 s.ledger.filter((l) => l.userId === id && l.delta < 0 && inPeriod(l.createdAt)),
                 (l) => l.delta,

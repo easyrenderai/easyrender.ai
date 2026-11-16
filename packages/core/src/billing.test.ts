@@ -9,10 +9,10 @@ import {
 } from './billing';
 
 describe('parseCheckout', () => {
-  it('accepts every monthly plan', () => {
-    for (const plan of ['creator', 'pro', 'scale']) {
-      expect(parseCheckout({ plan })).toEqual({ plan });
-    }
+  it('sells only Pro while legacy plans remain recognized by invoices', () => {
+    expect(parseCheckout({ plan: 'pro' })).toEqual({ plan: 'pro' });
+    for (const plan of ['creator', 'scale'])
+      expect(() => parseCheckout({ plan })).toThrow(/Unknown plan/);
   });
 
   it('accepts pay as you go within bounds, including numeric strings', () => {

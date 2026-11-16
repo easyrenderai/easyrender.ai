@@ -89,6 +89,55 @@ run('catalogue runs (real database)', () => {
     expect(await db().catalogItem.count({ where: { userId } })).toBe(0);
   });
 
+  it('queues one generation when concurrent submissions contain the same product', async () => {
+    const catalog = await load();
+    const userId = await newUser(RENDER_CREDITS * 10);
+    const { createApiKey } = await import('./api-keys');
+    const staleKey = await createApiKey(userId, 'stale', { creditLimit: 0 });
+    const activeKey = await createApiKey(userId, 'active');
+    // Delay one actual database read after it has obtained its snapshot. A second submission
+    // can then claim the product before the first resumes its read/check/write sequence.
+    let didRead: () => void = () => {};
+    const firstRead = new Promise<void>((resolve) => {
+      didRead = resolve;
+    });
+    let resume: () => void = () => {};
+    const resumeRead = new Promise<void>((resolve) => {
+      resume = resolve;
+    });
+    const originalFind = db().catalogItem.findMany.bind(db().catalogItem);
+    const delayed = vi.spyOn(db().catalogItem, 'findMany').mockImplementationOnce((args) => {
+      const pending = originalFind(args).then(async (rows) => {
+        didRead();
+        await resumeRead;
+        return rows;
+      });
+      return pending as ReturnType<typeof originalFind>;
+    });
+    const first = catalog.submitCatalog(
+      scopeFor(userId),
+      [product(1)],
+      RENDER_CREDITS,
+      staleKey.id,
+    );
+    await firstRead;
+    const second = await catalog
+      .submitCatalog(scopeFor(userId), [product(1)], RENDER_CREDITS, activeKey.id)
+      .finally(resume);
+    const results = [await first, second];
+    delayed.mockRestore();
+    expect(results.reduce((sum, result) => sum + result.queued, 0)).toBe(1);
+    expect(await db().render.count({ where: { userId } })).toBe(1);
+    const item = await itemState(userId, 'p1');
+    expect(item.state).toBe('drafting');
+    expect(item.apiKeyId).toBe(activeKey.id);
+    expect(item.renderId).not.toBeNull();
+    await finishSheet(item.renderId);
+    await Promise.all(Array.from({ length: 4 }, () => catalog.tickCatalog(scopeFor(userId))));
+    expect(await balance(userId)).toBe(RENDER_CREDITS * 9);
+    expect(await db().creditLedger.count({ where: { userId, reason: 'render' } })).toBe(1);
+  });
+
   it('starts only the products the balance can build, and the rest wait in the queue', async () => {
     const catalog = await load();
     const userId = await newUser(RENDER_CREDITS * 2);
@@ -186,5 +235,46 @@ run('catalogue runs (real database)', () => {
     const b = await newUser(RENDER_CREDITS);
     await catalog.submitCatalog(scopeFor(a), [product(1)], RENDER_CREDITS);
     expect((await catalog.listCatalog(scopeFor(b))).items).toHaveLength(0);
+  });
+
+  it('retains the submitting key budget when a later read advances the catalog', async () => {
+    const catalog = await load();
+    const { createApiKey } = await import('./api-keys');
+    const userId = await newUser(RENDER_CREDITS * 2);
+    const key = await createApiKey(userId, 'limited', { creditLimit: 0 });
+    await catalog.submitCatalog(scopeFor(userId), [product(1)], RENDER_CREDITS, key.id);
+    const item = await itemState(userId, 'p1');
+    expect(item.apiKeyId).toBe(key.id);
+    await finishSheet(item.renderId);
+    await catalog.listCatalog(scopeFor(userId));
+    expect(await itemState(userId, 'p1')).toMatchObject({ state: 'needs_info' });
+    expect(await balance(userId)).toBe(RENDER_CREDITS * 2);
+    expect(await db().creditLedger.count({ where: { userId, reason: 'render' } })).toBe(0);
+  });
+
+  it('cannot continue charging a catalog after its submitting key was revoked', async () => {
+    const catalog = await load();
+    const { createApiKey } = await import('./api-keys');
+    const userId = await newUser(RENDER_CREDITS * 2);
+    const key = await createApiKey(userId, 'revoked');
+    await catalog.submitCatalog(scopeFor(userId), [product(1)], RENDER_CREDITS, key.id);
+    const item = await itemState(userId, 'p1');
+    await finishSheet(item.renderId);
+    await db().apiKey.delete({ where: { id: key.id } });
+    await catalog.tickCatalog(scopeFor(userId));
+    expect(await itemState(userId, 'p1')).toMatchObject({ state: 'needs_info' });
+    expect(await balance(userId)).toBe(RENDER_CREDITS * 2);
+  });
+
+  it('rejects catalog submission without publication permission before fetching photos', async () => {
+    const catalog = await load();
+    const { createApiKey } = await import('./api-keys');
+    const userId = await newUser(RENDER_CREDITS);
+    const key = await createApiKey(userId, 'no sharing', { scopes: ['read', 'write', 'spend'] });
+    await expect(
+      catalog.submitCatalog(scopeFor(userId), [product(1)], RENDER_CREDITS, key.id),
+    ).rejects.toMatchObject({ code: 'insufficient_scope' });
+    expect(fake.image).not.toHaveBeenCalled();
+    expect(await db().catalogItem.count({ where: { userId } })).toBe(0);
   });
 });

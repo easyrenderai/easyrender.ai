@@ -1,0 +1,57 @@
+[
+  {
+    "name": "id",
+    "type": "text",
+    "label": "Render ID"
+  },
+  {
+    "name": "status",
+    "type": "text",
+    "label": "Status"
+  },
+  {
+    "name": "name",
+    "type": "text",
+    "label": "Name"
+  },
+  {
+    "name": "prompt",
+    "type": "text",
+    "label": "Prompt"
+  },
+  {
+    "name": "error",
+    "type": "text",
+    "label": "Error"
+  },
+  {
+    "name": "hasModel",
+    "type": "boolean",
+    "label": "Has Model"
+  },
+  {
+    "name": "hasPreview",
+    "type": "boolean",
+    "label": "Has Preview"
+  },
+  {
+    "name": "hasSheet",
+    "type": "boolean",
+    "label": "Has Sheet"
+  },
+  {
+    "name": "isPublic",
+    "type": "boolean",
+    "label": "Is Public"
+  },
+  {
+    "name": "createdAt",
+    "type": "date",
+    "label": "Created At"
+  },
+  {
+    "name": "modelVersion",
+    "type": "number",
+    "label": "Model Version"
+  }
+]

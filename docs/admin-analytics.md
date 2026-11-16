@@ -102,10 +102,28 @@ and `startSheet` attach an authenticated `userId` while retaining `anonId`. Cons
 `anonId + userId` proves a claimed preview, **not** signup-time conversion. A trustworthy
 anonymous-preview → signup rate requires a signup-time linkage event.
 
-There are no immutable sheet-ready or model-ready timestamps on main. `updatedAt` also
+New successful 3D generations record an immutable `completedAt`. Older successes can have
+no completion timestamp. There is no immutable sheet-ready timestamp. `updatedAt` also
 changes for later edits, and a paid build can replace a sheet. Historical reports therefore
 describe the current state of rows associated with the chosen period, not a replay of past
 state. PostHog server events provide the future immutable-event cross-check.
+
+### Organic landing cohorts
+
+The Attribution section includes a separate organic-search landing table. Its population is
+accounts that signed up inside the selected range and whose stored first touch classifies as
+organic search. Each landing reports that same population's observed sheet ownership, dated
+first/second model completions, and first/second positive payments before the range ends.
+Model IDs and payment IDs are deduplicated; older signups and paid-search accounts cannot
+inflate these counts. No new schema, consent behavior, client events or financial writes are
+introduced.
+
+Sheet ownership is a current-state proxy, not a historical preview-completion event. Undated
+legacy model successes are reported separately and never given an invented completion date.
+Payment timing and coverage inherit the selected financial source (including DB fallback
+limitations). Counts are outcomes, not a required ordered funnel; a purchase can precede a
+model. The table does not divide unrelated pageviews by signups. Recent cohorts have less
+follow-up, and missing first-touch data cannot be reconstructed from this table.
 
 ## KPI definitions
 

@@ -7,6 +7,7 @@ vi.mock('@easyrender/db', () => ({ db: vi.fn() }));
 vi.mock('./config', () => ({ config: { replicateToken: () => 'test-placeholder' } }));
 vi.mock('./analytics', () => ({ captureRender: vi.fn(), deferAnalytics: vi.fn() }));
 vi.mock('./report', () => ({ reportError: vi.fn() }));
+vi.mock('./service-email', () => ({ queueRenderServiceEmail: vi.fn() }));
 vi.mock('./storage', () => ({
   getFile: vi.fn().mockRejectedValue(new Error('source unavailable')),
   putFile: vi.fn().mockResolvedValue('local:models/model.glb'),
@@ -38,6 +39,7 @@ describe('render completion with failed fidelity QA', () => {
       prompt: null,
     } as unknown as Render;
     const database = {
+      $transaction: async (run: (tx: unknown) => unknown) => run(database),
       render: {
         findUnique: vi.fn(async () => stored),
         updateMany: vi.fn(async ({ data }: { data: Partial<Render> }) => {

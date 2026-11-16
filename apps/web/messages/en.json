@@ -12,17 +12,19 @@
       "howItWorks": "How it works",
       "hub": "Hub",
       "connect": "Connect",
+      "mcp": "MCP",
+      "api": "API",
       "try": "Try it",
       "pricing": "Pricing"
     },
-    "credits": "credits",
     "dashboard": "Dashboard",
     "signIn": "Sign in",
     "connect": "Connect",
     "connectSuffix": "your agent",
     "sections": "Sections",
     "menuOpen": "Open menu",
-    "menuClose": "Close menu"
+    "menuClose": "Close menu",
+    "upload": "Upload a photo"
   },
   "Footer": {
     "tagline": "One photo becomes a 3D model you can see from every angle and download as GLB and USDZ.",
@@ -45,10 +47,14 @@
       "models": "Models",
       "evals": "Evals",
       "cookies": "Cookies and analytics",
-      "api": "REST API"
+      "api": "REST API",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "editorial": "Editorial team",
+      "comparisons": "Comparisons"
     },
     "copyright": "© 2026 easyrender. Powered by Genfeed.",
-    "pricesNote": "Prices in USD. Credits never expire."
+    "pricesNote": "Check the currency and total at checkout. Credits never expire."
   },
   "Home": {
     "connect": {
@@ -87,6 +93,40 @@
       "scope": "It does not model whole rooms. It does not invent measurements. You get the file; you decide if it is good enough to keep.",
       "primaryCta": "Upload a photo",
       "secondaryCta": "See models made from a photo"
+    },
+    "integrations": {
+      "title": "Build 3D into your workflow.",
+      "description": "Use an AI agent or connect your own application. Choose the integration that fits your workflow.",
+      "mcp": {
+        "title": "For your AI agent",
+        "body": "Ask your agent to preview a product, check its cost and build a 3D model.",
+        "cta": "Explore MCP"
+      },
+      "api": {
+        "title": "For your application",
+        "body": "Add photo-to-3D to your product with the REST API. Control the upload, preview and paid build.",
+        "cta": "Explore the API"
+      },
+      "english": "English"
+    },
+    "journey": {
+      "title": "From your photo to your next project.",
+      "hub": "Explore how the Hub works",
+      "photo": {
+        "title": "Upload your product",
+        "body": "Start with a photo you already have."
+      },
+      "model": {
+        "title": "Get your model",
+        "body": "Review the free angles, then choose whether to build the 3D model."
+      },
+      "use": {
+        "title": "Use it in your work",
+        "body": "Download the file for your store, design project or scene."
+      }
+    },
+    "customer": {
+      "label": "Used by"
     }
   },
   "Landing": {
@@ -95,16 +135,6 @@
       "description": "Previews are free. A finished 3D model costs {credits} credits ({price}).",
       "seeAll": "See all pricing",
       "bestValue": "Best value",
-      "free": {
-        "name": "Free",
-        "note": "to try it",
-        "features": {
-          "mcp": "Connect your agent over MCP",
-          "previews": "Free previews of every angle",
-          "noCard": "No credit card"
-        },
-        "cta": "Start free"
-      },
       "payg": {
         "name": "Pay as you go",
         "note": "per credit",
@@ -114,7 +144,8 @@
           "ar": "Coming soon: see it in your room from your phone",
           "api": "MCP server and REST API"
         },
-        "cta": "Buy credits"
+        "cta": "Buy credits",
+        "audience": "For a first project or occasional products. No subscription."
       },
       "pro": {
         "note": "per month",
@@ -122,9 +153,11 @@
           "credits": "{credits} credits every month",
           "models": "About {count} 3D models",
           "rollover": "Unused credits roll over",
-          "cancel": "Cancel anytime"
+          "cancel": "Cancel anytime",
+          "topUp": "Need more? Top up anytime at your plan’s rate."
         },
-        "cta": "Go {plan}"
+        "cta": "Go {plan}",
+        "audience": "For teams creating product models every month."
       },
       "enterprise": {
         "name": "Enterprise",
@@ -136,8 +169,12 @@
           "support": "Priority support",
           "onboarding": "Onboarding call"
         },
-        "cta": "Book a call"
-      }
+        "cta": "Book a call",
+        "audience": "For large catalogs and assisted onboarding."
+      },
+      "tryFree": "Try it free",
+      "noCard": "Free previews. No credit card required.",
+      "perModel": "per 3D model"
     },
     "faq": {
       "title": "Questions, answered",
@@ -195,14 +232,17 @@
   },
   "AgentDemo": {
     "window": "Your agent · easyrender MCP",
-    "ask": "Here is the spring catalogue. Make a 3D model of every product.",
+    "illustration": "Illustrative conversation and tool sequence. No request runs on this page.",
+    "ask": "Turn this table photo into a 3D model. Show me the preview, then wait for my approval before building.",
+    "approval": "In this example, you instruct your agent to wait for approval. Configure that behavior in your client; the paid tool itself does not enforce a confirmation dialog.",
+    "budget": "Planning a catalogue? Review and approve each object before building its model.",
+    "budgetNote": "A budget example, not a completed batch. Your agent must create and track each render separately. Extra edits and AI-client charges are additional.",
     "calls": {
-      "create_render": "24 photos · previews free",
-      "get_render": "24 previews ready",
-      "render_3d": "24 models · 480 credits"
-    },
-    "done": "Done. 24 models are in your easyrender library, with GLB and USDZ for AR. Here is the first one:",
-    "modelAlt": "3D model: {title}"
+      "create_render": "Submit the product photo and request the free preview.",
+      "get_render": "Poll for the preview and return its link for inspection.",
+      "get_credits": "Check the balance and current full-build credit cost.",
+      "render_3d": "After your approval, request the paid build. Poll get_render until ready, then retrieve the GLB link."
+    }
   },
   "McpSetup": {
     "terminal": "Run in your terminal",
@@ -214,7 +254,12 @@
       "two": "Paste this URL as the connector URL.",
       "three": "Click Connect, sign in to easyrender and allow access. No key needed.",
       "note": "The same sign-in flow works with any OAuth-capable MCP client. Each connection creates a key you can revoke from Connectors."
-    }
+    },
+    "wallet": "Your web app, API and MCP use the same account wallet. Paid operations use credits from that wallet; connecting or checking your balance costs no easyrender credits. Your AI client may charge separately.",
+    "codexOauth": "These commands open browser sign-in through OAuth. Use the same easyrender account as this dashboard; no API key needs to be pasted.",
+    "firstPromptTitle": "Your first prompt",
+    "firstPrompt": "Use easyrender to check my credit balance and current operation costs. Do not generate anything or spend credits yet.",
+    "firstPromptNote": "Paste this in your connected client. A successful get_credits result confirms that client can reach your account."
   },
   "Gallery": {
     "modelAlt": "3D model: {title}",
@@ -258,6 +303,10 @@
       "bedside-table": {
         "title": "Bedside table",
         "prompt": "Solid wood bedside table with a drawer"
+      },
+      "table": {
+        "title": "Wooden table",
+        "prompt": "Rectangular wooden table"
       }
     }
   },
@@ -278,7 +327,6 @@
     "modelAlt": "3D model: {name}",
     "meta": {
       "status": "Status",
-      "engine": "Engine",
       "dimensions": "Dimensions",
       "formats": "Formats",
       "visibility": "Visibility",
@@ -294,7 +342,7 @@
     },
     "drafting": "Drawing every angle of your object. This takes about a minute.",
     "rendering": "Building the 3D model. This takes about two minutes.",
-    "previewReady": "Your preview is ready below. Check every angle, then render the 3D model.",
+    "previewReady": "Your preview is ready. Check every angle above, then render the 3D model.",
     "previewAlt": "Preview of every angle",
     "noPreview": "No preview",
     "signUpToRender": "Sign up to render in 3D",
@@ -305,9 +353,16 @@
     "finishedOnly": "Finished models only",
     "errors": {
       "start": "Could not start the render",
-      "sheet": "Could not generate the angle sheet"
+      "sheet": "Could not generate the angle sheet",
+      "redraw": "Could not redraw the angle sheet",
+      "upscale": "Could not upscale this picture. Try again in a minute."
     },
     "generateSheet": "Generate angle sheet ({credits} credits)",
+    "fixSheetLabel": "Something off in an angle?",
+    "fixSheetHint": "Describe what to fix and we redraw every angle from your photo, so mention everything you want changed. A redraw that fails is refunded.",
+    "fixSheetPlaceholder": "e.g. The back legs should match the front ones, and the seat is flat",
+    "redrawSheet": "Redraw angles ({credits} credits)",
+    "buyToRedraw": "Buy credits to redraw",
     "materials": {
       "title": "Materials",
       "hint": "Change how each material looks. Saved changes are included in the GLB and USDZ downloads.",
@@ -328,6 +383,42 @@
       "saved": "Saved. The downloads now include your changes.",
       "resetDone": "Back to the generated look.",
       "saveFailed": "Could not save the changes. Try again."
+    },
+    "details": "Details",
+    "history": {
+      "empty": "No edits yet. Drawing the angle sheet, redrawing it, changing a material or building in 3D shows up here.",
+      "kind": {
+        "sheet": "Angle sheet drawn",
+        "sheet_redraw": "Angle sheet redrawn",
+        "build": "3D build started",
+        "material": "Materials changed"
+      },
+      "credits": "{credits} credits"
+    },
+    "review": {
+      "title": "What should I check before building?",
+      "shape": "Does the silhouette match your product?",
+      "parts": "Are the legs, handles and other parts present?",
+      "openings": "Are the openings and gaps preserved?"
+    },
+    "correction": {
+      "title": "What needs correcting?",
+      "multiple": "Select all that apply, or describe another change below.",
+      "tooLong": "Keep your selections and description within {max} characters.",
+      "labels": {
+        "shape": "Shape",
+        "parts": "Parts",
+        "material": "Material"
+      },
+      "instructions": {
+        "shape": "Match the shape and proportions to the original photo.",
+        "parts": "Preserve the parts and openings visible in the original photo.",
+        "material": "Match the materials and colours to the original photo."
+      },
+      "review": "Review correction",
+      "confirmTitle": "Confirm the new angle sheet",
+      "confirmBody": "This regenerates the angles for {credits} credits. It does not build the 3D model.",
+      "back": "Edit instructions"
     }
   },
   "PromptBar": {
@@ -342,7 +433,11 @@
       "noPhoto": "Attach a photo of the object or building first.",
       "upload": "Upload failed",
       "unreadable": "Could not read this photo",
-      "title": "Could not start this render"
+      "title": "Could not start this render",
+      "small": "Use a higher-resolution original photo.",
+      "large": "Choose a smaller photo and try again.",
+      "aspect": "Use a photo that shows the whole product, rather than a very narrow crop.",
+      "blank": "This image appears blank. Choose a photo with the product visible."
     },
     "photoSize": "Photo · {size}",
     "removePhoto": "Remove photo",
@@ -353,7 +448,7 @@
     "replacePhoto": "Replace photo",
     "attachPhoto": "Attach photo",
     "dropOrPaste": "or drop, or paste",
-    "generate": "Generate",
+    "generate": "Create free preview",
     "dropToAttach": "Drop your photo to attach it",
     "tryOne": "Try one:",
     "previewReady": "Your preview is ready",
@@ -362,7 +457,13 @@
       "title": "Your 3D preview is ready",
       "description": "Create a free account to see every angle of your photo and turn it into a 3D model."
     },
-    "reveal": "Sign up free to see every angle"
+    "reveal": "Sign up free to see every angle",
+    "optionalNotes": "Add details (optional)",
+    "uploadingReal": "Uploading photo…",
+    "uploadingHint": "Your real preview starts after upload. We will show its status on the next screen.",
+    "previewNote": "Free angle preview. Building the downloadable 3D model uses credits.",
+    "guestNote": "Free angle preview · no account or card required. Daily limits apply.",
+    "seeExample": "Or explore a finished example:"
   },
   "Library": {
     "metaTitle": "Library · easyrender",
@@ -438,12 +539,81 @@
       "short": "Short by {credits} credits. Buy more"
     }
   },
+  "ProductViews": {
+    "metaTitle": "Product views · easyrender",
+    "title": "Product views",
+    "subtitle": "One product photo in, nine clean packshots out on white. No studio, no 3D needed.",
+    "choose": "Choose a product photo",
+    "chooseHint": "JPEG, PNG or WebP. Show the whole product.",
+    "noteLabel": "Describe the product (optional)",
+    "notePlaceholder": "Matte black metal frame, oak seat",
+    "create": "Make product views, {credits} credits",
+    "buyCredits": "Buy credits to make product views",
+    "aiNote": "Views are AI-generated from your photo. Hidden sides are inferred, so check each view against the real product and polish any that is off.",
+    "recents": "Your product views",
+    "empty": "No product views yet. Upload a photo to make your first set.",
+    "untitled": "Untitled product",
+    "viewsReady": "{count} views ready",
+    "progress": "{ready} of {total} views ready",
+    "canvas": "2000 × 2000 px · JPG · white background",
+    "downloadAll": "Download all (ZIP)",
+    "download": "Download",
+    "polish": "Polish",
+    "flagged": "Check this view",
+    "failed": "The views could not be drawn. Your credits were refunded.",
+    "buyToPolish": "Buy credits to polish a view",
+    "polishTitle": "Polish the {view} view",
+    "polishHint": "Describe what is wrong. This view is drawn again from your photo and the current picture; the others stay as they are.",
+    "polishLabel": "What should change?",
+    "polishPlaceholder": "The handle should be on the left, and the wood is lighter",
+    "polishSubmit": "Redraw this view, {credits} credits",
+    "upsellTitle": "Need it in 3D?",
+    "upsellBody": "Build a 3D model and AR from these same views. Your finished views are reused, so you only pay for the 3D step.",
+    "build3d": "Build 3D from these views, {credits} credits",
+    "openRender": "Open the 3D render",
+    "status": {
+      "drafting": "Drawing the angle sheet",
+      "processing": "Checking and finishing the views, {ready} of {total} ready",
+      "upscaling": "Finishing",
+      "redrawing": "Redrawing",
+      "failed": "Failed"
+    },
+    "views": {
+      "front": "Front",
+      "front_right": "Front right",
+      "right": "Right",
+      "back_right": "Back right",
+      "back": "Back",
+      "back_left": "Back left",
+      "left": "Left",
+      "front_left": "Front left",
+      "top": "Top"
+    },
+    "problems": {
+      "empty": "object hard to see",
+      "cropped": "object touches the edge",
+      "small": "object too small",
+      "background": "background not pure white",
+      "blurry": "soft detail",
+      "colour": "colour differs from the photo",
+      "duplicate": "looks like another view"
+    },
+    "errors": {
+      "unreadable": "Could not read this photo",
+      "create": "Could not make the product views. Try again in a minute.",
+      "polish": "Could not polish this view. Try again in a minute.",
+      "render": "Could not start the 3D render.",
+      "upscale": "Could not upscale this picture. Try again in a minute."
+    }
+  },
   "DashboardNav": {
     "overview": "Overview",
     "library": "Library",
     "connectors": "Connectors",
     "credits": "Credits",
-    "account": "Account"
+    "account": "Account",
+    "views": "Product views",
+    "profile": "Profile"
   },
   "AppShell": {
     "model": "Model",
@@ -452,9 +622,6 @@
     "toggleSidebar": "Toggle sidebar",
     "home": "easyrender home",
     "newModel": "New 3D model",
-    "recents": "Recents",
-    "noRecents": "Nothing yet. Upload a photo or ask your agent.",
-    "credits": "credits",
     "untitled": "Untitled",
     "status": {
       "drafting": "Drafting",
@@ -463,7 +630,6 @@
       "ready": "Ready",
       "failed": "Failed"
     },
-    "toggleRenders": "Toggle renders panel",
     "breadcrumb": "Breadcrumb",
     "panel": {
       "title": "Renders",
@@ -491,6 +657,13 @@
       "balance": "Balance",
       "sheet": "Angle sheet",
       "build": "Build 3D"
+    },
+    "toggleContext": "Toggle parts panel",
+    "context": {
+      "title": "Parts"
+    },
+    "history": {
+      "title": "History"
     }
   },
   "AppHome": {
@@ -502,7 +675,6 @@
     "remove": "Remove photo",
     "create": "Create free preview",
     "uploading": "Uploading…",
-    "balance": "{credits} credits",
     "batch": "Upload a batch",
     "connect": "Connect an agent",
     "errors": {
@@ -580,13 +752,16 @@
     "errors": {
       "expired": "Your session expired. Sign in again to create a key.",
       "create": "Could not create the key. Try again.",
-      "revoke": "Could not revoke the key. It is still active; try again."
+      "revoke": "Could not revoke the key. It is still active; try again.",
+      "scopes": "Select at least one permission.",
+      "creditLimit": "Enter a whole, non-negative credit limit, or leave it blank.",
+      "expiresAt": "Choose a valid future date and time, or leave it blank."
     },
     "connect": {
       "title": "Connect your agent",
-      "created": "Your new key is filled in below. Copy the snippet now: the key will not be shown again.",
-      "noKeys": "Use the claude.ai tab to connect with a sign-in. For other agents, create a key, then paste the snippet.",
-      "hasKeys": "Paste the snippet into your agent and replace {placeholder} with one of your keys. The claude.ai tab needs no key."
+      "created": "Your new key is filled into the API key snippets below. Copy it now: the key will not be shown again.",
+      "noKeys": "Use claude.ai or Codex to connect with browser sign-in. For the API key setup options, create a key and copy the snippet.",
+      "hasKeys": "For API key setup, replace {placeholder} with one of your keys. The claude.ai and Codex tabs use browser sign-in instead."
     },
     "createMyKey": "Create my key",
     "keys": {
@@ -595,12 +770,37 @@
       "namePlaceholder": "Key name, e.g. Claude Code",
       "create": "Create",
       "none": "No keys yet.",
-      "connected": "Connected",
+      "connected": "Recently used",
       "idle": "Idle",
       "neverUsed": "Never used",
       "created": "created {date}",
       "lastUsed": "last used {date}",
-      "revoke": "Revoke {name}"
+      "revoke": "Revoke {name}",
+      "nameLabel": "Key name",
+      "advanced": "Permissions and limits",
+      "permissions": "Allowed actions",
+      "scopes": {
+        "read": "Read",
+        "write": "Write",
+        "spend": "Spend",
+        "share": "Share"
+      },
+      "scopeDescriptions": {
+        "read": "View resources, quotes and downloads.",
+        "write": "Upload photos, create previews and edit materials.",
+        "spend": "Start paid generations using your credits.",
+        "share": "Publish renders and share catalog models."
+      },
+      "creditLimit": "Lifetime credit limit",
+      "unlimited": "Unlimited",
+      "creditLimitHelp": "Blank means unlimited. Zero blocks spending. Refunds return credits to your wallet but do not reset this key’s limit.",
+      "expiresAt": "Expiry (optional)",
+      "expiresAtHelp": "Your local date and time. Leave blank for no expiry.",
+      "expired": "Expired",
+      "noExpiry": "No expiry",
+      "expiryDate": "Expires {date}",
+      "spentUnlimited": "{spent} credits spent · unlimited",
+      "spentLimit": "{spent} of {limit} credits spent"
     }
   },
   "Account": {
@@ -641,7 +841,7 @@
       "features": {
         "credits": "{credits} credits added each month",
         "rollover": "Unused credits roll over",
-        "topUp": "Top up with pay as you go anytime",
+        "topUp": "Need more? Top up anytime at your plan’s rate.",
         "cancel": "Cancel anytime"
       }
     },
@@ -658,7 +858,12 @@
       "cta": "Book a call"
     },
     "metaTitle": "Pricing: pay per 3D model · easyrender",
-    "metaDescription": "Previews are free. A finished 3D model costs {credits} credits ({price}) and credits never expire. Pay as you go, or go Pro for {proCredits} credits a month."
+    "metaDescription": "Previews are free. A finished 3D model costs {credits} credits ({price}) and credits never expire. Pay as you go, or go Pro for {proCredits} credits a month.",
+    "topUp": {
+      "title": "Top up credits",
+      "description": "Buy extra credits at your {plan} plan’s rate, without changing your plan. The total is rounded to the nearest cent.",
+      "noExpiry": "Top-up credits never expire."
+    }
   },
   "Pricing": {
     "metaTitle": "Pricing: pay per 3D model · easyrender",
@@ -668,10 +873,10 @@
     "eyebrow": "Pricing",
     "title": "Pay per 3D model. Previews are free.",
     "description": "A finished 3D model costs {credits} credits ({price}). Buy credits as you go, or pick a monthly plan for a cheaper credit. Credits never expire.",
-    "note": "Prices in USD. Credits never expire. If a 3D build fails, its credits are refunded.",
+    "note": "Credits never expire. If a 3D build fails, its credits are refunded.",
     "compare": {
       "title": "Compare plans",
-      "description": "Pay as you go is {unit} a credit. Every monthly plan makes the credit cheaper, and a bigger plan cheaper still.",
+      "description": "Pay as you go is {unit} a credit. Pro includes monthly credits at a lower rate. Contact us for Enterprise volume pricing.",
       "plan": "Plan",
       "price": "Price",
       "credits": "Credits",
@@ -701,7 +906,7 @@
       "items": {
         "cost": {
           "q": "How much does a 3D model cost?",
-          "a": "Previews are free. A finished 3D model costs {credits} credits. On pay as you go a credit costs {unit}, so a model is {price}. Monthly plans make each credit cheaper."
+          "a": "Previews are free. A finished 3D model costs {credits} credits. On pay as you go a credit costs {unit}, so a model is {price}. Pro makes each credit cheaper."
         },
         "freePreview": {
           "q": "Why is the preview free?",
@@ -709,7 +914,7 @@
         },
         "plans": {
           "q": "Pay as you go or a monthly plan?",
-          "a": "Pay as you go suits occasional use: buy from {min} credits ({minPrice}) whenever you need them. A monthly plan adds credits every month at a lower price per credit. {plan}, for example, is {planPrice} a month for {planCredits} credits, about {planModels} 3D models."
+          "a": "Pay as you go suits occasional use: buy from {min} credits ({minPrice}) whenever you need them. {plan} is {planPrice} a month for {planCredits} credits, about {planModels} 3D models. Contact us for Enterprise volume pricing."
         },
         "expire": {
           "q": "Do credits expire?",
@@ -726,8 +931,31 @@
         "enterprise": {
           "q": "Do you offer volume pricing or invoices?",
           "a": "Yes, on Enterprise: volume credit pricing, invoice billing, priority support and an onboarding call. Book a call and we will set it up."
+        },
+        "topUp": {
+          "q": "Can I buy more credits without upgrading?",
+          "a": "Yes. Active and trialing subscribers buy top-ups at their plan’s per-credit rate, rounded to the nearest cent per purchase. Open Credits in your account to see pack prices. Without an eligible subscription, the displayed pay-as-you-go rate applies. Your monthly plan stays the same, and extra credits never expire."
         }
       }
+    },
+    "topUpTitle": "Top up credits",
+    "minimum": "Minimum purchase: {price} in credits, enough for {count} complete models.",
+    "calculator": {
+      "title": "Estimate your catalog",
+      "count": "Number of 3D models",
+      "consumption": "Credit value used",
+      "purchase": "Purchase from zero balance",
+      "remaining": "Credits left over",
+      "range": "Enter a whole number from 1 to {max}.",
+      "note": "Estimate for standard 3D builds at pay-as-you-go rates, starting with no credits. Additional edits, images and upscales are not included.",
+      "compare": "Compare plans"
+    },
+    "conditions": {
+      "title": "Before you buy",
+      "billing": "Pay as you go is a one-time credit purchase. Pro renews monthly until cancelled in Credits. Unused credits do not expire.",
+      "rights": "You keep your uploaded-content rights. Output rights are subject to third-party rights. Models are public by default and can be shared and downloaded.",
+      "tax": "Check the currency, applicable taxes and final total in checkout before paying.",
+      "link": "Read the full terms (English)"
     }
   },
   "PaygPicker": {
@@ -735,7 +963,8 @@
     "estimate": "{price} for about {count} renders",
     "range": "Choose between {min} and {max} credits",
     "buyAmount": "Buy {credits} credits",
-    "buy": "Buy credits"
+    "buy": "Buy credits",
+    "planRate": "Top-ups at your {plan} rate"
   },
   "BuyButton": {
     "failed": "Checkout failed",
@@ -767,7 +996,8 @@
       "oauth": "Google sign in did not finish. Try again or use your email."
     },
     "google": "Continue with Google",
-    "or": "or"
+    "or": "or",
+    "legalNotice": "By creating an account, you agree to the <terms>Terms of Service</terms>. Read our <privacy>Privacy Policy</privacy> to understand how we use your data."
   },
   "OAuth": {
     "title": "Connect {client} to easyrender?",
@@ -786,7 +1016,7 @@
   "Studio": {
     "hero": {
       "title": "3D model from a photo.",
-      "cta": "Get started",
+      "cta": "Upload a photo",
       "note": "Free preview · no card",
       "stackLabel": "One object seen through five passes of the engine. Drag to turn it.",
       "photo": "Input photo",
@@ -796,7 +1026,8 @@
       "render": "PBR render",
       "element": "Element",
       "hint": "Drag to turn",
-      "subtitle": "See it from every angle for free. You only spend credits when it looks right."
+      "subtitle": "Check the angles for free. Pay to build the downloadable 3D model when the shape looks right.",
+      "benefit": "Turn a product photo into a 3D model."
     },
     "pipeline": {
       "lead": "Upload one photo. The engine does the rest.",
@@ -850,7 +1081,7 @@
     "tools": {
       "lead": "See the shape before you spend a credit.",
       "body": "Every element is shown the way the engine built it: mesh, materials and textures.",
-      "link": "Explore the spec sheet",
+      "link": "Explore creations",
       "topology": "Topology",
       "triangles": "Triangles",
       "material": "PBR material",
@@ -911,7 +1142,7 @@
     },
     "cta": {
       "title": "Your catalogue no longer has to wait for a 3D team",
-      "button": "Get started"
+      "button": "Try it free"
     },
     "shelf": {
       "lead": "Explore the hub.",
@@ -1100,7 +1331,44 @@
         "title": "Try it with one photo",
         "button": "Upload a photo"
       },
-      "related": "Keep reading"
+      "related": "Keep reading",
+      "promo": {
+        "title": "Asked for more photos?",
+        "button": "Try your photo free",
+        "disclosure": "Free preview. The 3D model is paid.",
+        "solution": "Show it in 3D. From one photo.",
+        "visual": "Example of a generated armchair model turning",
+        "play": "Play product video",
+        "pause": "Pause product video"
+      },
+      "priceReference": "Article prices are USD reference rates. Check Pricing for your current currency and offer."
+    },
+    "comparisons": {
+      "title": "Comparisons",
+      "description": "Side-by-side looks at 3D modeling methods and tools, for when a guide is not enough to choose.",
+      "read": "Read the comparison",
+      "choices": {
+        "title": "Choose by what you need",
+        "photo": {
+          "need": "One product photo",
+          "tools": "easyrender",
+          "check": "Check the free angle sheet before paying for the model."
+        },
+        "views": {
+          "need": "Photos from several sides",
+          "tools": "Tripo · Rodin",
+          "check": "Use real views to show details hidden in one photo."
+        },
+        "animation": {
+          "need": "Characters and animation",
+          "tools": "Meshy · Sloyd",
+          "check": "Check rigging, export and commercial rights in your plan."
+        }
+      },
+      "groups": {
+        "tools": "Compare tools",
+        "methods": "Compare methods"
+      }
     }
   },
   "Models": {
@@ -1144,10 +1412,10 @@
       "step": "Step",
       "credits": "Credits",
       "price": "Price",
-      "sheet": "Draft sheet",
-      "build": "Final sheet and 3D build, once the draft exists",
-      "total": "Full 3D render, draft included",
-      "note": "The draft is free as a daily preview. A credit costs {unit} and never expires. If a step fails, its credits are refunded."
+      "sheet": "Initial preview (within your allowance)",
+      "build": "Final angle sheet and textured 3D model",
+      "total": "Full photo-to-3D workflow",
+      "note": "The initial preview spends no credits within your allowance. The paid build includes the final angle sheet and 3D model. Editing or reusing an existing final sheet can have a different cost: check the action’s credit quote. A credit costs {unit}. Failed builds refund their credits."
     },
     "change": {
       "title": "What can change",
@@ -1212,23 +1480,28 @@
   },
   "Analytics": {
     "title": "Cookies and analytics",
-    "banner": "Google Analytics is optional: you can accept or reject it. We also use cookieless PostHog analytics, which stays active independently of this choice.",
-    "accept": "Accept",
-    "reject": "Reject",
+    "banner": "Choose Google Analytics only, add optional advertising measurement, or reject both. Ad measurement links permitted ad clicks to conversions; ad personalization stays off. Cookieless PostHog remains active independently.",
+    "accept": "Analytics only",
+    "reject": "Reject optional",
     "details": "Cookie details",
-    "intro": "This page explains browser storage, optional Google Analytics and our separate cookieless product analytics.",
+    "intro": "How we use browser storage, optional Google measurement and separate cookieless product analytics.",
     "anonTitle": "er_anon",
     "anon": "This first-party cookie identifies your anonymous previews, applies the daily free-preview allowance and lets you associate previews with your account. It also keeps your prices consistent during a pricing test, even if you decline analytics. It is set on your first visit and lasts one year.",
     "consentTitle": "er_consent",
-    "consent": "Remembers your analytics choice, its date and version for one year. It is set only when you choose.",
+    "consent": "Records your separate analytics and advertising-measurement choices, date and version for one year, only after you choose. Older analytics acceptance never grants advertising permission.",
     "gaTitle": "Google Analytics 4: _ga and _ga_*",
-    "ga": "Google Analytics cookies measure visits and last up to two years. In strict regions they require acceptance; elsewhere analytics runs unless you reject it or send GPC. When allowed, er_campaign session storage keeps permitted campaign fields for up to 30 minutes and is cleared on rejection. Confirmed checkout purchases may be sent from our server using the same measurement identity, including when you do not return from checkout. Advertising storage and personalization remain denied.",
+    "ga": "Google Analytics cookies measure visits and can last up to two years. Strict regions require acceptance; elsewhere analytics runs unless rejected or blocked by GPC. Allowed analytics retains normalized campaign fields in er_campaign session storage for up to 30 minutes. Confirmed purchases may be measured server-side using the same client and session identifiers, even without a return from checkout.",
     "posthogTitle": "PostHog (EU), without cookies",
     "posthog": "PostHog loads in every region, including after rejection or GPC. Its browser SDK uses no cookies or persistent browser storage and creates no person profiles. We also collect server events for account creation, renders and payments, associated with internal account or preview IDs. A hashed pricing identifier connects pricing visits with registrations and purchases to measure our pricing experiment.",
     "attributionTitle": "First-touch attribution",
-    "attribution": "Campaign parameters and the referring page are kept in memory and stored with a preview or account when created. Allowed Google Analytics sessions also retain these fields temporarily in session storage, as described above. No advertising click IDs are stored. Operational server funnel events are independent of optional Google measurement.",
+    "attribution": "Normalized campaigns and referrer paths are kept in memory and stored with previews or accounts when created. Advertising click IDs are excluded from those records and from PostHog. Optional advertising attribution uses the separate, short-lived storage described above.",
     "change": "Change your choice",
-    "withdraw": "Reject stops optional Google Analytics, removes its cookies and er_campaign session storage, and requests cancellation of pending server purchase measurement for your signed-in account. GPC blocks optional Google Analytics. Cookieless PostHog and operational server events remain active. Data already sent is not withdrawn by this control."
+    "withdraw": "Reject disables optional Google measurement, clears its cookies and our campaign/click storage, and requests cancellation of pending server measurement for your signed-in account. Switching to Analytics only also clears ad attribution and cancels pending contexts. GPC blocks both optional Google purposes. Already sent events cannot be withdrawn here. Cookieless PostHog and operational server events stay active.",
+    "metaTitle": "Cookies and analytics · easyrender",
+    "metaDescription": "How easyrender uses cookies and analytics, which data is collected, and how to change your consent choices.",
+    "acceptAdvertising": "Analytics + ad measurement",
+    "advertisingTitle": "Optional advertising measurement: er_ad_touch and _gcl_*",
+    "advertising": "Only an explicit advertising choice permits Google ad storage and advertising user data. We retain allowlisted Google click IDs in er_ad_touch session storage for at most 30 minutes, send them only to Google, and remove them from the address after capture. Google may store its own conversion-linking cookies. Advertising personalization and Google Signals remain off. This choice is not inferred from accepting analytics. Google may also retain conversion-linking data in _gcl_* cookies and _gcl_ls local storage; their retention is separate from our 30-minute record. These accessible Google identifiers are cleared when you withdraw advertising permission."
   },
   "Ar": {
     "metaTitle": "View in your room",
@@ -1289,6 +1562,7 @@
       "product": "Product usage",
       "icp": "Customer profile",
       "health": "Data sources & health",
+      "giftCredits": "Regalar créditos",
       "adminNav": "Admin navigation",
       "all": "All",
       "auto": "Auto",
@@ -1334,7 +1608,7 @@
       "consumed": "Credits consumed (gross)",
       "free": "Other credits granted",
       "returned": "Failed-job credits returned",
-      "providerCost": "Provider cost · USD",
+      "providerCost": "Estimated provider cost · USD",
       "gross": "Gross revenue",
       "refunds": "Cash refunds",
       "net": "Net revenue",
@@ -1427,8 +1701,8 @@
       "sheets": "Angle sheets ready",
       "failure": "Failure rate · settled rows",
       "success": "Success rate · settled rows",
-      "generationMedian": "Generation median · minutes",
-      "generationP90": "Generation p90 · minutes",
+      "generationMedian": "3D completion median · minutes",
+      "generationP90": "3D completion p90 · minutes",
       "costModel": "Provider cost / model · USD",
       "publicShare": "Public model share",
       "keysCreated": "API keys created",
@@ -1475,10 +1749,10 @@
       "stripeUnavailable": "Stripe unavailable or incomplete · using DB fallback",
       "profilePlanned": "Business profile · not measurable yet",
       "profileDetails": "Business type, store platform and self-reported catalog size need a profile question at signup (planned).",
-      "periodDefinitions": "Activation follows signups in the selected period through its end. Usage follows render creation; revenue follows payments. Previous means the immediately preceding equal-duration window. Current subscriptions have no historical comparison.",
-      "mutableRenderTimes": "Render completion and generation times are proxies: updatedAt also changes after completion; no immutable sheet completion timestamp exists. A sheet requires sheetKey; a model requires ready + glbKey.",
+      "periodDefinitions": "Activation follows signup cohorts through period end. Product totals use creation cohorts; overview preview/model activity uses completion dates, revenue uses payments. Previous is the preceding equal-duration window. Current subscriptions have no historical comparison.",
+      "mutableRenderTimes": "Preview and model history use immutable completion dates; undated legacy successes are excluded. Later edits do not change these dates. Current status and visibility are snapshots, not historical states. Generation durations cover dated 3D completions only.",
       "boundedSnapshot": "Read-only snapshot, capped at 50,000 rows per table. Exceeding a cap stops the report rather than publishing partial totals.",
-      "dbFallback": "DB fallback (no Stripe fees/refunds/MRR from Stripe). Paid purchases use stored USD amounts for PAYG and subscriptions; only legacy subscription grants without a purchase link infer catalog prices. Net assumes no observable cash refunds. Dev grants are not revenue.",
+      "dbFallback": "DB fallback: gross receipts use stored purchases; only legacy subscription grants infer catalog prices. Cash refunds, fees, net revenue, net ARPU and margin remain unknown without complete Stripe reconciliation. Dev grants are not revenue.",
       "anonymousTeamCaveat": "Team exclusions apply to known account emails. Anonymous previews and cookieless traffic cannot reliably exclude the team.",
       "multipleCurrencies": "Tables separate currencies. Charts show the first currency only; no FX conversion or cross-currency total is calculated. Provider margin is USD only.",
       "attributionScope": "First-touch signup cohort and period payment activity. Visit joins use matching dimensions; missing traffic stays unknown. Signals require at least 20 signups.",
@@ -1486,7 +1760,7 @@
       "visitsCaveat": "Visits = landing_view; pageviews = $pageview. Unique visitors sum daily hash estimates, not distinct people across the period. Consent and blockers bias traffic; do not compare markets as equal coverage.",
       "cohortDefinition": "Each cell is cumulative conversion by the end of cohort week 0–8. Unfinished weeks are blank. Revenue is gross in the first displayed currency through the selected end.",
       "anonymousLink": "anonId + userId proves a claimed preview, not signup conversion: startBuild/startSheet assigns ownership after signup. A trustworthy anonymous-preview → signup rate needs a signup-time link.",
-      "reconciliationScope": "DB excludes team by default; PostHog includes all events. Sheet counts use creation-time proxies, model counts updatedAt; event timestamps and snapshot state can differ. Investigate differences; equality is not proof of correct tracking.",
+      "reconciliationScope": "DB excludes team by default; PostHog includes all events. Preview/model reconciliation uses valid immutable completion dates; undated legacy success is excluded. Differences can reflect coverage and event timing. Equality is not proof of correct tracking.",
       "healthNotes": "Refresh invalidates database (5 min) and external-source (10 min) caches. Missing sources never become zero. Errors are sanitized; raw API responses and secrets stay server-side.",
       "stripeScope": "Stripe payments without a known account are excluded with team filtering. Current subscriptions are filtered by customer identity. First-payer classification and LTV are bounded by fetched Stripe history.",
       "w0": "Week 0",
@@ -1520,19 +1794,105 @@
       "visitsNotConfigured": "Visits: PostHog not configured",
       "visitsIncomplete": "Visits: PostHog data incomplete",
       "visitsError": "Visits: PostHog unavailable (request failed)",
-      "sheetCountUnit": "sheets"
+      "sheetCountUnit": "sheets",
+      "developerActivation": "3D activation by creation channel",
+      "developerActivationCohorts": "3D activation cohorts",
+      "activationAccounts": "Accounts in cohort",
+      "measuredAccounts": "Measured accounts",
+      "legacyAccounts": "Undated history excluded",
+      "firstSuccess": "First completed model",
+      "secondSuccess": "Second completed model",
+      "activationPercent": "Activation (%)",
+      "repeatPercent": "Repeat after activation (%)",
+      "firstSuccessMinutes": "Median to first model (min)",
+      "repeatMinutes": "Median first to second (min)",
+      "developerActivationDefinition": "Identified accounts enter a channel cohort on their first 3D request. Activation and repeat count distinct ready GLBs completed before the selected period ends. Authentication keys do not determine whether a request came through API or MCP.",
+      "developerActivationCoverage": "Undated historical successes exclude that account/channel from measured rates and timing; they are shown separately. Recent cohorts have less observation time. These are 3D generations, not visits, issued keys, connections, downloads or packshot-only uses. Historical creation-channel labels may be incomplete.",
+      "api": "API",
+      "mcp": "MCP",
+      "web": "Web",
+      "organicLandings": "Organic search outcomes by landing page",
+      "previewAccounts": "Accounts with preview (current state)",
+      "cohortPayers": "Signup cohort payers",
+      "repeatPayers": "Accounts with two payments",
+      "organicCohortDefinition": "Organic-search accounts signed up in the period, with outcomes before its end. Previews and models require immutable completion dates; undated legacy model successes are separate. Positive payments are deduplicated source observations, not net revenue. This is not a visit conversion rate or required step sequence. Recent cohorts have less observation time.",
+      "providerCostScope": "Provider costs are cumulative stored estimates for renders, product-view sets and upscales, allocated to each operation’s creation date, not invoice or expense dates. Reused sheets are counted once. Later processing can update older cost cohorts. Cost per 3D model uses render costs only.",
+      "renderCostScope": "Channel costs cover Render operations only; advanced image operations have no stored creation channel. The total provider estimate includes them separately.",
+      "advertisingSpend": "Imported advertising spend",
+      "campaign": "Campaign UTM (join)",
+      "adSpend": "Imported spend",
+      "clicks": "Clicks",
+      "impressions": "Impressions",
+      "newPayers": "Matching new payers",
+      "cacEstimate": "CAC estimate",
+      "importedDays": "Imported days",
+      "expectedDays": "Period days",
+      "spendCoverage": "Import coverage",
+      "spendComplete": "All days imported",
+      "spendPartial": "Missing days",
+      "spendMissing": "No imported spend",
+      "spendAmbiguous": "Ambiguous campaign",
+      "advertisingSpendScope": "Manual daily imports. Match: paid Google first touch + exact normalized campaign + payment currency. Missing days or ambiguous campaign IDs disable CAC. Unknown or nonmatching attribution is excluded; no matching payers does not prove no conversions. New payers use earliest observed payment history. This is an activity-period estimate, not Ads click attribution, matured cohort CAC, ROAS or net profit.",
+      "spendProvisional": "Provisional daily export",
+      "spendImportTitle": "Import daily advertising spend",
+      "spendImportHelp": "Choose the normalized JSON file from the Google Ads CSV converter. Maximum 512 KB and 1,000 daily records. Reimporting replaces matching daily values. Campaigns and budgets are not changed.",
+      "spendImportFile": "Daily spend JSON",
+      "spendImportAction": "Import spend",
+      "spendImportPending": "Importing…",
+      "spendImportSuccess": "Imported {count} daily records. The report is refreshing.",
+      "spendImportTooLarge": "The file exceeds 512 KB. Split it into smaller batches.",
+      "spendImportInvalid": "Invalid import. Check the JSON format, dates, currency and nonnegative integer counters.",
+      "spendImportDenied": "Administrator permission is missing or expired. Sign in again with an authorized verified account.",
+      "spendImportFailed": "Could not confirm the import. Check your connection and retry the same file; daily records will not be duplicated."
     }
+  },
+  "AdminGift": {
+    "title": "Regalar créditos",
+    "eyebrow": "easyrender / administración",
+    "description": "Busca una cuenta, revisa sus movimientos y añade créditos con un motivo registrado.",
+    "internal": "Interno · acceso restringido",
+    "findTitle": "Buscar cuenta",
+    "findDescription": "Introduce el correo electrónico exacto de la persona.",
+    "email": "Correo electrónico",
+    "find": "Buscar usuario",
+    "searching": "Buscando…",
+    "balance": "Saldo actual · créditos",
+    "recentLedger": "Últimos movimientos",
+    "noEntries": "No hay movimientos todavía.",
+    "date": "Fecha",
+    "movement": "Créditos",
+    "ledgerReason": "Motivo",
+    "emptyState": "Busca una cuenta para ver su saldo y sus últimos movimientos.",
+    "giftTitle": "Añadir créditos",
+    "giftDescription": "El saldo se actualiza al confirmar y el movimiento queda registrado.",
+    "amount": "Cantidad de créditos",
+    "amountHint": "Max {max} credits (≈{models} 3D models).",
+    "reason": "Motivo (obligatorio)",
+    "review": "Revisar regalo",
+    "confirmTitle": "Confirmar regalo de créditos",
+    "confirmDescription": "Comprueba la cuenta, la cantidad y el motivo antes de continuar.",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar y regalar",
+    "granting": "Añadiendo…",
+    "success": "Créditos añadidos correctamente. Nuevo saldo: {balance} créditos.",
+    "duplicate": "Esta solicitud ya se había procesado. Saldo actual: {balance} créditos.",
+    "invalid_email": "Introduce un correo electrónico válido.",
+    "invalid_amount": "Enter a whole number between 1 and {max}.",
+    "invalid_reason": "Introduce un motivo de hasta 500 caracteres.",
+    "invalid_key": "La solicitud no es válida. Vuelve a revisar el regalo.",
+    "not_found": "No encontramos ninguna cuenta con ese correo.",
+    "requestFailed": "No se pudo completar la solicitud. Inténtalo de nuevo."
   },
   "McpLanding": {
     "meta": {
       "title": "Image to 3D MCP server for AI agents · easyrender",
-      "description": "Connect Claude, Cursor or VS Code to easyrender. Turn product photos into 3D models through MCP: preview the result, spend credits to build and download a GLB."
+      "description": "Connect Claude, Cursor or VS Code to easyrender. Turn product photos into 3D models through MCP: review the free preview and download the GLB when ready."
     },
     "hero": {
-      "title": "Product photos to 3D. From your agent.",
+      "title": "Image to 3D MCP server. From your agent.",
       "subtitle": "Connect easyrender through MCP. Give your agent a product photo, review the preview and build a textured GLB without switching to a modeling tool.",
       "cta": "Connect your agent",
-      "note": "Preview first. Credits for the 3D build."
+      "note": "Review the free preview before building the 3D model."
     },
     "clientsLabel": "Setup guides included for",
     "intro": {
@@ -1544,11 +1904,11 @@
       },
       "web": {
         "title": "Product pages & prototypes",
-        "body": "Ask your coding agent to generate a GLB for the 3D viewer you are building."
+        "body": "Building a product page in Cursor or Claude Code? Ask the agent to generate a GLB from your product photo, download it and use it in the viewer you are developing."
       },
       "workflow": {
         "title": "Repeatable asset workflows",
-        "body": "Use the same tools to create a preview, check its status and retrieve the finished model for each product."
+        "body": "Create a repeatable task for each product: submit its photo, review the preview, approve the cost and retrieve the model. The same renders remain available in your web library."
       }
     },
     "workflow": {
@@ -1569,7 +1929,7 @@
       "exampleLabel": "Example request to your connected agent",
       "prompt": "Turn this product photo into a 3D model. Show me the preview and the credit cost first. Wait for my approval before building the GLB. Once it is ready, download the model.",
       "exampleNote": "Illustrative workflow. Use your own photo; the preview and model are generated when you run the tools.",
-      "toolsLabel": "Four tools, one workflow",
+      "toolsLabel": "Core photo-to-3D workflow",
       "tools": {
         "create_render": "Start the angle-sheet preview from a photo.",
         "get_render": "Check progress and retrieve the result links.",
@@ -1597,7 +1957,7 @@
         },
         "input": {
           "q": "Can my agent use a local photo?",
-          "a": "create_render accepts a public HTTPS image URL or base64 image data. For a local photo, your client needs to read and send the file as base64. Supported types are JPEG, PNG and WebP, up to 4 MB."
+          "a": "create_render accepts exactly one image source: a public HTTPS URL, raw base64 data, or an upload_id from an authenticated upload. For a local photo, your client must be able to upload or encode the file. JPEG, PNG and WebP are supported. URL and upload inputs allow up to 4 MiB; inline base64 is limited to 3 MiB minus 16 KiB of decoded image data. An upload_id expires after one hour."
         },
         "payment": {
           "q": "When are credits spent?",
@@ -1620,6 +1980,26 @@
     "closing": {
       "title": "Bring your next product into the conversation.",
       "cta": "Connect easyrender"
+    },
+    "skill": {
+      "cta": "Install agent skill",
+      "title": "Give your agent the photo-to-3D workflow.",
+      "description": "Add the easyrender skill to guide your agent from the first photo to an approved GLB build.",
+      "body": "MCP connects the tools. The skill explains when to preview, how to check the current cost, how to work within your approved budget and how to resume a render after a timeout.",
+      "steps": {
+        "install": "Run the install command from your project and choose a compatible agent.",
+        "connect": "Connect your easyrender account using the MCP setup above.",
+        "ask": "Attach a product photo and tell your agent what to create and when it may spend credits."
+      },
+      "source": "Read the skill on GitHub",
+      "commandLabel": "Install in your project",
+      "copy": "Copy command",
+      "copied": "Copied",
+      "copyError": "Could not copy. Select and copy the command manually.",
+      "requirement": "Requires Node.js/npm for the installer and an Agent Skills-compatible client. Installation adds instructions; it does not connect your account or start a render. You can also copy the skill folder from GitHub.",
+      "exampleLabel": "Try this with your photo",
+      "example": "Use the easyrender-image-to-3d skill to turn this product photo into a GLB. Show me the preview and cost before spending any credits.",
+      "cost": "The skill is open source under the MIT license. Check the current cost with your agent before approving a build; your AI client may charge separately. Instructions are in English, and the agent can respond in your language."
     }
   },
   "ApiLanding": {
@@ -1628,7 +2008,7 @@
       "description": "Add photo-to-3D generation to your app with the easyrender REST API. Upload a product image, review the preview, start the paid build and download a textured GLB."
     },
     "hero": {
-      "title": "Photo to 3D. Built into your app.",
+      "title": "Image to 3D API. Built into your app.",
       "subtitle": "Use the easyrender REST API to turn product photos into textured GLBs. Your interface, your workflow, with a preview before the paid build.",
       "cta": "Get your API key",
       "note": "REST API · Product photo in. GLB out."
@@ -1646,15 +2026,15 @@
       "description": "Connect your backend to easyrender and decide how people upload, review and use each model.",
       "catalog": {
         "title": "Catalog tools",
-        "body": "Add a photo-to-model step to the tools your team uses to prepare product assets."
+        "body": "Give your catalog team an upload-and-review tool. Keep each render ID with its product record and retrieve the GLB when the build completes."
       },
       "app": {
         "title": "Your own upload experience",
-        "body": "Let users submit a product photo in your app. Your server creates the preview and starts the build when they approve it."
+        "body": "Keep your own interface and approval flow. Your backend submits the photo, returns the preview to your user and starts the paid build only after approval."
       },
       "web": {
         "title": "3D product experiences",
-        "body": "Retrieve a GLB to use in your own product viewer, prototype or asset workflow."
+        "body": "Download a textured GLB for your web viewer or prototype. Your application controls where the file is stored and how it is displayed; store publishing is your integration’s responsibility."
       }
     },
     "workflow": {
@@ -1730,7 +2110,7 @@
         },
         "cost": {
           "q": "How do I check the cost and my balance?",
-          "a": "Render responses include renderCredits, the total credit cost of a 3D build. GET /api/renders returns your library and balance. The preview has an allowance; a POST to the render endpoint starts the paid build. The pricing section below reflects the current plans."
+          "a": "Render responses include renderCredits, the total credit cost of a 3D build. GET /api/renders returns your library and balance. The preview has an allowance; a POST to the render endpoint starts the paid build. The pricing section on this page reflects the current plans."
         },
         "errors": {
           "q": "How should I handle progress and errors?",
@@ -1749,6 +2129,671 @@
     "closing": {
       "title": "Add the next dimension to your product.",
       "cta": "Get your API key"
+    }
+  },
+  "Upscale": {
+    "action": "Upscale, {credits} credits",
+    "working": "Upscaling",
+    "buy": "Buy credits to upscale",
+    "download": "Download {width} px",
+    "downloadLarge": "Download larger file"
+  },
+  "IntegrationLanding": {
+    "result": {
+      "photo": {
+        "label": "Source photo",
+        "alt": "Source photo of a rectangular wooden table",
+        "body": "One clear image of the object. No 3D file or multi-camera capture required."
+      },
+      "angles": {
+        "label": "Generated angle sheet",
+        "alt": "Nine generated views of the same wooden table",
+        "body": "See how the object is interpreted from different sides before using the final asset."
+      },
+      "model": {
+        "label": "Textured GLB",
+        "alt": "Interactive generated 3D model of the wooden table",
+        "body": "Drag to rotate the model. Download it to inspect in your own 3D viewer.",
+        "hint": "Drag to rotate"
+      },
+      "note": "Pre-generated showcase assets, not a live request. This sheet is a finished example; the initial preview is watermarked. Geometry is approximate and unseen surfaces are inferred.",
+      "download": "Download sample GLB",
+      "mcp": {
+        "title": "From an agent request to a 3D asset.",
+        "description": "See how a photo moves through the MCP tools, then inspect a real showcase result below."
+      },
+      "api": {
+        "title": "From your upload flow to a model response.",
+        "description": "See the application handoff and JSON response, then inspect the source photo, generated angles and downloadable GLB."
+      },
+      "evidence": {
+        "title": "What you can inspect",
+        "provenance": "These files are unchanged copies of an existing public easyrender table render. The source photo, angle sheet and GLB belong to that same render. This is a pre-generated sample, not a live API or MCP recording.",
+        "measurementTitle": "Generation status",
+        "measurement": "This existing example has no verified end-to-end duration. Follow your own render status to know when its files are ready."
+      }
+    },
+    "costs": {
+      "api": {
+        "title": "What does the image to 3D API cost?",
+        "description": "Pay for 3D builds with your account credits. API access uses the same credit balance as the web app.",
+        "check": "Read renderCredits in the render response before building; it is the credit cost for that render. Keep approval and spending limits in your application."
+      },
+      "mcp": {
+        "title": "Review before you build",
+        "description": "The preview is free, subject to your account’s preview limits. Inspect the angles before deciding to build the GLB.",
+        "check": "Ask your agent to check get_credits and wait for your approval before calling render_3d. Your AI client may charge separately."
+      },
+      "preview": {
+        "label": "Angle-sheet preview",
+        "body": "No credits charged, subject to your account’s preview allowance. Review the preview before the paid build."
+      },
+      "build": {
+        "label": "Per full 3D build · pay as you go",
+        "body": "{credits} credits for the final angle sheet and textured GLB. This is the full photo-to-3D workflow."
+      },
+      "access": {
+        "label": "API & MCP access",
+        "value": "Included",
+        "body": "Use your account and credits through either integration. No separate connector fee."
+      },
+      "estimate": {
+        "title": "Budget example: {count} full builds",
+        "body": "{credits} credits = {price} at the pay-as-you-go rate of {unit} per credit. Monthly plans can lower the effective cost per credit."
+      },
+      "start": {
+        "title": "Start without a subscription",
+        "body": "The minimum credit purchase is {credits} credits ({price}). Credits do not expire. Review the total at checkout before paying."
+      },
+      "refund": "Failed 3D builds refund their credits. Prices shown use your current currency and pricing offer."
+    },
+    "apiDemo": {
+      "title": "Your application · easyrender REST API",
+      "illustration": "Illustrative application flow and partial JSON response. No upload or paid request runs here.",
+      "photoAlt": "Table photo used as an example upload",
+      "upload": "Product photo received",
+      "flow": "Your backend sends the photo to POST /api/renders. Show the preview, display the returned cost and let the user approve the paid build. Poll the render status to retrieve the finished model.",
+      "cost": "Use the render’s current renderCredits field before building; the cost can change when a finished sheet is reused. Keep the API key on your server.",
+      "response": "Partial response after a full build has finished; sample ID, not a live render."
+    },
+    "examples": {
+      "title": "Run the complete example",
+      "body": "Upload a photo, review the quote, enforce a credit ceiling, resume by render ID and download the private GLB. The examples stop before spending unless you explicitly approve the build.",
+      "python": "Python example",
+      "typescript": "TypeScript example",
+      "reference": "API reference"
+    }
+  },
+  "Legal": {
+    "navigation": "Legal information",
+    "updated": "Last updated: 14 November 2026",
+    "languageNotice": "The legal text below is provided in English.",
+    "cookies": "Cookie information and choices",
+    "operator": {
+      "title": "Service operator / data controller",
+      "name": "Legal name: MRRAMOS INMUEBLES SL (sociedad limitada incorporated in Spain)",
+      "taxId": "CIF/NIF: B75763383",
+      "address": "Registered address / domicilio fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (Spain)",
+      "contact": "Contact email: info@easyrender.ai"
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "metaTitle": "Privacy Policy · easyrender",
+      "metaDescription": "Privacy Policy — easyrender.ai. The legal text below is provided in English.",
+      "intro": "This policy explains how easyrender.ai handles personal data when you use our website, apps, API and MCP tools to turn a photo into a 3D model. MRRAMOS INMUEBLES SL, the Spanish company identified above, is the data controller. Applicable data protection laws include the EU General Data Protection Regulation (GDPR), Spanish Organic Law 3/2018 on the Protection of Personal Data and Guarantee of Digital Rights (LOPDGDD) and, where applicable to UK users, the UK GDPR. Contact info@easyrender.ai about privacy or your rights.",
+      "sections": {
+        "collection": {
+          "title": "1. Data we collect",
+          "body": "We collect account details (name, email, password hash and, if you choose Google sign-in, profile and authentication identifiers); session and API credentials; uploaded photos, prompts, previews, generated models and job history; credit balances, ledger entries, purchases, subscription status and Stripe references; and messages you send us. Stripe collects payment and billing details directly; we do not store your full card number. Technical data includes IP addresses or derived identifiers, browser and device information, request and error logs, approximate country, consent choices, referral and campaign information, and product usage events. Anonymous previews are associated with an anonymous browser identifier. Please avoid uploading people, personal documents, sensitive data or confidential material."
+        },
+        "purposes": {
+          "title": "2. Purposes and legal bases",
+          "body": "The contract, legal obligation, legitimate interests and consent bases described below apply under the EU GDPR and Spanish Organic Law 3/2018 (LOPDGDD), and under the UK GDPR where it applies. We use account, upload and transaction data to provide the service you request, generate and deliver files, manage credits and subscriptions, and answer service requests (performance of a contract or steps requested before entering one). We retain required billing records and respond to valid legal demands to meet legal obligations. We use proportionate security, abuse prevention, diagnostics and cookieless product measurement for our legitimate interests in protecting and improving the service; you may object to processing based on those interests. Optional analytics use consent where required, including in the EEA. Where local law permits analytics without prior consent, we rely on legitimate interests and offer a rejection control. We do not use your data for decisions that produce legal or similarly significant effects solely through automated processing."
+        },
+        "public": {
+          "title": "3. Uploads, AI processing and public models",
+          "body": "AI providers process the photo, prompts and intermediate outputs needed to produce previews and 3D models. Generated models are public by default and may appear in the gallery, be viewed, downloaded, shared and indexed by search engines. Public model pages can also expose previews and source imagery. Use the available visibility controls before sharing sensitive content. Changing visibility does not revoke files already downloaded or copies held by others; file URLs and cached copies may remain accessible. Contact us to request removal. Do not upload material that you cannot lawfully share or send to our processing providers."
+        },
+        "providers": {
+          "title": "4. Service providers and other recipients",
+          "body": "We use Vercel for hosting, Neon/Postgres for account and application data, AWS S3 and CloudFront for file storage and delivery, Better Auth software and its hosted dashboard for authentication administration, Stripe for payments and subscriptions, Replicate and the AI model providers used by the rendering pipeline for image and model processing, PostHog EU for product measurement, Google Analytics 4 for optional analytics, and Sentry for error monitoring where enabled. Google also receives authentication data if you choose Google sign-in. Providers receive the data needed for their role and act as processors where applicable; payment and identity providers may also act as independent controllers for their own legal or security purposes. We may disclose necessary information to professional advisers, authorities when legally required, or a successor in a business transfer subject to applicable safeguards. We do not sell personal data."
+        },
+        "transfers": {
+          "title": "5. International transfers",
+          "body": "MRRAMOS INMUEBLES SL is established in Spain. Your data may be processed in or accessed from Spain and other countries where our providers or their subprocessors operate, including the United States, outside the EEA and the United Kingdom. EU hosting does not exclude overseas support access or onward transfers. Transfers subject to the EU GDPR require an applicable adequacy decision or appropriate safeguards, unless a permitted statutory exception applies. Safeguards may include the European Commission’s Standard Contractual Clauses, with transfer risk assessments and additional measures where required. Where the UK GDPR applies to a transfer, safeguards may include the UK International Data Transfer Agreement or UK Addendum. You can request details of the safeguards applicable to your data and copies, subject to redaction of confidential details, at info@easyrender.ai."
+        },
+        "retention": {
+          "title": "6. Retention and deletion",
+          "body": "Account information and saved uploads, previews and models are retained while needed to provide your account and library, or until a deletion request is handled. Uploads and outputs do not have a promised automatic expiry. Transaction and credit records may be kept after account closure for applicable accounting, tax, fraud prevention and legal claim requirements. Support, security and analytics records are retained according to their purpose, provider settings and applicable legal requirements; factors include whether an issue remains open, whether the data is still needed and whether a legal retention duty applies. Deletion requests are reviewed for those obligations. Backups and CDN caches may retain copies until their normal expiry; publicly downloaded copies cannot be recalled. Browser storage lifetimes are described on the cookie information page."
+        },
+        "cookies": {
+          "title": "7. Cookies, analytics and your choices",
+          "body": "Essential storage supports sign-in, anonymous previews, language preferences and remembering your choice. PostHog loads in every region, including after rejection or GPC. Its browser SDK uses no cookies or persistent browser storage and creates no person profiles. We also collect server events for account creation, renders and payments, associated with internal account or preview IDs. A hashed pricing identifier connects pricing visits with registrations and purchases to measure our pricing experiment. Google Analytics cookies measure visits and can last up to two years. Strict regions require acceptance; elsewhere analytics runs unless rejected or blocked by GPC. Allowed analytics retains normalized campaign fields in er_campaign session storage for up to 30 minutes. Confirmed purchases may be measured server-side using the same client and session identifiers, even without a return from checkout. Only an explicit advertising choice permits Google ad storage and advertising user data. We retain allowlisted Google click IDs in er_ad_touch session storage for at most 30 minutes, send them only to Google, and remove them from the address after capture. Google may store its own conversion-linking cookies. Advertising personalization and Google Signals remain off. This choice is not inferred from accepting analytics. Google may also retain conversion-linking data in _gcl_* cookies and _gcl_ls local storage; their retention is separate from our 30-minute record. These accessible Google identifiers are cleared when you withdraw advertising permission. Reject disables optional Google measurement, clears its cookies and our campaign/click storage, and requests cancellation of pending server measurement for your signed-in account. Switching to Analytics only also clears ad attribution and cancels pending contexts. GPC blocks both optional Google purposes. Already sent events cannot be withdrawn here. Cookieless PostHog and operational server events stay active. Contact us to object to processing based on legitimate interests."
+        },
+        "rights": {
+          "title": "8. Your rights and complaints",
+          "body": "EU/EEA and UK users retain their rights under the EU GDPR and UK GDPR where applicable, subject to the conditions in those laws: access, correction, erasure, restriction and portability of personal data, and objection to processing based on legitimate interests. Spanish Organic Law 3/2018 (LOPDGDD) recognises the same rights for processing subject to Spanish law. You may withdraw consent at any time without affecting the lawfulness of earlier processing. Contact info@easyrender.ai; we may request proportionate identity verification. For GDPR and UK GDPR requests we normally respond within one month and explain any lawful extension; other requests are handled within the applicable statutory time limit. You may complain to the Agencia Española de Protección de Datos (AEPD), the Spanish supervisory authority, or bring a claim before the Spanish courts. EU/EEA users may also complain to the supervisory authority where they live, work or believe an infringement occurred. Providing account and payment information is necessary for paid services; without it we cannot provide those features. Optional analytics consent is not required to use the service."
+        },
+        "changes": {
+          "title": "9. Security, children and policy changes",
+          "body": "We use access controls and technical safeguards appropriate to the service, but no system is completely secure. The service is intended for adults and we do not knowingly collect children’s data; contact us if you believe a child has supplied personal data. We may update this policy as the service or legal requirements change, show the revised date, and provide additional notice of material changes where required. A policy update does not itself grant new consent."
+        }
+      }
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "metaTitle": "Terms of Service · easyrender",
+      "metaDescription": "Terms of Service — easyrender.ai. The legal text below is provided in English.",
+      "intro": "Easy Render is a product operated by MRRAMOS INMUEBLES SL, the company identified above. These terms govern your use of easyrender.ai, its apps, API and MCP tools. By creating an account or using the service, you agree to these terms. Contact info@easyrender.ai for service, billing or legal questions. Mandatory consumer rights remain unaffected.",
+      "sections": {
+        "service": {
+          "title": "1. The service and its limits",
+          "body": "easyrender turns one photo of a single piece of furniture, decor object or building exterior into AI-generated previews and a 3D model, with GLB and USDZ downloads where available. Free angle previews are subject to usage and abuse-prevention limits. The service does not model whole interior rooms. Outputs are estimates: dimensions, scale, geometry, materials and resemblance are not guaranteed. Verify outputs before using them in commerce or other projects. They are not surveys, engineering drawings or a basis for structural, construction or safety decisions. Features described as coming soon are not included promises of current functionality."
+        },
+        "accounts": {
+          "title": "2. Accounts and access",
+          "body": "You must be at least 18 and able to enter a binding contract, or act with authority for the business you represent. Provide accurate account and billing information, protect your password and API keys, and tell us promptly about unauthorized access. You are responsible for activity you authorize through your account and connected agents. Do not share credentials publicly, impersonate another person or bypass account restrictions. We may restrict access where reasonably necessary to address abuse, security incidents, non-payment or unlawful activity, and provide notice and a way to contact us where practicable."
+        },
+        "credits": {
+          "title": "3. Credits, prices and plans",
+          "body": "Paid generation uses credits. Current prices, included credits, currency, billing interval and applicable taxes are shown in the pricing interface and Stripe checkout before purchase. Pay-as-you-go purchases add credits; monthly plans renew and charge automatically until cancelled. Credits never expire and unused plan credits roll over. Credits are service units, not money, deposits or an investment. Manage, change or cancel your plan through the billing portal in Credits; the portal shows when a change or cancellation takes effect. Cancellation stops future renewals according to that confirmation and does not itself refund prior payments. Generation costs are shown before you spend credits. Future price or plan changes will be communicated as required by law and do not retrospectively change completed purchases."
+        },
+        "refunds": {
+          "title": "4. Failed jobs, refunds and consumer rights",
+          "body": "When a charged rendering job fails, including a failed quality check, the credits charged for that failed job are returned to your credit balance. This is a credit reversal, not an automatic refund to your card. The service does not provide an automatic cash-refund flow. For a payment error, disputed charge, defective service or refund request, contact info@easyrender.ai with your purchase details. Nothing here excludes refunds or remedies required by law. EEA consumers generally have a 14-day withdrawal right for distance contracts, subject to statutory conditions and exceptions. Starting generation does not by itself waive that right: any exception for immediate digital supply requires the legally required express consent, acknowledgement and confirmation. To exercise a statutory withdrawal right, send us a clear statement identifying your account, purchase and decision to withdraw. Where applicable, the law determines any proportionate amount due for services expressly requested during the withdrawal period and the refund owed."
+        },
+        "ownership": {
+          "title": "5. Your content and intellectual property",
+          "body": "You keep your rights in uploaded photos and other content. You must own those rights or have all permissions needed to upload, process and, where public, share that material, including relevant privacy, property, copyright and trademark permissions. You grant us a non-exclusive licence to host, copy, transmit and process your content through our service providers to operate the service, generate and deliver outputs, and display content you make public. This licence is limited to those purposes and necessary retention, legal and backup requirements. We do not claim ownership of your uploaded content. To the extent we hold transferable rights in outputs generated for you, we assign those rights to you, subject to third-party rights. AI outputs may not qualify for intellectual property protection, may resemble other outputs and are not guaranteed exclusive or free of third-party claims. Our software, branding and service remain ours or our licensors’."
+        },
+        "public": {
+          "title": "6. Public models and sharing",
+          "body": "Generated models are public by default. Public model pages, previews and associated imagery may be listed in the gallery, indexed, shared and downloaded by others. Do not upload confidential material or content you lack permission to publish. Available visibility controls can remove public listing, but cannot recall earlier downloads, third-party copies or cached files, and existing file URLs may remain accessible. Contact info@easyrender.ai for removal requests. Publishing a model does not transfer your underlying intellectual property to other visitors or grant them an unrestricted commercial licence."
+        },
+        "use": {
+          "title": "7. Acceptable use",
+          "body": "Do not use the service for unlawful, infringing, deceptive, abusive or exploitative content; non-consensual intimate imagery; sexual content involving minors; or activities that violate another person’s privacy or rights. Do not upload malware, attack or overload systems, evade limits or payment, scrape private data, or attempt unauthorized access. You must review outputs and use them lawfully. We may refuse or remove content and suspend access for violations, applying proportionate measures and complying with applicable notice and redress obligations. Report misuse or rights infringements to info@easyrender.ai."
+        },
+        "availability": {
+          "title": "8. Availability and ending the service",
+          "body": "We aim to provide a reliable service, but maintenance, provider outages and AI processing failures can interrupt it. We may change features or discontinue the service with reasonable notice where practicable and as required by law. You may stop using the service, cancel your plan through billing and contact us to close your account. Account closure is separate from subscription cancellation. On suspension or closure, access may end; outstanding payment obligations and provisions that by their nature survive will continue. We will handle unused paid entitlements and any refunds required by applicable law; this clause does not authorize forfeiture of statutory rights."
+        },
+        "liability": {
+          "title": "9. Responsibility and liability",
+          "body": "To the extent permitted by law, the service and AI outputs are provided as available without a guarantee of uninterrupted operation or fitness for a particular purpose. For business customers, our aggregate liability arising from the service is limited to the amounts paid to us for the service in the 12 months before the event giving rise to the claim, and we exclude indirect or consequential losses, including lost profits. These limits do not apply to fraud, wilful misconduct, gross negligence, death or personal injury caused by negligence, or liability that cannot lawfully be limited. Consumer statutory guarantees, data protection rights and mandatory remedies remain unaffected. You remain responsible for the rights in your inputs and for verifying how you use outputs."
+        },
+        "law": {
+          "title": "10. Changes, governing law and disputes",
+          "body": "These terms and related non-contractual obligations are governed by Spanish law. The courts of Spain have jurisdiction over disputes concerning these terms, including their existence, validity, interpretation, performance, breach or termination. Before starting formal proceedings, both parties must seek a resolution through good-faith direct negotiation for at least 30 days after written notice of the dispute; send notices to info@easyrender.ai. If you are a consumer, these provisions do not deprive you of mandatory protections in your country of habitual residence or your right to bring claims before courts available under applicable consumer law, and do not delay remedies that mandatory law makes available to you. We may revise these terms, publish the new date and give notice of material changes as required. Changes apply prospectively and do not remove accrued rights. If a provision is unenforceable, the remaining provisions continue to apply."
+        }
+      }
+    }
+  },
+  "ConnectionCheck": {
+    "title": "Check your API key",
+    "description": "Confirm which account and permissions this key uses. This check does not generate anything or spend credits.",
+    "verifyNew": "Verify new key",
+    "keyLabel": "Or paste an existing API key",
+    "checking": "Checking…",
+    "verify": "Verify key",
+    "privacy": "The pasted key is cleared after checking. It is not saved in your browser.",
+    "mismatch": "This key belongs to another account. Use a key from the account you are signed in to.",
+    "readRequired": "This check needs read permission. Create a key with Read enabled.",
+    "invalid": "The key is invalid, expired or revoked. Create a new key and try again.",
+    "rateLimit": "Too many checks. Wait a minute and try again.",
+    "failed": "The check could not finish. Please try again.",
+    "verified": "Key verified",
+    "scopeOfCheck": "This verifies API access now, not a connection from your external client. Run the first prompt there to confirm its setup.",
+    "account": "Account",
+    "balance": "Shared wallet",
+    "credits": "{count, number} credits",
+    "permissions": "Permissions",
+    "expiry": "Expires",
+    "noExpiry": "No expiry",
+    "cap": "Key spending cap",
+    "unlimited": "{spent, number} credits spent · no cap",
+    "limited": "{spent, number} / {limit, number} spent · {remaining, number} remaining",
+    "grossCap": "The cap counts total debits for this key. Refunds restore the wallet balance, but do not restore the key cap."
+  },
+  "Author": {
+    "metaTitle": "Jorge Rodríguez | easyrender author",
+    "bio": "Jorge Rodríguez writes easyrender guides about product photos, 3D files and ecommerce workflows.",
+    "methodTitle": "How we review",
+    "method": "Guides link to the sources behind technical claims. Documented features and hands-on results are identified separately. A reproducible comparison records its input, model version, settings, date and limitations.",
+    "disclosure": "This content is published by easyrender, which sells the product discussed. A comparison is not an independent endorsement. Prices and availability can change; check the linked provider before buying.",
+    "guides": "Guides by Jorge",
+    "comparisons": "Comparisons"
+  },
+  "Resources": {
+    "title": "Choose your next step",
+    "description": "Learn how to prepare a photo, compare workflows and use the resulting 3D file."
+  },
+  "MailingUI": {
+    "title": "Practical ideas for your 3D projects",
+    "description": "Optional email lessons with stories, examples and useful next steps. Up to six messages during the 30 days from your first confirmation.",
+    "scope": "This is only the educational series. It does not subscribe you to a newsletter or future offers.",
+    "language": "Choose the language for these emails",
+    "spanish": "Español",
+    "english": "English",
+    "consent": "I want to receive this educational email series from easyrender.",
+    "subscribe": "Request confirmation email",
+    "busy": "Saving…",
+    "pending": "Check your inbox and confirm your choice. Nothing starts until you confirm.",
+    "active": "You are subscribed to the educational series.",
+    "unsubscribed": "You are unsubscribed from the educational series.",
+    "suppressed": "These emails are not being sent to your address.",
+    "expired": "The 30-day educational window has ended.",
+    "none": "You have not subscribed.",
+    "unavailable": "The educational series is currently unavailable.",
+    "stop": "Stop these emails",
+    "stopped": "Your choice has been saved.",
+    "failed": "We could not save your choice. Try again later.",
+    "rateLimited": "Please wait before requesting another confirmation email.",
+    "expires": "This series ends on {date}. Subscribing again does not restart the window.",
+    "languagesOnly": "Available in Spanish and English.",
+    "privacy": "Privacy policy",
+    "confirmTitle": "Confirm your email lessons",
+    "unsubscribeTitle": "Stop educational emails",
+    "confirmDescription": "Confirm only if you requested easyrender’s educational email series. This does not subscribe you to a newsletter or future offers.",
+    "unsubscribeDescription": "Stop the educational series for the address associated with this link. Access, security and purchase emails are unaffected.",
+    "confirmButton": "Confirm my subscription",
+    "unsubscribeButton": "Unsubscribe",
+    "confirmed": "Your subscription is confirmed. The series ends 30 days after your first confirmation.",
+    "removed": "You are unsubscribed from the educational series.",
+    "invalidLink": "This link is invalid or expired. You can manage your choice from your account.",
+    "tokenFailed": "We could not complete this request. Please try again later.",
+    "account": "Go to account",
+    "resend": "Resend confirmation email",
+    "requestedLanguage": "Requested email language: {language}"
+  },
+  "MailingSystem": {
+    "confirmSubject": "Confirm your easyrender email lessons",
+    "confirmBody": "You requested practical emails from easyrender. Confirm your choice below. The series includes up to six educational messages during the 30 days from your first confirmation. It does not include a newsletter or future offers. If you did not request this, ignore this message.",
+    "confirmAction": "Confirm my email lessons",
+    "footerReason": "You receive this educational series because you requested and confirmed it. It ends 30 days after your first confirmation.",
+    "unsubscribeLabel": "Stop these emails",
+    "preferencesLabel": "Manage email preferences",
+    "educationalActionLabel": "Continue in easyrender"
+  },
+  "MailingEmails": {
+    "ecommerce_d00": {
+      "subject": "Eight photos of the bag. This view was missing.",
+      "preheader": "Start with a question your product page still leaves unanswered.",
+      "body": "Welcome to easyrender. These emails share ways to help people understand a product through its images and make an informed choice.\n\nIllustrative story.\n\nLaura runs a handbag shop. She has prepared eight photos of one bag: beside a plant, on a table, in beautiful light.\n\nThen a message arrives:\n\n“What does the back look like?”\n\nShe opens the product page. None of the photos shows it.\n\nLaura looks through other questions and finds three different needs:\n\n“What does the back look like?” → a rear view or a way to explore the shape.\n\n“Will my laptop fit?” → reliable internal measurements.\n\n“How does it open?” → a demonstration of the fastening.\n\nYou can use the same distinction for your product. The buyer’s question helps you choose what to show.\n\nIf they need to explore its shape, that can guide a small 3D test. If they need a measurement, provide it from a reliable source.\n\nLaura’s next image now had a specific job.\n\nChoose one product page and complete: “My buyer needs to see ___ to decide ___.”",
+      "action": "Choose one product page and complete: “My buyer needs to see ___ to decide ___.”"
+    },
+    "ecommerce_d02": {
+      "subject": "Laura’s favourite bag had to wait",
+      "preheader": "Three conditions for choosing a small 3D test.",
+      "body": "Illustrative story.\n\nLaura was going to try 3D with the most striking bag in her shop. Then she looked at the data.\n\nIt received few visits. Another bag prompted questions about the shape of its pockets, and she had good photos to check it against.\n\nShe chose the second one.\n\nFor a small test, look for three things together: a specific visual question, a product that already gets attention, and enough references to review the result.\n\nLaura’s brief read:\n\n“Product: bag with a side pocket. Question: how far the pocket projects. Check: its profile and fastening position. References: photos of the actual product. Destination: its product page.”\n\nYou can adapt this example. If you have not chosen a product, it gives you a starting point. If you already have a model, use it to identify the question you want to evaluate.\n\nYou can prepare that test in easyrender. Before any paid step, check the current cost and decide how much you want to spend evaluating this case. One product can teach you something before you commit to a catalogue.\n\nWrite a test brief naming the product, question, detail to review and real reference.",
+      "action": "Write a test brief naming the product, question, detail to review and real reference."
+    },
+    "ecommerce_d05": {
+      "subject": "What to check when the product starts turning",
+      "preheader": "A published case and a question for reviewing your own test.",
+      "body": "Published case from Shopify.\n\nRebecca Minkoff added 3D models to its product pages after receiving questions about its products. Shopify reports that visitors who interacted with the models were 27% more likely to place an order than those who did not. This is an observed comparison; those visitors may have had greater purchase intent to begin with.\n\nSource: https://www.shopify.com/case-studies/rebecca-minkoff\n\nFor your test, ask what someone can now understand by turning the product.\n\nIf you wanted to show a side pocket, review that pocket: its shape, position and relationship to the rest of the bag. An impressive rotation that changes this detail does not fulfil the brief.\n\nYour note might read: “The profile is visible; the fastening position matches the reference; the back still needs checking.”\n\nIf you have an easyrender result, this helps you decide whether it suits the intended use. If not, prepare the same checklist from your references before generating it.\n\nAnother brand’s experience suggests a possibility. Your review turns it into a decision about your product.\n\nWrite a review note identifying one checked detail and any information still missing.",
+      "action": "Write a review note identifying one checked detail and any information still missing."
+    },
+    "ecommerce_d10": {
+      "subject": "The image was there. The buyer could not find it.",
+      "preheader": "Try a short mobile check before adding more content.",
+      "body": "Illustrative story.\n\nLaura showed someone a new product page on her phone.\n\n“Can you see the pocket on the side?”\n\nThey swiped through several photos and stopped. The view was there, but far from where they expected to find it.\n\nLaura had worked out what to show. She still needed to check whether people could find it.\n\nYou can try a product page or draft with a concrete question. For the bag: “Where is the fastening?”, “What does the side look like?” or “Where are the measurements?”\n\nAsk someone to answer using only the presentation. Watch where they look, what they find and where they need help. This does not need to become a long survey.\n\nIf you have a reviewed asset, test it where it will be used, alongside reliable photos and information. Also check that people can keep shopping while a visual resource loads.\n\nIf the asset is not ready, you can test the planned gallery order.\n\nLaura moved the side view. Her next check would show whether it was easier to find.\n\nTest one question on a product page or draft and note the first point of difficulty.",
+      "action": "Test one question on a product page or draft and note the first point of difficulty."
+    },
+    "ecommerce_d20": {
+      "subject": "The second product could take more work",
+      "preheader": "Decide what carries over before expanding your test.",
+      "body": "Illustrative story.\n\nLaura had prepared one bag and wanted to continue with a similar one. The references revealed a difference: the second bag had a fastening barely visible in the photos.\n\nThe earlier process could guide her, but it did not resolve that detail.\n\nBefore expanding, she wrote:\n\n“Reuse: the review criteria and destination. Change: the fastening references. Still to estimate: the time needed to check it.”\n\nThat note avoids treating every product as the same amount of work.\n\nIf you have tested a product, use what you observed across preparation, generation, review and adaptation. The useful cost also includes the work needed to accept the result.\n\nIf you have not tested yet, write down what you expect to reuse and leave the rest as unknown. Those are not demonstrated savings.\n\nYou can evaluate another case with easyrender once you know what you want to learn and its current cost. Expanding is easier to judge when you can distinguish repeated work from work that is still new.\n\nFor a possible second product, note what you can reuse, what changes and what remains to be estimated.",
+      "action": "For a possible second product, note what you can reuse, what changes and what remains to be estimated."
+    },
+    "ecommerce_d28": {
+      "subject": "What decision can your test support?",
+      "preheader": "Expanding, adjusting and waiting each need a reason.",
+      "body": "Illustrative story.\n\nLaura brought one finding to the meeting: people were turning the bag in the viewer.\n\n“What should we do with the rest of the catalogue?” someone asked.\n\nThe counter showed that the viewer was being used. To decide on the next investment, Laura needed more information.\n\nShe separated three questions: does the page answer the original question more clearly, how much work did the asset take, and is there enough evidence to discuss commercial results?\n\nYour closing note might read: “The pocket’s shape is clear; preparation was manageable; we do not yet know whether purchases changed. Next step: keep observing the test.”\n\nTo evaluate sales, compare visitors assigned to comparable groups, ideally at random. Looking only at people who used the viewer selects visitors who may already be more interested. For returns, wait until the return window closes.\n\nIf you have not tested yet, your note can identify the unanswered question or missing resource. You do not need to invent a result to make a useful decision.\n\nChoose expand, adjust or postpone, and write down the evidence or specific uncertainty behind that choice.",
+      "action": "Choose expand, adjust or postpone, and write down the evidence or specific uncertainty behind that choice."
+    },
+    "furniture_d00": {
+      "subject": "The sofa was going in the middle of the room",
+      "preheader": "Its position changes what the buyer needs to see.",
+      "body": "Welcome to easyrender. This series will help you prepare furniture presentations that give people useful information for their decision.\n\nIllustrative story.\n\nMateo shows a customer a sofa. Every photo places it against a wall.\n\n“I want it in the middle of the room. Is the back upholstered in the same way?”\n\nFor her, the back would be the first thing people saw when entering.\n\nMateo notes three needs: show that part, confirm the space it occupies, and explain the finish. Each needs a different reference.\n\nYou can apply this example to one piece: “It will stand in the centre of the room, visible from all four sides. I need to show the back and provide verified measurements.”\n\nA 3D model can help people explore the shape. Dimensions need a reliable source, while texture and feel need samples or a suitable description.\n\nBefore your next presentation, consider where the person using the piece will see it from. That simple question can change which view matters most.\n\nDescribe one intended position and the side or detail that matters there.",
+      "action": "Describe one intended position and the side or detail that matters there."
+    },
+    "furniture_d02": {
+      "subject": "Mateo prepared the test before generating",
+      "preheader": "One piece, useful references and a criterion you can check.",
+      "body": "Illustrative story.\n\nMateo opened a folder of chair photos. There was a clear front image and two others taken in the shop.\n\nHe almost discarded those two. Then he noticed that one showed the support beneath the seat and the other showed the backrest’s curve.\n\nThey would help him review the result, even if they were not the input image.\n\nHis brief read: “Represent this chair so we can explore its shape. Check the backrest, legs and seat support against photos of the real product.”\n\nYou can prepare a test this way: a familiar piece, a clear input image and references for checking the important details. Separate what you want to show from what you will need to verify.\n\nEven when a workflow uses one image, additional references can help your review. That does not mean the system processes all of them as inputs.\n\nBefore a paid operation in easyrender, check the current cost and define the scope of your test. If you already have a model, use the same brief to guide its review.\n\nPrepare the input image, review references and three features to check for one piece.",
+      "action": "Prepare the input image, review references and three features to check for one piece."
+    },
+    "furniture_d05": {
+      "subject": "The chair had an extra bar",
+      "preheader": "What to check before using a model in a presentation.",
+      "body": "Illustrative story.\n\nMateo turned a chair model and noticed a bar beneath the seat.\n\nThe image looked convincing. But the product photo had no such bar.\n\nHe started comparing it with the specific chair he needed to show.\n\nYou can make that review with three questions: are the same parts present, does it preserve the features that identify the design, and what can you not check yet?\n\nA useful note might read: “Backrest: matches the reference. Lower support: needs review. Back: another photograph is needed to check it.”\n\nWith an easyrender result, the note helps you decide whether it suits the presentation you are preparing. If you do not have a result yet, write the three checks for your next test.\n\nMeasurements need their own reliable sources. A difference that changes the product being sold needs resolving before publication, even when the overall image is attractive.\n\nMateo could explain why this version was not ready for approval. He had a specific detail to investigate.\n\nSort your review or review plan into checked, needs correction and missing information.",
+      "action": "Sort your review or review plan into checked, needs correction and missing information."
+    },
+    "furniture_d10": {
+      "subject": "Three armchairs, three different photo styles",
+      "preheader": "Help people compare pieces using the same criteria.",
+      "body": "Illustrative story.\n\nMateo sent three armchair options. One was photographed close up, another in a large room, and the third from above.\n\n“Which takes up less space?” the customer asked.\n\nThe images suggested different sizes but could not answer the question.\n\nMateo prepared the same fields for each piece: intended use, verified dimensions, finish and an equivalent view. He kept the current price in its own field.\n\nYou could start with this example: “Armchair A · reading · dimensions from the technical sheet · fabric checked against the sample · front and side views.”\n\nThe comparison does not need to pretend that the images are to scale. Written measurements and their source support that decision.\n\nReviewed models may provide comparable views or shape exploration in a compatible destination. If you do not have them yet, prepare the same structure using the references available.\n\nMateo’s conversation could now focus on which piece best suited the customer’s intended use.\n\nPrepare two options with matching fields and one specific comparison question.",
+      "action": "Prepare two options with matching fields and one specific comparison question."
+    },
+    "furniture_d20": {
+      "subject": "The next chair was not quite as simple",
+      "preheader": "Decide what to repeat across a collection.",
+      "body": "Illustrative story.\n\nMateo wanted to extend his test to a collection. The first chair had a simple structure. The next added arms and openings in its backrest.\n\nBefore repeating the same brief, he compared the differences.\n\nHe kept the destination and review method. He changed the detail list: the arms, openings and their positions now needed checking too.\n\nThis is a practical way to prepare a collection. Group pieces by features that affect their review, then choose a representative from each group before assuming they require equal work.\n\nYour note might read: “Group: chairs with arms. Shared criterion: commercial presentation. Additional review: joints and openings. Time needed: still to be observed.”\n\nIf you have already tested, use what you learned. If not, the note lets you anticipate differences without claiming savings you have not measured.\n\nRepeating a process in easyrender is easier to evaluate when you know what stays the same and what changes for each piece.\n\nGroup two or three pieces by review difficulty and choose a representative from one group.",
+      "action": "Group two or three pieces by review difficulty and choose a representative from one group."
+    },
+    "furniture_d28": {
+      "subject": "Fewer questions arrived. Mateo checked the visits too.",
+      "preheader": "Close your test without confusing different signals.",
+      "body": "Illustrative story.\n\nMateo noticed fewer enquiries about a piece and thought the new presentation was working.\n\nThen he checked how many people had seen it. Visits had fallen too.\n\nHe needed more than a count of messages.\n\nTo evaluate your presentation, bring together three related observations: how many people or proposals had access, which questions arose, and what decisions people could make. Separate questions about shape from questions about measurements, fabric or delivery.\n\nA closing note might read: “The back is easy to find in the usability check; measurements are still missing; there is not enough volume to conclude anything about sales.”\n\nIf you tested, fill in the note with your observations and the work involved. If you have not tested, identify the information you need to decide whether preparing it is worthwhile.\n\nYou can expand, adjust or postpone the presentation. What matters is knowing why you chose that next step, without turning fewer enquiries into a sale you have not verified.\n\nChoose expand, adjust or postpone and note the evidence or missing information behind your decision.",
+      "action": "Choose expand, adjust or postpone and note the evidence or missing information behind your decision."
+    },
+    "agency_d00": {
+      "subject": "The client asked for a render. They needed a deliverable.",
+      "preheader": "One sentence can turn a vague brief into something that can be approved.",
+      "body": "Welcome to easyrender. These emails share ideas for taking a visual asset from the brief to a deliverable your client can use.\n\nIllustrative story.\n\nInés is preparing a quote. She has written “3D product model”.\n\nHer client asks:\n\n“What does that include for the product page?”\n\nThey are discussing the same item, but have not agreed on the deliverable.\n\nShe rewrites the proposal: “We will prepare a representation of this product to review its shape. Delivery will include the agreed file, the reference used and the checks carried out in the intended destination.”\n\nYou can use that distinction to describe your own work: the product, its use and evidence that it is ready for that use.\n\nIf easyrender produces part of the work, this definition helps you review the result and explain what your service includes. Formats, adaptations and conditions must match what you actually deliver.\n\nInés could now ask the client whether that was the deliverable they needed.\n\nRewrite one brief in a sentence naming the product, intended use and specific deliverable.",
+      "action": "Rewrite one brief in a sentence naming the product, intended use and specific deliverable."
+    },
+    "agency_d02": {
+      "subject": "Before the catalogue, one piece they could approve",
+      "preheader": "An example of a pilot with a clear beginning and end.",
+      "body": "Illustrative story.\n\nInés’s client wanted an entire catalogue prepared. Some products had details that were hard to see in their photos.\n\nShe proposed starting with one representative piece and agreeing how it would be approved.\n\nHer note read: “Product: chair with arms. Use: commercial presentation. Reference: approved photographs. We will review the shape, visible parts and file in the agreed destination. The catalogue owner will approve it.”\n\nThe brief is small, but it allows the team to observe preparation, results and review work.\n\nYou can adapt it for your own test or a client project. Choose a piece that teaches you something about the catalogue. Picking only the easiest one may leave later work undiscovered.\n\nBefore producing it with easyrender, gather references for checking the details and review the current cost of any paid operation. Agreeing to the pilot does not approve work on the whole catalogue.\n\nIf you already have a generated piece, the same criteria can identify what needs checking before you present it.\n\nWrite a one-piece brief covering use, references, approval criteria and the person responsible.",
+      "action": "Write a one-piece brief covering use, references, approval criteria and the person responsible."
+    },
+    "agency_d05": {
+      "subject": "“It looks different” needed another sentence",
+      "preheader": "Turn a vague opinion into useful review feedback.",
+      "body": "Illustrative story.\n\nInés received a comment about a chair:\n\n“It looks different.”\n\nShe could change things blindly or find out what the client was comparing.\n\nShe asked them to identify the detail and reference. The next reply was more useful: “In the approved photo, the arm ends level with the backrest. In this version, it is lower.”\n\nNow there was something specific to check.\n\nYou can structure feedback with four fields: observed detail, reference, difference and requested decision.\n\nFor example: “Right arm · approved side photo · different height · review before approval.”\n\nIf you have an easyrender result, compare it with the reference before deciding what needs correcting or how to proceed. Do not assume every detail can be edited directly in the tool.\n\nIf you have not produced it yet, prepare the same form so the first review uses shared criteria.\n\nInés had feedback she could interpret. The conversation identified what was preventing approval.\n\nTurn one observation or review criterion into a sentence with a detail, reference, difference and decision.",
+      "action": "Turn one observation or review criterion into a sentence with a detail, reference, difference and decision."
+    },
+    "agency_d10": {
+      "subject": "“Which of these files should I use?”",
+      "preheader": "A delivery note saves the client from reconstructing the project.",
+      "body": "Illustrative story.\n\nInés delivered the model and received an unexpected question:\n\n“Which file should I use in the presentation?”\n\nSeveral versions appeared in the conversation. Delivery needed context.\n\nShe prepared this note:\n\n“File: chair-presentation-v2. Intended use: commercial presentation. Checked: opening and appearance in the agreed environment. Pending: final finish approval. This version replaces the earlier one for that review.”\n\nAdapt this format using your actual project details. Name the file, use, checks and outstanding decision. Do not mark a test as completed if it has not happened.\n\nBefore delivering an asset produced with easyrender, verify its destination and the access needed by the recipient. A file extension alone does not confirm that all materials and settings will carry over there.\n\nIf you do not have a deliverable yet, prepare the note as a template with pending fields.\n\nInés could continue reviewing the piece. The client now knew which version to comment on.\n\nWrite a delivery note naming the file, use, actual checks and outstanding decision.",
+      "action": "Write a delivery note naming the file, use, actual checks and outstanding decision."
+    },
+    "agency_d20": {
+      "subject": "Who had budgeted for the meeting?",
+      "preheader": "A deliverable costs more than the work inside the files.",
+      "body": "Illustrative story.\n\nInés had counted model production and review. Then came other tasks: gathering comments, speaking to the approver and adapting the delivery.\n\nShe opened the quote. Those hours were missing.\n\nInés had subtracted tools and direct work from the project fee. Once she included coordination and adaptation, the expected margin shrank. The calculation was incomplete because tasks were missing, not because the project had changed.\n\nThe price had not changed. The amount of work counted had.\n\nTo judge what you can repeat, separate preparation, production, review, coordination, adaptation and delivery. Work done with easyrender sits alongside the time spent on the other stages.\n\nIf you completed a project, use your observations. If you are preparing one, label your estimates as estimates.\n\nIt also helps to know who gathers comments and who approves the work. That organisation is part of the service you are pricing, even when it produces no new file.\n\nAdd one previously uncounted coordination or delivery task to a real or example quote.",
+      "action": "Add one previously uncounted coordination or delivery task to a real or example quote."
+    },
+    "agency_d28": {
+      "subject": "What can you offer after the first piece?",
+      "preheader": "Build the next proposal on something you have checked.",
+      "body": "Illustrative story.\n\nThe client asked Inés whether she could continue with the catalogue.\n\nBefore replying, she reviewed what she knew: one piece had passed the agreed check, review time had been recorded, and other shapes remained untested.\n\nShe prepared a proposal with its own scope: “We can evaluate this next group using the approved criteria. We will review pieces with untested details separately.”\n\nYou can close your preparation in the same way: what you have confirmed, what remains uncertain and which specific work would make sense to offer next.\n\nIf you ran a test, use its results and full cost. If not, the next proposal can be that first limited pilot. Neither requires promising an entire catalogue from the outset.\n\nA useful note is: “We can commit to ___ because we have checked ___. Before expanding to ___, we need to validate ___.”\n\nInés had a reply that explained both the opportunity and the next step needed to deliver it.\n\nWrite a next-step proposal grounded in what is checked, with the main outstanding requirement visible.",
+      "action": "Write a next-step proposal grounded in what is checked, with the main outstanding requirement visible."
+    },
+    "product_views_d00": {
+      "subject": "The photo looked good. The connection was missing.",
+      "preheader": "One specific question can decide which view you need.",
+      "body": "Welcome to easyrender. Let’s start by finding what a view of your product needs to explain.\n\nIllustrative story.\n\nLucía received several images of a lamp and chose the most attractive ones for a presentation.\n\n“Where does the cable come out?” her colleague asked.\n\nShe reopened the folder. Every image showed the same side.\n\nBefore producing more, she wrote a small brief:\n\nQuestion: where does the cable come out?\nRequired view: the base and connection point.\nReference for checking: a real photograph of that area.\n\nThe brief gave the next image a purpose without requiring a whole collection.\n\nTry this with one question about your product. The fastening, base or depth of a pocket might matter. If you need to explain movement, use a suitable demonstration; a still view shows only one position.\n\nYour easyrender test will have a clearer purpose when you know which detail to show and which reference to check it against.\n\nChoose one question and complete: “The next view needs to show ___.”",
+      "action": "Choose one question and write what the next view must show."
+    },
+    "product_views_d02": {
+      "subject": "Lucía’s test started with one piece",
+      "preheader": "Prepare a reference that lets you evaluate the next image.",
+      "body": "Illustrative story.\n\nLucía had several photos ready to test. She chose one with two overlapping objects.\n\nLooking again, she paused. If the hidden part changed in the result, she would have no way to check it against the product.\n\nFor the first test, she chose a familiar piece and a photo in which she could recognise it clearly. She noted three features before starting:\n\nObject: a table lamp.\nInput photo: the piece visible, with no other lamp in front.\nFeatures to review: shade shape, connection to the support and base.\n\nShe kept a photograph of the cable connection for later review. Having it as a review reference does not mean the system processes it as another input.\n\nPrepare an equally small easyrender test. Choosing a photo and criteria does not start generation. Before a paid operation, check its cost and confirm it.\n\nSet aside one photo and note the three features you will use to evaluate the result.",
+      "action": "Prepare one photo of a piece and three features to review."
+    },
+    "product_views_d05": {
+      "subject": "The fastening changed between two images",
+      "preheader": "A simple comparison before approving your views.",
+      "body": "Illustrative story.\n\nLucía switched from the first view to the second. The bag looked the same until she noticed the fastening.\n\nIn one image, it was round. In the other, elongated.\n\nEach image looked convincing alone. Together, they described different products.\n\nShe placed the views beside a real photograph and wrote:\n\nFeature: fastening shape.\nReference: round fastening in the product photograph.\nResult: matches in the first view; difference pending review in the second.\n\nUse this format for the silhouette, parts and details that identify your object. Comparing generated images can reveal contradictions. The real reference helps establish which matches the product.\n\nIf you have easyrender views, review them before use. If you are still preparing a test, mark the features in your photo that you will compare when the result arrives.\n\nYou do not need to judge everything from memory or approve a set because one image is attractive.\n\nChoose one feature and note what matches, what differs or what you cannot check yet.",
+      "action": "Review one feature against its reference, or prepare that criterion if you do not yet have views."
+    },
+    "product_views_d10": {
+      "subject": "The information was there. Nobody could find it.",
+      "preheader": "Check whether someone can locate the detail they need.",
+      "body": "Illustrative story.\n\nLucía had included the lamp’s connection in the gallery. Her colleague opened the presentation on a phone and asked where it was again.\n\nThe image existed. Several similar views came before it.\n\nTo check the order, she gave him a task:\n\n“Show me where the cable comes out, using only this presentation.”\n\nShe waited without pointing to the answer. She noted where he stopped and where he looked next. That observation suggested what to move or clarify.\n\nTry this with a product page, document or image set you already have. You do not need newly generated content.\n\nChoose a question the presentation should answer and let someone find it: locate a fastening, distinguish two finishes or identify what is included.\n\nThis can reveal a comprehension problem. It does not prove a sales improvement, but it can suggest a specific correction before you produce more content.\n\nAsk someone to answer one question using your presentation and record where they struggle.",
+      "action": "Run a one-question comprehension check with one person."
+    },
+    "product_views_d20": {
+      "subject": "The images were ready. Delivery was still waiting.",
+      "preheader": "Find the stage holding up publication.",
+      "body": "Illustrative story.\n\nLucía finished the images and told her team. The following day, they were still missing from the presentation.\n\nSomeone needed to select the approved ones, adapt their sizes and confirm who would deliver them.\n\nShe reconstructed one piece with this example record:\n\nProduction: finished.\nReview: two images still need checking.\nAdaptation: waiting for final selection.\nDelivery: owner not yet confirmed.\n\nResolving approval was the next improvement. Faster generation would not remove that wait.\n\nIf you have prepared an asset, trace its steps from the reference to actual use. If not, use an earlier image delivery to find where your work tends to stall.\n\nGeneration time is one part of the process. Its usefulness to you also depends on the work required to reach an accepted image that is used.\n\nYou can use easyrender for production and keep this record to evaluate the complete path.\n\nIdentify one outstanding step, who can resolve it and what they need to do so.",
+      "action": "Identify one outstanding step, its owner and the information needed to resolve it."
+    },
+    "product_views_d28": {
+      "subject": "Lucía chose what the next image needed to do",
+      "preheader": "Close the test with a decision you can explain.",
+      "body": "Illustrative story.\n\nLucía opened the folder to prepare more views. First, she read a note from the previous presentation:\n\n“The connection is easy to find. The size is still unclear.”\n\nShe could request another angle, but this question needed a scale reference and verified measurements. She changed the next resource she planned to prepare.\n\nHer decision read:\n\nClear already: where the connection is.\nStill unclear: how much space the lamp occupies.\nNext resource: size information from a checked source.\n\nClose your own test with these three lines. If you have not produced a result, use the question you identified and note what information you still need to decide how to show it.\n\nThe next step might be another view, exploring the shape in 3D or improving an existing resource. Choose based on what the viewer still needs to understand.\n\nThis welcome series ends here. You do not need a complete collection to reach a useful decision.\n\nWrite what you will repeat, change or postpone, and the specific reason for that choice.",
+      "action": "Choose whether to repeat, change or postpone a resource and justify it with a specific need."
+    },
+    "method_fit_d00": {
+      "subject": "Two people were looking at the same model",
+      "preheader": "One wanted to show it. The other needed a measurement.",
+      "body": "Welcome to easyrender. Let’s start by clarifying what you need from a 3D representation.\n\nIllustrative story.\n\nAndrés showed a model on screen. His colleague rotated it and recognised the object she needed for a proposal.\n\nSomeone else asked:\n\n“Can we get the measurement of this joint from it?”\n\nThey were looking at the same file with two different briefs.\n\nAndrés wrote two examples:\n\nPresentation: show the shape and check that the object is recognisable.\nAssembly: verify dimensions and fit using suitable sources and tests.\n\nFor the first use, a visual representation can be a useful starting point. For the second, a model generated from a photo does not itself establish the required measurements.\n\nThis distinction helps you choose what to test and how to evaluate it. It also applies if you arrived looking for photogrammetry: your intended result should guide the method.\n\nWith easyrender, you can evaluate a visual test against references of the object. Before starting, identify the decision it needs to support.\n\nComplete one sentence: “I need the model so someone can ___.”",
+      "action": "Define the model’s use and the decision it needs to support in one sentence."
+    },
+    "method_fit_d02": {
+      "subject": "One photo to start, another to check",
+      "preheader": "Prepare a test you can evaluate against real references.",
+      "body": "Illustrative story.\n\nAndrés had a chair photograph and wanted to show its shape in a proposal. The image showed the front clearly but hid the back.\n\nHe could begin a visual test. To approve it, he would also need to check what the photo did not show.\n\nHe prepared this sheet:\n\nUse: present the chair’s shape.\nInput: available front photograph.\nCriteria: silhouette, legs and backrest structure.\nMissing reference: rear photograph to check the hidden area.\n\nThe sheet separated what he could evaluate immediately from what needed to remain pending.\n\nPrepare an easyrender test the same way. Additional references support your review here; they do not imply the system processes all of them as inputs.\n\nChoose a familiar object and a specific visual use. If the brief requires measurements or fit, include the technical source and validation that requirement needs.\n\nPreparing the test does not execute a paid operation. Before generating, check the current cost and decide how much to spend evaluating it.\n\nPrepare one piece’s sheet: use, available photo, acceptance criterion and missing reference.",
+      "action": "Prepare a four-field test sheet for one piece."
+    },
+    "method_fit_d05": {
+      "subject": "The model opened. Andrés still had to approve it.",
+      "preheader": "Make the acceptance test as specific as the brief.",
+      "body": "Illustrative story.\n\nAndrés opened the file and turned it on screen.\n\n“It works.”\n\nHis colleague pointed to the backrest. Its shape needed another check before joining the proposal.\n\nOpening the file had answered a technical question. They still needed to decide whether it suited the brief.\n\nAndrés wrote this acceptance example:\n\nRequirement: recognise the backrest structure.\nTest: compare that view with a real photograph.\nEvidence: recorded matches and differences.\nDecision: usable for the proposal or pending review.\n\nAdapt this to your chosen use. A presentation needs the relevant details to be visible; another environment may add compatibility, performance or verified measurement requirements.\n\nIf you have a result, compare it against one specific condition. If you are still preparing the test, write how you will check that condition when the file arrives.\n\nA small decision like this helps prevent approving something on general impression that another person must later reassess.\n\nChoose one requirement, write its acceptance test and define what would be sufficient.",
+      "action": "Define and, if a result exists, apply an acceptance test for one requirement."
+    },
+    "method_fit_d10": {
+      "subject": "Andrés added one sentence to the delivery",
+      "preheader": "Explain what the model has been checked for and what is still pending.",
+      "body": "Illustrative story.\n\nAndrés sent a model for a presentation. Later, the file reached someone who wanted to use it to prepare an assembly.\n\nThe conversation returned to what had been reviewed and what could be treated as verified.\n\nFor the next delivery, he added this note:\n\n“Representation prepared for the visual proposal. The silhouette has been compared with the stated references. Dimensions and component fit have not been validated for manufacturing.”\n\nThe note travelled with the file and preserved the scope of its review.\n\nAdapt it to your project without claiming checks you have not performed:\n\n“Prepared for ___. Reviewed using ___. Still pending ___.”\n\nIf no result exists, use future wording: “Will be prepared for…; will be reviewed using…”. This helps agree the recipient’s expectations before production.\n\nAn asset can pass between people with different needs. Stating its intended use and limits lets the next team decide which additional checks it requires.\n\nWrite those three lines for the next person who will use your model.",
+      "action": "Write a delivery note stating use, checks and pending work without implying unperformed verification."
+    },
+    "method_fit_d20": {
+      "subject": "The cheaper quote left one task out",
+      "preheader": "Compare the work you need completed as well as the price.",
+      "body": "Illustrative story.\n\nAndrés had two proposals for the same project. One looked cheaper, but its scope left adaptation to the final destination to his team.\n\nBefore choosing, he compared one specific line:\n\nRequired delivery: asset reviewed in the destination application.\nProposal A: file and review in that environment included.\nProposal B: file included; adaptation and review still pending.\n\nThey were not yet prices for the same completed work.\n\nCompare quotes or methods this way. Include only tasks your use requires: preparation, production, review, adaptation and delivery, as applicable.\n\nIf an option offers capabilities you do not need, you do not have to pay for them to consider your brief complete.\n\nWhen evaluating easyrender, combine the current quote with the work you will need to perform afterwards. Generation cost is one part of obtaining a useful deliverable.\n\nChoose one necessary task and check whether it is included, who will do it and how it will be validated.",
+      "action": "Compare one necessary task across options and clarify its owner and validation."
+    },
+    "method_fit_d28": {
+      "subject": "Andrés could explain what it was useful for",
+      "preheader": "End the month with a specific decision about your project.",
+      "body": "Illustrative story.\n\nAndrés reviewed his test. The representation helped explain the shape in a proposal, but it still did not establish the measurements needed for another brief.\n\nHe saved a decision for each use:\n\nVisual proposal: continue with the agreed references and review.\nAssembly check: use a process that can validate the required measurements.\n\nThe same result had helped him separate two paths.\n\nClose your evaluation with a short note:\n\n“For ___, my evidence is ___. My next decision is ___ because ___.”\n\nIf you have not tested yet, write the condition missing from that decision. It might be an object reference, a recipient’s requirement or a maximum budget. You do not need to describe a result that does not exist.\n\nYou might continue with easyrender for that visual use, adjust the test or choose another approach. What matters is explaining what fits and what still needs checking.\n\nThis closes your welcome series.\n\nRecord one decision and the evidence, or missing information, that supports it.",
+      "action": "Document a decision to continue, adjust or choose another approach, with its supporting reason."
+    },
+    "general_d00": {
+      "subject": "Pablo needed to explain one thing",
+      "preheader": "Your intended use helps you choose the first test.",
+      "body": "Welcome to easyrender. These emails will help you prepare a small test and decide whether the result is useful to you.\n\nIllustrative story.\n\nPablo wanted to explain an object’s shape to someone. He sent a photograph and received a question:\n\n“Does that opening go all the way through?”\n\nThe image did not make it clear.\n\nBefore producing more content, he wrote his goal: “I want someone to understand this opening.”\n\nHe could find a view that showed it, explore the shape through a 3D representation or provide another reference. First, he needed to specify what he wanted to explain.\n\nThis works for a presentation, catalogue, commission or personal test. It does not depend on a particular profession.\n\n“I need to compare two objects’ shapes” is a visual goal. “I need their exact measurements” requires reliable information that a generated image does not establish on its own.\n\nWith easyrender, a specific question can guide both production and review.\n\nComplete this sentence for your case: “I want to use the result to understand or show ___.”",
+      "action": "Define what you want the result to help someone understand or see."
+    },
+    "general_d02": {
+      "subject": "The first test fitted into one photo",
+      "preheader": "Prepare a familiar object and a question you can check.",
+      "body": "Illustrative story.\n\nPablo was about to start with a box full of pieces. He chose one first: an object he knew and could inspect from every side.\n\nThat would make it easier to compare the representation with something real.\n\nHe prepared this test:\n\nObject: a small plant pot.\nInput reference: a photo showing the piece clearly.\nGoal: show its silhouette and the shape of its rim.\nCheck: compare those two features with the object.\n\nHe did not need to solve every possible use of 3D in his first attempt.\n\nPrepare your test using the same format. If you already have a project, use its current reference. You do not need another project for this exercise.\n\nWhen starting from an image, keep the object or additional references to check areas it does not show. Before a paid operation in easyrender, review the quote and decide whether it fits your budget.\n\nPreparing the photo does not execute generation.\n\nChoose one piece and note its reference photo and two features you want to check.",
+      "action": "Prepare one piece, a reference photo and two features to check."
+    },
+    "general_d05": {
+      "subject": "“It looks good” was not enough for Pablo’s review",
+      "preheader": "A specific comparison makes the decision easier.",
+      "body": "Illustrative story.\n\nPablo turned his object’s representation. His overall impression was good, but he was unsure how to answer “Is it ready?”\n\nHe returned to his two chosen features: silhouette and rim.\n\nHis review read:\n\nSilhouette: matches the reference in the checked views.\nRim: an area hidden in the photo still needs review.\nDecision: keep this version, pending that check before use.\n\nMake the same specific review with an easyrender result or another visual resource you are preparing.\n\nChoose a feature that matters for your use and compare it with a reliable reference. Describe any difference or missing information. “The rim is different” supports a clearer decision than an overall impression of appearance.\n\nIf you do not have a result, write the criterion you will apply to that feature when it arrives. Preparing the review does not require starting another operation.\n\nRecord one decision for that feature: matches, needs review or not enough information to check.",
+      "action": "Give one feature a decision: matches, needs review or missing information."
+    },
+    "general_d10": {
+      "subject": "“Where do I open it?” came after delivery",
+      "preheader": "A short note gives the file a clear intended use.",
+      "body": "Illustrative story.\n\nPablo sent the file and considered the task finished.\n\nThe reply came straight back:\n\n“Where do I open it, and what should I check?”\n\nThe result was prepared, but the next step needed explaining.\n\nHe added this note:\n\n“This asset is for reviewing the shape in the agreed presentation. It has been tested in the stated environment. The highlighted detail still needs confirmation before approval.”\n\nAdapt the note using three fields: intended use, completed check and outstanding decision. Include only verified facts. If the file has not been tested at its destination, mark that as pending.\n\nThe same note helps if the next user is you a few days later. It reminds you why you prepared the asset and what remains to do.\n\nIf you do not have a result yet, write the brief in the future tense. Thinking about delivery helps you check requirements before production.\n\nComplete a three-line note for your asset’s next use.",
+      "action": "Write a note covering intended use, completed check and outstanding decision."
+    },
+    "general_d20": {
+      "subject": "The second piece only looked similar at first",
+      "preheader": "Change one thing to understand what you can repeat.",
+      "body": "Illustrative story.\n\nPablo’s first test had helped explain a simple object. Next, he chose a similar shape with a more complex detail.\n\nBefore starting, he noted what he wanted to learn:\n\nKeep: presentation use and review criterion.\nChange: this piece has an opening the first did not.\nCheck: whether that opening is represented usefully and can be verified.\n\nThe comparison would help him identify which parts of the process still worked and which required another reference or review.\n\nPrepare the same plan for a next piece. If you have not tested the first, keep this plan pending. You do not need to run two tests at once to complete the exercise.\n\nOne useful result does not establish that every material or geometry will behave the same way. Choosing a specific difference helps you learn without turning the next test into an open-ended project.\n\nBefore a paid operation, review its current cost too.\n\nWrite what you would keep and the one relevant difference you would evaluate in the next piece.",
+      "action": "Plan a next piece with one retained criterion and one relevant difference."
+    },
+    "general_d28": {
+      "subject": "Pablo wrote down why he would use it again",
+      "preheader": "Continuing, adjusting and waiting can each be useful decisions.",
+      "body": "Illustrative story.\n\nPablo saved the result with his notes. He had explained the shape he wanted to show, and he had also spent time gathering references and reviewing the file.\n\nTo decide whether to repeat the process, he wrote:\n\n“It suits this presentation because it clarifies the detail I wanted to show. I would repeat it for a similar object when I have enough references to review it.”\n\nHis decision connected usefulness with the work required.\n\nClose your test with a similar sentence. Include what you needed, what evidence you have and what you would do next. When considering cost, count preparation and review alongside generation.\n\nIf you have not tested yet, identify what prevents a decision: a missing reference, an unclear use or uncertainty about the result. Writing that down is more useful than treating an unfinished project as completed.\n\nThis email closes your easyrender welcome series.\n\nChoose continue, adjust or postpone, and write one reason you can check in your own case.",
+      "action": "Choose continue, adjust or postpone and document a verifiable reason."
+    },
+    "api_d00": {
+      "subject": "The API responded. The model still needed delivering.",
+      "preheader": "Start with one task you can verify from beginning to end.",
+      "body": "Welcome to easyrender. These emails will help you prepare an integration that ends with a usable model.\n\nIllustrative story.\n\nDiego showed the API response.\n\n“It works.”\n\nHis colleague opened the product page.\n\n“Where can I see it?”\n\nA job had been created, but the result, review and delivery to the right destination were still missing.\n\nDiego wrote a small test: “Start with this chair photo and reach a file we can review for its product page.”\n\nUnderneath, he listed five checks:\n\nProduct identified → job recorded → result available → piece reviewed → destination tested.\n\nEach answered a different question. Which product was it? Which job should they check? Did a file exist? Did it represent the chair? Would it work in that application?\n\nYou can use this path to prepare your easyrender integration. You do not need to process a catalogue yet. Define one deliverable you would know how to accept.\n\nDiego’s next demo would start where his colleague expected to find the result.\n\nWrite one sentence for your test: “Start with ___ and deliver ___ so that ___ can use it in ___.”",
+      "action": "Write down the deliverable your first test must complete."
+    },
+    "api_d02": {
+      "subject": "Diego left ninety-nine products waiting",
+      "preheader": "The first test needed one well-chosen piece.",
+      "body": "Illustrative story.\n\nDiego had prepared a list of one hundred products to test the integration.\n\nHis colleague pointed to one:\n\n“We know this one well. If a part changes, we will notice.”\n\nThey chose that chair and saved an input photo alongside references for reviewing the result. The rest of the catalogue could wait.\n\nTheir test sheet read:\n\nObject: chair from the catalogue.\nUse: visual review for a product page.\nFeatures to check: four legs, backrest shape and seat joint.\nDestination: the team’s chosen application.\nLimit: one test, with the cost reviewed before approval.\n\nThis example does not verify measurements or mechanical fit. It defines a visual review someone can perform using references of the actual product.\n\nFor your first test, choose a familiar piece and three features that matter for its use. If the photo hides one, keep another reference for review. That does not mean the API processes every image as an input.\n\nDiego now had a test he could explain without showing code.\n\nComplete the sheet for one product before starting a paid operation.",
+      "action": "Prepare a test sheet for one familiar product."
+    },
+    "api_d05": {
+      "subject": "The “Retry” button appeared too soon",
+      "preheader": "Three messages that distinguish waiting from a confirmed result.",
+      "body": "Illustrative story.\n\nDiego’s screen stopped waiting and displayed “Retry”.\n\n“Has the generation failed?” his colleague asked.\n\nHe did not know yet. His application’s timeout did not confirm the remote job’s state.\n\nBefore changing the button, he wrote three messages:\n\nJob confirmed in progress: “Your model is still processing. You can check this job.”\n\nState still unknown: “We are checking the result. We have kept the job reference.”\n\nJob finished and file available: “The model is ready for review.”\n\nThese are interface examples, not official API state names. They must match what the service has confirmed.\n\nDiego saved the job identifier with the original product. He could now check the same job before offering another generation.\n\nIf your application did not receive an identifier, consult the documented strategy for that situation. Do not assume repeating the request is harmless or that a particular duplicate-protection mechanism exists.\n\nThe next wait in Diego’s demo had a message and an understandable action.\n\nCheck what your integration does when a wait expires: does it query the existing job or start another?",
+      "action": "Check what the integration does when a wait expires."
+    },
+    "api_d10": {
+      "subject": "The file opened. The joint did not match.",
+      "preheader": "Separate technical checks from visual approval.",
+      "body": "Illustrative story.\n\nDiego’s integration had found the file. The viewer opened it and the job record was complete.\n\nHis colleague brought up the reference photo.\n\n“This joint does not match.”\n\nDiego had built a useful technical check. Deciding to use this version required more.\n\nThey split the review into three lines:\n\nTechnical: the file exists and opens in the intended environment.\nVisual: it preserves the required product features, compared with reliable references.\nUse: a responsible person approves this version for the agreed destination.\n\nAn example result would be: “Technical check passed; difference at the seat joint; visual approval pending.”\n\nThis record makes it possible to act on a specific difference without treating completed generation as automatic approval. It does not assume the detail can be edited inside easyrender.\n\nYou can make the comparison manually. An assistant describing a file does not replace a reliable review of the piece.\n\nDiego kept the technical check and added the decision that had been missing.\n\nFor an available result, record what has been checked and what remains pending under those three headings.",
+      "action": "Record the technical, visual and intended-use review of an available result."
+    },
+    "api_d20": {
+      "subject": "Diego changed the number he was dividing by",
+      "preheader": "An example of calculating the cost of a usable asset.",
+      "body": "Illustrative story.\n\nDiego was comparing processes by their cost per request.\n\nHis colleague asked another question:\n\n“What does it cost us to get a piece we can actually use?”\n\nThey opened the pilot sheet and separated generation, review, preparation and accepted assets.\n\nCost per accepted asset = total process costs / number of accepted assets.\n\nEach team needs to fill in that calculation with its actual costs and reviewed pieces it can use.\n\nCounting only requests would have excluded much of the work. A complete comparison also needs relevant storage, operations and adaptation costs, with refunds accounted for once.\n\nThis calculation does not require the whole process to be automated. It helps reveal where human work is concentrated and which change is worth trying next.\n\nIf you do not yet have accepted assets, the unit cost remains unknown. Dividing by attempts does not replace it.\n\nDiego could now compare processes using a unit his colleague recognised.\n\nIf you have a reviewed sample, calculate its cost per accepted asset. If not, prepare the sheet with generation, review and accepted assets, leaving missing figures blank.",
+      "action": "If you have a reviewed sample, calculate its cost per accepted asset. If not, prepare the sheet with generation, review and accepted assets, leaving missing figures blank."
+    },
+    "api_d28": {
+      "subject": "The demo was finished. The next decision was not.",
+      "preheader": "A useful conclusion whether you tested or are still preparing.",
+      "body": "Illustrative story.\n\nDiego could show a product that had passed through the full integration.\n\nBefore adding the rest of the catalogue, his colleague asked what still required work.\n\nThey wrote a short note:\n\nWorked: the file reached the intended destination.\nTook more work: reviewing certain details.\nStill pending: checking another product family.\nDecision: improve the review before expanding.\n\nThe note separated observations from expectations.\n\nIf you have tested your integration, use these four lines with your own results. Include failed jobs and review time. A sample containing only easy successes can hide the actual effort.\n\nIf you have not tested yet, your decision can still be specific: “I need to confirm the destination”, “I need more references” or “This project will wait”. You do not need to generate a model to identify a blocker.\n\nExpanding, adjusting and postponing are different decisions. Choose the one supported by what you know today.\n\nWrite down that decision and the information that would make you reconsider it. That becomes a starting point for your next project.",
+      "action": "Write down your integration decision and the information that could change it."
+    },
+    "mcp_d00": {
+      "subject": "The assistant needed a smaller brief",
+      "preheader": "Start with one task you can review in a single pass.",
+      "body": "Welcome to easyrender. We will help you prepare 3D tasks you can give your assistant and review against clear criteria.\n\nIllustrative story.\n\nNora typed:\n\n“Turn my catalogue into 3D.”\n\nThen she looked at her folder: duplicate photos, similar products and several versions with the same name.\n\nShe replaced the request with one piece:\n\n“I want a visual representation of this chair for its product page. This is the input photo. Before starting a paid operation, explain the current cost and wait for my confirmation. When finished, identify the result and what needs reviewing.”\n\nThe brief now had an input, a use and an approval point. Nora also knew what completion meant: an identified result she could compare with the real chair.\n\nWith easyrender connected through MCP, that task can form part of the conversation. The effective scope depends on the client and available permissions. A written instruction does not create a technical spending limit.\n\nNora had defined one task she could accept or review.\n\nWrite your brief in one sentence: “Using this reference, I want to prepare ___ for use in ___.”",
+      "action": "Define one limited visual task for the assistant."
+    },
+    "mcp_d02": {
+      "subject": "Nora had three photos of the same chair",
+      "preheader": "Choosing the reference removes an ambiguous decision.",
+      "body": "Illustrative story.\n\nNora’s folder contained three photos of a chair. One showed another finish and another belonged to an older version.\n\nBefore requesting the model, she prepared a note:\n\nProduct: chair from the current collection.\nChosen input: photo of the finish we will present.\nReview references: back and seat joint.\nImportant features: four legs, backrest curve and support positions.\n\nThe additional images were references for checking the result. The note did not claim the workflow would process them all as inputs.\n\nYou can adapt this brief using your own files. If names are ambiguous, identify the exact image so both you and the assistant know which one was selected.\n\nAlso check that you can use the material for this project. Keep keys and credentials out of the reference files.\n\nNora no longer depended on a request such as “use the good one”. The input and review were separate before she approved generation.\n\nPrepare this note for one piece and mark three features you will check when a result exists.",
+      "action": "Identify an unambiguous reference and three features to review."
+    },
+    "mcp_d05": {
+      "subject": "The chair looked good. Nora brought up the photo.",
+      "preheader": "Three comparisons before approving a result.",
+      "body": "Illustrative story.\n\nNora turned the chair model. She liked its appearance.\n\nThen she opened the reference beside it. The backrest curve did not match.\n\nInstead of writing “it looks wrong”, she recorded a specific observation:\n\nFeature: backrest curve.\nReference: side photograph.\nDifference: the result gives it a different shape.\nDecision: review required before using this version.\n\nRepeat this record for three features that identify your product: legs, fastenings, joints or important openings.\n\nCompare the result manually with reliable references. If your assistant supports image analysis, it may help organise observations, but do not treat its assessment as verified or ask it to check an unseen area.\n\nRecord what you cannot verify yet too. This helps identify missing information without confusing a convincing image with an accurate representation.\n\nNora could now explain what prevented approval. The observation did not guarantee that this detail could be edited inside easyrender.\n\nCompare three features of an available result and record one decision: acceptable for this use, needs review or missing a reference.",
+      "action": "Compare three result features and record a review decision."
+    },
+    "mcp_d10": {
+      "subject": "Nora returned to the chat with seven saved lines",
+      "preheader": "A simple receipt for continuing an existing task.",
+      "body": "Illustrative story.\n\nNora opened a long conversation from the previous day. She remembered the product but was unsure of the job’s state and what she had approved.\n\nFor the next session, she saved this receipt:\n\nProduct: [your reference].\nJob: [identifier].\nLast checked state: [state and time].\nAvailable result: [reference, if any].\nApproved operations: [scope and limit].\nConfirmed spending: [amount and unit, or pending].\nNext step: [check status or review].\n\nPrepare it manually or ask the assistant to fill it in using verified information. Do not include credentials.\n\nWhen you return, try: “Check the job in this receipt and tell me its current state. If another paid operation is needed, wait for my approval.”\n\nThe receipt preserves context; current information must still be checked with the service. It also does not replace the connected client’s permission controls.\n\nNora had a specific reference to continue from, even though the previous conversation remained long.\n\nSave this receipt for an identified task. Mark unconfirmed details as pending instead of filling them in from memory.",
+      "action": "Save a verified receipt for an existing task."
+    },
+    "mcp_d20": {
+      "subject": "The second piece did not need a new conversation",
+      "preheader": "What to keep from a brief and what to check again.",
+      "body": "Illustrative story.\n\nNora’s first piece had passed review. For the next, she began copying the entire conversation.\n\nThen she noticed a difference: the new product had another type of joint.\n\nShe separated reusable instructions from details that needed changing:\n\nKeep: intended use, job identification method and approval point.\nUpdate: product, input photo, review features and current cost.\nCheck again: the new result and its references.\n\nThe template saved writing without treating two products as equivalent.\n\nYou can save a brief like this: “Keep the agreed use and procedure. For this piece, replace the input with [reference] and review [features]. Present the plan and cost before starting paid work.”\n\nApproval for one piece does not automatically extend to another. You also do not need a batch-processing feature to prepare a reusable brief.\n\nNora could repeat what had worked while paying attention to what changed.\n\nAdapt a brief for a next piece and leave it prepared without starting generation. If the first result has not been reviewed, make that review a condition before repeating it.",
+      "action": "Adapt a brief for a next piece and leave it prepared without starting generation. If the first result has not been reviewed, make that review a condition before repeating it."
+    },
+    "mcp_d28": {
+      "subject": "Nora looked at the work she was still doing",
+      "preheader": "Decide which tasks are worth continuing to delegate.",
+      "body": "Illustrative story.\n\nNora remembered the assistant completing part of a task quickly. Reviewing the project, she also found time spent preparing references and checking the result.\n\nShe wrote four lines:\n\nPrepared: identified the correct photo.\nDelegated: the agreed task with the assistant.\nReviewed: the piece’s features and destination.\nWould repeat: the brief, keeping that review.\n\nThe list separated a convenient conversation from completed work.\n\nIf you have used the workflow, add the human time and costs you can confirm. Compare similar tasks before estimating savings. One simple piece may not represent the whole catalogue.\n\nIf you have not tested yet, close the month by identifying what is missing: connecting a compatible client, choosing a reference or deciding how you would use the result. Recognising that condition does not require starting generation.\n\nNora ended with a decision about her next task rather than a count of messages sent to the assistant.\n\nWrite down which task you would repeat, adjust or postpone, and what you need to check before taking the next step.",
+      "action": "Record a task to delegate, adjust or postpone and its next condition."
+    },
+    "formats_d00": {
+      "subject": "Valeria had a GLB. Where would she use it?",
+      "preheader": "Start with the destination of your first delivery.",
+      "body": "Welcome to easyrender. We will help you prepare a model for a specific use, from reviewing the file to handing it over.\n\nIllustrative story.\n\nValeria had a GLB and two requests: show it in a presentation and use it on a product page.\n\nBefore sending the same file to both teams, she asked where they would open it.\n\nThe replies named different applications and requirements that remained untested.\n\nShe prepared a sheet for the first destination:\n\nUse: show the product in a presentation.\nEnvironment: application and version selected by the recipient.\nPreserve: relevant shape and materials.\nAcceptance: open the piece and perform the intended presentation.\n\nThe format’s name started the conversation. A test at the destination would establish whether that asset worked there.\n\nIf you start with an easyrender GLB, check the receiving environment’s requirements before promising compatibility. Another format may require conversion and a fresh review.\n\nValeria chose one destination for her first delivery. Other applications would need their own checks.\n\nComplete the sheet with one use and the tool in which you need to open your model.",
+      "action": "Choose a destination and define its acceptance test."
+    },
+    "formats_d02": {
+      "subject": "Valeria tested one piece before preparing the rest",
+      "preheader": "A small test can clarify the whole delivery.",
+      "body": "Illustrative story.\n\nValeria’s team had chosen where to open the model. Several pieces still needed preparing.\n\nBefore continuing, they tested an existing file in that application.\n\nThey left a short note:\n\nOpening: the file opens.\nAppearance: required materials look as expected.\nUse: the recipient can perform the intended presentation.\nPending: one check still unconfirmed.\n\nUse these four lines for your first test. Record the file and version so the result belongs to an identifiable piece.\n\nIf real-world scale matters, add a comparison with reliable measurements. Appearance on screen does not verify that information.\n\nIf the file will not open or its appearance changes, record exactly what you observe and keep the original. The test should produce a specific question before you repeat the process across every product.\n\nValeria left the other pieces waiting until she knew what each delivery would need.\n\nUse a file you already have to test the chosen destination and complete the four lines. You do not need to generate another piece to check this path.",
+      "action": "Test an available file in its destination and record the result."
+    },
+    "formats_d05": {
+      "subject": "The material changed when the file opened",
+      "preheader": "Describe the problem before rebuilding a model blindly.",
+      "body": "Illustrative story.\n\nValeria opened a piece in the destination application. One area looked different from the reference.\n\nHer first thought was to request another model. Before doing that, she kept the original file and described the change:\n\nFile and version: the piece being tested.\nDestination: application and version.\nExpected: the appearance in the approved reference.\nObserved: the affected area and how it appears.\nScope: whether it also happens in another available check.\n\nThe note did not identify the cause yet. It clarified what changed and where the problem appeared.\n\nYou can add an authorised screenshot without unnecessary private information. Keep relevant error messages too, with credentials removed.\n\nThe next adjustment should follow the diagnosis: file, import or destination requirements. A conversion completing without an error does not prove the issue is fixed.\n\nValeria had an explanation someone could investigate. She had not yet spent effort replacing an asset without knowing whether it caused the problem.\n\nIf you find a difference, document it using those five fields before changing the file. If you have not tested yet, save the fields as a record for your first import.",
+      "action": "If you find a difference, document it using those five fields before changing the file. If you have not tested yet, save the fields as a record for your first import."
+    },
+    "formats_d10": {
+      "subject": "“Which version should I use for the presentation?”",
+      "preheader": "The delivery note that accompanies the file.",
+      "body": "Illustrative story.\n\nValeria had a reviewed version. When she sent it to the team, a question arrived:\n\n“Is this the one we tested for the presentation?”\n\nThe file was identified, but the checks needed explaining.\n\nShe prepared this note:\n\n“This is version [identifier] of product [reference]. We tested it in [application and version] for [use]. We confirmed [observed result]. Still pending: [condition, if any]. Before using it elsewhere, check that destination’s requirements.”\n\nCopy this for your next delivery. Fill in only verified facts and make clear who must resolve an outstanding condition.\n\nProvide file access through the channel authorised for the project. You do not need to publish the asset for someone else to understand how to use it.\n\nIf scale matters, state how it was validated. If it remains unverified, do not present it as a real product measurement.\n\nThe next recipient could distinguish Valeria’s tested version from a pending proposal.\n\nPrepare the note for a specific version. If you have not reviewed the asset yet, leave its checks marked as pending before sharing it.",
+      "action": "Prepare the note for a specific version. If you have not reviewed the asset yet, leave its checks marked as pending before sharing it."
+    },
+    "formats_d20": {
+      "subject": "Three files were called “final”",
+      "preheader": "A small record can show which version is actually in use.",
+      "body": "Illustrative story.\n\nValeria changed a detail on a piece. Her folder contained three files called “final”.\n\nShe knew which one she had just changed. She did not know which version the sales team still used.\n\nShe prepared a simple record:\n\nProduct: chair from the collection.\nVersion: v2.\nChange: material reviewed.\nTested destination: presentation.\nVersion in use: awaiting confirmation.\nOwner: person maintaining that presentation.\n\n“Awaiting confirmation” mattered. It avoided treating a version as published just because it was saved in the folder.\n\nIdentify files by product, version and purpose. Then record separately where they have actually been used. A copy prepared for the web may need different checks from one intended for close inspection.\n\nBefore replacing a file, keep a reference to the earlier version and check which applications depend on it.\n\nValeria could ask about a specific version and update the right destination.\n\nRecord one asset using those six fields, marking unconfirmed use as unknown. If you do not have a file yet, prepare the record for its first version.",
+      "action": "Record one asset using those six fields, marking unconfirmed use as unknown. If you do not have a file yet, prepare the record for its first version."
+    },
+    "formats_d28": {
+      "subject": "Valeria counted the destinations actually in use",
+      "preheader": "Decide on reuse, even if the first test is still pending.",
+      "body": "Illustrative story.\n\nValeria’s model had several possible applications. When she reviewed the work, only some had actually been used.\n\nShe divided the sheet into three lines:\n\nCreation: work needed to obtain and review the asset.\nAdaptation: additional work for each destination.\nConfirmed use: where that version had actually been used.\n\nA possibility on a list was not yet a saving.\n\nIf you have used a model, complete these lines from your observations. This helps distinguish a second application that reuses previous work from one that nearly requires starting again.\n\nIf you have not tested yet, choose the destination still to be checked and note its main requirement. You do not need to assign value to applications that do not yet exist.\n\nThe next decision might be to reuse, adapt or postpone. It depends on the use you need and the work you can justify, not on the number of available formats.\n\nValeria ended with a priority destination and a clear outstanding check.\n\nWrite down what you will do with your next asset and what evidence you need before investing in another destination.",
+      "action": "Choose whether to reuse, adapt or postpone a destination using a verifiable criterion."
+    }
+  },
+  "AuthService": {
+    "forgotLink": "Forgot your password?",
+    "forgotTitle": "Reset your password",
+    "forgotDescription": "Enter the email you use for easyrender. If an account matches, we will request a recovery email.",
+    "email": "Email",
+    "requestReset": "Request recovery email",
+    "requested": "If an account matches this address, a recovery email has been requested. Check your inbox and spam folder. If it does not arrive, try again later.",
+    "unavailable": "Email recovery is temporarily unavailable. Please try again later. Google sign-in remains available for accounts created with Google.",
+    "busy": "Please wait…",
+    "failed": "We could not complete this request. Please try again later.",
+    "rateLimited": "Too many requests. Please wait a few minutes before trying again.",
+    "signIn": "Back to sign in",
+    "resetTitle": "Choose a new password",
+    "resetDescription": "Use at least 8 characters. Changing your password signs out existing sessions.",
+    "password": "New password",
+    "confirmPassword": "Repeat new password",
+    "passwordMismatch": "The passwords do not match.",
+    "resetAction": "Save new password",
+    "resetDone": "Your password has been changed. Sign in with your new password.",
+    "invalidLink": "This link is invalid or has expired. Request a new email to continue.",
+    "verifyTitle": "Verify your email",
+    "verifyDescription": "Confirm that you control the email address for your easyrender account. This does not subscribe you to marketing emails.",
+    "verifyAction": "Verify my email",
+    "verifyDone": "Your email is verified. You can return to your account.",
+    "account": "Go to account",
+    "verificationTitle": "Email verification",
+    "verified": "Your email address is verified.",
+    "notVerified": "Your email is not verified yet. You can keep using easyrender while you verify it.",
+    "resend": "Send verification email",
+    "verificationSent": "Verification email requested. Check your inbox and spam folder.",
+    "verificationUnavailable": "Verification emails are temporarily unavailable. Your existing access is unchanged.",
+    "newLink": "Request another recovery email"
+  },
+  "ServiceEmails": {
+    "verify_email": {
+      "subject": "Verify your easyrender email",
+      "body": "Thanks for creating your easyrender account. Confirm that this email address belongs to you using the link below.\n\nThe link expires in one hour. If you did not create this account, ignore this message. This is an account email, not a marketing subscription.",
+      "action": "Verify my email"
+    },
+    "reset_password": {
+      "subject": "Reset your easyrender password",
+      "body": "A password reset was requested for your easyrender account. Use the link below to choose a new password.\n\nThe link expires in one hour and can only be used once. If you did not request this, ignore this email; your password will stay the same.",
+      "action": "Choose a new password"
+    },
+    "render_ready": {
+      "subject": "Your easyrender result is ready",
+      "body": "Your rendering job has finished. Open easyrender to review the result and its available options.",
+      "action": "View my result"
+    },
+    "render_failed": {
+      "subject": "Your easyrender job could not finish",
+      "body": "Your rendering job could not be completed. Open easyrender to see its status and any available next steps.",
+      "action": "Review my job"
     }
   }
 }

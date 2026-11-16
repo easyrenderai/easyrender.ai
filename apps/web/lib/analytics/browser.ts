@@ -8,6 +8,13 @@ import {
 } from '@easyrender/core/attribution';
 import { PRICING_FLAG, type PricingVariant } from '@easyrender/harness/pricing';
 import type { PostHog } from 'posthog-js';
+import { isMailingTokenLocation } from '@/lib/mailing-privacy';
+import {
+  AD_CLICK_KEYS,
+  type AdvertisingTouch,
+  advertisingUrl,
+  readAdvertisingTouch,
+} from './advertising';
 
 declare global {
   interface Window {
@@ -23,6 +30,9 @@ let hasLanding = false;
 let posthog: PostHog | null = null;
 let isPosthogAllowed = false;
 let isGaAllowed = false;
+let isAdvertisingAllowed = false;
+let advertisingTouch: AdvertisingTouch | null = null;
+let advertisingExpiry: ReturnType<typeof setTimeout> | undefined;
 let gaId = '';
 let hasGaConfigured = false;
 let lastGaPage = '';
@@ -81,10 +91,11 @@ function googleUrl(value: string) {
   }
 }
 export function gaPageview() {
-  if (!isGaAllowed || !gaId || !window.gtag) return;
-  const url = googleUrl(window.location.href);
-  if (lastGaPage === url) return;
-  lastGaPage = url;
+  if (!isGaAllowed || !gaId || !window.gtag || isMailingTokenLocation(window.location.href)) return;
+  const page = googleUrl(window.location.href);
+  if (lastGaPage === page) return;
+  lastGaPage = page;
+  const url = advertisingUrl(window.location.href, isAdvertisingAllowed ? advertisingTouch : null);
   if (!hasGaConfigured) {
     hasGaConfigured = true;
     const touch = attribution();
@@ -114,7 +125,7 @@ export function gaEvent(
   properties: Record<string, unknown> = {},
   identity?: string,
 ) {
-  if (!isGaAllowed || !gaId || !window.gtag) return;
+  if (!isGaAllowed || !gaId || !window.gtag || isMailingTokenLocation(window.location.href)) return;
   const key = identity ? `${event}:${identity}` : null;
   if (key && conversions.has(key)) return;
   if (key) conversions.add(key);
@@ -122,7 +133,10 @@ export function gaEvent(
     pricing_variant: browserPricingVariant(),
     ...properties,
     send_to: gaId,
-    page_location: googleUrl(window.location.href),
+    page_location: advertisingUrl(
+      window.location.href,
+      isAdvertisingAllowed ? advertisingTouch : null,
+    ),
     page_referrer: googleUrl(document.referrer),
   });
 }
@@ -139,38 +153,113 @@ export async function setBrowserTools(
   allowPosthog: boolean,
   allowGa: boolean,
   hasWithdrawal = false,
+  allowAdvertising = false,
 ) {
   isPosthogAllowed = allowPosthog;
   isGaAllowed = allowGa && Boolean(gaId);
+  const wasAdvertisingAllowed = isAdvertisingAllowed;
+  isAdvertisingAllowed = isGaAllowed && allowAdvertising && !hasWithdrawal;
+  const hasAdvertisingWithdrawal =
+    (wasAdvertisingAllowed && !isAdvertisingAllowed) || hasWithdrawal;
+  clearTimeout(advertisingExpiry);
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('er_ad_touch') ?? 'null');
+    if (saved && !(typeof saved.expiresAt === 'number' && saved.expiresAt > Date.now()))
+      sessionStorage.removeItem('er_ad_touch');
+  } catch {
+    /* Storage unavailable or invalid. */
+  }
+  if (isAdvertisingAllowed) {
+    let saved: unknown = advertisingTouch;
+    try {
+      saved = JSON.parse(sessionStorage.getItem('er_ad_touch') ?? 'null');
+    } catch {
+      /* Memory only when storage is unavailable. */
+    }
+    advertisingTouch = readAdvertisingTouch(window.location.href, saved, true);
+    try {
+      if (advertisingTouch) sessionStorage.setItem('er_ad_touch', JSON.stringify(advertisingTouch));
+      else sessionStorage.removeItem('er_ad_touch');
+    } catch {
+      /* Keep only in-memory attribution. */
+    }
+    if (advertisingTouch) {
+      advertisingExpiry = setTimeout(
+        () => {
+          advertisingTouch = null;
+          try {
+            sessionStorage.removeItem('er_ad_touch');
+          } catch {
+            /* Storage unavailable. */
+          }
+          window.gtag?.('set', { page_location: googleUrl(window.location.href) });
+        },
+        Math.max(0, advertisingTouch.expiresAt - Date.now()),
+      );
+      advertisingExpiry.unref?.();
+    }
+  } else {
+    advertisingTouch = null;
+    if (hasAdvertisingWithdrawal) {
+      try {
+        sessionStorage.removeItem('er_ad_touch');
+      } catch {
+        /* Storage unavailable. */
+      }
+      try {
+        localStorage.removeItem('_gcl_ls');
+      } catch {
+        /* Google's conversion-linker storage may be unavailable. */
+      }
+    }
+  }
+  // Remove consumed/rejected click IDs from the address so a reload cannot renew their TTL.
+  if (advertisingTouch || hasAdvertisingWithdrawal) {
+    try {
+      const url = new URL(window.location.href);
+      for (const key of AD_CLICK_KEYS) url.searchParams.delete(key);
+      window.history.replaceState(window.history.state, '', url);
+    } catch {
+      /* Sandboxed clients may not expose History. */
+    }
+  }
   if (window.__erGoogleTagLoaded && window.location.hostname === 'easyrender.ai') {
-    // Set the GA kill switch before updating consent; advertising always stays denied.
+    // Clear redaction/URL state before consent updates; personalization is never granted.
+    window.gtag?.('set', 'ads_data_redaction', !isAdvertisingAllowed);
+    window.gtag?.('set', {
+      page_location: advertisingUrl(
+        window.location.href,
+        isAdvertisingAllowed ? advertisingTouch : null,
+      ),
+    });
     if (gaId) Object.assign(window, { [`ga-disable-${gaId}`]: !isGaAllowed });
     window.gtag?.('consent', 'update', {
       analytics_storage: isGaAllowed ? 'granted' : 'denied',
-      ad_storage: 'denied',
-      ad_user_data: 'denied',
+      ad_storage: isAdvertisingAllowed ? 'granted' : 'denied',
+      ad_user_data: isAdvertisingAllowed ? 'granted' : 'denied',
       ad_personalization: 'denied',
     });
   }
-  if (!allowGa && hasWithdrawal) {
+  if ((!allowGa && hasWithdrawal) || hasAdvertisingWithdrawal) {
     void fetch('/api/analytics/revoke', { method: 'POST', keepalive: true }).catch(() => undefined);
     try {
-      sessionStorage.removeItem('er_campaign');
+      if (!allowGa) sessionStorage.removeItem('er_campaign');
     } catch {
       /* Storage unavailable. */
     }
   }
-  if (!allowGa && gaId) {
-    lastGaPage = '';
-    for (const cookie of hasWithdrawal ? document.cookie.split(';') : []) {
-      const name = cookie.trim().split('=')[0];
-      if (!/^_ga(?:_|$)/.test(name)) continue;
-      const domains = ['', window.location.hostname, `.${window.location.hostname}`];
-      const labels = window.location.hostname.split('.');
-      for (let i = 1; i < labels.length - 1; i++) domains.push(`.${labels.slice(i).join('.')}`);
-      for (const domain of domains)
-        document.cookie = `${name}=; Max-Age=0; Path=/${domain ? `; Domain=${domain}` : ''}`;
-    }
+  if (!allowGa) lastGaPage = '';
+  for (const cookie of hasWithdrawal || hasAdvertisingWithdrawal
+    ? document.cookie.split(';')
+    : []) {
+    const name = cookie.trim().split('=')[0];
+    if (!((!allowGa && /^_ga(?:_|$)/.test(name)) || (!isAdvertisingAllowed && /^_gcl_/.test(name))))
+      continue;
+    const domains = ['', window.location.hostname, `.${window.location.hostname}`];
+    const labels = window.location.hostname.split('.');
+    for (let i = 1; i < labels.length - 1; i++) domains.push(`.${labels.slice(i).join('.')}`);
+    for (const domain of domains)
+      document.cookie = `${name}=; Max-Age=0; Path=/${domain ? `; Domain=${domain}` : ''}`;
   }
   if (allowGa && gaId) {
     restoreCampaign();
@@ -199,7 +288,10 @@ export async function setBrowserTools(
       disable_surveys: true,
       enable_heatmaps: false,
       capture_exceptions: false,
-      before_send: (event) => (event && isPosthogAllowed ? beforeSend(event) : null),
+      before_send: (event) =>
+        event && isPosthogAllowed && !isMailingTokenLocation(window.location.href)
+          ? beforeSend(event)
+          : null,
     });
   }
   capturePricingView();
@@ -216,17 +308,21 @@ export async function setBrowserTools(
     if (referrerHost !== url.hostname || UTM_KEYS.some((key) => url.searchParams.has(key))) {
       const path = url.pathname.replace(/^\/(es|de|fr|it|pt)(?=\/|$)/, '') || '/';
       const landingType =
-        path === '/'
-          ? 'home'
-          : path.startsWith('/r/')
-            ? 'model_page'
-            : path === '/explore'
-              ? 'explore'
-              : path === '/credits'
-                ? 'credits'
-                : path.includes('services')
-                  ? 'services'
-                  : 'other';
+        path === '/mcp'
+          ? 'mcp'
+          : path === '/image-to-3d-api' || path === '/api-imagen-a-3d'
+            ? 'api'
+            : path === '/'
+              ? 'home'
+              : path.startsWith('/r/')
+                ? 'model_page'
+                : path === '/explore'
+                  ? 'explore'
+                  : path === '/credits'
+                    ? 'credits'
+                    : path.includes('services')
+                      ? 'services'
+                      : 'other';
       posthog.capture('landing_view', {
         landing_type: landingType,
         ...Object.fromEntries(UTM_KEYS.map((key) => [key, a?.[key] ?? null])),
@@ -245,7 +341,7 @@ export function browserPricingVariant(): PricingVariant {
   return value === 'test' ? 'test' : 'control';
 }
 export function captureBrowser(event: string, properties: Record<string, unknown> = {}) {
-  if (!isPosthogAllowed || !posthog) return;
+  if (!isPosthogAllowed || !posthog || isMailingTokenLocation(window.location.href)) return;
   posthog.capture(event, {
     pricing_subject: browserPricingSubject(),
     pricing_variant: browserPricingVariant(),
@@ -340,5 +436,10 @@ export async function googleCheckoutContext() {
     });
   const [clientId, sessionId] = await Promise.all([read('client_id'), read('session_id')]);
   if (!isGaAllowed || typeof clientId !== 'string' || !sessionId) return null;
-  return { measurementId: gaId, clientId, sessionId: String(sessionId) };
+  return {
+    measurementId: gaId,
+    clientId,
+    sessionId: String(sessionId),
+    adMeasurementAllowed: isAdvertisingAllowed,
+  };
 }

@@ -1,3 +1,5 @@
+import { versionedPublicModel } from '@/lib/public-models';
+
 import data from './catalog.json';
 
 // The hub's elements. Names and prompts are translated under `Catalog` in messages/; everything
@@ -54,7 +56,8 @@ export type CatalogItem = {
   formats: string[];
 };
 
-export const CATALOG = data as CatalogItem[];
+// The rejected armchair remains an archived asset, never a promoted catalog example.
+export const CATALOG = (data as CatalogItem[]).filter((item) => item.id !== 'armchair');
 
 export const CATEGORIES: CategoryKey[] = [
   'furniture',
@@ -78,5 +81,5 @@ export function itemOf(id: string): CatalogItem {
 // The best file an element has.
 export const fullFile = (item: CatalogItem) => item.hd ?? item.lods[0];
 
-export const modelUrl = (file: string) => `/studio/models/${file}`;
+export const modelUrl = (file: string) => versionedPublicModel(`/studio/models/${file}`);
 export const photoUrl = (id: string) => `/studio/photos/${id}.jpg`;

@@ -1,6 +1,8 @@
 // Demo renders made with the easyrender harness (TRELLIS) during testing. They seed the public
 // gallery until real users publish their own, and power the floating model in the hero.
 // Titles and prompts are the English source; translations live under `Showcase` in messages/.
+import { versionedPublicModel } from '@/lib/public-models';
+
 export type ShowcaseSlug =
   | 'swivel-chair'
   | 'coffee-table'
@@ -35,9 +37,9 @@ const item = (
   slug,
   title,
   prompt,
-  photo: `/showcase/${slug}.jpg`,
+  photo: versionedPublicModel(`/showcase/${slug}.jpg`),
   angles: angles ? `/showcase/${slug}-angles.jpg` : null,
-  model: `/showcase/${slug}.glb`,
+  model: versionedPublicModel(`/showcase/${slug}.glb`),
   category,
   dimensions,
   engine: angles ? 'TRELLIS + angle sheet' : 'TRELLIS',
@@ -60,14 +62,6 @@ export const SHOWCASE: ShowcaseItem[] = [
     '50 × 48.5 × 50 cm',
   ),
   item('vase', 'Stoneware vase', 'Matte stoneware vase', 'Decor', '12.5 × 20 × 12 cm', true),
-  item(
-    'armchair',
-    'Bouclé lounge armchair',
-    'Bouclé lounge armchair with a brushed steel frame',
-    'Furniture',
-    '70 × 77 × 85 cm',
-    true,
-  ),
   item('clay-vase', 'Clay vase', 'Aged clay vase', 'Decor', '35 × 40 × 35 cm'),
   item(
     'bedside-table',

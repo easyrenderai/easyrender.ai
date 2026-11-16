@@ -1,0 +1,66 @@
+name: Upscale bake-off
+run-name: "Upscale bake-off · ${{ inputs.candidates }}"
+
+# Manual only. Enlarges real interior and product pictures with each candidate upscaler on Replicate
+# (and fal, when the FAL_KEY secret exists) and compares them. It spends real money (about $1 to
+# $3), so it needs the word "spend" typed in. Needs the repository secret REPLICATE_API_TOKEN.
+# The model behind the paid Upscale action was picked with it; see
+# .agents/memory/context/upscalers.md.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "spend" to confirm this spends Replicate and fal credit'
+        required: true
+        type: string
+      candidates:
+        description: "Comma-separated ids: esrgan, crisp, topaz, bria, fal-seedvr, fal-aura, fal-clarity, fal-crisp"
+        required: true
+        default: "esrgan,crisp,topaz,bria,fal-seedvr,fal-aura,fal-clarity,fal-crisp"
+        type: string
+      images:
+        description: "Comma-separated images (interior, room-ar, sofa, lamp, sneaker, barrel, big, gt-hero, gt-interior, gt-armchair)"
+        required: true
+        default: "interior,room-ar,sofa,lamp,sneaker,barrel,gt-hero,gt-interior,gt-armchair"
+        type: string
+      scale:
+        description: "Enlargement factor (2 or 4)"
+        required: true
+        default: "2"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  bakeoff:
+    name: Bake-off
+    if: ${{ inputs.confirm == 'spend' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.4.2
+      - run: bun install --frozen-lockfile
+      - name: Run the bake-off
+        env:
+          REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
+          FAL_KEY: ${{ secrets.FAL_KEY }}
+          CANDIDATES: ${{ inputs.candidates }}
+          IMAGES: ${{ inputs.images }}
+          SCALE: ${{ inputs.scale }}
+        run: bun packages/harness/scripts/upscale-bakeoff.ts --spend --scale="$SCALE" --candidates="$CANDIDATES" --images="$IMAGES"
+      - name: Job summary
+        if: always()
+        run: |
+          if [ -f upscale-out/summary.md ]; then cat upscale-out/summary.md >> "$GITHUB_STEP_SUMMARY"; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: upscale-bakeoff-${{ github.run_number }}
+          path: upscale-out
+          if-no-files-found: ignore

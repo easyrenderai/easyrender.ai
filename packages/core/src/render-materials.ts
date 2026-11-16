@@ -7,6 +7,7 @@ import {
   sanitizeMaterialEdits,
 } from '@easyrender/harness';
 import { AppError, notFound } from './errors';
+import { recordEdit } from './render-edits';
 import { type Actor, canAccess, getRender } from './renders';
 import { getFile } from './storage';
 
@@ -72,5 +73,6 @@ export async function saveMaterialEdits(
     );
   }
   const updated = await db().render.update({ where: { id }, data: { materialEdits: edits } });
+  await recordEdit(id, 'material');
   return describe(updated, original);
 }

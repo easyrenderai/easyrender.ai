@@ -46,7 +46,7 @@ export async function signupAttribution(input: {
       });
     }
     const variant = await assignedPricing(input.userId, input.anonId);
-    captureServer(
+    await captureServer(
       'signup',
       input.userId,
       { userId: input.userId, previewId: preview?.id ?? null, source: 'web', attribution },

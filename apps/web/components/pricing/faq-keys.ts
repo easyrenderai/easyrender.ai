@@ -5,6 +5,7 @@ export const FAQ_ITEM_KEYS = [
   'freePreview',
   'plans',
   'expire',
+  'topUp',
   'cancel',
   'failed',
   'enterprise',

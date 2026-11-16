@@ -3,7 +3,7 @@
 import { FolderOpen, ImagePlus, Loader2, TriangleAlert, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -16,9 +16,8 @@ const TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 // The app's home: a prompt bar built around a drop slot. A photo is all it needs; the text is
 // optional. Dragging a file anywhere over the page lights the bar up.
-export function HomeComposer({ balance }: { balance: number }) {
+export function HomeComposer() {
   const t = useTranslations('AppHome');
-  const format = useFormatter();
   const router = useRouter();
   const picker = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -181,9 +180,6 @@ export function HomeComposer({ balance }: { balance: number }) {
           />
         </div>
         <div className="mt-3 flex items-center justify-end gap-3">
-          <span className="text-xs text-muted-foreground tabular-nums">
-            {t('balance', { credits: format.number(balance) })}
-          </span>
           <Button type="submit" disabled={!file || isBusy}>
             {isBusy && <Loader2 className="animate-spin" />}
             {isBusy ? t('uploading') : t('create')}

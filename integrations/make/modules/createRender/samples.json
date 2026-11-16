@@ -1,0 +1,11 @@
+{
+  "id": "r_example",
+  "status": "drafting",
+  "name": "Chair",
+  "hasModel": false,
+  "hasPreview": false,
+  "hasSheet": false,
+  "isPublic": false,
+  "createdAt": "2026-11-16T09:00:00Z",
+  "modelVersion": 1794819600000
+}

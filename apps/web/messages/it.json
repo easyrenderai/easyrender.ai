@@ -13,16 +13,18 @@
       "hub": "Hub",
       "connect": "Agenti",
       "try": "Prova",
-      "pricing": "Prezzi"
+      "pricing": "Prezzi",
+      "mcp": "MCP",
+      "api": "API"
     },
-    "credits": "crediti",
     "dashboard": "Dashboard",
     "signIn": "Accedi",
     "connect": "Collega",
     "connectSuffix": "il tuo agente",
     "sections": "Sezioni",
     "menuOpen": "Apri il menu",
-    "menuClose": "Chiudi il menu"
+    "menuClose": "Chiudi il menu",
+    "upload": "Carica una foto"
   },
   "Footer": {
     "tagline": "Una foto diventa un modello 3D da vedere da ogni angolazione e da scaricare in GLB e USDZ.",
@@ -45,10 +47,14 @@
       "models": "Models",
       "evals": "Evals",
       "cookies": "Cookie e analisi",
-      "api": "REST API"
+      "api": "REST API",
+      "privacy": "Informativa sulla privacy",
+      "terms": "Termini di servizio",
+      "editorial": "Redazione",
+      "comparisons": "Confronti"
     },
     "copyright": "© 2026 easyrender. Tecnologia Genfeed.",
-    "pricesNote": "Prezzi in USD. I crediti non scadono."
+    "pricesNote": "Controlla valuta e totale prima di pagare. I crediti non scadono."
   },
   "Home": {
     "connect": {
@@ -87,6 +93,40 @@
       "scope": "Non modella stanze intere e non inventa misure. Ricevi il file e decidi tu se tenerlo.",
       "primaryCta": "Carica una foto",
       "secondaryCta": "Guarda la galleria"
+    },
+    "integrations": {
+      "title": "Integra il 3D nel tuo lavoro.",
+      "description": "Usa un agente IA o collega la tua applicazione. Scegli l’integrazione adatta al tuo flusso di lavoro.",
+      "mcp": {
+        "title": "Per il tuo agente IA",
+        "body": "Chiedi al tuo agente di creare un’anteprima, verificare il costo e generare un modello 3D.",
+        "cta": "Scopri MCP"
+      },
+      "api": {
+        "title": "Per la tua applicazione",
+        "body": "Aggiungi la conversione da foto a 3D con l’API REST. Gestisci caricamento, anteprima e generazione a pagamento.",
+        "cta": "Scopri l’API"
+      },
+      "english": "inglese"
+    },
+    "journey": {
+      "title": "Dalla tua foto al prossimo progetto.",
+      "hub": "Scopri come funziona l’Hub",
+      "photo": {
+        "title": "Carica il tuo prodotto",
+        "body": "Inizia da una foto che hai già."
+      },
+      "model": {
+        "title": "Ottieni il modello",
+        "body": "Controlla le angolazioni gratis, poi decidi se creare il modello 3D."
+      },
+      "use": {
+        "title": "Usalo nel tuo lavoro",
+        "body": "Scarica il file per il negozio, il progetto o la scena."
+      }
+    },
+    "customer": {
+      "label": "Utilizzato da"
     }
   },
   "Landing": {
@@ -95,16 +135,6 @@
       "description": "Le anteprime sono gratis. Un modello 3D finito costa {credits} crediti ({price}).",
       "seeAll": "Vedi tutti i prezzi",
       "bestValue": "Più conveniente",
-      "free": {
-        "name": "Gratis",
-        "note": "per provare",
-        "features": {
-          "mcp": "Collega il tuo agente via MCP",
-          "previews": "Anteprime gratis di ogni angolazione",
-          "noCard": "Senza carta di credito"
-        },
-        "cta": "Inizia gratis"
-      },
       "payg": {
         "name": "A consumo",
         "note": "per credito",
@@ -114,7 +144,8 @@
           "ar": "Realtà aumentata dal telefono, in arrivo",
           "api": "Server MCP e API REST"
         },
-        "cta": "Compra crediti"
+        "cta": "Compra crediti",
+        "audience": "Per un primo progetto o prodotti occasionali. Senza abbonamento."
       },
       "pro": {
         "note": "al mese",
@@ -122,9 +153,11 @@
           "credits": "{credits} crediti ogni mese",
           "models": "Circa {count} modelli 3D",
           "rollover": "I crediti non usati restano disponibili",
-          "cancel": "Disdici quando vuoi"
+          "cancel": "Disdici quando vuoi",
+          "topUp": "Ti serve di più? Ricarica quando vuoi alla tariffa del tuo piano."
         },
-        "cta": "Passa a {plan}"
+        "cta": "Passa a {plan}",
+        "audience": "Per team che creano modelli di prodotti ogni mese."
       },
       "enterprise": {
         "name": "Enterprise",
@@ -136,8 +169,12 @@
           "support": "Assistenza prioritaria",
           "onboarding": "Chiamata di onboarding"
         },
-        "cta": "Prenota una chiamata"
-      }
+        "cta": "Prenota una chiamata",
+        "audience": "Per grandi cataloghi con avvio assistito."
+      },
+      "tryFree": "Provalo gratis",
+      "noCard": "Anteprime gratuite. Nessuna carta di credito richiesta.",
+      "perModel": "per modello 3D"
     },
     "faq": {
       "title": "Domande frequenti",
@@ -194,15 +231,18 @@
     }
   },
   "AgentDemo": {
-    "window": "Il tuo agente · easyrender MCP",
-    "ask": "Ecco il catalogo di primavera. Mi serve un modello 3D di ogni prodotto.",
+    "window": "Your agent · easyrender MCP",
+    "illustration": "Illustrative conversation and tool sequence. No request runs on this page.",
+    "ask": "Turn this table photo into a 3D model. Show me the preview, then wait for my approval before building.",
+    "approval": "In this example, you instruct your agent to wait for approval. Configure that behavior in your client; the paid tool itself does not enforce a confirmation dialog.",
+    "budget": "Planning a catalogue? Review and approve each object before building its model.",
+    "budgetNote": "A budget example, not a completed batch. Your agent must create and track each render separately. Extra edits and AI-client charges are additional.",
     "calls": {
-      "create_render": "24 foto · anteprime gratis",
-      "get_render": "24 anteprime pronte",
-      "render_3d": "24 modelli · GLB e USDZ"
-    },
-    "done": "Fatto. Nella tua libreria easyrender ci sono 24 modelli, in GLB e USDZ. Ecco il primo:",
-    "modelAlt": "Modello 3D: {title}"
+      "create_render": "Submit the product photo and request the free preview.",
+      "get_render": "Poll for the preview and return its link for inspection.",
+      "get_credits": "Check the balance and current full-build credit cost.",
+      "render_3d": "After your approval, request the paid build. Poll get_render until ready, then retrieve the GLB link."
+    }
   },
   "McpSetup": {
     "terminal": "Eseguilo nel terminale",
@@ -214,7 +254,12 @@
       "two": "Incolla questo URL come URL del connettore.",
       "three": "Clicca Connect, accedi a easyrender con il tuo account e autorizza l'accesso. Non serve nessuna chiave.",
       "note": "Lo stesso accesso funziona con qualsiasi client MCP che supporti OAuth. Ogni connessione crea una chiave che puoi revocare qui sotto."
-    }
+    },
+    "wallet": "L’app web, l’API e l’MCP usano lo stesso saldo del tuo account. Le operazioni a pagamento consumano quei crediti; collegarsi e consultare il saldo non costa crediti easyrender. Il tuo client IA può applicare costi separati.",
+    "codexOauth": "Questi comandi aprono l’accesso OAuth nel browser. Usa lo stesso account easyrender di questo pannello; non occorre incollare una chiave API.",
+    "firstPromptTitle": "Il tuo primo prompt",
+    "firstPrompt": "Usa easyrender per consultare il mio saldo crediti e il costo attuale delle operazioni. Non generare nulla e non spendere crediti per ora.",
+    "firstPromptNote": "Incollalo nel client collegato. Una risposta corretta di get_credits conferma che il client può accedere al tuo account."
   },
   "Gallery": {
     "modelAlt": "Modello 3D: {title}",
@@ -258,6 +303,10 @@
       "bedside-table": {
         "title": "Comodino",
         "prompt": "Comodino in legno massello con cassetto"
+      },
+      "table": {
+        "title": "Tavolo in legno",
+        "prompt": "Tavolo rettangolare in legno"
       }
     }
   },
@@ -278,7 +327,6 @@
     "modelAlt": "3D model: {name}",
     "meta": {
       "status": "Status",
-      "engine": "Engine",
       "dimensions": "Dimensions",
       "formats": "Formats",
       "visibility": "Visibility",
@@ -294,7 +342,7 @@
     },
     "drafting": "Drawing every angle of your object. This takes about a minute.",
     "rendering": "Building the 3D model. This takes about two minutes.",
-    "previewReady": "Your preview is ready below. Check every angle, then render the 3D model.",
+    "previewReady": "Your preview is ready. Check every angle above, then render the 3D model.",
     "previewAlt": "Preview of every angle",
     "noPreview": "No preview",
     "signUpToRender": "Sign up to render in 3D",
@@ -305,9 +353,16 @@
     "finishedOnly": "Finished models only",
     "errors": {
       "start": "Could not start the render",
-      "sheet": "Could not generate the angle sheet"
+      "sheet": "Could not generate the angle sheet",
+      "redraw": "Could not redraw the angle sheet",
+      "upscale": "Impossibile ingrandire questa immagine. Riprova tra un minuto."
     },
     "generateSheet": "Generate angle sheet ({credits} credits)",
+    "fixSheetLabel": "Something off in an angle?",
+    "fixSheetHint": "Describe what to fix and we redraw every angle from your photo, so mention everything you want changed. A redraw that fails is refunded.",
+    "fixSheetPlaceholder": "e.g. The back legs should match the front ones, and the seat is flat",
+    "redrawSheet": "Redraw angles ({credits} credits)",
+    "buyToRedraw": "Buy credits to redraw",
     "materials": {
       "title": "Materials",
       "hint": "Change how each material looks. Saved changes are included in the GLB and USDZ downloads.",
@@ -328,6 +383,42 @@
       "saved": "Saved. The downloads now include your changes.",
       "resetDone": "Back to the generated look.",
       "saveFailed": "Could not save the changes. Try again."
+    },
+    "details": "Dettagli",
+    "history": {
+      "empty": "Ancora nessuna modifica. Qui compaiono la tavola degli angoli, i suoi ridisegni, i cambi di materiale e la creazione 3D.",
+      "kind": {
+        "sheet": "Tavola degli angoli disegnata",
+        "sheet_redraw": "Tavola degli angoli ridisegnata",
+        "build": "Creazione 3D avviata",
+        "material": "Materiali modificati"
+      },
+      "credits": "{credits} crediti"
+    },
+    "review": {
+      "title": "Cosa controllare prima di creare il 3D?",
+      "shape": "La sagoma corrisponde al prodotto?",
+      "parts": "Sono presenti gambe, maniglie e altri elementi?",
+      "openings": "Sono conservate aperture e spazi vuoti?"
+    },
+    "correction": {
+      "title": "Cosa va corretto?",
+      "multiple": "Seleziona tutti i punti pertinenti o descrivi un’altra modifica sotto.",
+      "tooLong": "Opzioni e descrizione devono rientrare in {max} caratteri.",
+      "labels": {
+        "shape": "Forma",
+        "parts": "Elementi",
+        "material": "Materiale"
+      },
+      "instructions": {
+        "shape": "Allinea forma e proporzioni alla foto originale.",
+        "parts": "Conserva gli elementi e le aperture visibili nella foto originale.",
+        "material": "Allinea materiali e colori alla foto originale."
+      },
+      "review": "Rivedi la correzione",
+      "confirmTitle": "Conferma le nuove viste",
+      "confirmBody": "Le viste verranno rigenerate per {credits} crediti. Il modello 3D non verrà creato.",
+      "back": "Modifica le istruzioni"
     }
   },
   "PromptBar": {
@@ -342,7 +433,11 @@
       "noPhoto": "Prima allega una foto dell'oggetto o dell'edificio.",
       "upload": "Caricamento non riuscito",
       "unreadable": "Impossibile leggere questa foto",
-      "title": "Impossibile avviare questo render"
+      "title": "Impossibile avviare questo render",
+      "small": "Usa la foto originale con una risoluzione maggiore.",
+      "large": "Scegli una foto più piccola e riprova.",
+      "aspect": "Usa una foto del prodotto intero, senza un ritaglio troppo stretto.",
+      "blank": "Questa immagine sembra vuota. Scegli una foto in cui il prodotto sia visibile."
     },
     "photoSize": "Foto · {size}",
     "removePhoto": "Rimuovi la foto",
@@ -353,7 +448,7 @@
     "replacePhoto": "Sostituisci la foto",
     "attachPhoto": "Allega una foto",
     "dropOrPaste": "oppure trascinala o incollala",
-    "generate": "Genera",
+    "generate": "Crea anteprima gratuita",
     "dropToAttach": "Rilascia la foto per allegarla",
     "tryOne": "Prova con:",
     "previewReady": "L'anteprima è pronta",
@@ -362,7 +457,13 @@
       "title": "La tua anteprima 3D è pronta",
       "description": "Crea un account gratuito per vedere la tua foto da ogni angolazione e trasformarla in un modello 3D."
     },
-    "reveal": "Registrati gratis per vedere ogni angolazione"
+    "reveal": "Registrati gratis per vedere ogni angolazione",
+    "optionalNotes": "Aggiungi dettagli (facoltativo)",
+    "uploadingReal": "Caricamento della foto…",
+    "uploadingHint": "L’anteprima reale inizia dopo il caricamento. Vedrai lo stato nella schermata successiva.",
+    "previewNote": "Anteprima delle angolazioni gratuita. Creare il modello 3D scaricabile consuma crediti.",
+    "guestNote": "Anteprima delle angolazioni gratuita · senza account né carta. Si applicano limiti giornalieri.",
+    "seeExample": "Oppure esplora un esempio finito:"
   },
   "Library": {
     "metaTitle": "Library · easyrender",
@@ -438,12 +539,81 @@
       "short": "Short by {credits} credits. Buy more"
     }
   },
+  "ProductViews": {
+    "metaTitle": "Product views · easyrender",
+    "title": "Product views",
+    "subtitle": "One product photo in, nine clean packshots out on white. No studio, no 3D needed.",
+    "choose": "Choose a product photo",
+    "chooseHint": "JPEG, PNG or WebP. Show the whole product.",
+    "noteLabel": "Describe the product (optional)",
+    "notePlaceholder": "Matte black metal frame, oak seat",
+    "create": "Make product views, {credits} credits",
+    "buyCredits": "Buy credits to make product views",
+    "aiNote": "Views are AI-generated from your photo. Hidden sides are inferred, so check each view against the real product and polish any that is off.",
+    "recents": "Your product views",
+    "empty": "No product views yet. Upload a photo to make your first set.",
+    "untitled": "Untitled product",
+    "viewsReady": "{count} views ready",
+    "progress": "{ready} of {total} views ready",
+    "canvas": "2000 × 2000 px · JPG · white background",
+    "downloadAll": "Download all (ZIP)",
+    "download": "Download",
+    "polish": "Polish",
+    "flagged": "Check this view",
+    "failed": "The views could not be drawn. Your credits were refunded.",
+    "buyToPolish": "Buy credits to polish a view",
+    "polishTitle": "Polish the {view} view",
+    "polishHint": "Describe what is wrong. This view is drawn again from your photo and the current picture; the others stay as they are.",
+    "polishLabel": "What should change?",
+    "polishPlaceholder": "The handle should be on the left, and the wood is lighter",
+    "polishSubmit": "Redraw this view, {credits} credits",
+    "upsellTitle": "Need it in 3D?",
+    "upsellBody": "Build a 3D model and AR from these same views. Your finished views are reused, so you only pay for the 3D step.",
+    "build3d": "Build 3D from these views, {credits} credits",
+    "openRender": "Open the 3D render",
+    "status": {
+      "drafting": "Drawing the angle sheet",
+      "processing": "Checking and finishing the views, {ready} of {total} ready",
+      "upscaling": "Finishing",
+      "redrawing": "Redrawing",
+      "failed": "Failed"
+    },
+    "views": {
+      "front": "Front",
+      "front_right": "Front right",
+      "right": "Right",
+      "back_right": "Back right",
+      "back": "Back",
+      "back_left": "Back left",
+      "left": "Left",
+      "front_left": "Front left",
+      "top": "Top"
+    },
+    "problems": {
+      "empty": "object hard to see",
+      "cropped": "object touches the edge",
+      "small": "object too small",
+      "background": "background not pure white",
+      "blurry": "soft detail",
+      "colour": "colour differs from the photo",
+      "duplicate": "looks like another view"
+    },
+    "errors": {
+      "unreadable": "Could not read this photo",
+      "create": "Could not make the product views. Try again in a minute.",
+      "polish": "Could not polish this view. Try again in a minute.",
+      "render": "Could not start the 3D render.",
+      "upscale": "Impossibile ingrandire questa immagine. Riprova tra un minuto."
+    }
+  },
   "DashboardNav": {
     "overview": "Overview",
     "library": "Library",
     "connectors": "Connectors",
     "credits": "Credits",
-    "account": "Account"
+    "account": "Account",
+    "views": "Product views",
+    "profile": "Profilo"
   },
   "AppShell": {
     "model": "Modello",
@@ -452,9 +622,6 @@
     "toggleSidebar": "Mostra o nascondi la barra laterale",
     "home": "Home di easyrender",
     "newModel": "Nuovo modello 3D",
-    "recents": "Recenti",
-    "noRecents": "Ancora niente. Carica una foto o chiedilo al tuo agente.",
-    "credits": "crediti",
     "untitled": "Senza titolo",
     "status": {
       "drafting": "In preparazione",
@@ -463,7 +630,6 @@
       "ready": "Pronto",
       "failed": "Non riuscito"
     },
-    "toggleRenders": "Mostra o nascondi il pannello dei render",
     "breadcrumb": "Percorso di navigazione",
     "panel": {
       "title": "Render",
@@ -491,6 +657,13 @@
       "balance": "Saldo",
       "sheet": "Foglio angoli",
       "build": "Crea il 3D"
+    },
+    "toggleContext": "Mostra o nascondi il pannello delle parti",
+    "context": {
+      "title": "Parti"
+    },
+    "history": {
+      "title": "Cronologia"
     }
   },
   "AppHome": {
@@ -502,7 +675,6 @@
     "remove": "Rimuovi la foto",
     "create": "Crea anteprima gratuita",
     "uploading": "Caricamento…",
-    "balance": "{credits} crediti",
     "batch": "Carica più foto",
     "connect": "Collega un agente",
     "errors": {
@@ -580,13 +752,16 @@
     "errors": {
       "expired": "Your session expired. Sign in again to create a key.",
       "create": "Could not create the key. Try again.",
-      "revoke": "Could not revoke the key. It is still active; try again."
+      "revoke": "Could not revoke the key. It is still active; try again.",
+      "scopes": "Seleziona almeno un’autorizzazione.",
+      "creditLimit": "Inserisci un limite di crediti intero e non negativo, oppure lascia il campo vuoto.",
+      "expiresAt": "Scegli una data e un’ora future valide, oppure lascia il campo vuoto."
     },
     "connect": {
-      "title": "Connect your agent",
-      "created": "Your new key is filled in below. Copy the snippet now: the key will not be shown again.",
-      "noKeys": "Use the claude.ai tab to connect with a sign-in. For other agents, create a key, then paste the snippet.",
-      "hasKeys": "Paste the snippet into your agent and replace {placeholder} with one of your keys. The claude.ai tab needs no key."
+      "title": "Collega il tuo agente",
+      "created": "La nuova chiave è inserita negli esempi di configurazione con chiave API. Copiala ora: non verrà mostrata di nuovo.",
+      "noKeys": "Collega claude.ai o Codex accedendo dal browser. Per le opzioni con chiave API, crea una chiave e copia l’esempio.",
+      "hasKeys": "Per la configurazione con chiave API, sostituisci {placeholder} con una delle tue chiavi. Le schede claude.ai e Codex usano l’accesso dal browser."
     },
     "createMyKey": "Create my key",
     "keys": {
@@ -595,12 +770,37 @@
       "namePlaceholder": "Key name, e.g. Claude Code",
       "create": "Create",
       "none": "No keys yet.",
-      "connected": "Connected",
+      "connected": "Usata di recente",
       "idle": "Idle",
       "neverUsed": "Never used",
       "created": "created {date}",
       "lastUsed": "last used {date}",
-      "revoke": "Revoke {name}"
+      "revoke": "Revoke {name}",
+      "nameLabel": "Nome della chiave",
+      "advanced": "Autorizzazioni e limiti",
+      "permissions": "Azioni consentite",
+      "scopes": {
+        "read": "Lettura",
+        "write": "Scrittura",
+        "spend": "Spesa",
+        "share": "Condivisione"
+      },
+      "scopeDescriptions": {
+        "read": "Consultare risorse, prezzi e download.",
+        "write": "Caricare foto, creare anteprime e modificare i materiali.",
+        "spend": "Avviare generazioni a pagamento usando i tuoi crediti.",
+        "share": "Pubblicare rendering e condividere modelli del catalogo."
+      },
+      "creditLimit": "Limite totale di crediti",
+      "unlimited": "Illimitato",
+      "creditLimitHelp": "Un campo vuoto significa nessun limite. Zero impedisce le spese. I rimborsi restituiscono crediti al saldo, ma non ripristinano il limite di questa chiave.",
+      "expiresAt": "Scadenza (facoltativa)",
+      "expiresAtHelp": "Data e ora locali. Lascia vuoto per non impostare una scadenza.",
+      "expired": "Scaduta",
+      "noExpiry": "Nessuna scadenza",
+      "expiryDate": "Scade il {date}",
+      "spentUnlimited": "{spent} crediti spesi · senza limite",
+      "spentLimit": "{spent} crediti spesi su {limit}"
     }
   },
   "Account": {
@@ -641,7 +841,7 @@
       "features": {
         "credits": "{credits} credits added each month",
         "rollover": "Unused credits roll over",
-        "topUp": "Top up with pay as you go anytime",
+        "topUp": "Ti serve di più? Ricarica quando vuoi alla tariffa del tuo piano.",
         "cancel": "Cancel anytime"
       }
     },
@@ -658,87 +858,116 @@
       "cta": "Book a call"
     },
     "metaTitle": "Pricing: pay per 3D model · easyrender",
-    "metaDescription": "Previews are free. A finished 3D model costs {credits} credits ({price}) and credits never expire. Pay as you go, or go Pro for {proCredits} credits a month."
+    "metaDescription": "Previews are free. A finished 3D model costs {credits} credits ({price}) and credits never expire. Pay as you go, or go Pro for {proCredits} credits a month.",
+    "topUp": {
+      "title": "Ricarica crediti",
+      "description": "Acquista crediti extra alla tariffa del tuo piano {plan}, senza cambiare piano. Il totale viene arrotondato al centesimo più vicino.",
+      "noExpiry": "I crediti delle ricariche non scadono mai."
+    }
   },
   "Pricing": {
-    "metaTitle": "Pricing: pay per 3D model · easyrender",
-    "metaDescription": "Previews are free. A finished 3D model costs {credits} credits ({price}) and credits never expire. Pay as you go, or go Pro for {proCredits} credits a month.",
+    "metaTitle": "Prezzi: paga per modello 3D · easyrender",
+    "metaDescription": "Le anteprime sono gratuite. Un modello 3D completo costa {credits} crediti ({price}), senza scadenza. Paga a consumo o scegli Pro con {proCredits} crediti al mese.",
     "home": "Home",
-    "breadcrumb": "Pricing",
-    "eyebrow": "Pricing",
-    "title": "Pay per 3D model. Previews are free.",
-    "description": "A finished 3D model costs {credits} credits ({price}). Buy credits as you go, or pick a monthly plan for a cheaper credit. Credits never expire.",
-    "note": "Prices in USD. Credits never expire. If a 3D build fails, its credits are refunded.",
+    "breadcrumb": "Prezzi",
+    "eyebrow": "Prezzi",
+    "title": "Paga per modello 3D. Le anteprime sono gratuite.",
+    "description": "Un modello 3D completo costa {credits} crediti ({price}). Acquista crediti a consumo o scegli Pro per una tariffa mensile inferiore per credito. I crediti non scadono mai.",
+    "note": "I crediti non scadono mai. Se la creazione di un modello 3D non riesce, i crediti vengono rimborsati.",
     "compare": {
-      "title": "Compare plans",
-      "description": "Pay as you go is {unit} a credit. Every monthly plan makes the credit cheaper, and a bigger plan cheaper still.",
-      "plan": "Plan",
-      "price": "Price",
-      "credits": "Credits",
-      "models": "3D models",
-      "perCredit": "Per credit",
-      "from": "From {value}",
-      "perMonth": "{value} / month"
+      "title": "Confronta i piani",
+      "description": "A consumo, un credito costa {unit}. Pro include crediti mensili a una tariffa inferiore. Contattaci per le tariffe Enterprise in base al volume.",
+      "plan": "Piano",
+      "price": "Prezzo",
+      "credits": "Crediti",
+      "models": "Modelli 3D",
+      "perCredit": "Per credito",
+      "from": "Da {value}",
+      "perMonth": "{value} / mese"
     },
     "how": {
-      "title": "How credits work",
-      "step": "Step {number}",
+      "title": "Come funzionano i crediti",
+      "step": "Passaggio {number}",
       "preview": {
-        "title": "Previews cost nothing",
-        "body": "Upload a photo and check a free sheet that shows the object from every angle before you spend anything."
+        "title": "Le anteprime non costano nulla",
+        "body": "Carica una foto e controlla gratuitamente l’oggetto da ogni angolazione prima di spendere."
       },
       "build": {
-        "title": "A 3D model costs {credits} credits",
-        "body": "That is {price}. The button shows the cost before you click, and you download the model as GLB and USDZ."
+        "title": "Un modello 3D costa {credits} crediti",
+        "body": "Sono {price}. Il pulsante mostra il costo prima del clic e puoi scaricare il modello in GLB e USDZ."
       },
       "refund": {
-        "title": "Failed builds are refunded",
-        "body": "If a 3D model fails to build, the credits for that render go back to your balance automatically."
+        "title": "Le creazioni non riuscite vengono rimborsate",
+        "body": "Se la creazione di un modello 3D non riesce, i crediti tornano automaticamente al tuo saldo."
       }
     },
     "faq": {
-      "title": "Pricing questions",
+      "title": "Domande sui prezzi",
       "items": {
         "cost": {
-          "q": "How much does a 3D model cost?",
-          "a": "Previews are free. A finished 3D model costs {credits} credits. On pay as you go a credit costs {unit}, so a model is {price}. Monthly plans make each credit cheaper."
+          "q": "Quanto costa un modello 3D?",
+          "a": "Le anteprime sono gratuite. Un modello 3D completo costa {credits} crediti. A consumo, un credito costa {unit}, quindi un modello costa {price}. Pro riduce il prezzo per credito."
         },
         "freePreview": {
-          "q": "Why is the preview free?",
-          "a": "Before the 3D model is built we draw the object from every angle. You check that preview at no cost and only spend credits when the shape and the details look right."
+          "q": "Perché l’anteprima è gratuita?",
+          "a": "Prima di creare il modello 3D disegniamo l’oggetto da ogni angolazione. Controlli l’anteprima gratuitamente e spendi crediti solo se forma e dettagli ti convincono."
         },
         "plans": {
-          "q": "Pay as you go or a monthly plan?",
-          "a": "Pay as you go suits occasional use: buy from {min} credits ({minPrice}) whenever you need them. A monthly plan adds credits every month at a lower price per credit. {plan}, for example, is {planPrice} a month for {planCredits} credits, about {planModels} 3D models."
+          "q": "A consumo o Pro?",
+          "a": "Per un uso occasionale, acquista da {min} crediti ({minPrice}) quando servono. {plan} costa {planPrice} al mese per {planCredits} crediti, circa {planModels} modelli 3D. Contattaci per le tariffe Enterprise in base al volume."
         },
         "expire": {
-          "q": "Do credits expire?",
-          "a": "No. Credits never expire, and unused credits from a monthly plan roll over to the next month."
+          "q": "I crediti scadono?",
+          "a": "No. I crediti non scadono mai e quelli mensili inutilizzati vengono trasferiti al mese successivo."
         },
         "cancel": {
-          "q": "Can I change or cancel my plan?",
-          "a": "Yes. Change or cancel your plan at any time from Credits in your account, where you can manage your subscription."
+          "q": "Posso cambiare o annullare il piano?",
+          "a": "Sì. Puoi gestire, cambiare o annullare l’abbonamento in qualsiasi momento da Crediti nel tuo account."
         },
         "failed": {
-          "q": "What if a render fails?",
-          "a": "If the 3D model fails to build, the credits for that render go back to your balance automatically."
+          "q": "Cosa succede se un render non riesce?",
+          "a": "Se la creazione del modello 3D non riesce, i crediti tornano automaticamente al tuo saldo."
         },
         "enterprise": {
-          "q": "Do you offer volume pricing or invoices?",
-          "a": "Yes, on Enterprise: volume credit pricing, invoice billing, priority support and an onboarding call. Book a call and we will set it up."
+          "q": "Offrite prezzi per grandi volumi o fatturazione?",
+          "a": "Sì, con Enterprise: prezzi in base al volume, pagamento su fattura, assistenza prioritaria e una chiamata introduttiva. Prenota una chiamata per parlarne."
+        },
+        "topUp": {
+          "q": "Posso acquistare altri crediti senza cambiare piano?",
+          "a": "Sì. Gli abbonati attivi o in prova possono ricaricare alla tariffa per credito del proprio piano, con il totale arrotondato al centesimo più vicino. Apri Crediti nel tuo account per vedere i prezzi dei pacchetti. Senza un abbonamento idoneo si applica la tariffa a consumo indicata. Il piano mensile resta invariato e i crediti extra non scadono mai."
         }
       }
+    },
+    "topUpTitle": "Ricarica crediti",
+    "minimum": "Acquisto minimo: {price} in crediti, sufficienti per {count} modelli completi.",
+    "calculator": {
+      "title": "Calcola il tuo catalogo",
+      "count": "Numero di modelli 3D",
+      "consumption": "Valore dei crediti utilizzati",
+      "purchase": "Acquisto partendo da saldo zero",
+      "remaining": "Crediti rimanenti",
+      "range": "Inserisci un numero intero da 1 a {max}.",
+      "note": "Stima di modelli 3D standard a consumo, senza saldo iniziale. Modifiche, immagini e ingrandimenti aggiuntivi esclusi.",
+      "compare": "Confronta i piani"
+    },
+    "conditions": {
+      "title": "Prima di acquistare",
+      "billing": "Il pagamento a consumo è un acquisto singolo di crediti. Pro si rinnova mensilmente fino alla cancellazione in Crediti. I crediti inutilizzati non scadono.",
+      "rights": "Conservi i diritti sui contenuti caricati. I diritti sui risultati sono soggetti ai diritti di terzi. I modelli sono pubblici per impostazione predefinita e possono essere condivisi e scaricati.",
+      "tax": "Controlla valuta, imposte applicabili e totale finale prima del pagamento.",
+      "link": "Leggi le condizioni complete (inglese)"
     }
   },
   "PaygPicker": {
-    "custom": "Or enter an amount",
-    "estimate": "{price} for about {count} renders",
-    "range": "Choose between {min} and {max} credits",
-    "buyAmount": "Buy {credits} credits",
-    "buy": "Buy credits"
+    "custom": "Oppure inserisci una quantità",
+    "estimate": "{price} per circa {count} rendering",
+    "range": "Scegli tra {min} e {max} crediti",
+    "buyAmount": "Acquista {credits} crediti",
+    "buy": "Acquista crediti",
+    "planRate": "Ricariche alla tariffa del tuo piano {plan}"
   },
   "BuyButton": {
-    "failed": "Checkout failed",
+    "failed": "Pagamento non riuscito",
     "pricingChanged": "I prezzi sono cambiati. Aggiorna la pagina e riprova."
   },
   "Auth": {
@@ -767,7 +996,8 @@
       "oauth": "Google sign in did not finish. Try again or use your email."
     },
     "google": "Continue with Google",
-    "or": "or"
+    "or": "or",
+    "legalNotice": "Creando un account, accetti i <terms>Termini di servizio</terms>. Leggi la nostra <privacy>Informativa sulla privacy</privacy> per sapere come utilizziamo i tuoi dati."
   },
   "OAuth": {
     "title": "Connect {client} to easyrender?",
@@ -786,7 +1016,7 @@
   "Studio": {
     "hero": {
       "title": "Modello 3D dalla foto del prodotto.",
-      "cta": "Inizia ora",
+      "cta": "Carica una foto",
       "note": "Anteprima gratis · senza carta",
       "stackLabel": "Lo stesso oggetto visto in cinque passaggi del motore. Trascinalo per ruotarlo.",
       "photo": "Foto di partenza",
@@ -796,7 +1026,8 @@
       "render": "Render PBR",
       "element": "Elemento",
       "hint": "Trascina per ruotare",
-      "subtitle": "Guarda l'oggetto da ogni angolazione, gratis. Spendi crediti solo quando la forma ti convince."
+      "subtitle": "Controlla le angolazioni gratis. Paga il modello 3D scaricabile quando la forma ti convince.",
+      "benefit": "Trasforma la foto del tuo prodotto in un modello 3D."
     },
     "pipeline": {
       "lead": "Carica una foto. Al resto pensa il motore.",
@@ -850,7 +1081,7 @@
     "tools": {
       "lead": "Guarda la forma prima di spendere un credito.",
       "body": "Ogni elemento è mostrato come lo ha costruito il motore: mesh, materiali e texture.",
-      "link": "Esplora la scheda tecnica",
+      "link": "Esplora le creazioni",
       "topology": "Topologia",
       "triangles": "Triangoli",
       "material": "Materiale PBR",
@@ -911,7 +1142,7 @@
     },
     "cta": {
       "title": "Il tuo catalogo non deve più aspettare un team 3D",
-      "button": "Inizia ora"
+      "button": "Provalo gratis"
     },
     "shelf": {
       "lead": "Esplora l'hub.",
@@ -1075,13 +1306,13 @@
   },
   "Blog": {
     "index": {
-      "metaTitle": "Guides: turning photos into 3D models · easyrender",
-      "metaDescription": "How to turn a photo into a 3D model, which files you get, and what easyrender can and cannot model. Written by the people building it.",
-      "title": "Guides",
+      "metaTitle": "Guide: da una foto a un modello 3D · easyrender",
+      "metaDescription": "Come trasformare una foto in un modello 3D, quali file scaricare e quali limiti conoscere. Guide del team easyrender.",
+      "title": "Guide",
       "headline": "Tutto quello che impariamo trasformando foto in 3D",
-      "description": "How to turn a photo into a 3D model, which files you get, and what easyrender can and cannot model.",
-      "empty": "The first guides are being written. Nothing is published yet.",
-      "readMore": "Read the guide",
+      "description": "Come trasformare una foto in un modello 3D, quali file ricevi e cosa può modellare easyrender.",
+      "empty": "Stiamo scrivendo le prime guide. Non ce ne sono ancora di pubblicate.",
+      "readMore": "Leggi la guida",
       "latest": "La guida più recente",
       "more": "Altre guide"
     },
@@ -1090,17 +1321,54 @@
     },
     "post": {
       "by": "Di {author}",
-      "published": "Published {date}",
-      "updated": "Updated {date}",
+      "published": "Pubblicato il {date}",
+      "updated": "Aggiornato il {date}",
       "readingTime": "{minutes} min di lettura",
       "toc": "In questa pagina",
-      "backToIndex": "All guides",
+      "backToIndex": "Tutte le guide",
       "modelHint": "Trascina per ruotare",
       "cta": {
-        "title": "Try it with one photo",
-        "button": "Upload a photo"
+        "title": "Prova con una foto",
+        "button": "Carica una foto"
       },
-      "related": "Continua a leggere"
+      "related": "Continua a leggere",
+      "promo": {
+        "title": "Ti chiedono altre foto?",
+        "button": "Prova gratis la tua foto",
+        "disclosure": "Anteprima gratuita. Il modello 3D è a pagamento.",
+        "solution": "Mostralo in 3D. Da una foto.",
+        "visual": "Esempio di modello generato di poltrona in rotazione",
+        "play": "Riproduci il video del prodotto",
+        "pause": "Metti in pausa il video"
+      },
+      "priceReference": "I prezzi dell’articolo sono riferimenti in USD. Consulta i prezzi per la valuta e l’offerta attuali."
+    },
+    "comparisons": {
+      "title": "Confronti",
+      "description": "Metodi e strumenti di modellazione 3D affiancati, quando una guida non basta per scegliere.",
+      "read": "Leggi il confronto",
+      "choices": {
+        "title": "Scegli in base alle tue esigenze",
+        "photo": {
+          "need": "Una foto di prodotto",
+          "tools": "easyrender",
+          "check": "Controlla le viste gratuite prima di pagare il modello."
+        },
+        "views": {
+          "need": "Foto da più lati",
+          "tools": "Tripo · Rodin",
+          "check": "Mostra i dettagli nascosti con viste reali del prodotto."
+        },
+        "animation": {
+          "need": "Personaggi e animazione",
+          "tools": "Meshy · Sloyd",
+          "check": "Verifica rigging, esportazione e diritti commerciali del piano."
+        }
+      },
+      "groups": {
+        "tools": "Confronta gli strumenti",
+        "methods": "Confronta i metodi"
+      }
     }
   },
   "Models": {
@@ -1212,23 +1480,28 @@
   },
   "Analytics": {
     "title": "Cookie e analisi",
-    "banner": "Google Analytics è facoltativo: puoi accettarlo o rifiutarlo. Usiamo anche PostHog senza cookie, che resta attivo indipendentemente da questa scelta.",
-    "accept": "Accetta",
-    "reject": "Rifiuta",
+    "banner": "Scegli solo Google Analytics, aggiungi la misurazione pubblicitaria facoltativa o rifiuta entrambe. La misurazione pubblicitaria collega i clic consentiti alle conversioni; la personalizzazione resta disattivata. PostHog senza cookie rimane attivo separatamente.",
+    "accept": "Solo analisi",
+    "reject": "Rifiuta le opzioni",
     "details": "Dettagli sui cookie",
-    "intro": "Qui spieghiamo lo spazio di archiviazione del browser, Google Analytics facoltativo e la nostra analisi del prodotto senza cookie.",
+    "intro": "Come usiamo lo spazio del browser, la misurazione Google facoltativa e l’analisi di prodotto separata senza cookie.",
     "anonTitle": "er_anon",
     "anon": "Questo cookie proprietario identifica le tue anteprime anonime, applica il limite gratuito giornaliero e ti permette di associarle al tuo account. Mantiene anche gli stessi prezzi durante un test dei prezzi, anche se rifiuti le analisi. Viene creato alla prima visita e dura un anno.",
     "consentTitle": "er_consent",
-    "consent": "Ricorda la tua scelta, la data e la versione per un anno. Viene creato solo quando scegli.",
+    "consent": "Conserva per un anno le tue scelte separate di analisi e misurazione pubblicitaria, data e versione, solo dopo una tua scelta. Un’accettazione precedente dell’analisi non autorizza mai la pubblicità.",
     "gaTitle": "Google Analytics 4: _ga e _ga_*",
-    "ga": "I cookie di Google Analytics misurano le visite e durano fino a due anni. Nelle regioni più restrittive richiedono il consenso; altrove la misurazione è attiva salvo rifiuto o GPC. Quando consentito, er_campaign conserva i campi di campagna ammessi nello spazio di sessione per un massimo di 30 minuti e viene eliminato in caso di rifiuto. Gli acquisti confermati possono essere inviati dal server con la stessa identità di misurazione, anche senza tornare dal checkout. Archiviazione pubblicitaria e personalizzazione restano disabilitate.",
+    "ga": "I cookie di Google Analytics misurano le visite e possono durare due anni. Nelle regioni rigorose serve il consenso; altrove l’analisi funziona salvo rifiuto o GPC. Se consentita, er_campaign conserva i campi normalizzati della campagna per un massimo di 30 minuti. Gli acquisti confermati possono essere misurati dal server con gli stessi identificatori di client e sessione, anche senza ritorno dal pagamento.",
     "posthogTitle": "PostHog (UE), senza cookie",
     "posthog": "PostHog si carica in tutte le regioni, anche dopo un rifiuto o con GPC. Il suo SDK per browser non usa cookie né archiviazione persistente e non crea profili personali. Raccogliamo inoltre eventi server per registrazioni, rendering e pagamenti, associati a identificativi interni dell’account o dell’anteprima. Un identificativo di prezzo sottoposto a hash collega le visite ai prezzi con registrazioni e acquisti per misurare il test dei prezzi.",
     "attributionTitle": "Attribuzione del primo contatto",
-    "attribution": "I parametri della campagna e la pagina di provenienza restano in memoria e vengono salvati alla creazione di un’anteprima o di un account. Se Google Analytics è consentito, questi campi restano anche temporaneamente nello spazio di sessione, come indicato sopra. Non salviamo identificativi dei clic pubblicitari. Gli eventi operativi del server sono indipendenti dalla misurazione Google facoltativa.",
+    "attribution": "Le campagne normalizzate e i percorsi di provenienza restano in memoria e vengono salvati con anteprime o account alla creazione. Gli identificatori di clic pubblicitari sono esclusi da questi dati e da PostHog. L’attribuzione pubblicitaria facoltativa usa lo spazio temporaneo separato descritto sopra.",
     "change": "Cambia la tua scelta",
-    "withdraw": "Rifiuta interrompe Google Analytics facoltativo, elimina i suoi cookie e lo spazio di sessione er_campaign e richiede l’annullamento delle misurazioni degli acquisti ancora in attesa sul server per il tuo account connesso. GPC blocca Google Analytics facoltativo. PostHog senza cookie e gli eventi operativi del server restano attivi. Questo controllo non ritira i dati già inviati."
+    "withdraw": "Rifiutare disattiva la misurazione Google facoltativa, cancella i relativi cookie e i nostri dati di campagne e clic, e richiede l’annullamento delle misurazioni server in attesa per l’account connesso. Solo analisi cancella anche l’attribuzione pubblicitaria e annulla i contesti in attesa. GPC blocca entrambe le finalità Google facoltative. Gli eventi già inviati non si possono ritirare qui. PostHog senza cookie e gli eventi operativi restano attivi.",
+    "metaTitle": "Cookie e analisi · easyrender",
+    "metaDescription": "Come easyrender usa cookie e analisi, quali dati raccoglie e come modificare le preferenze di consenso.",
+    "acceptAdvertising": "Analisi + misurazione annunci",
+    "advertisingTitle": "Misurazione pubblicitaria facoltativa: er_ad_touch e _gcl_*",
+    "advertising": "Solo una scelta pubblicitaria esplicita consente l’archiviazione pubblicitaria di Google e l’uso dei dati per misurare gli annunci. Conserviamo gli identificatori di clic Google consentiti in er_ad_touch per un massimo di 30 minuti, li inviamo solo a Google e li rimuoviamo dall’indirizzo dopo la raccolta. Google può salvare propri cookie per collegare le conversioni. Personalizzazione e Google Signals restano disattivati. Accettare l’analisi non attiva questa opzione. Google può conservare dati di collegamento anche nei cookie _gcl_* e nello spazio locale _gcl_ls; la loro durata è separata dal nostro record di 30 minuti. Questi identificatori Google accessibili vengono cancellati quando ritiri il permesso pubblicitario."
   },
   "Ar": {
     "metaTitle": "Guardalo a casa tua",
@@ -1276,6 +1549,43 @@
     "invalid": "Questo link è scaduto. Apri di nuovo l'app in Shopify.",
     "error": "Impossibile collegare il negozio."
   },
+  "AdminGift": {
+    "title": "Regalar créditos",
+    "eyebrow": "easyrender / administración",
+    "description": "Busca una cuenta, revisa sus movimientos y añade créditos con un motivo registrado.",
+    "internal": "Interno · acceso restringido",
+    "findTitle": "Buscar cuenta",
+    "findDescription": "Introduce el correo electrónico exacto de la persona.",
+    "email": "Correo electrónico",
+    "find": "Buscar usuario",
+    "searching": "Buscando…",
+    "balance": "Saldo actual · créditos",
+    "recentLedger": "Últimos movimientos",
+    "noEntries": "No hay movimientos todavía.",
+    "date": "Fecha",
+    "movement": "Créditos",
+    "ledgerReason": "Motivo",
+    "emptyState": "Busca una cuenta para ver su saldo y sus últimos movimientos.",
+    "giftTitle": "Añadir créditos",
+    "giftDescription": "El saldo se actualiza al confirmar y el movimiento queda registrado.",
+    "amount": "Cantidad de créditos",
+    "amountHint": "Max {max} credits (≈{models} 3D models).",
+    "reason": "Motivo (obligatorio)",
+    "review": "Revisar regalo",
+    "confirmTitle": "Confirmar regalo de créditos",
+    "confirmDescription": "Comprueba la cuenta, la cantidad y el motivo antes de continuar.",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar y regalar",
+    "granting": "Añadiendo…",
+    "success": "Créditos añadidos correctamente. Nuevo saldo: {balance} créditos.",
+    "duplicate": "Esta solicitud ya se había procesado. Saldo actual: {balance} créditos.",
+    "invalid_email": "Introduce un correo electrónico válido.",
+    "invalid_amount": "Enter a whole number between 1 and {max}.",
+    "invalid_reason": "Introduce un motivo de hasta 500 caracteres.",
+    "invalid_key": "La solicitud no es válida. Vuelve a revisar el regalo.",
+    "not_found": "No encontramos ninguna cuenta con ese correo.",
+    "requestFailed": "No se pudo completar la solicitud. Inténtalo de nuevo."
+  },
   "AdminAnalytics": {
     "title": "Admin analytics",
     "eyebrow": "easyrender / internal intelligence",
@@ -1289,6 +1599,7 @@
       "product": "Product usage",
       "icp": "Customer profile",
       "health": "Data sources & health",
+      "giftCredits": "Regalar créditos",
       "adminNav": "Admin navigation",
       "all": "All",
       "auto": "Auto",
@@ -1334,7 +1645,7 @@
       "consumed": "Credits consumed (gross)",
       "free": "Other credits granted",
       "returned": "Failed-job credits returned",
-      "providerCost": "Provider cost · USD",
+      "providerCost": "Costo stimato del fornitore · USD",
       "gross": "Gross revenue",
       "refunds": "Cash refunds",
       "net": "Net revenue",
@@ -1427,8 +1738,8 @@
       "sheets": "Angle sheets ready",
       "failure": "Failure rate · settled rows",
       "success": "Success rate · settled rows",
-      "generationMedian": "Generation median · minutes",
-      "generationP90": "Generation p90 · minutes",
+      "generationMedian": "Completamento 3D mediano · minuti",
+      "generationP90": "Completamento 3D p90 · minuti",
       "costModel": "Provider cost / model · USD",
       "publicShare": "Public model share",
       "keysCreated": "API keys created",
@@ -1475,10 +1786,10 @@
       "stripeUnavailable": "Stripe unavailable or incomplete · using DB fallback",
       "profilePlanned": "Business profile · not measurable yet",
       "profileDetails": "Business type, store platform and self-reported catalog size need a profile question at signup (planned).",
-      "periodDefinitions": "Activation follows signups in the selected period through its end. Usage follows render creation; revenue follows payments. Previous means the immediately preceding equal-duration window. Current subscriptions have no historical comparison.",
-      "mutableRenderTimes": "Render completion and generation times are proxies: updatedAt also changes after completion; no immutable sheet completion timestamp exists. A sheet requires sheetKey; a model requires ready + glbKey.",
+      "periodDefinitions": "L’attivazione segue le coorti di registrazione fino a fine periodo. I totali prodotto usano coorti di creazione; l’attività anteprime/modelli del riepilogo segue i completamenti, i ricavi i pagamenti. Confronto con il precedente periodo di pari durata. Gli abbonamenti attuali non hanno confronto storico.",
+      "mutableRenderTimes": "La cronologia di anteprime e modelli usa date di completamento immutabili; i vecchi successi senza data sono esclusi. Le modifiche successive non spostano queste date. Stato e visibilità sono attuali. Le durate coprono solo completamenti 3D con data.",
       "boundedSnapshot": "Read-only snapshot, capped at 50,000 rows per table. Exceeding a cap stops the report rather than publishing partial totals.",
-      "dbFallback": "DB fallback (no Stripe fees/refunds/MRR from Stripe). Paid purchases use stored USD amounts for PAYG and subscriptions; only legacy subscription grants without a purchase link infer catalog prices. Net assumes no observable cash refunds. Dev grants are not revenue.",
+      "dbFallback": "Fonte DB di riserva: i ricavi lordi usano gli acquisti registrati; solo i vecchi accrediti di abbonamento stimano i prezzi di catalogo. Rimborsi monetari, commissioni, ricavi netti, ARPU netto e margine restano sconosciuti senza riconciliazione Stripe completa. Gli accrediti di sviluppo non sono ricavi.",
       "anonymousTeamCaveat": "Team exclusions apply to known account emails. Anonymous previews and cookieless traffic cannot reliably exclude the team.",
       "multipleCurrencies": "Tables separate currencies. Charts show the first currency only; no FX conversion or cross-currency total is calculated. Provider margin is USD only.",
       "attributionScope": "First-touch signup cohort and period payment activity. Visit joins use matching dimensions; missing traffic stays unknown. Signals require at least 20 signups.",
@@ -1486,7 +1797,7 @@
       "visitsCaveat": "Visits = landing_view; pageviews = $pageview. Unique visitors sum daily hash estimates, not distinct people across the period. Consent and blockers bias traffic; do not compare markets as equal coverage.",
       "cohortDefinition": "Each cell is cumulative conversion by the end of cohort week 0–8. Unfinished weeks are blank. Revenue is gross in the first displayed currency through the selected end.",
       "anonymousLink": "anonId + userId proves a claimed preview, not signup conversion: startBuild/startSheet assigns ownership after signup. A trustworthy anonymous-preview → signup rate needs a signup-time link.",
-      "reconciliationScope": "DB excludes team by default; PostHog includes all events. Sheet counts use creation-time proxies, model counts updatedAt; event timestamps and snapshot state can differ. Investigate differences; equality is not proof of correct tracking.",
+      "reconciliationScope": "Il DB esclude il team per impostazione predefinita; PostHog include tutti gli eventi. La riconciliazione di anteprime/modelli usa date di completamento immutabili valide, senza vecchi successi non datati. Le differenze possono riflettere copertura e date. L’uguaglianza non dimostra un tracciamento corretto.",
       "healthNotes": "Refresh invalidates database (5 min) and external-source (10 min) caches. Missing sources never become zero. Errors are sanitized; raw API responses and secrets stay server-side.",
       "stripeScope": "Stripe payments without a known account are excluded with team filtering. Current subscriptions are filtered by customer identity. First-payer classification and LTV are bounded by fetched Stripe history.",
       "w0": "Week 0",
@@ -1520,19 +1831,68 @@
       "visitsNotConfigured": "Visits: PostHog not configured",
       "visitsIncomplete": "Visits: PostHog data incomplete",
       "visitsError": "Visits: PostHog unavailable (request failed)",
-      "sheetCountUnit": "sheets"
+      "sheetCountUnit": "sheets",
+      "developerActivation": "Attivazione 3D per canale di creazione",
+      "developerActivationCohorts": "Coorti di attivazione 3D",
+      "activationAccounts": "Account nella coorte",
+      "measuredAccounts": "Account misurati",
+      "legacyAccounts": "Storico senza data escluso",
+      "firstSuccess": "Primo modello completato",
+      "secondSuccess": "Secondo modello completato",
+      "activationPercent": "Attivazione (%)",
+      "repeatPercent": "Riutilizzo dopo l’attivazione (%)",
+      "firstSuccessMinutes": "Mediana al primo modello (min)",
+      "repeatMinutes": "Mediana dal primo al secondo (min)",
+      "developerActivationDefinition": "Gli account identificati entrano nella coorte di un canale con la prima richiesta 3D. Attivazione e riutilizzo contano GLB distinti completati prima della fine del periodo. La chiave di autenticazione non determina se la richiesta arriva da API o MCP.",
+      "developerActivationCoverage": "I successi storici senza data escludono quell’account/canale da tassi e tempi misurati; sono mostrati separatamente. Le coorti recenti hanno meno tempo di osservazione. Sono generazioni 3D, non visite, chiavi emesse, connessioni, download o utilizzi limitati alle foto prodotto. Il canale storico di creazione può essere incompleto.",
+      "api": "API",
+      "mcp": "MCP",
+      "web": "Web",
+      "organicLandings": "Organic search outcomes by landing page",
+      "previewAccounts": "Accounts with preview (current state)",
+      "cohortPayers": "Signup cohort payers",
+      "repeatPayers": "Accounts with two payments",
+      "organicCohortDefinition": "Account da ricerca organica registrati nel periodo, con risultati prima della sua fine. Anteprime e modelli richiedono date di completamento immutabili; i vecchi modelli senza data sono separati. I pagamenti positivi sono osservazioni deduplicate, non ricavi netti. Non è conversione visite né una sequenza obbligatoria. Le coorti recenti hanno meno tempo di osservazione.",
+      "providerCostScope": "I costi sono stime cumulative registrate per render, set di viste e ingrandimenti, assegnate alla creazione di ogni operazione, non alla fattura o alla spesa giornaliera. Le tavole riutilizzate contano una volta. Elaborazioni successive possono cambiare vecchie coorti. Il costo per modello 3D usa solo i render.",
+      "renderCostScope": "I costi per canale includono solo le operazioni Render; le operazioni di immagine avanzate non salvano il canale di creazione. Il costo totale del fornitore le include separatamente.",
+      "advertisingSpend": "Spesa pubblicitaria importata",
+      "campaign": "UTM campagna (associazione)",
+      "adSpend": "Spesa importata",
+      "clicks": "Clic",
+      "impressions": "Impressioni",
+      "newPayers": "Nuovi paganti associati",
+      "cacEstimate": "CAC stimato",
+      "importedDays": "Giorni importati",
+      "expectedDays": "Giorni del periodo",
+      "spendCoverage": "Copertura importazione",
+      "spendComplete": "Tutti i giorni importati",
+      "spendPartial": "Giorni mancanti",
+      "spendMissing": "Nessuna spesa importata",
+      "spendAmbiguous": "Campagna ambigua",
+      "advertisingSpendScope": "Importazione giornaliera manuale. Corrispondenza: primo contatto Google a pagamento + campagna normalizzata esatta + valuta del pagamento. Giorni mancanti o ID ambigui disabilitano il CAC. Attribuzioni sconosciute o non corrispondenti sono escluse; nessun pagante associato non prova assenza di conversioni. Si usa il primo pagamento osservato. È una stima del periodo di attività, non attribuzione clic Ads, CAC di coorte matura, ROAS o profitto netto.",
+      "spendProvisional": "Esportazione giornaliera provvisoria",
+      "spendImportTitle": "Importa la spesa pubblicitaria giornaliera",
+      "spendImportHelp": "Scegli il JSON normalizzato dal convertitore CSV Google Ads. Massimo 512 KB e 1.000 righe giornaliere. Reimportare sostituisce i valori corrispondenti. Campagne e budget non cambiano.",
+      "spendImportFile": "JSON della spesa giornaliera",
+      "spendImportAction": "Importa spesa",
+      "spendImportPending": "Importazione…",
+      "spendImportSuccess": "Importate {count} righe giornaliere. Il report si sta aggiornando.",
+      "spendImportTooLarge": "Il file supera 512 KB. Dividilo in lotti più piccoli.",
+      "spendImportInvalid": "Importazione non valida. Controlla formato JSON, date, valuta e contatori interi non negativi.",
+      "spendImportDenied": "Permessi amministratore mancanti o scaduti. Accedi con un account verificato autorizzato.",
+      "spendImportFailed": "Impossibile confermare l’importazione. Controlla la connessione e riprova con lo stesso file; le righe giornaliere non saranno duplicate."
     }
   },
   "McpLanding": {
     "meta": {
       "title": "Image to 3D MCP server for AI agents · easyrender",
-      "description": "Connect Claude, Cursor or VS Code to easyrender. Turn product photos into 3D models through MCP: preview the result, spend credits to build and download a GLB."
+      "description": "Connect Claude, Cursor or VS Code to easyrender. Turn product photos into 3D models through MCP: review the free preview and download the GLB when ready."
     },
     "hero": {
       "title": "Product photos to 3D. From your agent.",
       "subtitle": "Connect easyrender through MCP. Give your agent a product photo, review the preview and build a textured GLB without switching to a modeling tool.",
       "cta": "Connect your agent",
-      "note": "Preview first. Credits for the 3D build."
+      "note": "Review the free preview before building the 3D model."
     },
     "clientsLabel": "Setup guides included for",
     "intro": {
@@ -1569,7 +1929,7 @@
       "exampleLabel": "Example request to your connected agent",
       "prompt": "Turn this product photo into a 3D model. Show me the preview and the credit cost first. Wait for my approval before building the GLB. Once it is ready, download the model.",
       "exampleNote": "Illustrative workflow. Use your own photo; the preview and model are generated when you run the tools.",
-      "toolsLabel": "Four tools, one workflow",
+      "toolsLabel": "Il flusso principale dalla foto al 3D",
       "tools": {
         "create_render": "Start the angle-sheet preview from a photo.",
         "get_render": "Check progress and retrieve the result links.",
@@ -1597,7 +1957,7 @@
         },
         "input": {
           "q": "Can my agent use a local photo?",
-          "a": "create_render accepts a public HTTPS image URL or base64 image data. For a local photo, your client needs to read and send the file as base64. Supported types are JPEG, PNG and WebP, up to 4 MB."
+          "a": "create_render accetta una sola fonte dell’immagine: un URL HTTPS pubblico, dati base64 senza prefisso o un upload_id ottenuto da un caricamento autenticato. Per una foto locale, il client deve poter caricare o codificare il file. Sono supportati JPEG, PNG e WebP. Le immagini tramite URL o caricamento possono arrivare a 4 MiB; per i dati base64 inviati direttamente, il limite è di 3 MiB meno 16 KiB dopo la decodifica. Un upload_id scade dopo un’ora."
         },
         "payment": {
           "q": "When are credits spent?",
@@ -1620,6 +1980,26 @@
     "closing": {
       "title": "Bring your next product into the conversation.",
       "cta": "Connect easyrender"
+    },
+    "skill": {
+      "cta": "Install agent skill",
+      "title": "Give your agent the photo-to-3D workflow.",
+      "description": "Add the easyrender skill to guide your agent from the first photo to an approved GLB build.",
+      "body": "MCP connects the tools. The skill explains when to preview, how to check the current cost, how to work within your approved budget and how to resume a render after a timeout.",
+      "steps": {
+        "install": "Run the install command from your project and choose a compatible agent.",
+        "connect": "Connect your easyrender account using the MCP setup above.",
+        "ask": "Attach a product photo and tell your agent what to create and when it may spend credits."
+      },
+      "source": "Read the skill on GitHub",
+      "commandLabel": "Install in your project",
+      "copy": "Copy command",
+      "copied": "Copied",
+      "copyError": "Could not copy. Select and copy the command manually.",
+      "requirement": "Requires Node.js/npm for the installer and an Agent Skills-compatible client. Installation adds instructions; it does not connect your account or start a render. You can also copy the skill folder from GitHub.",
+      "exampleLabel": "Try this with your photo",
+      "example": "Use the easyrender-image-to-3d skill to turn this product photo into a GLB. Show me the preview and cost before spending any credits.",
+      "cost": "The skill is open source under the MIT license. Check the current cost with your agent before approving a build; your AI client may charge separately. Instructions are in English, and the agent can respond in your language."
     }
   },
   "ApiLanding": {
@@ -1750,5 +2130,242 @@
       "title": "Add the next dimension to your product.",
       "cta": "Get your API key"
     }
+  },
+  "Upscale": {
+    "action": "Ingrandisci, {credits} crediti",
+    "working": "Ingrandimento",
+    "buy": "Acquista crediti per ingrandire",
+    "download": "Scarica {width} px",
+    "downloadLarge": "Scarica il file ingrandito"
+  },
+  "IntegrationLanding": {
+    "result": {
+      "photo": {
+        "label": "Source photo",
+        "alt": "Foto originale di un tavolo rettangolare in legno",
+        "body": "One clear image of the object. No 3D file or multi-camera capture required."
+      },
+      "angles": {
+        "label": "Generated angle sheet",
+        "alt": "Nove viste generate dello stesso tavolo in legno",
+        "body": "See how the object is interpreted from different sides before using the final asset."
+      },
+      "model": {
+        "label": "Textured GLB",
+        "alt": "Modello 3D interattivo generato del tavolo in legno",
+        "body": "Drag to rotate the model. Download it to inspect in your own 3D viewer.",
+        "hint": "Trascina per ruotare"
+      },
+      "note": "Pre-generated showcase assets, not a live request. This sheet is a finished example; the initial preview is watermarked. Geometry is approximate and unseen surfaces are inferred.",
+      "download": "Download sample GLB",
+      "mcp": {
+        "title": "From an agent request to a 3D asset.",
+        "description": "See how a photo moves through the MCP tools, then inspect a real showcase result below."
+      },
+      "api": {
+        "title": "From your upload flow to a model response.",
+        "description": "See the application handoff and JSON response, then inspect the source photo, generated angles and downloadable GLB."
+      },
+      "evidence": {
+        "title": "Cosa puoi verificare",
+        "provenance": "Questi file sono copie inalterate di un rendering pubblico esistente di un tavolo easyrender. La foto originale, il foglio delle viste e il GLB appartengono allo stesso rendering. È un esempio già generato, non una registrazione in diretta dell’API o del MCP.",
+        "measurementTitle": "Stato della generazione",
+        "measurement": "Questo esempio esistente non ha una durata totale verificata. Segui lo stato del tuo rendering per sapere quando i file sono pronti."
+      }
+    },
+    "costs": {
+      "api": {
+        "title": "What does the image to 3D API cost?",
+        "description": "Pay for 3D builds with your account credits. API access uses the same credit balance as the web app.",
+        "check": "Read renderCredits in the render response before building; it is the credit cost for that render. Keep approval and spending limits in your application."
+      },
+      "mcp": {
+        "title": "Review before you build",
+        "description": "The preview is free, subject to your account’s preview limits. Inspect the angles before deciding to build the GLB.",
+        "check": "Ask your agent to check get_credits and wait for your approval before calling render_3d. Your AI client may charge separately."
+      },
+      "preview": {
+        "label": "Angle-sheet preview",
+        "body": "No credits charged, subject to your account’s preview allowance. Review the preview before the paid build."
+      },
+      "build": {
+        "label": "Per full 3D build · pay as you go",
+        "body": "{credits} credits for the final angle sheet and textured GLB. This is the full photo-to-3D workflow."
+      },
+      "access": {
+        "label": "API & MCP access",
+        "value": "Included",
+        "body": "Use your account and credits through either integration. No separate connector fee."
+      },
+      "estimate": {
+        "title": "Budget example: {count} full builds",
+        "body": "{credits} credits = {price} at the pay-as-you-go rate of {unit} per credit. Monthly plans can lower the effective cost per credit."
+      },
+      "start": {
+        "title": "Start without a subscription",
+        "body": "The minimum credit purchase is {credits} credits ({price}). Credits do not expire. Review the total at checkout before paying."
+      },
+      "refund": "Failed 3D builds refund their credits. Prices shown use your current currency and pricing offer."
+    },
+    "apiDemo": {
+      "title": "Your application · easyrender REST API",
+      "illustration": "Illustrative application flow and partial JSON response. No upload or paid request runs here.",
+      "photoAlt": "Foto di un tavolo usata come esempio di caricamento",
+      "upload": "Product photo received",
+      "flow": "Your backend sends the photo to POST /api/renders. Show the preview, display the returned cost and let the user approve the paid build. Poll the render status to retrieve the finished model.",
+      "cost": "Use the render’s current renderCredits field before building; the cost can change when a finished sheet is reused. Keep the API key on your server.",
+      "response": "Partial response after a full build has finished; sample ID, not a live render."
+    },
+    "examples": {
+      "title": "Esegui l’esempio completo",
+      "body": "Carica una foto, controlla il prezzo, imposta un limite di crediti, riprendi dall’ID e scarica il GLB privato. Gli esempi non avviano generazioni a pagamento senza approvazione esplicita.",
+      "python": "Esempio Python",
+      "typescript": "Esempio TypeScript",
+      "reference": "Riferimento API"
+    }
+  },
+  "Legal": {
+    "navigation": "Informazioni legali",
+    "updated": "Ultimo aggiornamento: 14 novembre 2026",
+    "languageNotice": "Il testo legale qui sotto è disponibile in inglese.",
+    "cookies": "Informazioni e preferenze sui cookie",
+    "operator": {
+      "title": "Service operator / data controller",
+      "name": "Legal name: MRRAMOS INMUEBLES SL (sociedad limitada incorporated in Spain)",
+      "taxId": "CIF/NIF: B75763383",
+      "address": "Registered address / domicilio fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (Spain)",
+      "contact": "Contact email: info@easyrender.ai"
+    },
+    "privacy": {
+      "title": "Informativa sulla privacy",
+      "metaTitle": "Informativa sulla privacy · easyrender",
+      "metaDescription": "Informativa sulla privacy — easyrender.ai. Il testo legale qui sotto è disponibile in inglese.",
+      "intro": "This policy explains how easyrender.ai handles personal data when you use our website, apps, API and MCP tools to turn a photo into a 3D model. MRRAMOS INMUEBLES SL, the Spanish company identified above, is the data controller. Applicable data protection laws include the EU General Data Protection Regulation (GDPR), Spanish Organic Law 3/2018 on the Protection of Personal Data and Guarantee of Digital Rights (LOPDGDD) and, where applicable to UK users, the UK GDPR. Contact info@easyrender.ai about privacy or your rights.",
+      "sections": {
+        "collection": {
+          "title": "1. Data we collect",
+          "body": "We collect account details (name, email, password hash and, if you choose Google sign-in, profile and authentication identifiers); session and API credentials; uploaded photos, prompts, previews, generated models and job history; credit balances, ledger entries, purchases, subscription status and Stripe references; and messages you send us. Stripe collects payment and billing details directly; we do not store your full card number. Technical data includes IP addresses or derived identifiers, browser and device information, request and error logs, approximate country, consent choices, referral and campaign information, and product usage events. Anonymous previews are associated with an anonymous browser identifier. Please avoid uploading people, personal documents, sensitive data or confidential material."
+        },
+        "purposes": {
+          "title": "2. Purposes and legal bases",
+          "body": "The contract, legal obligation, legitimate interests and consent bases described below apply under the EU GDPR and Spanish Organic Law 3/2018 (LOPDGDD), and under the UK GDPR where it applies. We use account, upload and transaction data to provide the service you request, generate and deliver files, manage credits and subscriptions, and answer service requests (performance of a contract or steps requested before entering one). We retain required billing records and respond to valid legal demands to meet legal obligations. We use proportionate security, abuse prevention, diagnostics and cookieless product measurement for our legitimate interests in protecting and improving the service; you may object to processing based on those interests. Optional analytics use consent where required, including in the EEA. Where local law permits analytics without prior consent, we rely on legitimate interests and offer a rejection control. We do not use your data for decisions that produce legal or similarly significant effects solely through automated processing."
+        },
+        "public": {
+          "title": "3. Uploads, AI processing and public models",
+          "body": "AI providers process the photo, prompts and intermediate outputs needed to produce previews and 3D models. Generated models are public by default and may appear in the gallery, be viewed, downloaded, shared and indexed by search engines. Public model pages can also expose previews and source imagery. Use the available visibility controls before sharing sensitive content. Changing visibility does not revoke files already downloaded or copies held by others; file URLs and cached copies may remain accessible. Contact us to request removal. Do not upload material that you cannot lawfully share or send to our processing providers."
+        },
+        "providers": {
+          "title": "4. Service providers and other recipients",
+          "body": "We use Vercel for hosting, Neon/Postgres for account and application data, AWS S3 and CloudFront for file storage and delivery, Better Auth software and its hosted dashboard for authentication administration, Stripe for payments and subscriptions, Replicate and the AI model providers used by the rendering pipeline for image and model processing, PostHog EU for product measurement, Google Analytics 4 for optional analytics, and Sentry for error monitoring where enabled. Google also receives authentication data if you choose Google sign-in. Providers receive the data needed for their role and act as processors where applicable; payment and identity providers may also act as independent controllers for their own legal or security purposes. We may disclose necessary information to professional advisers, authorities when legally required, or a successor in a business transfer subject to applicable safeguards. We do not sell personal data."
+        },
+        "transfers": {
+          "title": "5. International transfers",
+          "body": "MRRAMOS INMUEBLES SL is established in Spain. Your data may be processed in or accessed from Spain and other countries where our providers or their subprocessors operate, including the United States, outside the EEA and the United Kingdom. EU hosting does not exclude overseas support access or onward transfers. Transfers subject to the EU GDPR require an applicable adequacy decision or appropriate safeguards, unless a permitted statutory exception applies. Safeguards may include the European Commission’s Standard Contractual Clauses, with transfer risk assessments and additional measures where required. Where the UK GDPR applies to a transfer, safeguards may include the UK International Data Transfer Agreement or UK Addendum. You can request details of the safeguards applicable to your data and copies, subject to redaction of confidential details, at info@easyrender.ai."
+        },
+        "retention": {
+          "title": "6. Retention and deletion",
+          "body": "Account information and saved uploads, previews and models are retained while needed to provide your account and library, or until a deletion request is handled. Uploads and outputs do not have a promised automatic expiry. Transaction and credit records may be kept after account closure for applicable accounting, tax, fraud prevention and legal claim requirements. Support, security and analytics records are retained according to their purpose, provider settings and applicable legal requirements; factors include whether an issue remains open, whether the data is still needed and whether a legal retention duty applies. Deletion requests are reviewed for those obligations. Backups and CDN caches may retain copies until their normal expiry; publicly downloaded copies cannot be recalled. Browser storage lifetimes are described on the cookie information page."
+        },
+        "cookies": {
+          "title": "7. Cookies, analytics and your choices",
+          "body": "Lo spazio essenziale supporta accesso, anteprime anonime, preferenze linguistiche e memorizzazione della tua scelta. PostHog si carica in tutte le regioni, anche dopo un rifiuto o con GPC. Il suo SDK per browser non usa cookie né archiviazione persistente e non crea profili personali. Raccogliamo inoltre eventi server per registrazioni, rendering e pagamenti, associati a identificativi interni dell’account o dell’anteprima. Un identificativo di prezzo sottoposto a hash collega le visite ai prezzi con registrazioni e acquisti per misurare il test dei prezzi. I cookie di Google Analytics misurano le visite e possono durare due anni. Nelle regioni rigorose serve il consenso; altrove l’analisi funziona salvo rifiuto o GPC. Se consentita, er_campaign conserva i campi normalizzati della campagna per un massimo di 30 minuti. Gli acquisti confermati possono essere misurati dal server con gli stessi identificatori di client e sessione, anche senza ritorno dal pagamento. Solo una scelta pubblicitaria esplicita consente l’archiviazione pubblicitaria di Google e l’uso dei dati per misurare gli annunci. Conserviamo gli identificatori di clic Google consentiti in er_ad_touch per un massimo di 30 minuti, li inviamo solo a Google e li rimuoviamo dall’indirizzo dopo la raccolta. Google può salvare propri cookie per collegare le conversioni. Personalizzazione e Google Signals restano disattivati. Accettare l’analisi non attiva questa opzione. Google può conservare dati di collegamento anche nei cookie _gcl_* e nello spazio locale _gcl_ls; la loro durata è separata dal nostro record di 30 minuti. Questi identificatori Google accessibili vengono cancellati quando ritiri il permesso pubblicitario. Rifiutare disattiva la misurazione Google facoltativa, cancella i relativi cookie e i nostri dati di campagne e clic, e richiede l’annullamento delle misurazioni server in attesa per l’account connesso. Solo analisi cancella anche l’attribuzione pubblicitaria e annulla i contesti in attesa. GPC blocca entrambe le finalità Google facoltative. Gli eventi già inviati non si possono ritirare qui. PostHog senza cookie e gli eventi operativi restano attivi. Contattaci per opporti al trattamento basato su interessi legittimi."
+        },
+        "rights": {
+          "title": "8. Your rights and complaints",
+          "body": "EU/EEA and UK users retain their rights under the EU GDPR and UK GDPR where applicable, subject to the conditions in those laws: access, correction, erasure, restriction and portability of personal data, and objection to processing based on legitimate interests. Spanish Organic Law 3/2018 (LOPDGDD) recognises the same rights for processing subject to Spanish law. You may withdraw consent at any time without affecting the lawfulness of earlier processing. Contact info@easyrender.ai; we may request proportionate identity verification. For GDPR and UK GDPR requests we normally respond within one month and explain any lawful extension; other requests are handled within the applicable statutory time limit. You may complain to the Agencia Española de Protección de Datos (AEPD), the Spanish supervisory authority, or bring a claim before the Spanish courts. EU/EEA users may also complain to the supervisory authority where they live, work or believe an infringement occurred. Providing account and payment information is necessary for paid services; without it we cannot provide those features. Optional analytics consent is not required to use the service."
+        },
+        "changes": {
+          "title": "9. Security, children and policy changes",
+          "body": "We use access controls and technical safeguards appropriate to the service, but no system is completely secure. The service is intended for adults and we do not knowingly collect children’s data; contact us if you believe a child has supplied personal data. We may update this policy as the service or legal requirements change, show the revised date, and provide additional notice of material changes where required. A policy update does not itself grant new consent."
+        }
+      }
+    },
+    "terms": {
+      "title": "Termini di servizio",
+      "metaTitle": "Termini di servizio · easyrender",
+      "metaDescription": "Termini di servizio — easyrender.ai. Il testo legale qui sotto è disponibile in inglese.",
+      "intro": "Easy Render is a product operated by MRRAMOS INMUEBLES SL, the company identified above. These terms govern your use of easyrender.ai, its apps, API and MCP tools. By creating an account or using the service, you agree to these terms. Contact info@easyrender.ai for service, billing or legal questions. Mandatory consumer rights remain unaffected.",
+      "sections": {
+        "service": {
+          "title": "1. The service and its limits",
+          "body": "easyrender turns one photo of a single piece of furniture, decor object or building exterior into AI-generated previews and a 3D model, with GLB and USDZ downloads where available. Free angle previews are subject to usage and abuse-prevention limits. The service does not model whole interior rooms. Outputs are estimates: dimensions, scale, geometry, materials and resemblance are not guaranteed. Verify outputs before using them in commerce or other projects. They are not surveys, engineering drawings or a basis for structural, construction or safety decisions. Features described as coming soon are not included promises of current functionality."
+        },
+        "accounts": {
+          "title": "2. Accounts and access",
+          "body": "You must be at least 18 and able to enter a binding contract, or act with authority for the business you represent. Provide accurate account and billing information, protect your password and API keys, and tell us promptly about unauthorized access. You are responsible for activity you authorize through your account and connected agents. Do not share credentials publicly, impersonate another person or bypass account restrictions. We may restrict access where reasonably necessary to address abuse, security incidents, non-payment or unlawful activity, and provide notice and a way to contact us where practicable."
+        },
+        "credits": {
+          "title": "3. Credits, prices and plans",
+          "body": "Paid generation uses credits. Current prices, included credits, currency, billing interval and applicable taxes are shown in the pricing interface and Stripe checkout before purchase. Pay-as-you-go purchases add credits; monthly plans renew and charge automatically until cancelled. Credits never expire and unused plan credits roll over. Credits are service units, not money, deposits or an investment. Manage, change or cancel your plan through the billing portal in Credits; the portal shows when a change or cancellation takes effect. Cancellation stops future renewals according to that confirmation and does not itself refund prior payments. Generation costs are shown before you spend credits. Future price or plan changes will be communicated as required by law and do not retrospectively change completed purchases."
+        },
+        "refunds": {
+          "title": "4. Failed jobs, refunds and consumer rights",
+          "body": "When a charged rendering job fails, including a failed quality check, the credits charged for that failed job are returned to your credit balance. This is a credit reversal, not an automatic refund to your card. The service does not provide an automatic cash-refund flow. For a payment error, disputed charge, defective service or refund request, contact info@easyrender.ai with your purchase details. Nothing here excludes refunds or remedies required by law. EEA consumers generally have a 14-day withdrawal right for distance contracts, subject to statutory conditions and exceptions. Starting generation does not by itself waive that right: any exception for immediate digital supply requires the legally required express consent, acknowledgement and confirmation. To exercise a statutory withdrawal right, send us a clear statement identifying your account, purchase and decision to withdraw. Where applicable, the law determines any proportionate amount due for services expressly requested during the withdrawal period and the refund owed."
+        },
+        "ownership": {
+          "title": "5. Your content and intellectual property",
+          "body": "You keep your rights in uploaded photos and other content. You must own those rights or have all permissions needed to upload, process and, where public, share that material, including relevant privacy, property, copyright and trademark permissions. You grant us a non-exclusive licence to host, copy, transmit and process your content through our service providers to operate the service, generate and deliver outputs, and display content you make public. This licence is limited to those purposes and necessary retention, legal and backup requirements. We do not claim ownership of your uploaded content. To the extent we hold transferable rights in outputs generated for you, we assign those rights to you, subject to third-party rights. AI outputs may not qualify for intellectual property protection, may resemble other outputs and are not guaranteed exclusive or free of third-party claims. Our software, branding and service remain ours or our licensors’."
+        },
+        "public": {
+          "title": "6. Public models and sharing",
+          "body": "Generated models are public by default. Public model pages, previews and associated imagery may be listed in the gallery, indexed, shared and downloaded by others. Do not upload confidential material or content you lack permission to publish. Available visibility controls can remove public listing, but cannot recall earlier downloads, third-party copies or cached files, and existing file URLs may remain accessible. Contact info@easyrender.ai for removal requests. Publishing a model does not transfer your underlying intellectual property to other visitors or grant them an unrestricted commercial licence."
+        },
+        "use": {
+          "title": "7. Acceptable use",
+          "body": "Do not use the service for unlawful, infringing, deceptive, abusive or exploitative content; non-consensual intimate imagery; sexual content involving minors; or activities that violate another person’s privacy or rights. Do not upload malware, attack or overload systems, evade limits or payment, scrape private data, or attempt unauthorized access. You must review outputs and use them lawfully. We may refuse or remove content and suspend access for violations, applying proportionate measures and complying with applicable notice and redress obligations. Report misuse or rights infringements to info@easyrender.ai."
+        },
+        "availability": {
+          "title": "8. Availability and ending the service",
+          "body": "We aim to provide a reliable service, but maintenance, provider outages and AI processing failures can interrupt it. We may change features or discontinue the service with reasonable notice where practicable and as required by law. You may stop using the service, cancel your plan through billing and contact us to close your account. Account closure is separate from subscription cancellation. On suspension or closure, access may end; outstanding payment obligations and provisions that by their nature survive will continue. We will handle unused paid entitlements and any refunds required by applicable law; this clause does not authorize forfeiture of statutory rights."
+        },
+        "liability": {
+          "title": "9. Responsibility and liability",
+          "body": "To the extent permitted by law, the service and AI outputs are provided as available without a guarantee of uninterrupted operation or fitness for a particular purpose. For business customers, our aggregate liability arising from the service is limited to the amounts paid to us for the service in the 12 months before the event giving rise to the claim, and we exclude indirect or consequential losses, including lost profits. These limits do not apply to fraud, wilful misconduct, gross negligence, death or personal injury caused by negligence, or liability that cannot lawfully be limited. Consumer statutory guarantees, data protection rights and mandatory remedies remain unaffected. You remain responsible for the rights in your inputs and for verifying how you use outputs."
+        },
+        "law": {
+          "title": "10. Changes, governing law and disputes",
+          "body": "These terms and related non-contractual obligations are governed by Spanish law. The courts of Spain have jurisdiction over disputes concerning these terms, including their existence, validity, interpretation, performance, breach or termination. Before starting formal proceedings, both parties must seek a resolution through good-faith direct negotiation for at least 30 days after written notice of the dispute; send notices to info@easyrender.ai. If you are a consumer, these provisions do not deprive you of mandatory protections in your country of habitual residence or your right to bring claims before courts available under applicable consumer law, and do not delay remedies that mandatory law makes available to you. We may revise these terms, publish the new date and give notice of material changes as required. Changes apply prospectively and do not remove accrued rights. If a provision is unenforceable, the remaining provisions continue to apply."
+        }
+      }
+    }
+  },
+  "ConnectionCheck": {
+    "title": "Verifica la tua chiave API",
+    "description": "Conferma l’account e i permessi di questa chiave. La verifica non genera nulla e non consuma crediti.",
+    "verifyNew": "Verifica la nuova chiave",
+    "keyLabel": "Oppure incolla una chiave API esistente",
+    "checking": "Verifica in corso…",
+    "verify": "Verifica chiave",
+    "privacy": "La chiave incollata viene cancellata dopo la verifica. Non viene salvata nel browser.",
+    "mismatch": "Questa chiave appartiene a un altro account. Usa una chiave dell’account con cui hai effettuato l’accesso.",
+    "readRequired": "La verifica richiede il permesso di lettura. Crea una chiave con Lettura attivata.",
+    "invalid": "La chiave non è valida, è scaduta o è stata revocata. Creane una nuova e riprova.",
+    "rateLimit": "Troppe verifiche. Attendi un minuto e riprova.",
+    "failed": "Impossibile completare la verifica. Riprova.",
+    "verified": "Chiave verificata",
+    "scopeOfCheck": "Questo conferma l’accesso attuale all’API, non la connessione del tuo client esterno. Esegui lì il primo prompt per verificarne la configurazione.",
+    "account": "Account",
+    "balance": "Saldo condiviso",
+    "credits": "{count, number} crediti",
+    "permissions": "Permessi",
+    "expiry": "Scadenza",
+    "noExpiry": "Senza scadenza",
+    "cap": "Limite di spesa della chiave",
+    "unlimited": "{spent, number} crediti spesi · senza limite",
+    "limited": "{spent, number} / {limit, number} spesi · {remaining, number} rimanenti",
+    "grossCap": "Il limite conta tutti gli addebiti di questa chiave. I rimborsi ripristinano il saldo dell’account, ma non il limite della chiave."
+  },
+  "Author": {
+    "metaTitle": "Jorge Rodríguez | Autore di easyrender",
+    "bio": "Jorge Rodríguez scrive le guide easyrender su foto di prodotto, file 3D e flussi di lavoro per ecommerce.",
+    "methodTitle": "Il nostro metodo",
+    "method": "Le affermazioni tecniche rimandano alle fonti. Le funzioni documentate sono distinte dai risultati delle prove pratiche. Un confronto riproducibile indica immagine iniziale, versione del modello, impostazioni, data e limiti.",
+    "disclosure": "Questi contenuti sono pubblicati da easyrender, che vende il prodotto descritto. I confronti non sono raccomandazioni indipendenti. Prezzi e disponibilità possono cambiare; verifica sul sito del fornitore prima di acquistare.",
+    "guides": "Guide di Jorge",
+    "comparisons": "Confronti"
+  },
+  "Resources": {
+    "title": "Scegli il prossimo passo",
+    "description": "Prepara una foto, confronta i flussi di lavoro e scopri come usare il file 3D."
   }
 }

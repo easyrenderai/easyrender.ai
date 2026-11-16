@@ -21,6 +21,7 @@ describe('the per-language sitemaps', () => {
     const paths = (locale: (typeof LOCALES)[number]) =>
       localeEntries(locale, BEFORE_GUIDES).map((entry) => entry.path);
     expect(paths('en')).toEqual([
+      '/authors/jorge-rodriguez',
       '/',
       '/pricing',
       '/mcp',
@@ -32,43 +33,62 @@ describe('the per-language sitemaps', () => {
       '/compare/meshy',
       '/compare/photogrammetry-software',
       '/compare/tripo',
+      '/privacy',
+      '/terms',
       '/cookies',
     ]);
     expect(paths('es')).toEqual([
+      '/es/autores/jorge-rodriguez',
       '/es',
       '/es/precios',
       '/es/mcp',
       '/es/api-imagen-a-3d',
       '/es/modelos',
+      '/es/comparativas',
+      '/es/comparativas/360-vs-3d',
+      '/es/comparativas/meshy',
+      '/es/comparativas/modelador-3d-o-ia',
+      '/es/comparativas/software-de-fotogrametria',
+      '/es/comparativas/tripo',
+      '/es/privacidad',
+      '/es/terminos',
       '/es/cookies',
     ]);
-    // Homes and cookie information are open; guides and pricing remain unpublished.
+    // Homes, comparisons and legal pages are open. Guides dated after 1 Nov are not listed yet.
+    const compareSlugs = {
+      de: [
+        'vergleich-360-vs-3d',
+        'vergleich-3d-modellierer-oder-ki',
+        'vergleich-meshy',
+        'vergleich-photogrammetrie-software',
+        'vergleich-tripo',
+      ],
+      fr: ['360-ou-3d', 'logiciel-de-photogrammetrie', 'meshy', 'modeleur-3d-ou-ia', 'tripo'],
+      it: ['360-o-3d', 'meshy', 'modellatore-3d-o-ai', 'software-di-fotogrammetria', 'tripo'],
+      pt: ['360-vs-3d', 'meshy', 'modelador-3d-ou-ia', 'software-de-fotogrametria', 'tripo'],
+    } as const;
     for (const locale of ['de', 'fr', 'it', 'pt'] as const) {
-      expect(paths(locale), locale).toEqual([`/${locale}`, ROUTES.cookies.paths[locale]]);
+      const hub = ROUTES.compare.paths[locale];
+      expect(paths(locale), locale).toEqual([
+        ROUTES.author.paths[locale],
+        `/${locale}`,
+        ROUTES.pricing.paths[locale],
+        hub,
+        ...compareSlugs[locale].map((slug) => `${hub}/${slug}`),
+        ROUTES.privacy.paths[locale],
+        ROUTES.terms.paths[locale],
+        ROUTES.cookies.paths[locale],
+      ]);
     }
   });
 
-  it('adds a live guide to the English sitemap only', () => {
+  it('adds a guide on the day it is published, and only in languages that have it', () => {
     const paths = (locale: (typeof LOCALES)[number]) =>
       localeEntries(locale, FIRST_GUIDE_OUT).map((entry) => entry.path);
-    expect(paths('en')).toEqual([
-      '/',
-      '/pricing',
-      '/mcp',
-      '/image-to-3d-api',
-      '/models',
-      '/compare',
-      '/compare/360-vs-3d',
-      '/compare/3d-modeler-vs-ai',
-      '/compare/meshy',
-      '/compare/photogrammetry-software',
-      '/compare/tripo',
-      '/cookies',
-      '/learn/how-to-make-a-3d-model-from-photos',
-    ]);
-    for (const locale of ['de', 'fr', 'it', 'pt'] as const) {
-      expect(paths(locale), locale).toEqual([`/${locale}`, ROUTES.cookies.paths[locale]]);
-    }
+    expect(paths('en')).toContain('/learn/how-to-make-a-3d-model-from-photos');
+    expect(paths('de')).not.toContain('/de/ratgeber/3d-modell-aus-fotos-erstellen');
+    expect(paths('pt')).toContain('/pt/guias/criar-um-modelo-3d-a-partir-de-fotografias');
+    expect(paths('fr')).not.toContain('/fr/guides/photographie-produit-e-commerce');
   });
 
   it('gives each home the full hreflang block of the six homes', () => {
@@ -118,11 +138,16 @@ describe('the per-language sitemaps', () => {
     expect(xml).not.toMatch(/vercel\.app|localhost/);
   });
 
-  it('gives a single-language page no hreflang block', () => {
+  it('gives the comparisons hub a hreflang link for every published language', () => {
     const xml = localeSitemapXml('en');
     const start = xml.indexOf('/compare</loc>');
     const compare = xml.slice(start, xml.indexOf('</url>', start));
-    expect(compare).not.toContain('xhtml:link');
+    expect(compare).toContain(`hreflang="es" href="${SITE_URL}/es/comparativas"`);
+    expect(compare).toContain(`hreflang="de" href="${SITE_URL}/de/vergleich"`);
+    expect(compare).toContain(`hreflang="fr" href="${SITE_URL}/fr/comparatifs"`);
+    expect(compare).toContain(`hreflang="it" href="${SITE_URL}/it/confronti"`);
+    expect(compare).toContain(`hreflang="pt-PT" href="${SITE_URL}/pt/comparacoes"`);
+    expect(compare).toContain(`hreflang="x-default" href="${SITE_URL}/compare"`);
   });
 
   it('publishes the API landing separately from MCP with localized alternates', () => {
