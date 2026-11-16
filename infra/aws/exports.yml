@@ -15,10 +15,14 @@ Parameters:
       Tag of the image in the registry that the function runs, a commit SHA. Empty on the first
       deploy: the registry has to exist before CI can push to it, and the function cannot exist
       before an image does. After that, CI moves the function to each new image itself.
-  GitHubRepository:
+  GitHubSubjectPrefix:
     Type: String
-    Default: easyrenderai/easyrender.ai
-    Description: The repository whose main branch may push images and update the function.
+    Default: repo:easyrenderai@354822750/easyrender.ai@1451843595
+    Description: >-
+      Start of the OIDC subject GitHub issues for the repository whose main branch may push images
+      and update the function. This repository uses GitHub's immutable subject, which carries the
+      owner id and the repository id: repo:OWNER@OWNER_ID/REPO@REPO_ID. Read it with
+      gh api repos/OWNER/REPO/actions/oidc/customization/sub (sub_claim_prefix).
   MemoryMb:
     Type: Number
     Default: 2048
@@ -161,7 +165,7 @@ Resources:
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
-                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubRepository}:ref:refs/heads/main
+                token.actions.githubusercontent.com:sub: !Sub ${GitHubSubjectPrefix}:ref:refs/heads/main
       Policies:
         - PolicyName: push-image
           PolicyDocument:
