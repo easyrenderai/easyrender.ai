@@ -1404,13 +1404,13 @@
       },
       "related": "Continua a leggere",
       "promo": {
-        "title": "Ti chiedono altre foto?",
+        "title": "Una foto non mostra tutto.",
         "button": "Prova gratis la tua foto",
         "disclosure": "Anteprima gratuita. Il modello 3D è a pagamento.",
-        "solution": "Mostralo in 3D. Da una foto.",
-        "visual": "Esempio di modello generato di tavolino in legno in rotazione",
-        "play": "Riproduci il video del prodotto",
-        "pause": "Metti in pausa il video"
+        "solution": "Crea in 3D. Esplora ogni angolo.",
+        "visual": "Dimostrazione visiva: una poltrona appare in una stanza e viene mostrata da diverse angolazioni",
+        "play": "Riproduci dimostrazione",
+        "pause": "Metti in pausa la dimostrazione"
       },
       "priceReference": "I prezzi dell’articolo sono riferimenti in USD. Consulta i prezzi per la valuta e l’offerta attuali."
     },

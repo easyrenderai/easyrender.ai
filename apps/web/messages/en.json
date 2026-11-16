@@ -1404,13 +1404,13 @@
       },
       "related": "Keep reading",
       "promo": {
-        "title": "Asked for more photos?",
+        "title": "One photo doesn’t show it all.",
         "button": "Try your photo free",
         "disclosure": "Free preview. The 3D model is paid.",
-        "solution": "Show it in 3D. From one photo.",
-        "visual": "Example of a generated wooden side table model turning",
-        "play": "Play product video",
-        "pause": "Pause product video"
+        "solution": "Create in 3D. Explore every angle.",
+        "visual": "Visual demonstration: an armchair appears in a room and is shown from different angles",
+        "play": "Play demonstration",
+        "pause": "Pause demonstration"
       },
       "priceReference": "Article prices are USD reference rates. Check Pricing for your current currency and offer."
     },

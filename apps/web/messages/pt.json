@@ -1404,13 +1404,13 @@
       },
       "related": "Continua a ler",
       "promo": {
-        "title": "Pedem-te mais fotos?",
+        "title": "Uma foto não mostra tudo.",
         "button": "Experimenta a tua foto grátis",
         "disclosure": "Pré-visualização grátis. O modelo 3D é pago.",
-        "solution": "Mostra-o em 3D. A partir de uma foto.",
-        "visual": "Exemplo de modelo gerado de mesa de apoio de madeira a rodar",
-        "play": "Reproduzir vídeo do produto",
-        "pause": "Pausar vídeo do produto"
+        "solution": "Cria em 3D. Explora cada ângulo.",
+        "visual": "Demonstração visual: uma poltrona aparece numa sala e é mostrada de vários ângulos",
+        "play": "Reproduzir demonstração",
+        "pause": "Pausar demonstração"
       },
       "priceReference": "Os preços do artigo são referências em USD. Consulta Preços para ver a moeda e a oferta atuais."
     },

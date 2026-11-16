@@ -16,7 +16,7 @@ export type PromoCopy = {
   disclosure: string;
 };
 
-/** Pain → a product turning → one action. Copy stays readable in every frame and locale. */
+/** Photo limitation → a model revealed in a room → one action. Copy stays readable in every frame and locale. */
 export function ArticlePromo({ locale, copy }: { locale: Locale; copy: PromoCopy }) {
   return (
     <Card className="gap-0 overflow-hidden py-0 shadow-none" data-article-promo="">

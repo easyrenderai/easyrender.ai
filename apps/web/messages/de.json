@@ -1404,13 +1404,13 @@
       },
       "related": "Lies weiter",
       "promo": {
-        "title": "Kunden wollen mehr Fotos?",
+        "title": "Ein Foto zeigt nicht alles.",
         "button": "Foto kostenlos testen",
         "disclosure": "Kostenlose Vorschau. Das 3D-Modell ist kostenpflichtig.",
-        "solution": "Zeig es in 3D. Aus einem Foto.",
-        "visual": "Beispiel eines generierten, rotierenden Beistelltischmodells aus Holz",
-        "play": "Produktvideo abspielen",
-        "pause": "Produktvideo pausieren"
+        "solution": "In 3D erstellen. Jeden Winkel entdecken.",
+        "visual": "Visuelle Demonstration: Ein Sessel erscheint in einem Raum und wird aus verschiedenen Winkeln gezeigt",
+        "play": "Demo abspielen",
+        "pause": "Demo pausieren"
       },
       "priceReference": "Artikelpreise sind USD-Referenzpreise. Aktuelle Währung und Angebote findest du unter Preise."
     },
