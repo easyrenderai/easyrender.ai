@@ -1,11 +1,32 @@
 import { ENTERPRISE_BOOKING_URL, RENDER_CREDITS } from '@easyrender/harness';
-import { ArrowRight, Box, ChevronDownIcon, EyeOff, Monitor, Smartphone } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowRight,
+  Box,
+  ChevronDownIcon,
+  Code2,
+  Copy,
+  Download,
+  EyeOff,
+  ImageUp,
+  KeyRound,
+  LayoutTemplate,
+  Link2,
+  type LucideIcon,
+  Monitor,
+  Smartphone,
+  Sparkles,
+  Store,
+  Upload,
+  UserPlus,
+} from 'lucide-react';
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import QRCode from 'qrcode';
+import type { ReactNode } from 'react';
 import { CodeSnippet } from '@/components/code-snippet';
+import { PrestaShopMark, ShopifyMark, WooMark } from '@/components/ecommerce/platform-logos';
 import { PlatformPicker } from '@/components/ecommerce/platform-picker';
-import { IntegrationCosts } from '@/components/integrations/costs';
 import { Section } from '@/components/landing';
 import { SiteLink as Link } from '@/components/site-link';
 import { StudioClosing } from '@/components/studio/proof';
@@ -14,7 +35,7 @@ import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
 import { currentUser } from '@/lib/actor';
 import { TABLE_EXAMPLE as sample } from '@/lib/marketing-examples';
-import { formatCount } from '@/lib/price-format';
+import { formatCount, formatMoney } from '@/lib/price-format';
 import { isPublished, ROUTES } from '@/lib/seo/routes';
 import { SITE_URL } from '@/lib/seo/site';
 
@@ -22,6 +43,13 @@ const PLATFORMS = ['shopify', 'woocommerce', 'prestashop', 'other'] as const;
 type Platform = (typeof PLATFORMS)[number];
 
 const STEPS = ['one', 'two', 'three', 'four'] as const;
+// One icon per setup step, in the order of STEPS.
+const STEP_ICONS: Record<Platform, readonly LucideIcon[]> = {
+  shopify: [Download, Link2, Sparkles, LayoutTemplate],
+  woocommerce: [Upload, KeyRound, Sparkles, Box],
+  prestashop: [Upload, KeyRound, Sparkles, Box],
+  other: [UserPlus, ImageUp, Copy, Code2],
+};
 const SHOPPER = [
   { key: 'phone', icon: Smartphone },
   { key: 'desktop', icon: Monitor },
@@ -33,6 +61,7 @@ const FAQ_KEYS = ['photos', 'cost', 'theme', 'devices', 'accuracy', 'remove'] as
 const SOURCE = 'https://github.com/easyrenderai/easyrender.ai/tree/main/plugins';
 // The size of the store in the admin example; the credits beside it come from the harness.
 const EXAMPLE_PRODUCTS = 120;
+const CATALOGUE = 100;
 
 export async function ecommerceFaqItems(locale: Locale) {
   const t = await getTranslations({ locale, namespace: 'EcommerceLanding.faq.items' });
@@ -46,25 +75,36 @@ const snippet = (label: string, caption: string, id: string) =>
 
 export async function EcommerceView({ locale }: { locale: Locale }) {
   const arUrl = `${SITE_URL}/ar/${sample.id}`;
-  const [t, user, items, qr] = await Promise.all([
+  const { currentPricing } = await import('@/lib/pricing');
+  const [t, user, items, qr, pricing] = await Promise.all([
     getTranslations({ locale, namespace: 'EcommerceLanding' }),
     currentUser().catch(() => null),
     ecommerceFaqItems(locale),
     QRCode.toDataURL(arUrl, { margin: 1, width: 280, errorCorrectionLevel: 'M' }),
+    currentPricing(),
   ]);
   const accountHref = user ? '/connectors' : '/sign-up?next=%2Fconnectors';
   const apiLocale = isPublished('api', locale) ? locale : 'en';
+  const money = (value: number) => formatMoney(locale, value, pricing.currency);
+  const modelPrice = RENDER_CREDITS * pricing.creditPrice;
 
+  // The main button goes straight to the plugin wherever one can be downloaded.
   const actions: Record<Platform, { primary: string; secondary: string }> = {
     shopify: { primary: ENTERPRISE_BOOKING_URL, secondary: accountHref },
-    woocommerce: { primary: accountHref, secondary: `${SOURCE}/woocommerce` },
-    prestashop: { primary: accountHref, secondary: `${SOURCE}/prestashop` },
+    woocommerce: { primary: `${SOURCE}/woocommerce`, secondary: accountHref },
+    prestashop: { primary: `${SOURCE}/prestashop`, secondary: accountHref },
     other: { primary: accountHref, secondary: ROUTES.api.paths[apiLocale] },
+  };
+  const icons: Record<Platform, ReactNode> = {
+    shopify: <ShopifyMark className="size-4" />,
+    woocommerce: <WooMark className="size-5" />,
+    prestashop: <PrestaShopMark className="size-4" />,
+    other: <Store aria-hidden="true" className="size-4" />,
   };
 
   // The product page of the example store. The button and the QR code are real: they open the
   // AR page of an existing public model made from this photo.
-  const store = (platform: Platform) => (
+  const store = (
     <figure className="min-w-0 overflow-hidden rounded-xl border bg-card">
       <div className="flex items-center justify-between gap-3 border-b px-4 py-2.5 text-xs text-muted-foreground">
         <span>{t('mock.storeLabel')}</span>
@@ -120,9 +160,8 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
           </div>
         </div>
       </div>
-      <figcaption className="space-y-1.5 border-t p-4 text-xs leading-relaxed text-muted-foreground">
-        <p className="text-foreground">{t(`platforms.${platform}.placement`)}</p>
-        <p>{t('mock.live')}</p>
+      <figcaption className="border-t px-4 py-3 text-xs text-muted-foreground">
+        {t('mock.live')}
       </figcaption>
     </figure>
   );
@@ -130,9 +169,9 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
   // What the owner clicks: the page of the plugin, or the two lines for a store without one.
   const admin = (platform: Platform) => (
     <div className="min-w-0 overflow-hidden rounded-xl border bg-card">
-      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b px-4 py-2.5 text-xs text-muted-foreground">
-        <span>{t('mock.adminLabel')}</span>
-        <span className="font-mono">{t(`platforms.${platform}.path`)}</span>
+      <div className="space-y-1 border-b px-4 py-2.5 text-xs text-muted-foreground">
+        <p>{t('mock.adminLabel')}</p>
+        <p className="font-mono">{t(`platforms.${platform}.path`)}</p>
       </div>
       {platform === 'other' ? (
         <div className="p-4">
@@ -145,7 +184,7 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
           />
         </div>
       ) : (
-        <div className="space-y-3 p-5">
+        <div className="p-5">
           <p
             aria-hidden="true"
             className="w-fit max-w-full rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground tabular-nums"
@@ -154,9 +193,6 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
               count: formatCount(locale, EXAMPLE_PRODUCTS),
               credits: formatCount(locale, EXAMPLE_PRODUCTS * RENDER_CREDITS),
             })}
-          </p>
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            {t('mock.generateNote', { count: formatCount(locale, EXAMPLE_PRODUCTS) })}
           </p>
         </div>
       )}
@@ -180,85 +216,89 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
   );
 
   const panel = (platform: Platform) => (
-    <div className="grid items-start gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-      <div className="min-w-0 space-y-8">
-        <div className="space-y-2">
-          <p className="eyebrow">{t('stepsLabel')}</p>
-          <h2 className="text-2xl font-medium tracking-tight sm:text-3xl">
-            {t(`platforms.${platform}.title`)}
-          </h2>
-        </div>
-        <ol className="space-y-6">
-          {STEPS.map((step, index) => (
-            <li key={step} className="flex gap-5">
-              <span className="pt-1 font-mono text-xs text-muted-foreground" aria-hidden="true">
-                {String(index + 1).padStart(2, '0')}
-              </span>
-              <div className="space-y-1.5">
-                <h3 className="text-lg font-medium">
-                  {t(`platforms.${platform}.steps.${step}.title`)}
-                </h3>
-                <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
-                  {t(`platforms.${platform}.steps.${step}.body`)}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ol>
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h2 className="text-2xl font-medium tracking-tight sm:text-3xl">
+          {t(`platforms.${platform}.title`)}
+        </h2>
         <div className="flex flex-wrap gap-3">
           {cta(actions[platform].primary, t(`platforms.${platform}.cta`), true)}
           {cta(actions[platform].secondary, t(`platforms.${platform}.secondary`), false)}
         </div>
-        <dl className="grid gap-4 border-t pt-6 text-sm sm:grid-cols-2">
-          {(['availability', 'requirements'] as const).map((key) => (
-            <div key={key} className="space-y-1">
-              <dt className="text-muted-foreground">{t(`${key}Label`)}</dt>
-              <dd className="leading-relaxed">{t(`platforms.${platform}.${key}`)}</dd>
-            </div>
-          ))}
-        </dl>
       </div>
-      <div className="min-w-0 space-y-4">
+      <ol className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {STEPS.map((step, index) => {
+          const Icon = STEP_ICONS[platform][index];
+          return (
+            <li key={step} className="space-y-4 rounded-xl border bg-card p-4">
+              <div className="flex items-center justify-between text-muted-foreground">
+                <Icon aria-hidden="true" className="size-5" />
+                <span className="font-mono text-xs" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+              </div>
+              <p className="text-sm font-medium leading-snug">
+                {t(`platforms.${platform}.steps.${step}`)}
+              </p>
+            </li>
+          );
+        })}
+      </ol>
+      <div className="grid items-center gap-3 lg:grid-cols-[0.8fr_auto_1.2fr]">
         {admin(platform)}
-        {store(platform)}
+        <ArrowDown
+          aria-hidden="true"
+          className="mx-auto size-5 text-muted-foreground lg:-rotate-90"
+        />
+        {store}
       </div>
+      <p className="text-xs leading-relaxed text-muted-foreground">
+        {t(`platforms.${platform}.note`)}
+      </p>
     </div>
   );
 
-  return (
-    <StudioShell>
-      <section className="sec" aria-labelledby="ecommerce-title">
-        <div className="mx-auto max-w-3xl space-y-5 pb-10 text-center sm:pb-12">
-          <p className="eyebrow">{t('hero.eyebrow')}</p>
-          <h1
-            id="ecommerce-title"
-            className="text-balance text-4xl font-normal leading-none tracking-tight sm:text-5xl lg:text-6xl"
-          >
-            {t('hero.title')}
-          </h1>
-          <p className="mx-auto max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {t('hero.subtitle')}
-          </p>
-        </div>
-        <PlatformPicker
-          label={t('picker.label')}
-          platforms={PLATFORMS.map((id) => ({ id, name: t(`platforms.${id}.name`) }))}
-          panels={{
-            shopify: panel('shopify'),
-            woocommerce: panel('woocommerce'),
-            prestashop: panel('prestashop'),
-            other: panel('other'),
-          }}
-        />
-      </section>
+  const costs = [
+    { key: 'install', value: money(0) },
+    { key: 'model', value: money(modelPrice) },
+    { key: 'catalogue', value: money(CATALOGUE * modelPrice) },
+  ] as const;
 
-      <Section id="shopper" title={t('shopper.title')} description={t('shopper.description')}>
-        <div className="grid gap-8 md:grid-cols-3">
+  return (
+    <StudioShell className="[&>section]:mx-auto [&>section]:max-w-6xl [&>section]:px-6 lg:[&>section]:px-10">
+      <PlatformPicker
+        label={t('picker.label')}
+        hero={
+          <div className="space-y-5">
+            <p className="eyebrow">{t('hero.eyebrow')}</p>
+            <h1 className="text-balance text-4xl font-normal leading-none tracking-tight sm:text-5xl lg:text-6xl">
+              {t('hero.title')}
+            </h1>
+            <p className="mx-auto max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+              {t('hero.subtitle')}
+            </p>
+          </div>
+        }
+        platforms={PLATFORMS.map((id) => ({
+          id,
+          name: t(`platforms.${id}.name`),
+          icon: icons[id],
+        }))}
+        panels={{
+          shopify: panel('shopify'),
+          woocommerce: panel('woocommerce'),
+          prestashop: panel('prestashop'),
+          other: panel('other'),
+        }}
+      />
+
+      <Section id="shopper" title={t('shopper.title')}>
+        <div className="grid gap-4 md:grid-cols-3">
           {SHOPPER.map(({ key, icon: Icon }) => (
-            <div key={key} className="space-y-3 border-t pt-6">
+            <div key={key} className="space-y-3 rounded-xl border bg-card p-5">
               <Icon className="size-5 text-muted-foreground" aria-hidden="true" />
-              <h3 className="text-xl font-medium">{t(`shopper.${key}.title`)}</h3>
-              <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
+              <h3 className="text-lg font-medium">{t(`shopper.${key}.title`)}</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 {t(`shopper.${key}.body`)}
               </p>
             </div>
@@ -266,7 +306,22 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
         </div>
       </Section>
 
-      <IntegrationCosts locale={locale} kind="ecommerce" />
+      <Section id="cost" title={t('cost.title')}>
+        <dl className="grid gap-4 md:grid-cols-3">
+          {costs.map(({ key, value }) => (
+            <div key={key} className="space-y-2 rounded-xl border bg-card p-5">
+              <dd className="text-4xl font-medium tracking-tight tabular-nums">{value}</dd>
+              <dt className="text-sm text-muted-foreground">
+                {t(`cost.${key}`, {
+                  credits: formatCount(locale, RENDER_CREDITS),
+                  count: formatCount(locale, CATALOGUE),
+                })}
+              </dt>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{t('cost.note')}</p>
+      </Section>
 
       <Section id="faq" title={t('faq.title')} narrow>
         <div className="sec__column">

@@ -2283,12 +2283,7 @@
         "title": "Empieza sin suscripción",
         "body": "La compra mínima es de {credits} créditos ({price}). Los créditos no caducan. Revisa el total antes de confirmar el pago."
       },
-      "refund": "Las generaciones 3D fallidas devuelven sus créditos. Los precios corresponden a tu moneda y oferta actuales.",
-      "ecommerce": {
-        "title": "¿Cuánto cuesta un catálogo en 3D?",
-        "description": "Instalar los plugins es gratis. Pagas cada modelo 3D con los créditos de tu cuenta, y el total aparece en el botón antes de hacer clic.",
-        "check": "El plugin pide a easyrender el precio de la tanda y envía esa cifra con tu clic. Una tanda que costaría más se rechaza."
-      }
+      "refund": "Las generaciones 3D fallidas devuelven sus créditos. Los precios corresponden a tu moneda y oferta actuales."
     },
     "apiDemo": {
       "title": "Tu aplicación · API REST de easyrender",
@@ -2894,121 +2889,62 @@
     "picker": {
       "label": "Elige la plataforma de tu tienda"
     },
-    "stepsLabel": "Instalación",
-    "availabilityLabel": "Disponibilidad",
-    "requirementsLabel": "Requisitos",
     "platforms": {
       "shopify": {
         "name": "Shopify",
         "title": "easyrender para Shopify",
         "steps": {
-          "one": {
-            "title": "Instala la app",
-            "body": "Abre el enlace de instalación en tu panel de Shopify. La app se abre dentro del panel, como cualquier otra app de Shopify."
-          },
-          "two": {
-            "title": "Conecta tu cuenta de easyrender",
-            "body": "Un clic vincula la tienda con tu cuenta. Los modelos de esta tienda se pagan con los créditos de esa cuenta."
-          },
-          "three": {
-            "title": "Genera el catálogo",
-            "body": "El botón indica cuántos productos tienen foto y cuánto cuesta la tanda. Un clic los envía todos."
-          },
-          "four": {
-            "title": "Añade el bloque a tu tema",
-            "body": "En el editor de temas, abre una ficha de producto, añade el bloque «Verlo en tu casa» y guarda. Tú eliges dónde va y qué dice."
-          }
+          "one": "Instala la app",
+          "two": "Conecta tu cuenta de easyrender",
+          "three": "Genera el catálogo",
+          "four": "Añade el bloque a tu tema"
         },
         "path": "Tienda online › Temas › Personalizar › Producto › Agregar bloque",
-        "placement": "Un bloque del tema. Los productos con modelo terminado lo muestran; el resto no muestra nada.",
-        "availability": "Se instala desde un enlace que te enviamos. La app todavía no está en la Shopify App Store.",
-        "requirements": "Un tema Online Store 2.0 y fotos de producto.",
         "cta": "Pide la app de Shopify",
-        "secondary": "Crea tu cuenta de easyrender"
+        "secondary": "Crea tu cuenta",
+        "note": "Se instala desde un enlace que te enviamos; todavía no está en la Shopify App Store. Requiere un tema Online Store 2.0."
       },
       "woocommerce": {
         "name": "WooCommerce",
         "title": "easyrender para WooCommerce",
         "steps": {
-          "one": {
-            "title": "Sube el plugin",
-            "body": "En WordPress, ve a Plugins, Añadir nuevo, Subir plugin, elige el archivo zip y actívalo."
-          },
-          "two": {
-            "title": "Pega tu clave de API",
-            "body": "Crea una clave en tu cuenta de easyrender y pégala en WooCommerce, 3D y RA."
-          },
-          "three": {
-            "title": "Genera el catálogo",
-            "body": "El botón indica cuántos productos publicados tienen foto y cuánto cuesta la tanda. Un clic los envía por lotes."
-          },
-          "four": {
-            "title": "El botón aparece solo",
-            "body": "Cada producto con modelo terminado muestra el botón y el código QR después de «Añadir al carrito». La lista de productos gana una columna con el estado del 3D."
-          }
+          "one": "Sube el plugin",
+          "two": "Pega tu clave de API",
+          "three": "Genera el catálogo",
+          "four": "El botón aparece solo"
         },
         "path": "WooCommerce › 3D y RA",
-        "placement": "Después del botón de añadir al carrito, sin tocar el tema. Con el shortcode [easyrender_ar] lo colocas en cualquier otro sitio.",
-        "availability": "Un archivo zip que subes tú. El plugin todavía no está en el directorio de WordPress.org; el código es público en GitHub.",
-        "requirements": "WordPress 6.0 o posterior, PHP 7.4 o posterior y fotos de producto servidas por https.",
-        "cta": "Crea tu clave de API",
-        "secondary": "Descarga el plugin en GitHub"
+        "cta": "Descarga el plugin de WooCommerce",
+        "secondary": "Crea tu clave de API",
+        "note": "Un zip que subes tú; todavía no está en el directorio de WordPress.org. WordPress 6.0+, PHP 7.4+, fotos por https."
       },
       "prestashop": {
         "name": "PrestaShop",
         "title": "easyrender para PrestaShop",
         "steps": {
-          "one": {
-            "title": "Sube el módulo",
-            "body": "En el back office, ve a Módulos, Gestor de módulos, Subir un módulo y elige el archivo zip."
-          },
-          "two": {
-            "title": "Pega tu clave de API",
-            "body": "Crea una clave en tu cuenta de easyrender, abre la página Configurar del módulo, pégala y guarda."
-          },
-          "three": {
-            "title": "Genera el catálogo",
-            "body": "El botón indica cuántos productos tienen foto de portada y cuánto cuesta la tanda. Un clic los envía por lotes."
-          },
-          "four": {
-            "title": "El botón aparece solo",
-            "body": "Cada producto con modelo terminado muestra el botón y el código QR en su ficha. Una URL de cron opcional mantiene los estados al día."
-          }
+          "one": "Sube el módulo",
+          "two": "Pega tu clave de API",
+          "three": "Genera el catálogo",
+          "four": "El botón aparece solo"
         },
         "path": "Módulos › Gestor de módulos › easyrender 3D & AR › Configurar",
-        "placement": "En la zona de información adicional del producto, sin tocar el tema.",
-        "availability": "Un archivo zip que subes tú. El módulo todavía no está en PrestaShop Addons; el código es público en GitHub.",
-        "requirements": "PrestaShop 1.7.7 o posterior, incluida la 8.x, y fotos de portada servidas por https.",
-        "cta": "Crea tu clave de API",
-        "secondary": "Descarga el módulo en GitHub"
+        "cta": "Descarga el módulo de PrestaShop",
+        "secondary": "Crea tu clave de API",
+        "note": "Un zip que subes tú; todavía no está en PrestaShop Addons. PrestaShop 1.7.7+ u 8.x, fotos por https."
       },
       "other": {
         "name": "Otra plataforma",
         "title": "easyrender en cualquier otra tienda",
         "steps": {
-          "one": {
-            "title": "Crea tu cuenta",
-            "body": "Regístrate y crea una clave de API. También puedes trabajar desde el panel sin escribir código."
-          },
-          "two": {
-            "title": "Pasa tus productos a 3D",
-            "body": "Sube la foto de cada producto en el panel o envíala por la API REST. Revisa la vista previa gratis antes de la generación de pago."
-          },
-          "three": {
-            "title": "Copia el id del modelo",
-            "body": "Cada modelo terminado tiene un id. Su página de realidad aumentada y su código QR son dos URL normales que se forman con ese id."
-          },
-          "four": {
-            "title": "Pega el botón",
-            "body": "Añade las dos líneas a tu plantilla de producto. Sirve cualquier plataforma que permita editar HTML: Magento, BigCommerce, Wix, Squarespace o una tienda a medida."
-          }
+          "one": "Crea tu cuenta",
+          "two": "Pasa tus productos a 3D",
+          "three": "Copia el id del modelo",
+          "four": "Pega el botón"
         },
         "path": "Tu plantilla de producto",
-        "placement": "Donde pegues las dos líneas. Dale al enlace el estilo de tu propio botón.",
-        "availability": "Disponible hoy con cualquier cuenta de easyrender.",
-        "requirements": "Una plantilla de producto que puedas editar y un modelo público o compartido por enlace.",
         "cta": "Crea tu clave de API",
-        "secondary": "Lee la guía de la API REST"
+        "secondary": "Guía de la API REST",
+        "note": "Sirve en Magento, BigCommerce, Wix, Squarespace o una tienda a medida. El modelo tiene que ser público o estar compartido por enlace."
       }
     },
     "snippet": {
@@ -3021,7 +2957,6 @@
     "mock": {
       "adminLabel": "En tu panel",
       "generate": "Generar 3D para {count} productos ({credits} créditos)",
-      "generateNote": "Ejemplo para una tienda con {count} productos. El plugin muestra tu cantidad y tu precio.",
       "storeLabel": "En tu ficha de producto",
       "domain": "tutienda.com",
       "productName": "Mesa auxiliar de roble",
@@ -3032,22 +2967,21 @@
       "qrCaption": "Escanea con el móvil para verlo en tu casa",
       "qrAlt": "Código QR que abre esta mesa en realidad aumentada en un móvil",
       "photoAlt": "Foto de producto de una mesa auxiliar de roble",
-      "live": "Este funciona de verdad. El botón y el código QR abren un modelo real hecho a partir de esta foto."
+      "live": "Demo real: el botón y el código QR abren un modelo de verdad."
     },
     "shopper": {
       "title": "Lo que ve tu comprador",
-      "description": "Un bloque en la ficha de producto. Funciona con el móvil que el comprador ya tiene.",
       "phone": {
         "title": "En el móvil: un toque",
-        "body": "El botón abre el modelo en el visor de realidad aumentada del propio teléfono, Quick Look en iPhone y Scene Viewer en Android. No hay que instalar ninguna app."
+        "body": "El botón abre el visor de realidad aumentada del propio teléfono. Sin instalar ninguna app."
       },
       "desktop": {
         "title": "En el ordenador: un código QR",
-        "body": "El código QR lleva la misma página al móvil del comprador. Solo se muestra en pantallas con ratón."
+        "body": "El código QR lleva la página al móvil del comprador."
       },
       "quiet": {
         "title": "Sin modelo, sin botón",
-        "body": "Un producto sin modelo terminado no muestra nada, así que un catálogo a medio convertir nunca parece roto."
+        "body": "Los productos sin modelo terminado no muestran nada."
       }
     },
     "faq": {
@@ -3082,6 +3016,13 @@
     "closing": {
       "title": "Lleva tu catálogo a la casa de tu comprador.",
       "cta": "Crea tu cuenta"
+    },
+    "cost": {
+      "title": "Cuánto cuesta",
+      "install": "Plugin y borrador de vista previa",
+      "model": "Por modelo 3D · {credits} créditos",
+      "catalogue": "Un catálogo de {count} productos",
+      "note": "El total aparece en el botón antes de hacer clic. Si un modelo falla, se devuelven sus créditos."
     }
   }
 }

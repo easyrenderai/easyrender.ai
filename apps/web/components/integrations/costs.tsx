@@ -6,13 +6,7 @@ import { formatCount, formatMoney } from '@/lib/price-format';
 
 const EXAMPLE_MODELS = 100;
 
-export async function IntegrationCosts({
-  locale,
-  kind,
-}: {
-  locale: Locale;
-  kind: 'api' | 'mcp' | 'ecommerce';
-}) {
+export async function IntegrationCosts({ locale, kind }: { locale: Locale; kind: 'api' | 'mcp' }) {
   if (kind === 'mcp') {
     const t = await getTranslations({ locale, namespace: 'IntegrationLanding.costs' });
     return (
