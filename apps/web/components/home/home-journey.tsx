@@ -30,16 +30,3 @@ export async function HomeJourney() {
     </section>
   );
 }
-
-export async function CustomerProof() {
-  const t = await getTranslations('Home.customer');
-  return (
-    <section
-      aria-label={t('label')}
-      className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-8 gap-y-3 border-y px-6 py-7"
-    >
-      <p className="text-xs text-muted-foreground">{t('label')}</p>
-      <p className="font-serif text-3xl tracking-tight">Pietra</p>
-    </section>
-  );
-}
