@@ -1252,11 +1252,13 @@
       },
       "related": "Continua a leggere",
       "promo": {
-        "title": "Il tuo prodotto da ogni lato",
-        "input": "La tua foto",
-        "output": "Viste generate con IA",
+        "title": "Ti chiedono altre foto?",
         "button": "Prova gratis la tua foto",
-        "disclosure": "Anteprima gratuita. Il modello 3D è a pagamento."
+        "disclosure": "Anteprima gratuita. Il modello 3D è a pagamento.",
+        "solution": "Mostralo in 3D. Da una foto.",
+        "visual": "Esempio di modello generato di poltrona in rotazione",
+        "play": "Riproduci il video del prodotto",
+        "pause": "Metti in pausa il video"
       }
     },
     "comparisons": {

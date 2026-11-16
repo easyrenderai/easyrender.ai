@@ -1252,11 +1252,13 @@
       },
       "related": "À lire ensuite",
       "promo": {
-        "title": "Votre produit sous tous les angles",
-        "input": "Votre photo",
-        "output": "Vues générées par IA",
+        "title": "On vous demande plus de photos ?",
         "button": "Tester ma photo gratuitement",
-        "disclosure": "Aperçu gratuit. Le modèle 3D est payant."
+        "disclosure": "Aperçu gratuit. Le modèle 3D est payant.",
+        "solution": "Montrez-le en 3D. À partir d’une photo.",
+        "visual": "Exemple de modèle de fauteuil généré en rotation",
+        "play": "Lire la vidéo du produit",
+        "pause": "Mettre la vidéo en pause"
       }
     },
     "comparisons": {

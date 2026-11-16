@@ -1252,11 +1252,13 @@
       },
       "related": "Sigue leyendo",
       "promo": {
-        "title": "Mira tu producto desde todos los lados",
-        "input": "Tu foto",
-        "output": "Ángulos con IA",
+        "title": "¿Te piden más fotos?",
         "button": "Prueba tu foto gratis",
-        "disclosure": "Vista previa gratis. El modelo 3D es de pago."
+        "disclosure": "Vista previa gratis. El modelo 3D es de pago.",
+        "solution": "Enséñalo en 3D. Desde una foto.",
+        "visual": "Ejemplo de un modelo generado de butaca girando",
+        "play": "Reproducir vídeo del producto",
+        "pause": "Pausar vídeo del producto"
       }
     },
     "comparisons": {

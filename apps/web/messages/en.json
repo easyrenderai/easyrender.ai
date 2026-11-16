@@ -1252,11 +1252,13 @@
       },
       "related": "Keep reading",
       "promo": {
-        "title": "See your product from every side",
-        "input": "Your photo",
-        "output": "AI angle sheet",
+        "title": "Asked for more photos?",
         "button": "Try your photo free",
-        "disclosure": "Free preview. The 3D model is paid."
+        "disclosure": "Free preview. The 3D model is paid.",
+        "solution": "Show it in 3D. From one photo.",
+        "visual": "Example of a generated armchair model turning",
+        "play": "Play product video",
+        "pause": "Pause product video"
       }
     },
     "comparisons": {
