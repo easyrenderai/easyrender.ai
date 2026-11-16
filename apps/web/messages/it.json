@@ -125,7 +125,8 @@
           "ar": "Realtà aumentata dal telefono, in arrivo",
           "api": "Server MCP e API REST"
         },
-        "cta": "Compra crediti"
+        "cta": "Compra crediti",
+        "audience": "Per un primo progetto o prodotti occasionali. Senza abbonamento."
       },
       "pro": {
         "note": "al mese",
@@ -136,7 +137,8 @@
           "cancel": "Disdici quando vuoi",
           "topUp": "Ti serve di più? Ricarica quando vuoi alla tariffa del tuo piano."
         },
-        "cta": "Passa a {plan}"
+        "cta": "Passa a {plan}",
+        "audience": "Per team che creano modelli di prodotti ogni mese."
       },
       "enterprise": {
         "name": "Enterprise",
@@ -148,10 +150,12 @@
           "support": "Assistenza prioritaria",
           "onboarding": "Chiamata di onboarding"
         },
-        "cta": "Prenota una chiamata"
+        "cta": "Prenota una chiamata",
+        "audience": "Per grandi cataloghi con avvio assistito."
       },
       "tryFree": "Provalo gratis",
-      "noCard": "Anteprime gratuite. Nessuna carta di credito richiesta."
+      "noCard": "Anteprime gratuite. Nessuna carta di credito richiesta.",
+      "perModel": "per modello 3D"
     },
     "faq": {
       "title": "Domande frequenti",
@@ -392,7 +396,7 @@
     "replacePhoto": "Sostituisci la foto",
     "attachPhoto": "Allega una foto",
     "dropOrPaste": "oppure trascinala o incollala",
-    "generate": "Genera",
+    "generate": "Crea anteprima gratuita",
     "dropToAttach": "Rilascia la foto per allegarla",
     "tryOne": "Prova con:",
     "previewReady": "L'anteprima è pronta",
@@ -401,7 +405,13 @@
       "title": "La tua anteprima 3D è pronta",
       "description": "Crea un account gratuito per vedere la tua foto da ogni angolazione e trasformarla in un modello 3D."
     },
-    "reveal": "Registrati gratis per vedere ogni angolazione"
+    "reveal": "Registrati gratis per vedere ogni angolazione",
+    "optionalNotes": "Aggiungi dettagli (facoltativo)",
+    "uploadingReal": "Caricamento della foto…",
+    "uploadingHint": "L’anteprima reale inizia dopo il caricamento. Vedrai lo stato nella schermata successiva.",
+    "previewNote": "Anteprima delle angolazioni gratuita. Creare il modello 3D scaricabile consuma crediti.",
+    "guestNote": "Anteprima delle angolazioni gratuita · senza account né carta. Si applicano limiti giornalieri.",
+    "seeExample": "Oppure esplora un esempio finito:"
   },
   "Library": {
     "metaTitle": "Library · easyrender",
@@ -876,7 +886,25 @@
         }
       }
     },
-    "topUpTitle": "Ricarica crediti"
+    "topUpTitle": "Ricarica crediti",
+    "minimum": "Acquisto minimo: {price} in crediti, sufficienti per {count} modelli completi.",
+    "calculator": {
+      "title": "Calcola il tuo catalogo",
+      "count": "Numero di modelli 3D",
+      "consumption": "Valore dei crediti utilizzati",
+      "purchase": "Acquisto partendo da saldo zero",
+      "remaining": "Crediti rimanenti",
+      "range": "Inserisci un numero intero da 1 a {max}.",
+      "note": "Stima di modelli 3D standard a consumo, senza saldo iniziale. Modifiche, immagini e ingrandimenti aggiuntivi esclusi.",
+      "compare": "Confronta i piani"
+    },
+    "conditions": {
+      "title": "Prima di acquistare",
+      "billing": "Il pagamento a consumo è un acquisto singolo di crediti. Pro si rinnova mensilmente fino alla cancellazione in Crediti. I crediti inutilizzati non scadono.",
+      "rights": "Conservi i diritti sui contenuti caricati. I diritti sui risultati sono soggetti ai diritti di terzi. I modelli sono pubblici per impostazione predefinita e possono essere condivisi e scaricati.",
+      "tax": "Controlla valuta, imposte applicabili e totale finale prima del pagamento.",
+      "link": "Leggi le condizioni complete (inglese)"
+    }
   },
   "PaygPicker": {
     "custom": "Oppure inserisci una quantità",
@@ -946,7 +974,8 @@
       "render": "Render PBR",
       "element": "Elemento",
       "hint": "Trascina per ruotare",
-      "subtitle": "Guarda l'oggetto da ogni angolazione, gratis. Spendi crediti solo quando la forma ti convince."
+      "subtitle": "Controlla le angolazioni gratis. Paga il modello 3D scaricabile quando la forma ti convince.",
+      "benefit": "Trasforma la foto del tuo prodotto in un modello 3D."
     },
     "pipeline": {
       "lead": "Carica una foto. Al resto pensa il motore.",
@@ -1257,7 +1286,8 @@
         "output": "Viste generate con IA",
         "button": "Prova gratis la tua foto",
         "disclosure": "Anteprima gratuita. Il modello 3D è a pagamento."
-      }
+      },
+      "priceReference": "I prezzi dell’articolo sono riferimenti in USD. Consulta i prezzi per la valuta e l’offerta attuali."
     },
     "comparisons": {
       "title": "Confronti",

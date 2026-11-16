@@ -292,6 +292,48 @@ body:has(.er-studio) {
     color: var(--ash);
   }
 
+  .hero--upload {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    max-width: 1440px;
+    margin-inline: auto;
+  }
+  .hero--upload .hero__copy {
+    padding-top: 0;
+    min-width: 0;
+  }
+  .hero--upload .hero__keyword {
+    max-width: none;
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--ash);
+  }
+  .hero__benefit {
+    margin-top: 12px;
+    max-width: 16em;
+    font-size: clamp(30px, 3.4vw, 48px);
+    line-height: 1.08;
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  .hero__upload {
+    margin-top: 24px;
+    scroll-margin-top: 80px;
+  }
+  @media (max-width: 1080px) {
+    .hero.hero--upload {
+      grid-template-columns: 1fr;
+    }
+    .hero--upload .stack {
+      width: min(100%, 420px);
+    }
+    .hero--upload .hero__keyword {
+      font-size: 14px;
+    }
+  }
+
   /* stack of passes */
   .stack {
     position: relative;

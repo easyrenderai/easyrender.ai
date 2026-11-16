@@ -167,6 +167,11 @@ export async function getTopupPricing(
   );
 }
 
+/** Only a render route can be carried through checkout. Authorization is checked there. */
+export function checkoutRenderPath(value: unknown): string | null {
+  return typeof value === 'string' && /^\/r\/[A-Za-z0-9_-]+$/.test(value) ? value : null;
+}
+
 const devCheckoutUrl = (request: CheckoutRequest) =>
   request.plan === 'payg'
     ? `${config.appUrl()}/api/dev/checkout?plan=payg&credits=${request.credits}`
@@ -179,6 +184,7 @@ export async function createCheckoutDetails(
     credits?: unknown;
     expectedAmountCents?: unknown;
     expectedCurrency?: unknown;
+    next?: unknown;
   },
   context: {
     anonId?: string | null;
@@ -195,6 +201,8 @@ export async function createCheckoutDetails(
       'pricing_changed',
     );
   const request = parseCheckout(input, variant);
+  const next = checkoutRenderPath(input.next);
+  const returnQuery = next ? `&next=${encodeURIComponent(next)}` : '';
   let metadata: Stripe.MetadataParam = {
     userId,
     plan: request.plan,
@@ -204,7 +212,7 @@ export async function createCheckoutDetails(
   const client = stripe();
   if (!client) {
     if (devCheckoutEnabled())
-      return { url: devCheckoutUrl(request), sessionId: null, analytics: null };
+      return { url: `${devCheckoutUrl(request)}${returnQuery}`, sessionId: null, analytics: null };
     throw new AppError('Payments are not configured', 503, 'no_stripe');
   }
   const user = await db().user.findUnique({
@@ -276,8 +284,8 @@ export async function createCheckoutDetails(
     items: [{ item_id: request.plan, quantity: request.plan === 'payg' ? request.credits : 1 }],
   };
   const urls = {
-    success_url: `${config.appUrl()}/credits?status=success&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${config.appUrl()}/credits?status=canceled`,
+    success_url: `${config.appUrl()}/credits?status=success&session_id={CHECKOUT_SESSION_ID}${returnQuery}`,
+    cancel_url: `${config.appUrl()}/credits?status=canceled${returnQuery}`,
   };
 
   if (request.plan !== 'payg') {

@@ -63,6 +63,13 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
       </nav>
 
       <article>
+        {/\$|USD/.test(post.body) && (
+          <p className="mt-6 text-sm text-muted-foreground">
+            <Link href={ROUTES.pricing.paths[post.locale]} className="underline underline-offset-4">
+              {t('post.priceReference')}
+            </Link>
+          </p>
+        )}
         <header className="mt-10 max-w-4xl sm:mt-14">
           <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground tabular-nums">
             {t('post.readingTime', { minutes: readingMinutes(post.body) })}

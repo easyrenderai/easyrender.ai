@@ -89,6 +89,23 @@ beforeEach(() => {
   state.price.mockResolvedValue(price('payg'));
 });
 afterEach(() => vi.unstubAllEnvs());
+it('preserves the render on both checkout return URLs', async () => {
+  await createCheckout('user', { plan: 'payg', credits: 500, next: '/r/render_123' });
+  const checkout = state.session.mock.calls[0][0];
+  expect(new URL(checkout.success_url).searchParams.get('next')).toBe('/r/render_123');
+  expect(new URL(checkout.cancel_url).searchParams.get('next')).toBe('/r/render_123');
+});
+it.each([
+  '//evil.example',
+  '/\\evil.example',
+  'https://evil.example',
+  '/r/../account',
+  '/r/test?next=evil',
+])('never forwards an unsafe checkout destination: %s', async (next) => {
+  await createCheckout('user', { plan: 'payg', credits: 500, next });
+  const checkout = state.session.mock.calls[0][0];
+  expect(new URL(checkout.success_url).searchParams.has('next')).toBe(false);
+});
 it('ignores forged prices and variants, charges the assigned price and snapshots the credits', async () => {
   const body = {
     plan: 'payg',

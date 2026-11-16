@@ -33,8 +33,8 @@ describe('primary marketing action', () => {
       href: '/dashboard',
     });
     expect(headerPrimaryAction('fr', '/fr/mcp', false)).toEqual({
-      kind: 'mcp',
-      href: '/fr#connect',
+      kind: 'upload',
+      href: '/fr#try',
     });
   });
 });

@@ -1,4 +1,4 @@
-import { AppError, devGrant, parseCheckout } from '@easyrender/core';
+import { AppError, checkoutRenderPath, devGrant, parseCheckout } from '@easyrender/core';
 import { NextResponse } from 'next/server';
 import { resolveActor } from '@/lib/actor';
 import { handle } from '@/lib/http';
@@ -14,5 +14,8 @@ export const GET = (request: Request) =>
       credits: url.searchParams.get('credits'),
     });
     await devGrant(userId, request_, anonId);
-    return NextResponse.redirect(new URL('/credits?status=success', url));
+    const destination = new URL('/credits?status=success', url);
+    const next = checkoutRenderPath(url.searchParams.get('next'));
+    if (next) destination.searchParams.set('next', next);
+    return NextResponse.redirect(destination);
   });

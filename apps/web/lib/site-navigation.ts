@@ -40,5 +40,5 @@ export function headerPrimaryAction(locale: Locale, path: string | null, isSigne
   }
   return isSignedIn
     ? ({ kind: 'dashboard', href: '/dashboard' } as const)
-    : ({ kind: 'mcp', href: `${ROUTES.home.paths[locale]}#connect` } as const);
+    : ({ kind: 'upload', href: `${ROUTES.home.paths[locale]}#try` } as const);
 }
