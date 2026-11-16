@@ -23,9 +23,10 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.4",
-    "turbo": "2.11.10",
-    "typescript": "6.0.3",
+    "@easyrender/harness": "workspace:*",
     "husky": "9.1.7",
-    "lint-staged": "16.2.7"
+    "lint-staged": "16.2.7",
+    "turbo": "2.11.10",
+    "typescript": "6.0.3"
   }
 }

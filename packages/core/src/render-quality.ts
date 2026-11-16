@@ -1,6 +1,8 @@
 import type { Render } from '@easyrender/db';
 import type { GlbMeasures, PhotoMeasures, SheetMeasures } from '@easyrender/harness';
 
+import type { StoredFidelity } from './render-fidelity';
+
 // What the guardrails measured on one render, stored on `Render.quality`. It is a quality signal
 // to read afterwards (which renders had near-duplicate views, which fell back to the draft); it
 // never gates anything. Every field is optional because a render only fills in the stages it
@@ -15,6 +17,7 @@ export type RenderQuality = {
   isDraftUsed?: boolean;
   finalSheetProblem?: string;
   glb?: GlbMeasures;
+  fidelity?: StoredFidelity;
 };
 
 export function storedQuality(render: Pick<Render, 'quality'>): RenderQuality {

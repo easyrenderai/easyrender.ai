@@ -37,6 +37,7 @@ import { config } from './config';
 import { grantCreditsInTransaction, spendCreditsInTransaction } from './credits';
 import { AppError, notFound } from './errors';
 import { type RenderEditView, toEditView } from './render-edits';
+import { finishMaterialFidelity } from './render-fidelity';
 import { type RenderQuality, withQuality } from './render-quality';
 import { reportError } from './report';
 import { queueRenderServiceEmail } from './service-email';
@@ -581,7 +582,8 @@ export async function advance(id: string): Promise<Render | null> {
       const quality = checkGlb(glb);
       if (!quality.ok)
         throw new TerminalRenderError(`model rejected (${quality.code}): ${quality.message}`);
-      const glbKey = await putFile('models/model.glb', glb, 'model/gltf-binary');
+      const finished = await finishMaterialFidelity(glb, render);
+      const glbKey = await putFile('models/model.glb', finished.bytes, 'model/gltf-binary');
       const completedAt = render.completedAt ?? new Date();
       const { count } = await db().$transaction(async (tx) => {
         const result = await tx.render.updateMany({
@@ -590,7 +592,10 @@ export async function advance(id: string): Promise<Render | null> {
             status: 'ready',
             completedAt,
             glbKey,
-            quality: withQuality(render, { glb: quality.measures }),
+            quality: withQuality(render, {
+              glb: { ...quality.measures, bytes: finished.bytes.byteLength },
+              fidelity: finished.fidelity,
+            }),
             costUsd: { increment: buildCostUsd(prediction.metrics?.predict_time) },
           },
         });

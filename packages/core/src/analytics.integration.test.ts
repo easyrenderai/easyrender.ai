@@ -39,7 +39,7 @@ vi.mock('@easyrender/harness', async (original) => ({
     measures: { side: 2048, emptyCells: 0, repeatedViews: 0, closestViews: 0.1 },
   }),
   checkGlb: () => ({ ok: true, warnings: [], measures: { bytes: 50000 } }),
-  download: async () => new Uint8Array([1, 2, 3]),
+  download: async () => new Uint8Array(50000),
   cutCells: async () => [new Uint8Array([1])],
   createReplicate: () => ({
     upload: async () => {

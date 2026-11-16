@@ -24,7 +24,8 @@ const nextConfig: NextConfig = {
     '@easyrender/harness',
     '@easyrender/mcp',
   ],
-  serverExternalPackages: ['sharp', 'pg'],
+  // Draco loads its adjacent WASM file at runtime; bundling loses that asset path.
+  serverExternalPackages: ['sharp', 'pg', 'draco3dgltf'],
   // Guides are content files read at request time, so they have to travel with the deployment.
   outputFileTracingIncludes: { '/**': ['./content/**/*'] },
   // noindex as a response header as well as a meta tag: the header covers a route before anyone
