@@ -15,15 +15,17 @@ Procura alternativas ao Meshy porque paga por modelos que não consegue usar? Ve
 
 ## Escolha pelo problema que precisa de resolver
 
-| Ferramenta      | Quando escolher                                 | Preço publicado                                        | Limite grátis                              |
-| --------------- | ----------------------------------------------- | ------------------------------------------------------ | ------------------------------------------ |
-| easyrender      | Uma fotografia de produto; rever antes de pagar | {{renderPrice}} por modelo; {{renderCredits}} créditos | Folha de ângulos grátis; modelo pago       |
-| Tripo           | Várias vistas e controlo da malha               | Pro: US$20/mês; US$240 cobrados anualmente             | 200 créditos/mês; uso não comercial        |
-| Rodin (Hyper3D) | Várias fotografias e materiais                  | Creator: US$30/mês, cobrança mensal                    | Exportações limitadas a modelos anteriores |
-| Sloyd           | Criação frequente e modelos paramétricos        | Plus: US$15/mês, cobrança mensal                       | 1 geração/dia; exportações da comunidade   |
-| Meshy           | Texto, várias fotografias e animação            | Pro: £16/mês (GBP), cobrança mensal                    | 100 créditos/mês; confirmar download       |
+| Ferramenta          | Quando escolher                                 | Preço publicado                                        | Limite grátis                              |
+| ------------------- | ----------------------------------------------- | ------------------------------------------------------ | ------------------------------------------ |
+| **easyrender**      | Uma fotografia de produto; rever antes de pagar | {{renderPrice}} por modelo; {{renderCredits}} créditos | Folha de ângulos grátis; modelo pago       |
+| **Tripo**           | Várias vistas e controlo da malha               | Pro: US$20/mês; US$240 cobrados anualmente             | 200 créditos/mês; uso não comercial        |
+| **Rodin (Hyper3D)** | Várias fotografias e materiais                  | Creator: US$30/mês, cobrança mensal                    | Exportações limitadas a modelos anteriores |
+| **Sloyd**           | Criação frequente e modelos paramétricos        | Plus: US$15/mês, cobrança mensal                       | 1 geração/dia; exportações da comunidade   |
+| **Meshy**           | Texto, várias fotografias e animação            | Pro: £16/mês (GBP), cobrança mensal                    | 100 créditos/mês; confirmar download       |
 
 Preços e condições verificados a 16 de novembro de 2026: [easyrender](/pt/precos), [Meshy](https://www.meshy.ai/pricing), [Tripo](https://www.tripo3d.ai/pricing), [Rodin](https://hyper3d.ai/pricing) e [Sloyd](https://www.sloyd.ai/pricing). Mantemos moedas e períodos de cobrança dos sites; não são custos equivalentes por modelo. Os créditos diferem entre serviços e as tarifas API são separadas.
+
+> **Antes de escolher.** Gerar, descarregar e usar comercialmente são três permissões diferentes. Confirma as três antes de pagar.
 
 ![Ilustração de um relógio de latão, metade material e metade malha 3D](/compare/illustrations/meshy/hero.webp "Ilustração conceptual: relógio de latão representado entre superfície e malha 3D.")
 
@@ -62,13 +64,13 @@ Nos testes diretos, Meshy Workspace e Tripo Studio pediram outro plano para as e
 
 ### easyrender: rever o produto antes de pagar
 
-Para móveis e decoração a partir de uma fotografia: confira nove ângulos, conte as peças e gere quando a forma estiver correta. O modelo custa {{renderCredits}} créditos ({{renderPrice}}), com GLB e USDZ. A pré-visualização é grátis; o ficheiro 3D é pago.
+**Para móveis e decoração a partir de uma fotografia: confira nove ângulos, conte as peças e gere quando a forma estiver correta.** O modelo custa {{renderCredits}} créditos ({{renderPrice}}), com GLB e USDZ. A pré-visualização é grátis; o ficheiro 3D é pago.
 
 As vistas adicionais são previsões das partes escondidas. Para várias fotografias reais, rigging ou animação, veja as outras opções. [Experimente a fotografia](/pt#try) ou consulte os [preços](/pt/precos).
 
 ### Tripo: aproveitar fotografias reais de vários lados
 
-Para vistas de frente, laterais e costas, segmentação e redução da malha. A [API multivista](https://developers.tripo3d.com/en/docs/generation-multiview-to-model/standard) aceita duas a quatro vistas, com a frente obrigatória. [Studio Free](https://www.tripo3d.ai/pricing) é não comercial e indica 15 exportações H2.5. Ver um modelo recente não garante exportação grátis.
+**Para vistas de frente, laterais e costas, segmentação e redução da malha.** A [API multivista](https://developers.tripo3d.com/en/docs/generation-multiview-to-model/standard) aceita duas a quatro vistas, com a frente obrigatória. [Studio Free](https://www.tripo3d.ai/pricing) é não comercial e indica 15 exportações H2.5. Ver um modelo recente não garante exportação grátis.
 
 ### Rodin: controlar referências e materiais
 
@@ -78,23 +80,23 @@ A [pré-visualização grátis](https://hyper3d.ai/help/articles/how-many-credit
 
 ### Sloyd: volume e modelos paramétricos
 
-Sloyd combina texto e imagem com modelos paramétricos. [Plus](https://www.sloyd.ai/pricing) inclui geração básica ilimitada com uso razoável e regras de fila. Multivista e outras funções gastam créditos. Para revender os ficheiros em marketplaces, consulte Pro: Plus exclui essa redistribuição.
+**Sloyd combina texto e imagem com modelos paramétricos.** [Plus](https://www.sloyd.ai/pricing) inclui geração básica ilimitada com uso razoável e regras de fila. Multivista e outras funções gastam créditos. Para revender os ficheiros em marketplaces, consulte Pro: Plus exclui essa redistribuição.
 
 Guest permite uma geração diária, mas exporta apenas modelos da comunidade. As suas gerações gratuitas são de uso pessoal. Veja os [formatos e licenças](https://www.sloyd.ai/sloyd-answers).
 
 ### Meshy: texto, fotografias e animação
 
-Para conceitos, novas texturas ou animação. A [entrada multi-imagem](https://docs.meshy.ai/en/api/multi-image-to-3d) aceita uma a quatro fotografias do mesmo objeto. O [plano grátis](https://www.meshy.ai/pricing) oferece 100 créditos mensais e licença CC BY 4.0 com atribuição; confirme o download. Pro acrescenta downloads ilimitados e licença privada.
+**Para conceitos, novas texturas ou animação.** A [entrada multi-imagem](https://docs.meshy.ai/en/api/multi-image-to-3d) aceita uma a quatro fotografias do mesmo objeto. O [plano grátis](https://www.meshy.ai/pricing) oferece 100 créditos mensais e licença CC BY 4.0 com atribuição; confirme o download. Pro acrescenta downloads ilimitados e licença privada.
 
 ## Entradas e exportações para o seu trabalho
 
-| Ferramenta | Entrada                                          | Formatos relevantes        |
-| ---------- | ------------------------------------------------ | -------------------------- |
-| easyrender | Uma fotografia e nota opcional                   | GLB, USDZ                  |
-| Meshy      | Texto ou 1–4 fotografias                         | GLB, FBX, OBJ, USDZ, BLEND |
-| Tripo      | Texto, uma fotografia ou 2–4 vistas              | GLB; FBX, OBJ, USDZ        |
-| Rodin      | Texto ou até 5 imagens na API                    | GLB, USDZ, FBX, OBJ        |
-| Sloyd      | Texto, imagem, multivista e modelos paramétricos | GLB, FBX, OBJ, BLEND, USDZ |
+| Ferramenta     | Entrada                                          | Formatos relevantes        |
+| -------------- | ------------------------------------------------ | -------------------------- |
+| **easyrender** | Uma fotografia e nota opcional                   | GLB, USDZ                  |
+| **Meshy**      | Texto ou 1–4 fotografias                         | GLB, FBX, OBJ, USDZ, BLEND |
+| **Tripo**      | Texto, uma fotografia ou 2–4 vistas              | GLB; FBX, OBJ, USDZ        |
+| **Rodin**      | Texto ou até 5 imagens na API                    | GLB, USDZ, FBX, OBJ        |
+| **Sloyd**      | Texto, imagem, multivista e modelos paramétricos | GLB, FBX, OBJ, BLEND, USDZ |
 
 Formatos documentados não significam downloads grátis em todos os planos. Tripo oferece alguns por [conversão](https://developers.tripo3d.com/en/docs/models-convert). Teste uma exportação completa na ferramenta de destino antes de processar o catálogo.
 

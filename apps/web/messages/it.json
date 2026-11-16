@@ -1250,12 +1250,37 @@
         "title": "Prova con una foto",
         "button": "Carica una foto"
       },
-      "related": "Continua a leggere"
+      "related": "Continua a leggere",
+      "promo": {
+        "title": "Il tuo prodotto da ogni lato",
+        "input": "La tua foto",
+        "output": "Viste generate con IA",
+        "button": "Prova gratis la tua foto",
+        "disclosure": "Anteprima gratuita. Il modello 3D è a pagamento."
+      }
     },
     "comparisons": {
       "title": "Confronti",
       "description": "Metodi e strumenti di modellazione 3D affiancati, quando una guida non basta per scegliere.",
-      "read": "Leggi il confronto"
+      "read": "Leggi il confronto",
+      "choices": {
+        "title": "Scegli in base alle tue esigenze",
+        "photo": {
+          "need": "Una foto di prodotto",
+          "tools": "easyrender",
+          "check": "Controlla le viste gratuite prima di pagare il modello."
+        },
+        "views": {
+          "need": "Foto da più lati",
+          "tools": "Tripo · Rodin",
+          "check": "Mostra i dettagli nascosti con viste reali del prodotto."
+        },
+        "animation": {
+          "need": "Personaggi e animazione",
+          "tools": "Meshy · Sloyd",
+          "check": "Verifica rigging, esportazione e diritti commerciali del piano."
+        }
+      }
     }
   },
   "Models": {

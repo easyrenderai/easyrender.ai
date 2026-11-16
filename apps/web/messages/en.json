@@ -1250,12 +1250,37 @@
         "title": "Try it with one photo",
         "button": "Upload a photo"
       },
-      "related": "Keep reading"
+      "related": "Keep reading",
+      "promo": {
+        "title": "See your product from every side",
+        "input": "Your photo",
+        "output": "AI angle sheet",
+        "button": "Try your photo free",
+        "disclosure": "Free preview. The 3D model is paid."
+      }
     },
     "comparisons": {
       "title": "Comparisons",
       "description": "Side-by-side looks at 3D modeling methods and tools, for when a guide is not enough to choose.",
-      "read": "Read the comparison"
+      "read": "Read the comparison",
+      "choices": {
+        "title": "Choose by what you need",
+        "photo": {
+          "need": "One product photo",
+          "tools": "easyrender",
+          "check": "Check the free angle sheet before paying for the model."
+        },
+        "views": {
+          "need": "Photos from several sides",
+          "tools": "Tripo · Rodin",
+          "check": "Use real views to show details hidden in one photo."
+        },
+        "animation": {
+          "need": "Characters and animation",
+          "tools": "Meshy · Sloyd",
+          "check": "Check rigging, export and commercial rights in your plan."
+        }
+      }
     }
   },
   "Models": {

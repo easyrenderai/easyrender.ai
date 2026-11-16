@@ -15,15 +15,17 @@ Suchst du Meshy-Alternativen, weil du für unbrauchbare Ergebnisse bezahlst? Pr�
 
 ## Welche Hürde soll die Alternative lösen?
 
-| Werkzeug        | Geeignet für                             | Veröffentlichter Preis                               | Gratislimit                                     |
-| --------------- | ---------------------------------------- | ---------------------------------------------------- | ----------------------------------------------- |
-| easyrender      | Ein Produktfoto; vor dem Bezahlen prüfen | {{renderPrice}} je Modell; {{renderCredits}} Credits | Ansichtsblatt gratis; 3D-Modell kostenpflichtig |
-| Tripo           | Mehrere Ansichten und Mesh-Bearbeitung   | Pro: US$20/Monat; US$240 jährlich abgerechnet        | 200 Credits/Monat; nicht kommerziell            |
-| Rodin (Hyper3D) | Mehrere Fotos und Materialkontrolle      | Creator: US$30/Monat, monatlich abgerechnet          | Exporte nur aus älteren Modellen                |
-| Sloyd           | Viele Assets und anpassbare Vorlagen     | Plus: US$15/Monat, monatlich abgerechnet             | 1 Generierung/Tag; Community-Exporte            |
-| Meshy           | Text, mehrere Fotos und Animation        | Pro: £16/Monat (GBP), monatlich abgerechnet          | 100 Credits/Monat; Download prüfen              |
+| Werkzeug            | Geeignet für                             | Veröffentlichter Preis                               | Gratislimit                                     |
+| ------------------- | ---------------------------------------- | ---------------------------------------------------- | ----------------------------------------------- |
+| **easyrender**      | Ein Produktfoto; vor dem Bezahlen prüfen | {{renderPrice}} je Modell; {{renderCredits}} Credits | Ansichtsblatt gratis; 3D-Modell kostenpflichtig |
+| **Tripo**           | Mehrere Ansichten und Mesh-Bearbeitung   | Pro: US$20/Monat; US$240 jährlich abgerechnet        | 200 Credits/Monat; nicht kommerziell            |
+| **Rodin (Hyper3D)** | Mehrere Fotos und Materialkontrolle      | Creator: US$30/Monat, monatlich abgerechnet          | Exporte nur aus älteren Modellen                |
+| **Sloyd**           | Viele Assets und anpassbare Vorlagen     | Plus: US$15/Monat, monatlich abgerechnet             | 1 Generierung/Tag; Community-Exporte            |
+| **Meshy**           | Text, mehrere Fotos und Animation        | Pro: £16/Monat (GBP), monatlich abgerechnet          | 100 Credits/Monat; Download prüfen              |
 
 Preise und Bedingungen geprüft am 16. November 2026: [easyrender](/de/preise), [Meshy](https://www.meshy.ai/pricing), [Tripo](https://www.tripo3d.ai/pricing), [Rodin](https://hyper3d.ai/pricing) und [Sloyd](https://www.sloyd.ai/pricing). Währung und Abrechnungszeitraum entsprechen der jeweiligen Website. Das sind keine vergleichbaren Stückpreise; auch Credits sind nicht austauschbar. API-Preise gelten separat.
+
+> **Vor der Auswahl.** Generieren, Herunterladen und kommerzielle Nutzung sind drei verschiedene Berechtigungen. Prüfe alle drei vor dem Bezahlen.
 
 ![Illustration einer Kaminuhr aus Messing, zur Hälfte aus echtem poliertem Messing, zur anderen Hälfte aus mattgrauem Ton mit weißem Drahtgitter, vor dunklem Hintergrund](/compare/illustrations/meshy/hero.webp "Illustration, kein Ergebnis von easyrender: eine Kaminuhr, halb als poliertes Messing, halb als Ton- und Drahtgittermodell gezeichnet.")
 
@@ -62,13 +64,13 @@ Meshy Workspace und Tripo Studio verlangten bei unseren direkten Tests ein Upgra
 
 ### easyrender: ein Produkt vor dem Bezahlen prüfen
 
-Für Möbel oder Dekoration aus einem Foto: neun Ansichten prüfen, Teile zählen, dann 3D erzeugen. Ein Modell kostet {{renderCredits}} Credits ({{renderPrice}}), mit GLB und USDZ. Die Vorschau ist kostenlos, die Modelldatei nicht.
+**Für Möbel oder Dekoration aus einem Foto: neun Ansichten prüfen, Teile zählen, dann 3D erzeugen.** Ein Modell kostet {{renderCredits}} Credits ({{renderPrice}}), mit GLB und USDZ. Die Vorschau ist kostenlos, die Modelldatei nicht.
 
 Zusätzliche Ansichten sind Vorhersagen der verdeckten Seiten. Mehrere echte Fotos, Rigging und Animation sprechen für andere Werkzeuge. [Foto ausprobieren](/de#try) oder [Preise ansehen](/de/preise).
 
 ### Tripo: echte Fotos mehrerer Seiten nutzen
 
-Für vorhandene Front-, Seiten- und Rückansichten sowie Segmentierung und Mesh-Reduktion. Die [Multiview-API](https://developers.tripo3d.com/en/docs/generation-multiview-to-model/standard) nimmt zwei bis vier Ansichten mit verpflichtender Front. [Studio Free](https://www.tripo3d.ai/pricing) ist nicht kommerziell und nennt 15 H2.5-Exporte. Ein neueres Modell im Viewer bedeutet keinen kostenlosen Export.
+**Für vorhandene Front-, Seiten- und Rückansichten sowie Segmentierung und Mesh-Reduktion.** Die [Multiview-API](https://developers.tripo3d.com/en/docs/generation-multiview-to-model/standard) nimmt zwei bis vier Ansichten mit verpflichtender Front. [Studio Free](https://www.tripo3d.ai/pricing) ist nicht kommerziell und nennt 15 H2.5-Exporte. Ein neueres Modell im Viewer bedeutet keinen kostenlosen Export.
 
 ### Rodin: Eingabe und Materialien kontrollieren
 
@@ -78,23 +80,23 @@ Die [kostenlose Vorschau](https://hyper3d.ai/help/articles/how-many-credits-does
 
 ### Sloyd: viele Assets und anpassbare Vorlagen
 
-Sloyd verbindet Text und Bild mit parametrischen Vorlagen. [Plus](https://www.sloyd.ai/pricing) bietet unbegrenzte Basisgenerierungen unter Fair Use und Warteschlangenregeln. Mehrbildeingabe und weitere Extras kosten Credits. Für den Weiterverkauf der Dateien auf Marktplätzen ist Pro zu prüfen; Plus schließt diese Weitergabe aus.
+**Sloyd verbindet Text und Bild mit parametrischen Vorlagen.** [Plus](https://www.sloyd.ai/pricing) bietet unbegrenzte Basisgenerierungen unter Fair Use und Warteschlangenregeln. Mehrbildeingabe und weitere Extras kosten Credits. Für den Weiterverkauf der Dateien auf Marktplätzen ist Pro zu prüfen; Plus schließt diese Weitergabe aus.
 
 Guest erlaubt eine tägliche Generierung, aber nur Community-Modelle als Export. Eigene kostenlose Ergebnisse sind für persönliche Nutzung. Siehe die [Format- und Lizenzübersicht](https://www.sloyd.ai/sloyd-answers).
 
 ### Meshy: Text, Fotos und Animation
 
-Für Konzepte, neue Texturen oder Animation. Die [Mehrbildeingabe](https://docs.meshy.ai/en/api/multi-image-to-3d) akzeptiert ein bis vier Fotos desselben Objekts. [Free](https://www.meshy.ai/pricing) enthält 100 monatliche Credits und CC BY 4.0 mit Namensnennung; den Downloadzugang musst du gesondert prüfen. Pro bietet unbegrenzte Downloads und eine private Lizenz.
+**Für Konzepte, neue Texturen oder Animation.** Die [Mehrbildeingabe](https://docs.meshy.ai/en/api/multi-image-to-3d) akzeptiert ein bis vier Fotos desselben Objekts. [Free](https://www.meshy.ai/pricing) enthält 100 monatliche Credits und CC BY 4.0 mit Namensnennung; den Downloadzugang musst du gesondert prüfen. Pro bietet unbegrenzte Downloads und eine private Lizenz.
 
 ## Eingaben und Exporte für deinen Arbeitsablauf
 
-| Werkzeug   | Eingabe                              | Relevante Formate          |
-| ---------- | ------------------------------------ | -------------------------- |
-| easyrender | Ein Foto, optionale Notiz            | GLB, USDZ                  |
-| Meshy      | Text oder 1–4 Fotos                  | GLB, FBX, OBJ, USDZ, BLEND |
-| Tripo      | Text, ein Foto oder 2–4 Ansichten    | GLB; FBX, OBJ, USDZ        |
-| Rodin      | Text oder bis zu 5 API-Bilder        | GLB, USDZ, FBX, OBJ        |
-| Sloyd      | Text, Bild, mehrere Bilder, Vorlagen | GLB, FBX, OBJ, BLEND, USDZ |
+| Werkzeug       | Eingabe                              | Relevante Formate          |
+| -------------- | ------------------------------------ | -------------------------- |
+| **easyrender** | Ein Foto, optionale Notiz            | GLB, USDZ                  |
+| **Meshy**      | Text oder 1–4 Fotos                  | GLB, FBX, OBJ, USDZ, BLEND |
+| **Tripo**      | Text, ein Foto oder 2–4 Ansichten    | GLB; FBX, OBJ, USDZ        |
+| **Rodin**      | Text oder bis zu 5 API-Bilder        | GLB, USDZ, FBX, OBJ        |
+| **Sloyd**      | Text, Bild, mehrere Bilder, Vorlagen | GLB, FBX, OBJ, BLEND, USDZ |
 
 Dokumentierte Formate sind keine kostenlosen Downloads in jedem Plan. Tripo bietet einige über [Formatumwandlung](https://developers.tripo3d.com/en/docs/models-convert). Teste einen vollständigen Export in deinem Zielprogramm, bevor du einen Katalog verarbeitest.
 
