@@ -170,7 +170,7 @@ function forAgentsSection(): string[] {
     '',
     `- [MCP server (English)](${absoluteUrl(ROUTES.mcp.paths.en)}): setup and tools.`,
     `- [MCP server (Spanish)](${absoluteUrl(ROUTES.mcp.paths.es)}): setup and tools in Spanish.`,
-    `- [Remote MCP endpoint](${absoluteUrl('/api/mcp')}): streamable HTTP; authenticate with OAuth or an API key in Authorization: Bearer. Without credentials, it returns 401.`,
+    `- [Remote MCP endpoint](${absoluteUrl('/api/mcp')}): streamable HTTP; initialize, notifications/initialized, ping and tools/list are public without credentials. All tools/call requests require OAuth or an API key in Authorization: Bearer; missing or invalid credentials return a JSON-RPC unauthorized error with status 401.`,
     '- [Official MCP Registry entry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.easyrenderai/easyrender): io.github.easyrenderai/easyrender.',
     `- [REST API (English)](${absoluteUrl(ROUTES.api.paths.en)}): image-to-3D API overview.`,
     `- [REST API (Spanish)](${absoluteUrl(ROUTES.api.paths.es)}): image-to-3D API overview in Spanish.`,

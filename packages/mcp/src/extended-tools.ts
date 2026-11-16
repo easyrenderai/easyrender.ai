@@ -101,7 +101,7 @@ function viewSetResult(row: Parameters<typeof toViewSetView>[0]) {
   return { ...view, links: { zip: `${config.appUrl()}/api/product-views/${view.id}/zip` } };
 }
 
-export function registerExtendedTools(server: McpServer, actor: Actor & { userId: string }) {
+export function registerExtendedTools(server: McpServer, actor: Actor) {
   server.registerTool(
     'list_renders',
     {
@@ -120,8 +120,8 @@ export function registerExtendedTools(server: McpServer, actor: Actor & { userId
       annotations: { ...reads, readOnlyHint: true },
     },
     (input) =>
-      forActor(actor, 'read', async () => {
-        const page = await listRenderPage(actor.userId, input);
+      forActor(actor, 'read', async (owner) => {
+        const page = await listRenderPage(owner.userId, input);
         return { renders: page.renders.map(result), next_cursor: page.nextCursor };
       }),
   );
@@ -271,8 +271,8 @@ export function registerExtendedTools(server: McpServer, actor: Actor & { userId
       annotations: reads,
     },
     ({ limit }) =>
-      forActor(actor, 'read', async () => ({
-        view_sets: (await listViewSets(actor.userId, limit ?? 24)).map(viewSetResult),
+      forActor(actor, 'read', async (owner) => ({
+        view_sets: (await listViewSets(owner.userId, limit ?? 24)).map(viewSetResult),
       })),
   );
   server.registerTool(

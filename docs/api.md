@@ -214,8 +214,15 @@ an uncertain paid/provider submission. For safe GETs, retry transient failures w
 
 ## MCP tools
 
-Connect to `https://easyrender.ai/api/mcp` using Streamable HTTP and OAuth or a bearer key. Discover
-`tools/list` on the connected server: input and output schemas are authoritative for that deployment.
+Connect to `https://easyrender.ai/api/mcp` using Streamable HTTP. Discovery is public:
+`initialize`, `notifications/initialized`, `ping` and `tools/list` work without credentials.
+Input and output schemas from `tools/list` are authoritative for that deployment. Every
+`tools/call` requires OAuth or a valid bearer API key, including free previews and account reads.
+Missing or invalid credentials return HTTP 401 with an OAuth challenge and a JSON-RPC unauthorized error with the request id,
+`data.status: 401`, and the message `Pass an easyrender API key as Authorization: Bearer er_...`.
+Anonymous requests are rate limited to 120 per minute per IP; authenticated limits remain per key.
+Resources and prompts are not implemented. The public directory ownership claim is available at
+`GET /api/mcp/.well-known/glama.json`, independently of the MCP transport and authentication.
 Tool successes include `structuredContent` and the same JSON in a text content block. Failures set
 `isError:true` and use `{error:{code,message,status,retryable,retry_after_seconds?}}`; do not mistake them for render data.
 
