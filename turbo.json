@@ -43,7 +43,9 @@
         "EMAIL_FROM",
         "EMAIL_REPLY_TO",
         "EMAIL_LEGAL_IDENTITY",
-        "EMAIL_ALLOWED_RECIPIENTS"
+        "EMAIL_ALLOWED_RECIPIENTS",
+        "SERVICE_EMAIL_ENABLED",
+        "SERVICE_EMAIL_ENCRYPTION_SECRET"
       ],
       "outputs": [".next/**", "!.next/cache/**"]
     },

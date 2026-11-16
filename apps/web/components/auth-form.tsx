@@ -8,7 +8,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { hasPending } from '@/lib/pending-upload';
 
-export function AuthForm({ mode }: { mode: AuthMode }) {
+export function AuthForm({
+  mode,
+  recovery,
+}: {
+  mode: AuthMode;
+  recovery?: { label: string; locale: string };
+}) {
   const t = useTranslations('Auth');
   const router = useRouter();
   const params = useSearchParams();
@@ -42,6 +48,14 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
             router.refresh();
           }}
         />
+        {mode === 'sign-in' && recovery && (
+          <Link
+            href={`/forgot-password?locale=${recovery.locale}`}
+            className="text-center text-sm underline underline-offset-4"
+          >
+            {recovery.label}
+          </Link>
+        )}
         <p className="text-center text-sm text-muted-foreground">
           {mode === 'sign-up' ? t('haveAccount') : t('newHere')}{' '}
           <Link

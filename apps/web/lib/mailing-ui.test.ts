@@ -5,16 +5,33 @@ import { MailingPreferencesForm } from '@/components/mailing-preferences-form';
 import { MailingTokenForm } from '@/components/mailing-token-form';
 import en from '@/messages/en.json';
 
-function preferences(status: string, isAvailable = true, expiresAt = '2099-01-01T00:00:00Z') {
+function preferences(
+  status: string,
+  isAvailable = true,
+  expiresAt: string | null = '2099-01-01T00:00:00Z',
+) {
   return renderToStaticMarkup(
     createElement(MailingPreferencesForm, {
-      initial: { status, isAvailable, expiresAt, locale: status === 'pending' ? 'es' : null },
+      initial: {
+        status,
+        isAvailable,
+        expiresAt,
+        confirmExpiresAt: null,
+        locale: status === 'pending' ? 'es' : null,
+      },
       copy: en.MailingUI,
       uiLocale: 'en',
     }),
   );
 }
 describe('mailing consent UI', () => {
+  it('does not invent a program expiry before first confirmation', () => {
+    const html = preferences('none', true, null);
+    expect(html).not.toContain('1970');
+    expect(html).not.toContain('Invalid Date');
+    expect(html).toContain('first confirmation');
+    expect(preferences('pending', true, null)).toContain('Resend confirmation email');
+  });
   it('requires an explicit language and separate unchecked consent before requesting mail', () => {
     const html = preferences('none');
     expect(html).toContain('aria-checked="false"');

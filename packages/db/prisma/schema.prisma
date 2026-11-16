@@ -36,6 +36,7 @@ model User {
   updatedAt     DateTime @updatedAt
 
   emailSubscription EmailSubscription?
+  serviceEmailDeliveries ServiceEmailDelivery[]
 
   sessions  Session[]
   accounts  Account[]
@@ -581,4 +582,39 @@ model EmailProviderEvent {
   occurredAt DateTime
   receivedAt DateTime @default(now())
   @@index([providerId, occurredAt])
+}
+
+// Service messages are independent of promotional consent. Auth payloads are encrypted.
+model ServiceEmailDelivery {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose String
+  dedupeKey String @unique
+  email String
+  locale String @default("en")
+  renderId String?
+  payloadEncrypted String?
+  status String @default("queued")
+  attempts Int @default(0)
+  firstAttemptAt DateTime?
+  nextAttemptAt DateTime @default(now())
+  leaseUntil DateTime?
+  leaseToken String?
+  providerId String? @unique
+  acceptedAt DateTime?
+  deliveredAt DateTime?
+  expiresAt DateTime
+  lastError String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([status, nextAttemptAt])
+  @@index([userId, purpose])
+  @@index([email, firstAttemptAt])
+}
+
+model ServiceEmailSuppression {
+  email String @id
+  reason String
+  createdAt DateTime @default(now())
 }

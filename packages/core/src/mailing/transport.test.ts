@@ -141,3 +141,26 @@ it('retries a concurrent idempotent request but rejects a conflicting payload', 
     expect(await sendMail(mail, 'same-id', fake)).toEqual({ status: expected });
   }
 });
+it('adds one clickable educational destination and rejects foreign action URLs', () => {
+  env();
+  const copy = { subject: 'Lesson', body: 'Exercise', preheader: 'Read', action: 'Review' };
+  const links = {
+    unsubscribe: 'https://example.com/email/unsubscribe',
+    preferences: 'https://example.com/account',
+    action: { url: 'https://example.com/new', label: 'Open easyrender' },
+  };
+  expect(buildMailPayload(copy, 'a@example.com', links, texts).html).toContain(
+    'href="https://example.com/new"',
+  );
+  expect(buildMailPayload(copy, 'a@example.com', links, texts).text).toContain(
+    'Open easyrender: https://example.com/new',
+  );
+  expect(() =>
+    buildMailPayload(
+      copy,
+      'a@example.com',
+      { ...links, action: { url: 'https://evil.example', label: 'Bad' } },
+      texts,
+    ),
+  ).toThrow();
+});

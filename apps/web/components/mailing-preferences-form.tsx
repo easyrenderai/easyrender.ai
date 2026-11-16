@@ -27,7 +27,7 @@ export function MailingPreferencesForm({
   const consentId = useId();
   const isSubscribed =
     status.status === 'active' || status.status === 'pending' || status.status === 'held';
-  const isExpired = Date.parse(status.expiresAt) <= Date.now();
+  const isExpired = status.expiresAt !== null && Date.parse(status.expiresAt) <= Date.now();
   const canSubscribe =
     status.isAvailable && !isExpired && !isSubscribed && status.status !== 'suppressed';
   const message = isExpired
@@ -96,7 +96,7 @@ export function MailingPreferencesForm({
         <p role="status" aria-live="polite">
           {message}
         </p>
-        {!isExpired && (
+        {!isExpired && status.expiresAt && (
           <p className="text-muted-foreground">
             {copy.expires.replace(
               '{date}',

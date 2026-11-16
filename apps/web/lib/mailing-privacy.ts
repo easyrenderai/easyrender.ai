@@ -5,7 +5,11 @@ export function isMailingTokenLocation(value: string): boolean {
       value.replace(/^(?:GET|POST|HEAD|OPTIONS)\s+/i, ''),
       'https://easyrender.invalid',
     ).pathname;
-    return /^\/(?:api\/)?email\/(?:confirm|unsubscribe)(?:\/|$)/.test(path);
+    return (
+      /^\/(?:api\/)?email\/(?:confirm|unsubscribe)(?:\/|$)/.test(path) ||
+      /^\/api\/email\/verify-account(?:\/|$)/.test(path) ||
+      /^\/(?:api\/auth\/)?(?:verify-email|reset-password)(?:\/|$)/.test(path)
+    );
   } catch {
     return false;
   }

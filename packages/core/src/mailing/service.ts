@@ -36,6 +36,14 @@ const PROVIDER_EVENTS = [
 const SUPPRESSION_EVENTS = ['email.bounced', 'email.complained', 'email.suppressed'];
 const secret = () => process.env.EMAIL_TOKEN_SECRET ?? '';
 const sameAddress = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
+async function isProviderSuppressed(tx: Tx, email: string): Promise<boolean> {
+  return Boolean(
+    await tx.serviceEmailSuppression.findUnique({
+      where: { email: email.trim().toLowerCase() },
+      select: { email: true },
+    }),
+  );
+}
 async function lockUser(tx: Tx, id: string) {
   await tx.$queryRaw`SELECT id FROM "user" WHERE id = ${id} FOR UPDATE`;
 }
@@ -53,33 +61,45 @@ function links(s: EmailSubscription, appUrl: string) {
     confirm: `${appUrl}/email/confirm?token=${encodeURIComponent(makeMailToken(s.id, s.consentNonce, 'confirm', secret()))}${suffix}`,
   };
 }
+// The first confirmation is the immutable education anchor, including for legacy rows.
+function programExpiresAt(s: Pick<EmailSubscription, 'confirmedAt'>): Date | null {
+  return s.confirmedAt ? new Date(+s.confirmedAt + 30 * DAY) : null;
+}
 export function mailingAvailable(): boolean {
   return Boolean(mailingConfig());
 }
-export async function mailingStatus(
-  userId: string,
-): Promise<{ status: string; locale: string | null; expiresAt: string; isAvailable: boolean }> {
+export async function mailingStatus(userId: string): Promise<{
+  status: string;
+  locale: string | null;
+  expiresAt: string | null;
+  confirmExpiresAt: string | null;
+  isAvailable: boolean;
+}> {
   const user = await db().user.findUnique({
     where: { id: userId },
     include: { emailSubscription: true },
   });
   if (!user) throw new AppError('Account not found', 404, 'not_found');
   const s = user.emailSubscription;
-  const expiresAt = new Date(+user.createdAt + 30 * DAY);
-  const status =
-    s && !sameAddress(s.email, user.email)
+  const expiresAt = s ? programExpiresAt(s) : null;
+  const hasProviderSuppression = await isProviderSuppressed(db(), user.email);
+  const status = hasProviderSuppression
+    ? 'suppressed'
+    : s && !sameAddress(s.email, user.email)
       ? 'held'
-      : +expiresAt <= Date.now()
+      : expiresAt && +expiresAt <= Date.now()
         ? 'expired'
         : (s?.status ?? 'none');
   return {
     status,
     locale: s?.locale ?? null,
-    expiresAt: expiresAt.toISOString(),
+    expiresAt: expiresAt?.toISOString() ?? null,
+    confirmExpiresAt: s?.confirmExpiresAt.toISOString() ?? null,
     isAvailable:
       mailingAvailable() &&
       recipientAllowed(user.email) &&
-      +expiresAt > Date.now() &&
+      !hasProviderSuppression &&
+      (!expiresAt || +expiresAt > Date.now()) &&
       s?.status !== 'suppressed',
   };
 }
@@ -106,13 +126,15 @@ export async function requestMailing(
     });
     if (!user) throw new AppError('Account not found', 404, 'not_found');
     const now = new Date();
-    const expiresAt = new Date(+user.createdAt + 30 * DAY);
-    if (+expiresAt <= +now)
-      throw new AppError('Registration program ended', 409, 'mailing_expired');
+    const old = user.emailSubscription;
+    const programEnd = old ? programExpiresAt(old) : null;
+    if (programEnd && +programEnd <= +now)
+      throw new AppError('Education program ended', 409, 'mailing_expired');
+    const confirmExpiresAt = new Date(Math.min(programEnd ? +programEnd : Infinity, +now + DAY));
+    const expiresAt = programEnd ?? confirmExpiresAt;
     if (!recipientAllowed(user.email))
       throw new AppError('Mailing unavailable', 503, 'mailing_unavailable');
-    const old = user.emailSubscription;
-    if (old?.status === 'suppressed')
+    if (old?.status === 'suppressed' || (await isProviderSuppressed(tx, user.email)))
       throw new AppError('Address suppressed', 409, 'mailing_suppressed');
     if (old?.status === 'active' && sameAddress(old.email, user.email)) return;
     if (old && +now - +old.requestedAt < HOUR)
@@ -144,9 +166,9 @@ export async function requestMailing(
       consentVersion: MAILING_VERSION,
       consentNonce: randomUUID(),
       requestedAt: now,
-      confirmExpiresAt: new Date(Math.min(+expiresAt, +now + DAY)),
+      confirmExpiresAt,
       expiresAt,
-      confirmedAt: null,
+      confirmedAt: old?.confirmedAt ?? null,
       isPaused: false,
       nextCheckAt: now,
     };
@@ -219,15 +241,19 @@ export async function confirmMailing(token: string): Promise<boolean> {
       !s ||
       s.consentNonce !== value.nonce ||
       !sameAddress(s.email, s.user.email) ||
-      +s.expiresAt <= +now ||
-      +s.user.createdAt + 30 * DAY <= +now
+      (s.confirmedAt && +s.confirmedAt + 30 * DAY <= +now)
     )
       return false;
     if (s.status === 'active') return true;
     if (s.status !== 'pending' || +s.confirmExpiresAt <= +now) return false;
     await tx.emailSubscription.update({
       where: { id: s.id },
-      data: { status: 'active', confirmedAt: now, nextCheckAt: now },
+      data: {
+        status: 'active',
+        confirmedAt: s.confirmedAt ?? now,
+        expiresAt: new Date(+(s.confirmedAt ?? now) + 30 * DAY),
+        nextCheckAt: now,
+      },
     });
     await tx.emailConsentEvent.create({
       data: {
@@ -409,12 +435,19 @@ export async function handleMailingWebhook(
 async function isCurrentSubscription(
   tx: Tx,
   s: EmailSubscription,
-  user: { email: string; createdAt: Date },
+  user: { email: string },
   now: Date,
 ) {
+  if (await isProviderSuppressed(tx, s.email)) {
+    await suppressSubscription(tx, s, 'provider_suppressed');
+    return false;
+  }
   let status: string | null = null;
+  const expiresAt = programExpiresAt(s);
+  if (expiresAt && +s.expiresAt !== +expiresAt)
+    await tx.emailSubscription.update({ where: { id: s.id }, data: { expiresAt } });
   if (!sameAddress(s.email, user.email)) status = 'held';
-  else if (+s.expiresAt <= +now || +user.createdAt + 30 * DAY <= +now) status = 'expired';
+  else if (expiresAt && +expiresAt <= +now) status = 'expired';
   if (status) {
     if (s.status !== 'suppressed' && s.status !== 'unsubscribed')
       await tx.emailSubscription.update({ where: { id: s.id }, data: { status } });
@@ -427,6 +460,16 @@ async function activity(tx: Tx, userId: string, now: Date) {
   const task = await tx.render.findFirst({ where: { userId }, select: { id: true } });
   const result = await tx.render.findFirst({
     where: { userId, status: 'ready', glbKey: { not: null } },
+    orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+    select: { id: true },
+  });
+  const preview = await tx.render.findFirst({
+    where: { userId, status: 'preview_ready', sheetKey: { not: null } },
+    orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+    select: { id: true },
+  });
+  const purchase = await tx.purchase.findFirst({
+    where: { userId, status: 'paid' },
     select: { id: true },
   });
   const interruption = await tx.render.findFirst({
@@ -442,6 +485,8 @@ async function activity(tx: Tx, userId: string, now: Date) {
   return {
     hasTask: Boolean(task),
     hasResult: Boolean(result),
+    hasPurchase: Boolean(purchase),
+    actionRenderId: result?.id ?? preview?.id ?? null,
     hasInterruption: Boolean(interruption),
   };
 }
@@ -489,7 +534,7 @@ async function queueSubscription(
       return false;
     const config = mailingConfig();
     if (!config || !recipientAllowed(s.email)) return false;
-    const day = currentSlot(s.user.createdAt, now);
+    const day = currentSlot(s.confirmedAt, now);
     if (day === null) return false;
     const key = `d${String(day).padStart(2, '0')}`;
     const messageId = `${s.route}_${key}`;
@@ -517,7 +562,16 @@ async function queueSubscription(
     const payload = buildMailPayload(
       copy,
       s.email,
-      { unsubscribe: urls.unsubscribe, preferences: urls.preferences },
+      {
+        unsubscribe: urls.unsubscribe,
+        preferences: urls.preferences,
+        action: {
+          url: state.actionRenderId
+            ? `${config.appUrl}/r/${encodeURIComponent(state.actionRenderId)}`
+            : `${config.appUrl}/dashboard`,
+          label: texts[locale].educationalActionLabel ?? copy.action,
+        },
+      },
       texts[locale],
     );
     await tx.emailDelivery.create({
@@ -528,7 +582,7 @@ async function queueSubscription(
         payload,
         recipient: s.email,
         consentNonce: s.consentNonce,
-        expiresAt: new Date(Math.min(+s.expiresAt, +s.user.createdAt + (day + 1) * DAY)),
+        expiresAt: new Date(+s.confirmedAt + (day + 1) * DAY),
         nextAttemptAt: now,
       },
     });
@@ -681,17 +735,21 @@ async function dispatchEntry(id: string, fetcher: typeof fetch) {
   const now = new Date();
   const s = latest?.subscription;
   const isConfirmation = entry.kind === 'confirmation';
+  const state = !isConfirmation && s ? await activity(db(), s.userId, now) : null;
+  const hasProviderSuppression = s ? await isProviderSuppressed(db(), s.email) : false;
   const canSend =
     latest?.status === 'sending' &&
     latest.leaseToken === entry.leaseToken &&
     s &&
     !s.isPaused &&
+    !hasProviderSuppression &&
     sameAddress(s.email, s.user.email) &&
     sameAddress(entry.recipient, s.email) &&
     s.consentNonce === entry.consentNonce &&
     +entry.expiresAt > +now &&
-    +s.expiresAt > +now &&
-    +s.user.createdAt + 30 * DAY > +now &&
+    (!s.confirmedAt || +s.confirmedAt + 30 * DAY > +now) &&
+    (!state ||
+      (!state.hasInterruption && isLessonEligible(`${s.route}_${entry.messageKey}`, state))) &&
     (isConfirmation
       ? s.status === 'pending' && +s.confirmExpiresAt > +now
       : s.status === 'active' && Boolean(s.confirmedAt) && isSendingHour(s.timezone, now)) &&

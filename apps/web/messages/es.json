@@ -2314,7 +2314,7 @@
   },
   "MailingUI": {
     "title": "Ideas prácticas para tus proyectos 3D",
-    "description": "Correos opcionales con historias, ejemplos y próximos pasos útiles. Hasta seis envíos, con final a los 30 días de tu registro.",
+    "description": "Correos opcionales con historias, ejemplos y próximos pasos útiles. Hasta seis envíos durante los 30 días desde tu primera confirmación.",
     "scope": "Solo incluye la serie educativa. No te suscribe a una newsletter ni a futuras ofertas.",
     "language": "Elige el idioma de estos correos",
     "spanish": "Español",
@@ -2333,7 +2333,7 @@
     "stopped": "Tu elección se ha guardado.",
     "failed": "No hemos podido guardar tu elección. Inténtalo más tarde.",
     "rateLimited": "Espera antes de solicitar otro correo de confirmación.",
-    "expires": "Esta serie termina el {date}, aunque te suscribas más tarde.",
+    "expires": "Esta serie termina el {date}. Volver a suscribirte no reinicia el plazo.",
     "languagesOnly": "Disponible en español e inglés.",
     "privacy": "Política de privacidad",
     "confirmTitle": "Confirma tus correos educativos",
@@ -2342,7 +2342,7 @@
     "unsubscribeDescription": "Detén la serie educativa para la dirección asociada a este enlace. No afecta a los correos de acceso, seguridad o compras.",
     "confirmButton": "Confirmar mi suscripción",
     "unsubscribeButton": "Darme de baja",
-    "confirmed": "Tu suscripción está confirmada. Los correos solo se envían durante los primeros 30 días desde el registro.",
+    "confirmed": "Tu suscripción está confirmada. La serie termina a los 30 días desde tu primera confirmación.",
     "removed": "Te has dado de baja de la serie educativa.",
     "invalidLink": "El enlace no es válido o ha caducado. Puedes gestionar tu elección desde tu cuenta.",
     "tokenFailed": "No hemos podido completar la solicitud. Inténtalo más tarde.",
@@ -2352,11 +2352,12 @@
   },
   "MailingSystem": {
     "confirmSubject": "Confirma tus correos educativos de easyrender",
-    "confirmBody": "Has solicitado correos prácticos de easyrender. Confirma tu elección abajo. La serie incluye hasta seis correos educativos y termina a los 30 días de crear tu cuenta. No incluye una newsletter ni futuras ofertas. Si no lo solicitaste, ignora este mensaje.",
+    "confirmBody": "Has solicitado correos prácticos de easyrender. Confirma tu elección abajo. La serie incluye hasta seis correos educativos durante los 30 días desde tu primera confirmación. No incluye una newsletter ni futuras ofertas. Si no lo solicitaste, ignora este mensaje.",
     "confirmAction": "Confirmar mis correos educativos",
-    "footerReason": "Recibes esta serie educativa porque la solicitaste y confirmaste. Termina a los 30 días de tu registro.",
+    "footerReason": "Recibes esta serie educativa porque la solicitaste y confirmaste. Termina a los 30 días de tu primera confirmación.",
     "unsubscribeLabel": "Dejar de recibir estos correos",
-    "preferencesLabel": "Gestionar preferencias de email"
+    "preferencesLabel": "Gestionar preferencias de email",
+    "educationalActionLabel": "Continuar en easyrender"
   },
   "MailingEmails": {
     "ecommerce_d00": {
@@ -2458,7 +2459,7 @@
     "agency_d20": {
       "subject": "¿Quién había presupuestado la reunión?",
       "preheader": "El coste de una entrega incluye el trabajo entre archivos.",
-      "body": "Historia ilustrativa; cifras hipotéticas para explicar el cálculo.\n\nInés había contado la producción y revisión del modelo. Después llegaron otras tareas: reunir comentarios, hablar con quien aprobaba y adaptar la entrega.\n\nAbrió el presupuesto. Esas horas no aparecían.\n\nImagina un encargo de 300 € con 40 € de herramientas y 120 € de trabajo directo. Quedan 140 € antes de otros costes e impuestos. Si la coordinación y adaptación añaden 100 €, quedan 40 € en esas mismas condiciones.\n\nEl precio no cambió. Cambió el trabajo que habíamos contado.\n\nPara valorar qué puedes repetir, separa preparación, producción, revisión, coordinación, adaptación y entrega. La parte que realices con easyrender convive con el tiempo de las demás.\n\nSi ya completaste un proyecto, utiliza lo observado. Si estás preparando uno, anota estimaciones y márcalas como tales.\n\nTambién ayuda saber quién reúne los comentarios y quién da la aprobación. Esa organización forma parte del servicio que estás presupuestando, aunque no produzca un archivo nuevo.\n\nAñade a un presupuesto real o de ejemplo una tarea de coordinación o entrega que aún no estuviera contada.",
+      "body": "Historia ilustrativa.\n\nInés había contado la producción y revisión del modelo. Después llegaron otras tareas: reunir comentarios, hablar con quien aprobaba y adaptar la entrega.\n\nAbrió el presupuesto. Esas horas no aparecían.\n\nInés había restado herramientas y trabajo directo del importe del encargo. Al añadir coordinación y adaptación, el margen que esperaba se redujo. La cuenta estaba incompleta porque faltaban tareas, no porque hubiera cambiado el encargo.\n\nEl precio no cambió. Cambió el trabajo que habíamos contado.\n\nPara valorar qué puedes repetir, separa preparación, producción, revisión, coordinación, adaptación y entrega. La parte que realices con easyrender convive con el tiempo de las demás.\n\nSi ya completaste un proyecto, utiliza lo observado. Si estás preparando uno, anota estimaciones y márcalas como tales.\n\nTambién ayuda saber quién reúne los comentarios y quién da la aprobación. Esa organización forma parte del servicio que estás presupuestando, aunque no produzca un archivo nuevo.\n\nAñade a un presupuesto real o de ejemplo una tarea de coordinación o entrega que aún no estuviera contada.",
       "action": "Añade a un presupuesto real o de ejemplo una tarea de coordinación o entrega que aún no estuviera contada."
     },
     "agency_d28": {
@@ -2494,7 +2495,7 @@
     "api_d20": {
       "subject": "Diego cambió el número que estaba dividiendo",
       "preheader": "Un ejemplo para calcular el coste de un activo útil.",
-      "body": "Historia ilustrativa; cifras hipotéticas, no precios de easyrender.\n\nDiego comparaba dos procesos mirando cuánto costaba cada petición.\n\nSu compañera le hizo otra pregunta:\n\n—¿Cuánto nos cuesta tener una pieza que podamos utilizar?\n\nAbrieron la hoja del piloto. El ejemplo era sencillo:\n\nGeneración: 100 €.\nRevisión y preparación: 200 €.\nActivos aceptados: 50.\n\nCoste por activo aceptado: (100 + 200) / 50 = 6 €.\n\nContar solo las peticiones habría dejado fuera buena parte del trabajo. Para una comparación completa, la hoja también debe incluir los costes de almacenamiento, operación o adaptación que correspondan, sin duplicar importes reembolsados.\n\nLa cuenta no exige que todo el proceso esté automatizado. Precisamente ayuda a ver dónde se concentra el trabajo humano y qué cambio merece probarse después.\n\nSi todavía no tienes activos aceptados, el coste unitario queda pendiente: dividir entre intentos no lo sustituye.\n\nDiego podía comparar procesos con una unidad que su compañera reconocía.\n\nSi tienes una muestra revisada, calcula su coste por activo aceptado. Si aún no la tienes, deja preparada la hoja con generación, revisión y aceptados; conserva vacíos los datos que faltan.",
+      "body": "Historia ilustrativa.\n\nDiego comparaba dos procesos mirando cuánto costaba cada petición.\n\nSu compañera le hizo otra pregunta:\n\n—¿Cuánto nos cuesta tener una pieza que podamos utilizar?\n\nAbrieron la hoja del piloto y separaron generación, revisión, preparación y activos aceptados.\n\nCoste por activo aceptado = costes totales del proceso / número de activos aceptados.\n\nCada equipo debe completar esa cuenta con sus costes reales y con piezas revisadas que sí pueda utilizar.\n\nContar solo las peticiones habría dejado fuera buena parte del trabajo. Para una comparación completa, la hoja también debe incluir los costes de almacenamiento, operación o adaptación que correspondan, sin duplicar importes reembolsados.\n\nLa cuenta no exige que todo el proceso esté automatizado. Precisamente ayuda a ver dónde se concentra el trabajo humano y qué cambio merece probarse después.\n\nSi todavía no tienes activos aceptados, el coste unitario queda pendiente: dividir entre intentos no lo sustituye.\n\nDiego podía comparar procesos con una unidad que su compañera reconocía.\n\nSi tienes una muestra revisada, calcula su coste por activo aceptado. Si aún no la tienes, deja preparada la hoja con generación, revisión y aceptados; conserva vacíos los datos que faltan.",
       "action": "Si tienes una muestra revisada, calcula su coste por activo aceptado. Si aún no la tienes, deja preparada la hoja con generación, revisión y aceptados; conserva vacíos los datos que faltan."
     },
     "api_d28": {
@@ -2682,6 +2683,61 @@
       "preheader": "Una decisión útil puede ser continuar, ajustar o esperar.",
       "body": "Escena ilustrativa.\n\nPablo guardó el resultado junto a sus notas. Había conseguido explicar la forma que le interesaba, pero también había dedicado tiempo a reunir referencias y revisar el archivo.\n\nPara decidir si repetiría, escribió:\n\n«Me sirve para esta presentación porque aclara el detalle que quería mostrar. Repetiré cuando tenga un objeto parecido y referencias suficientes para revisarlo».\n\nSu decisión relacionaba la utilidad con el trabajo que había necesitado.\n\nPuedes cerrar tu prueba con una frase equivalente. Incluye qué necesitabas, qué evidencia tienes y qué harías después. Si valoras el coste, cuenta también preparación y revisión, además de la generación.\n\nSi aún no has hecho la prueba, identifica qué te impide decidir: falta de referencia, un uso todavía poco claro o una duda sobre el resultado. Dejarlo escrito es más útil que dar por realizado un proyecto pendiente.\n\nEste correo cierra tu recorrido de bienvenida en easyrender.\n\nElige continuar, ajustar o posponer, y escribe una razón que puedas comprobar en tu propio caso.",
       "action": "Elegir continuar, ajustar o posponer y documentar una razón comprobable."
+    }
+  },
+  "AuthService": {
+    "forgotLink": "¿Has olvidado tu contraseña?",
+    "forgotTitle": "Recupera tu contraseña",
+    "forgotDescription": "Introduce el email que usas en easyrender. Si existe una cuenta, solicitaremos un correo de recuperación.",
+    "email": "Email",
+    "requestReset": "Solicitar correo de recuperación",
+    "requested": "Si existe una cuenta con esta dirección, se ha solicitado un correo de recuperación. Revisa tu bandeja y el spam. Si no llega, inténtalo más tarde.",
+    "unavailable": "La recuperación por email no está disponible temporalmente. Inténtalo más tarde. Las cuentas creadas con Google pueden seguir accediendo con Google.",
+    "busy": "Un momento…",
+    "failed": "No hemos podido completar la solicitud. Inténtalo más tarde.",
+    "rateLimited": "Demasiadas solicitudes. Espera unos minutos antes de intentarlo de nuevo.",
+    "signIn": "Volver a iniciar sesión",
+    "resetTitle": "Elige una nueva contraseña",
+    "resetDescription": "Usa al menos 8 caracteres. Al cambiar la contraseña se cerrarán las sesiones existentes.",
+    "password": "Nueva contraseña",
+    "confirmPassword": "Repite la nueva contraseña",
+    "passwordMismatch": "Las contraseñas no coinciden.",
+    "resetAction": "Guardar nueva contraseña",
+    "resetDone": "Tu contraseña se ha cambiado. Inicia sesión con la nueva contraseña.",
+    "invalidLink": "Este enlace no es válido o ha caducado. Solicita otro correo para continuar.",
+    "verifyTitle": "Verifica tu email",
+    "verifyDescription": "Confirma que controlas la dirección de email de tu cuenta de easyrender. Esto no te suscribe a correos comerciales.",
+    "verifyAction": "Verificar mi email",
+    "verifyDone": "Tu email está verificado. Ya puedes volver a tu cuenta.",
+    "account": "Ir a mi cuenta",
+    "verificationTitle": "Verificación del email",
+    "verified": "Tu dirección de email está verificada.",
+    "notVerified": "Tu email aún no está verificado. Puedes seguir usando easyrender mientras lo verificas.",
+    "resend": "Enviar correo de verificación",
+    "verificationSent": "Correo de verificación solicitado. Revisa tu bandeja y el spam.",
+    "verificationUnavailable": "Los correos de verificación no están disponibles temporalmente. Tu acceso actual sigue funcionando.",
+    "newLink": "Solicitar otro correo de recuperación"
+  },
+  "ServiceEmails": {
+    "verify_email": {
+      "subject": "Verifica tu email de easyrender",
+      "body": "Gracias por crear tu cuenta de easyrender. Confirma que esta dirección de email es tuya con el enlace de abajo.\n\nEl enlace caduca en una hora. Si no has creado esta cuenta, ignora este mensaje. Es un correo de tu cuenta, no una suscripción comercial.",
+      "action": "Verificar mi email"
+    },
+    "reset_password": {
+      "subject": "Restablece tu contraseña de easyrender",
+      "body": "Se ha solicitado un cambio de contraseña para tu cuenta de easyrender. Usa el enlace de abajo para elegir una nueva contraseña.\n\nEl enlace caduca en una hora y solo se puede usar una vez. Si no lo has solicitado, ignora este correo: tu contraseña seguirá siendo la misma.",
+      "action": "Elegir una nueva contraseña"
+    },
+    "render_ready": {
+      "subject": "Tu resultado de easyrender está listo",
+      "body": "Tu trabajo de renderizado ha terminado. Abre easyrender para revisar el resultado y las opciones disponibles.",
+      "action": "Ver mi resultado"
+    },
+    "render_failed": {
+      "subject": "Tu trabajo de easyrender no ha podido terminar",
+      "body": "No se ha podido completar tu trabajo de renderizado. Abre easyrender para ver su estado y los siguientes pasos disponibles.",
+      "action": "Revisar mi trabajo"
     }
   }
 }

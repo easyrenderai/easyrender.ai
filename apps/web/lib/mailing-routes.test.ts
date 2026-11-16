@@ -11,6 +11,8 @@ const mocks = vi.hoisted(() => ({
   unsubscribe: vi.fn(),
   webhook: vi.fn(),
   run: vi.fn(),
+  serviceWebhook: vi.fn(),
+  serviceRun: vi.fn(),
   report: vi.fn(),
 }));
 vi.mock('server-only', () => ({}));
@@ -24,6 +26,7 @@ vi.mock('@/lib/mailing', () => ({
   mailingSystemCopies: {},
   mailingOriginMap: {},
 }));
+vi.mock('@/lib/service-email', () => ({ serviceEmailTexts: {} }));
 vi.mock('@easyrender/core', () => ({
   AppError: class extends Error {
     constructor(
@@ -43,6 +46,8 @@ vi.mock('@easyrender/core', () => ({
   unsubscribeMailing: mocks.unsubscribe,
   handleMailingWebhook: mocks.webhook,
   runMailing: mocks.run,
+  runServiceEmails: mocks.serviceRun,
+  handleServiceEmailWebhook: mocks.serviceWebhook,
 }));
 
 import { GET as cron } from '@/app/api/cron/email/route';
@@ -168,6 +173,7 @@ describe('mailing token routes and delivery', () => {
     const r = request('/api/webhooks/email', raw, { 'svix-signature': 'signature' });
     expect((await webhook(r)).status).toBe(200);
     expect(mocks.webhook).toHaveBeenCalledWith(raw, r.headers);
+    expect(mocks.serviceWebhook).toHaveBeenCalledWith(raw, r.headers);
     const previous = process.env.CRON_SECRET;
     delete process.env.CRON_SECRET;
     expect((await cron(new Request('https://easyrender.test/api/cron/email'))).status).toBe(401);
@@ -182,12 +188,16 @@ describe('mailing token routes and delivery', () => {
       ).status,
     ).toBe(401);
     mocks.run.mockResolvedValue({ queued: 1, examined: 2 });
+    mocks.serviceRun.mockResolvedValue({ examined: 1 });
     const accepted = await cron(
       new Request('https://easyrender.test/api/cron/email', {
         headers: { authorization: 'Bearer test-secret' },
       }),
     );
-    expect(await accepted.json()).toEqual({ queued: 1, examined: 2 });
+    expect(await accepted.json()).toEqual({
+      education: { queued: 1, examined: 2 },
+      service: { examined: 1 },
+    });
     if (previous === undefined) delete process.env.CRON_SECRET;
     else process.env.CRON_SECRET = previous;
   });

@@ -17,6 +17,13 @@ const routes = [
 const days = ['00', '02', '05', '10', '20', '28'];
 
 describe('the registration email catalog', () => {
+  it('does not include monetary amounts even in hypothetical agency or API examples', () => {
+    for (const locale of ['en', 'es'] as const) {
+      for (const id of ['agency_d20', 'api_d20'] as const) {
+        expect(catalogs[locale][id].body).not.toMatch(/[€$£]|\b(?:EUR|USD|euros?|dollars?)\b/i);
+      }
+    }
+  });
   it.each(['es', 'en'] as const)(
     '%s covers all nine routes and six registration days',
     (locale) => {
