@@ -479,6 +479,12 @@
             "body": "Prüfe Ausrichtung, Materialien und Maßstab. Das generierte Modell übernimmt keine realen Maße."
           }
         }
+      },
+      "video": {
+        "illustration": "Illustrative Anleitung · Beispielmodell und vereinfachte Oberflächen.",
+        "readSteps": "Schritte lesen",
+        "captions": "Untertitel der Schritte",
+        "error": "Das Video konnte nicht geladen werden. Lies die Schritte unten."
       }
     }
   },

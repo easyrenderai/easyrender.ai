@@ -479,6 +479,12 @@
             "body": "Vérifiez orientation, matériaux et échelle. Le modèle généré ne conserve pas les dimensions réelles."
           }
         }
+      },
+      "video": {
+        "illustration": "Démonstration illustrative · modèle d’exemple et interfaces simplifiées.",
+        "readSteps": "Lire les étapes",
+        "captions": "Sous-titres des étapes",
+        "error": "La vidéo n’a pas pu être chargée. Consultez les étapes ci-dessous."
       }
     }
   },

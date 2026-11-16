@@ -479,6 +479,12 @@
             "body": "Check orientation, materials and scale. The generated model does not preserve real-world measurements."
           }
         }
+      },
+      "video": {
+        "illustration": "Illustrative walkthrough · example model, simplified interfaces.",
+        "readSteps": "Read the steps",
+        "captions": "Step captions",
+        "error": "The video could not load. Read the steps below."
       }
     }
   },
