@@ -14,7 +14,7 @@ export function FirstModelControls({
   copy: typeof en.FirstModelAdmin;
 }) {
   const router = useRouter();
-  const [cap, setCap] = useState(String(campaign?.maxOffers ?? 100));
+  const [cap, setCap] = useState(String(campaign?.maxOffers ?? 250));
   const [isBusy, setIsBusy] = useState(false);
   const [hasError, setHasError] = useState(false);
   async function configure() {
