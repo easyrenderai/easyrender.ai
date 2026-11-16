@@ -59,7 +59,8 @@ docker build -t model-export .
 ```
 
 CI (`.github/workflows/model-export.yml`) builds the image and runs the tests inside it on every
-PR that touches this folder.
+PR that touches this folder. On `main` it then pushes the image and points the Lambda function at
+it.
 
 ## Measured
 
@@ -70,6 +71,6 @@ compressed. The first start after idle on Lambda itself is not measured yet.
 
 ## Not here yet
 
-The Lambda function, its roles and the image registry (`infra/aws`), and the app side (export
-routes, buttons, signed links). The private bucket and the signed download path already exist:
-see `infra/aws/README.md`.
+The app side: export routes, buttons and signed links. The function, its roles and the image
+registry are `infra/aws/exports.yml`; the private bucket and the signed download path are
+`infra/aws/storage.yml`. See `infra/aws/README.md`.
