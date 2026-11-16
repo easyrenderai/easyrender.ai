@@ -156,3 +156,24 @@ def test_a_refused_request_is_answered_without_loading_blender() -> None:
     )
 
     assert result.stdout.split() == ["False", "False"]
+
+
+def test_a_warm_up_converts_a_generated_model_and_touches_no_bucket(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def no_bucket() -> None:
+        raise AssertionError("the warm-up must not reach S3")
+
+    monkeypatch.setattr(handler_module, "_client", no_bucket)
+    monkeypatch.delenv("EXPORTS_BUCKET", raising=False)
+
+    result = handler_module.handler({"warm": True})
+
+    assert result["ok"] is True
+    assert result["warm"] is True
+
+
+def test_only_a_true_warm_flag_is_a_warm_up() -> None:
+    result = handler_module.handler({"warm": "yes", "format": "stl"})
+
+    assert result == {"ok": False, "error": "format must be one of: obj, fbx, blend"}
