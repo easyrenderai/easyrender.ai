@@ -8,6 +8,7 @@ import {
 } from '@easyrender/core/attribution';
 import { PRICING_FLAG, type PricingVariant } from '@easyrender/harness/pricing';
 import type { PostHog } from 'posthog-js';
+import { isMailingTokenLocation } from '@/lib/mailing-privacy';
 import {
   AD_CLICK_KEYS,
   type AdvertisingTouch,
@@ -90,7 +91,7 @@ function googleUrl(value: string) {
   }
 }
 export function gaPageview() {
-  if (!isGaAllowed || !gaId || !window.gtag) return;
+  if (!isGaAllowed || !gaId || !window.gtag || isMailingTokenLocation(window.location.href)) return;
   const page = googleUrl(window.location.href);
   if (lastGaPage === page) return;
   lastGaPage = page;
@@ -124,7 +125,7 @@ export function gaEvent(
   properties: Record<string, unknown> = {},
   identity?: string,
 ) {
-  if (!isGaAllowed || !gaId || !window.gtag) return;
+  if (!isGaAllowed || !gaId || !window.gtag || isMailingTokenLocation(window.location.href)) return;
   const key = identity ? `${event}:${identity}` : null;
   if (key && conversions.has(key)) return;
   if (key) conversions.add(key);
@@ -287,7 +288,10 @@ export async function setBrowserTools(
       disable_surveys: true,
       enable_heatmaps: false,
       capture_exceptions: false,
-      before_send: (event) => (event && isPosthogAllowed ? beforeSend(event) : null),
+      before_send: (event) =>
+        event && isPosthogAllowed && !isMailingTokenLocation(window.location.href)
+          ? beforeSend(event)
+          : null,
     });
   }
   capturePricingView();
@@ -337,7 +341,7 @@ export function browserPricingVariant(): PricingVariant {
   return value === 'test' ? 'test' : 'control';
 }
 export function captureBrowser(event: string, properties: Record<string, unknown> = {}) {
-  if (!isPosthogAllowed || !posthog) return;
+  if (!isPosthogAllowed || !posthog || isMailingTokenLocation(window.location.href)) return;
   posthog.capture(event, {
     pricing_subject: browserPricingSubject(),
     pricing_variant: browserPricingVariant(),
