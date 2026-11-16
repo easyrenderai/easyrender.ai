@@ -256,9 +256,13 @@ jobs:
           echo "url=${url}" >> "$GITHUB_OUTPUT"
           echo "Staged ${url} (no domain points at it yet)" >> "$GITHUB_STEP_SUMMARY"
 
+  # The jobs below test their direct needs explicitly with `!cancelled()`. Without it GitHub also
+  # requires every ancestor job to have succeeded, and `converter` and `backend` are skipped on most
+  # releases, which would skip the smoke, the promote and the publish too.
   smoke-staged:
     name: Smoke staged build
     needs: stage
+    if: ${{ !cancelled() && needs.stage.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -289,7 +293,7 @@ jobs:
   promote:
     name: Promote to production
     needs: [validate, stage, smoke-staged]
-    if: ${{ !inputs.stage_only }}
+    if: ${{ !cancelled() && !inputs.stage_only && needs.stage.result == 'success' && needs.smoke-staged.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: production
@@ -323,6 +327,7 @@ jobs:
   publish:
     name: Tag and publish release
     needs: [validate, stage, promote]
+    if: ${{ !cancelled() && needs.promote.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
