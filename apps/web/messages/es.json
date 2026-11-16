@@ -1007,6 +1007,16 @@
       "read": "Leer tus renders y su estado",
       "spend": "Crear modelos 3D, lo que gasta tus créditos"
     },
+    "trust": {
+      "verified": "App verificada",
+      "verifiedBody": "{client} se conecta desde {host}, una app conocida.",
+      "local": "App en este ordenador",
+      "localBody": "{client} se está ejecutando en tu propio ordenador. Continúa solo si acabas de iniciar esta conexión desde una herramienta de este equipo.",
+      "unverified": "App no verificada",
+      "unverifiedBody": "Cualquiera puede registrar una app con cualquier nombre, así que “{client}” podría estar haciéndose pasar por otra. Si la permites, se envía a {host} una clave que puede usar tu cuenta y tus créditos. Continúa solo si iniciaste esta conexión tú y confías en {host}.",
+      "returnsTo": "Volverás a",
+      "approveAnyway": "Permitir de todos modos"
+    },
     "revoke": "Puedes desconectarlo cuando quieras revocando su clave en la página de Conectores.",
     "approve": "Permitir acceso",
     "deny": "Cancelar",

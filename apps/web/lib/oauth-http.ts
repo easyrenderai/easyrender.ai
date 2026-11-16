@@ -1,5 +1,5 @@
 import 'server-only';
-import { AppError, reportError } from '@easyrender/core';
+import { ApiRateLimitError, AppError, reportError } from '@easyrender/core';
 import { NextResponse } from 'next/server';
 
 // Public endpoints that MCP clients call from servers, and sometimes from browsers.
@@ -21,7 +21,14 @@ export const json = (data: unknown, init: ResponseInit = {}) =>
 // RFC 6749 error body.
 export function oauthError(error: unknown) {
   if (error instanceof AppError) {
-    return json({ error: error.code, error_description: error.message }, { status: error.status });
+    return json(
+      { error: error.code, error_description: error.message },
+      {
+        status: error.status,
+        headers:
+          error instanceof ApiRateLimitError ? { 'retry-after': String(error.retryAfter) } : {},
+      },
+    );
   }
   reportError(error);
   return json({ error: 'server_error' }, { status: 500 });

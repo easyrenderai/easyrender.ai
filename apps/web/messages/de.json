@@ -1007,6 +1007,16 @@
       "read": "Read your renders and their status",
       "spend": "Build 3D models, which spends your credits"
     },
+    "trust": {
+      "verified": "Verifizierte App",
+      "verifiedBody": "{client} verbindet sich von {host}, einer bekannten App.",
+      "local": "App auf diesem Computer",
+      "localBody": "{client} läuft auf deinem eigenen Computer. Fahre nur fort, wenn du diese Verbindung gerade selbst über ein Tool auf diesem Gerät gestartet hast.",
+      "unverified": "Nicht verifizierte App",
+      "unverifiedBody": "Jeder kann eine App mit beliebigem Namen registrieren, daher könnte sich „{client}“ als jemand anderes ausgeben. Wenn du zustimmst, geht ein Schlüssel an {host}, der dein Konto und deine Credits nutzen kann. Fahre nur fort, wenn du diese Verbindung selbst gestartet hast und {host} vertraust.",
+      "returnsTo": "Du wirst weitergeleitet zu",
+      "approveAnyway": "Trotzdem erlauben"
+    },
     "revoke": "You can disconnect it any time by revoking its key on the Connectors page.",
     "approve": "Allow access",
     "deny": "Cancel",

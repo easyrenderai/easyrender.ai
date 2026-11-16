@@ -10,6 +10,19 @@ import { AppError } from './errors';
 const CODE_TTL_S = 120;
 const CLIENT_TTL_S = 60 * 60 * 24 * 365;
 const MAX_REDIRECTS = 10;
+const MAX_REDIRECT_LENGTH = 2048;
+const MAX_NAME_LENGTH = 60;
+
+// Dynamic registration is open on purpose: MCP clients such as Claude and ChatGPT register
+// themselves. Registering therefore proves nothing about who a client is. The consent screen
+// classifies a client by where its redirect points, never by the name it chose.
+const VERIFIED_CLIENT_HOSTS: ReadonlySet<string> = new Set([
+  'claude.ai',
+  'claude.com',
+  'chatgpt.com',
+  'chat.openai.com',
+]);
+const LOOPBACK_HOSTS = ['localhost', '127.0.0.1', '[::1]'];
 
 function secret(): string {
   const value = process.env.BETTER_AUTH_SECRET;
@@ -47,16 +60,44 @@ function verify<T>(token: string, type: string): (T & { exp: number }) | null {
 
 const now = () => Math.floor(Date.now() / 1000);
 
-// Native clients use loopback http; everything else must be https. No fragments.
+// Native clients use loopback http; everything else must be https. No fragments, credentials
+// or wildcards: a redirect is matched exactly at /authorize.
 export function isAllowedRedirect(uri: string): boolean {
+  if (uri.length > MAX_REDIRECT_LENGTH || uri.includes('*')) return false;
   try {
     const url = new URL(uri);
-    if (url.hash) return false;
+    if (url.hash || url.username || url.password) return false;
     if (url.protocol === 'https:') return true;
-    return url.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
+    return url.protocol === 'http:' && LOOPBACK_HOSTS.includes(url.hostname);
   } catch {
     return false;
   }
+}
+
+export type ClientTrust = 'verified' | 'local' | 'unverified';
+
+// verified: https redirect on a known client host. local: loopback only, an app on the user's
+// own machine (Claude Code, MCP Inspector). Anything else, or a mix, is unverified.
+export function redirectTrust(uri: string): ClientTrust {
+  try {
+    const url = new URL(uri);
+    if (url.protocol === 'https:' && VERIFIED_CLIENT_HOSTS.has(url.hostname)) return 'verified';
+    if (url.protocol === 'http:' && LOOPBACK_HOSTS.includes(url.hostname)) return 'local';
+  } catch {}
+  return 'unverified';
+}
+
+// The name is attacker-chosen text shown on the consent screen: drop control and format
+// characters (newlines, bidi overrides) and collapse whitespace.
+function cleanName(value: unknown): string {
+  if (typeof value !== 'string') return 'MCP client';
+  const name = value
+    .replace(/[\p{Cc}\p{Cf}]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, MAX_NAME_LENGTH)
+    .trim();
+  return name || 'MCP client';
 }
 
 export type OAuthClient = { id: string; name: string; redirectUris: string[] };
@@ -75,10 +116,7 @@ export function registerClient(input: { client_name?: unknown; redirect_uris?: u
       'invalid_redirect_uri',
     );
   }
-  const name =
-    typeof input.client_name === 'string' && input.client_name.trim()
-      ? input.client_name.trim().slice(0, 60)
-      : 'MCP client';
+  const name = cleanName(input.client_name);
   const issued = now();
   return {
     client_id: sign({ t: 'client', name, uris, exp: issued + CLIENT_TTL_S }),
@@ -100,6 +138,7 @@ export function readClient(clientId: string | null | undefined): OAuthClient | n
 export type AuthorizeRequest = {
   client: OAuthClient;
   redirectUri: string;
+  trust: ClientTrust;
   state: string | null;
   codeChallenge: string;
   isRedirectRequired: boolean;
@@ -143,6 +182,7 @@ export function parseAuthorizeRequest(params: URLSearchParams): AuthorizeRequest
   return {
     client,
     redirectUri,
+    trust: redirectTrust(redirectUri),
     state: params.get('state'),
     codeChallenge,
     isRedirectRequired: params.has('redirect_uri'),
