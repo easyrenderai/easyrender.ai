@@ -127,6 +127,17 @@
     },
     "customer": {
       "label": "Verwendet von"
+    },
+    "motionHero": {
+      "title": "Dein Produkt. In jeder Dimension.",
+      "description": "Beginne mit einem Foto. Prüfe die Ansichten kostenlos und entscheide dann, ob du das 3D-Modell erstellen möchtest.",
+      "label": "Vorhandenes Beispiel: Foto, Ansichten und ein rotierendes 3D-Modell mit Texturen. Die Zeitabläufe sind illustrativ.",
+      "play": "Ablauf abspielen",
+      "pause": "Ablauf pausieren",
+      "photo": "Foto",
+      "angles": "Gratis-Ansichten",
+      "model": "3D-Modell",
+      "example": "Beispiel ansehen"
     }
   },
   "Landing": {
@@ -486,6 +497,23 @@
         "captions": "Untertitel der Schritte",
         "error": "Das Video konnte nicht geladen werden. Lies die Schritte unten."
       }
+    },
+    "journey": {
+      "photo": "Foto erhalten",
+      "angles": "Ansichten prüfen",
+      "model": "Dein 3D-Modell",
+      "draftingTitle": "Kostenlose Ansichten werden vorbereitet",
+      "draftingBody": "Wir arbeiten mit deinem Foto. Danach prüfst du die Form, bevor du Credits ausgibst.",
+      "preview_readyTitle": "Deine Ansichten sind bereit",
+      "preview_readyBody": "Vergleiche Form und Details mit deinem Foto. Erstelle das Modell, wenn du zufrieden bist.",
+      "renderingTitle": "Dein 3D-Modell wird erstellt",
+      "renderingBody": "Die Ansichten werden zu Geometrie und Texturen. Diese Seite aktualisiert sich, sobald alles bereit ist.",
+      "readyTitle": "Bereit zum Erkunden",
+      "readyBody": "Drehe das Modell, prüfe Materialien und wähle den Einsatzzweck.",
+      "failedTitle": "Der Vorgang wurde gestoppt",
+      "failedBody": "Prüfe den Fehler unten, bevor du ein anderes Foto versuchst.",
+      "connection": "Verbindung unterbrochen. Wir prüfen weiter; der Auftrag läuft auf dem Server weiter.",
+      "buildCost": "Dieses Modell kostet {credits} Credits. Du entscheidest, wann es losgeht."
     }
   },
   "PromptBar": {
@@ -530,7 +558,9 @@
     "uploadingHint": "Die echte Vorschau beginnt nach dem Upload. Den Status siehst du auf der nächsten Seite.",
     "previewNote": "Kostenlose Ansichtenvorschau. Das herunterladbare 3D-Modell kostet Credits.",
     "guestNote": "Kostenlose Ansichtenvorschau · ohne Konto oder Karte. Es gelten tägliche Limits.",
-    "seeExample": "Oder ein fertiges Beispiel ansehen:"
+    "seeExample": "Oder ein fertiges Beispiel ansehen:",
+    "startPreview": "Foto hochladen",
+    "compactNote": "Vorschau ohne Konto oder Karte. Das 3D-Modell kostet Credits."
   },
   "Library": {
     "metaTitle": "Library · easyrender",
@@ -1379,6 +1409,11 @@
       "embed": "Copy embed code",
       "copied": "Code copied",
       "copyFailed": "Could not copy. Try again"
+    },
+    "usage": {
+      "title": "Dieses Modell verwenden",
+      "body": "Lade GLB herunter und wähle den Einsatzort. Prüfe Maßstab und Materialien vor der Veröffentlichung.",
+      "create": "Aus meinem Foto erstellen"
     }
   },
   "Blog": {
@@ -2444,5 +2479,43 @@
   "Resources": {
     "title": "Dein nächster Schritt",
     "description": "Bereite ein Foto vor, vergleiche Arbeitsabläufe und nutze die fertige 3D-Datei."
+  },
+  "LandingIntent": {
+    "photo": {
+      "title": "Entdecke, was aus deinem Foto werden kann",
+      "body": "Lade ein Produktfoto hoch und prüfe die kostenlosen Ansichten vor der Modellerstellung."
+    },
+    "commerce": {
+      "title": "Teste zuerst ein Produkt",
+      "body": "Prüfe Form und Materialien und nutze die GLB-Datei auf deiner Produktseite oder in einer 3D-Szene."
+    },
+    "format": {
+      "title": "Prüfe zuerst eine echte Datei",
+      "body": "Öffne das vorhandene Tischbeispiel und vergleiche Foto, Ansichten und interaktives Modell."
+    },
+    "tools": {
+      "title": "Vergleiche dasselbe Produkt, nicht nur Funktionen",
+      "body": "Teste dein Foto und beurteile Silhouette, verdeckte Flächen und Textur für deinen Einsatzzweck."
+    },
+    "precision": {
+      "title": "Prüfe, ob das Ergebnis zur Aufgabe passt",
+      "body": "KI aus einem Foto leitet verdeckte Flächen ab. Prüfe Proportionen; für exakte Maße brauchst du vermessenes Modellieren."
+    },
+    "interactive": {
+      "title": "Was sollen deine Kunden tun können?",
+      "body": "Ein 3D-Modell lässt sich frei drehen und in Szenen einsetzen. Prüfe zunächst ein vorhandenes Beispiel."
+    },
+    "scan": {
+      "title": "Teste den Weg mit einem Foto",
+      "body": "KI leitet Geometrie aus einem Bild ab. Für maßhaltige Rekonstruktion vergleiche einen Aufnahmeprozess mit mehreren Fotos."
+    },
+    "inspect": "Beispiel prüfen",
+    "upload": "Mein Foto hochladen",
+    "qualityTitle": "Prüfe das Ergebnis, nicht nur den Modellnamen",
+    "qualityBody": "Vergleiche Quelle und Ergebnis. Feine Details, transparente und verdeckte Flächen können Korrekturen erfordern; die Geometrie ist kein vermessenes CAD-Modell.",
+    "sample": "Beispiel prüfen",
+    "evals": "Qualitätsprüfungen ansehen",
+    "create": "Aus meinem Foto erstellen",
+    "galleryBody": "Öffne das Ergebnis, um Foto und 3D-Modell zu vergleichen. Öffentliche Beispiele sind einsehbar; Downloads hängen vom Eigentum ab."
   }
 }

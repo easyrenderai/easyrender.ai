@@ -10,18 +10,19 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
+import { MODEL_DESTINATIONS } from '@/lib/model-destinations';
 
 const JOURNEYS = [
-  { key: 'web', Icon: Globe, href: 'https://modelviewer.dev/editor/' },
+  { key: 'web', Icon: Globe, href: MODEL_DESTINATIONS.web },
   {
     key: 'shop',
     Icon: ShoppingBag,
-    href: 'https://help.shopify.com/en/manual/products/product-media/add-media',
+    href: MODEL_DESTINATIONS.shop,
   },
   {
     key: 'design',
     Icon: Box,
-    href: 'https://docs.blender.org/manual/en/latest/addons/scene_gltf2.html',
+    href: MODEL_DESTINATIONS.design,
   },
 ] as const;
 const STEPS = ['download', 'prepare', 'use'] as const;

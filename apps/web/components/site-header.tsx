@@ -33,7 +33,7 @@ export async function SiteHeader() {
   };
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* One row at every width: section links only from xl, sign-in from sm,
+      {/* One row at every width: section links only from xl, sign-in always visible,
           the language dropdown always, signed in or not. Whatever is hidden moves into the menu, so nothing is cut off at 320px. */}
       <div className="relative mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-4">
@@ -58,7 +58,7 @@ export async function SiteHeader() {
         <div className="flex shrink-0 items-center gap-1">
           <LocaleSwitcher />
           {!user && (
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
+            <Button variant="ghost" size="sm" asChild>
               <Link href="/sign-in">{t('signIn')}</Link>
             </Button>
           )}
@@ -84,11 +84,6 @@ export async function SiteHeader() {
                   {t(`nav.${item.key}`)}
                 </HeaderNavItem>
               ))}
-              {!user && (
-                <Button variant="ghost" className="justify-start sm:hidden" asChild>
-                  <Link href="/sign-in">{t('signIn')}</Link>
-                </Button>
-              )}
             </nav>
           </SiteMenu>
         </div>

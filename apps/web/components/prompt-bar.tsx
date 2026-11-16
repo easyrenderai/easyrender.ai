@@ -25,7 +25,7 @@ const TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export { prepare };
 
-export function PromptBar({ signedIn }: { signedIn: boolean }) {
+export function PromptBar({ signedIn, compact = false }: { signedIn: boolean; compact?: boolean }) {
   const t = useTranslations('PromptBar');
   const showcase = useTranslations('Showcase');
   const router = useRouter();
@@ -50,6 +50,7 @@ export function PromptBar({ signedIn }: { signedIn: boolean }) {
       setError(null);
       requestKey.current = null;
       setFile(next);
+      captureBrowser('photo_selected', { source: 'home' });
       setThumb(URL.createObjectURL(next));
     },
     [t],
@@ -123,7 +124,8 @@ export function PromptBar({ signedIn }: { signedIn: boolean }) {
           }
         }}
         className={cn(
-          'relative space-y-3 rounded-xl border bg-card p-4 text-left',
+          'relative space-y-3 text-left',
+          (!compact || file) && 'rounded-xl border bg-card p-4',
           isDragging && 'border-dashed border-primary',
         )}
         aria-busy={isBusy}
@@ -175,43 +177,52 @@ export function PromptBar({ signedIn }: { signedIn: boolean }) {
         ) : (
           <Button
             type="button"
-            variant="outline"
-            className="h-auto w-full flex-col gap-2 border-dashed py-5"
+            variant={compact ? 'default' : 'outline'}
+            size="lg"
+            className={
+              compact ? 'h-12 w-full sm:w-auto' : 'h-auto w-full flex-col gap-2 border-dashed py-5'
+            }
             disabled={isBusy}
             onClick={() => input.current?.click()}
           >
             <ImagePlus className="size-6" />
-            <span>{t('attachPhoto')}</span>
-            <span className="text-xs font-normal text-muted-foreground">{t('dropOrPaste')}</span>
+            <span>{t(compact ? 'startPreview' : 'attachPhoto')}</span>
+            {!compact && (
+              <span className="text-xs font-normal text-muted-foreground">{t('dropOrPaste')}</span>
+            )}
           </Button>
         )}
-        <details>
-          <summary className="cursor-pointer text-sm text-muted-foreground">
-            {t('optionalNotes')}
-          </summary>
-          <Label htmlFor="photo-notes" className="sr-only">
-            {t('optionalNotes')}
-          </Label>
-          <Textarea
-            id="photo-notes"
-            value={prompt}
-            rows={2}
-            maxLength={500}
-            disabled={isBusy}
-            placeholder={t('placeholder.withPhoto')}
-            className="mt-2 resize-none"
-            onChange={(event) => {
-              setPrompt(event.target.value);
-              requestKey.current = null;
-            }}
-          />
-        </details>
-        <Button type="submit" disabled={isBusy} className="w-full">
-          {isBusy ? <Loader2 className="animate-spin" /> : <Sparkles />}
-          {isBusy ? t('uploadingReal') : t('generate')}
-        </Button>
+        {(!compact || file) && (
+          <>
+            <details>
+              <summary className="cursor-pointer text-sm text-muted-foreground">
+                {t('optionalNotes')}
+              </summary>
+              <Label htmlFor="photo-notes" className="sr-only">
+                {t('optionalNotes')}
+              </Label>
+              <Textarea
+                id="photo-notes"
+                value={prompt}
+                rows={2}
+                maxLength={500}
+                disabled={isBusy}
+                placeholder={t('placeholder.withPhoto')}
+                className="mt-2 resize-none"
+                onChange={(event) => {
+                  setPrompt(event.target.value);
+                  requestKey.current = null;
+                }}
+              />
+            </details>
+            <Button type="submit" disabled={isBusy} className="w-full">
+              {isBusy ? <Loader2 className="animate-spin" /> : <Sparkles />}
+              {isBusy ? t('uploadingReal') : t('generate')}
+            </Button>
+          </>
+        )}
         <p className="text-xs leading-relaxed text-muted-foreground">
-          {t(signedIn ? 'previewNote' : 'guestNote')}
+          {t(compact ? 'compactNote' : signedIn ? 'previewNote' : 'guestNote')}
         </p>
         {isBusy && (
           <p role="status" className="text-sm text-muted-foreground">
@@ -226,24 +237,26 @@ export function PromptBar({ signedIn }: { signedIn: boolean }) {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-      <div className="flex flex-wrap items-center gap-2 text-sm">
-        <span className="text-muted-foreground">{t('seeExample')}</span>
-        {TRY_ONE_EXAMPLES.map((example) => (
-          <Button key={example.id} variant="outline" size="sm" asChild>
-            <Link href={`/r/${example.id}`}>
-              <Image
-                src={example.photo}
-                alt=""
-                width={20}
-                height={20}
-                sizes="20px"
-                className="size-5 rounded-full object-cover"
-              />
-              {showcase(`items.${example.slug}.title`)}
-            </Link>
-          </Button>
-        ))}
-      </div>
+      {!compact && (
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <span className="text-muted-foreground">{t('seeExample')}</span>
+          {TRY_ONE_EXAMPLES.map((example) => (
+            <Button key={example.id} variant="outline" size="sm" asChild>
+              <Link href={`/r/${example.id}`}>
+                <Image
+                  src={example.photo}
+                  alt=""
+                  width={20}
+                  height={20}
+                  sizes="20px"
+                  className="size-5 rounded-full object-cover"
+                />
+                {showcase(`items.${example.slug}.title`)}
+              </Link>
+            </Button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
