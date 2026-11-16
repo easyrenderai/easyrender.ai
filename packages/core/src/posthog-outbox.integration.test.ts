@@ -102,12 +102,34 @@ describe.skipIf(!url)('durable PostHog delivery with actual Postgres claims', ()
       where: { userId },
       data: { nextAttemptAt: new Date(0) },
     });
-    await flushPosthogEvents();
+    await flushPosthogEvents({ userId });
     expect(
       await db().posthogDelivery.count({ where: { userId, deliveredAt: { not: null } } }),
     ).toBe(50);
-    await flushPosthogEvents();
+    await flushPosthogEvents({ userId });
     expect(await db().posthogDelivery.count({ where: { userId, deliveredAt: null } })).toBe(0);
+  });
+  it("a user-scoped drain leaves other users' pending rows for their own consumer", async () => {
+    const otherId = `outbox-other-${crypto.randomUUID()}`;
+    await db().user.create({
+      data: { id: otherId, name: 'Other', email: `${otherId}@example.invalid` },
+    });
+    try {
+      const other = { ...event('other'), id: eventUuid(`${otherId}:one`), userId: otherId };
+      await enqueuePosthogEvent(event());
+      await enqueuePosthogEvent(other);
+      await flushPosthogEvents({ userId });
+      expect(
+        await db().posthogDelivery.findUniqueOrThrow({ where: { id: other.id } }),
+      ).toMatchObject({ deliveredAt: null, leaseToken: null, attempts: 0 });
+      expect(
+        await db().posthogDelivery.findUniqueOrThrow({ where: { id: event().id } }),
+      ).toMatchObject({ deliveredAt: expect.any(Date) });
+      expect(fetcher).toHaveBeenCalledTimes(1);
+    } finally {
+      await db().posthogDelivery.deleteMany({ where: { userId: otherId } });
+      await db().user.delete({ where: { id: otherId } });
+    }
   });
   it('expires old pending events without sending, removes old delivered/dead payloads', async () => {
     await enqueuePosthogEvent({ ...event(), occurredAt: new Date(Date.now() - 8 * 86400000) });

@@ -67,7 +67,8 @@ export async function sendPosthogEvent(entry: PosthogDelivery, fetcher: typeof f
   }
 }
 
-export async function flushPosthogEvents(options: { eventIds?: string[] } = {}) {
+/** `userId` limits a drain to one user's rows; production crons omit it and drain everything. */
+export async function flushPosthogEvents(options: { eventIds?: string[]; userId?: string } = {}) {
   if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return { disabled: true, examined: 0 };
   const deadline = Date.now() + 25000;
   let examined = 0;
@@ -80,6 +81,7 @@ export async function flushPosthogEvents(options: { eventIds?: string[] } = {}) 
       nextAttemptAt: { lte: now },
       OR: [{ leaseUntil: null }, { leaseUntil: { lte: now } }],
       ...(options.eventIds ? { id: { in: options.eventIds.slice(0, 10) } } : {}),
+      ...(options.userId ? { userId: options.userId } : {}),
     };
     const pending = await db().posthogDelivery.findMany({
       where: eligible,
