@@ -108,6 +108,25 @@
         "cta": "Découvrir l’API"
       },
       "english": "anglais"
+    },
+    "journey": {
+      "title": "De votre photo à votre prochain projet.",
+      "hub": "Découvrez le fonctionnement du Hub",
+      "photo": {
+        "title": "Importez votre produit",
+        "body": "Commencez avec une photo existante."
+      },
+      "model": {
+        "title": "Obtenez son modèle",
+        "body": "Vérifiez les angles gratuitement, puis décidez de créer le modèle 3D."
+      },
+      "use": {
+        "title": "Utilisez-le dans votre travail",
+        "body": "Téléchargez le fichier pour votre boutique, projet ou scène."
+      }
+    },
+    "customer": {
+      "label": "Utilisé par"
     }
   },
   "Landing": {
@@ -375,6 +394,31 @@
         "material": "Matières modifiées"
       },
       "credits": "{credits} crédits"
+    },
+    "review": {
+      "title": "Que vérifier avant de créer le modèle 3D ?",
+      "shape": "La silhouette correspond-elle au produit ?",
+      "parts": "Les pieds, poignées et autres pièces sont-ils présents ?",
+      "openings": "Les ouvertures et espaces sont-ils préservés ?"
+    },
+    "correction": {
+      "title": "Que faut-il corriger ?",
+      "multiple": "Sélectionnez tous les points concernés ou décrivez un autre changement ci-dessous.",
+      "tooLong": "Les options et la description doivent tenir dans {max} caractères.",
+      "labels": {
+        "shape": "Forme",
+        "parts": "Pièces",
+        "material": "Matériau"
+      },
+      "instructions": {
+        "shape": "Aligner la forme et les proportions sur la photo originale.",
+        "parts": "Conserver les pièces et ouvertures visibles sur la photo originale.",
+        "material": "Aligner les matériaux et couleurs sur la photo originale."
+      },
+      "review": "Vérifier la correction",
+      "confirmTitle": "Confirmer les nouvelles vues",
+      "confirmBody": "Les vues seront régénérées pour {credits} crédits. Aucun modèle 3D ne sera créé.",
+      "back": "Modifier les instructions"
     }
   },
   "PromptBar": {
@@ -389,7 +433,11 @@
       "noPhoto": "Ajoute d'abord une photo de l'objet ou du bâtiment.",
       "upload": "Échec de l'import",
       "unreadable": "Impossible de lire cette photo",
-      "title": "Impossible de lancer ce rendu"
+      "title": "Impossible de lancer ce rendu",
+      "small": "Utilisez la photo originale en meilleure résolution.",
+      "large": "Choisissez une photo plus petite et réessayez.",
+      "aspect": "Utilisez une photo montrant tout le produit, sans cadrage trop étroit.",
+      "blank": "Cette image semble vide. Choisissez une photo où le produit est visible."
     },
     "photoSize": "Photo · {size}",
     "removePhoto": "Retirer la photo",
@@ -1316,6 +1364,10 @@
           "tools": "Meshy · Sloyd",
           "check": "Vérifiez le rigging, l’export et les droits commerciaux du forfait."
         }
+      },
+      "groups": {
+        "tools": "Comparer les outils",
+        "methods": "Comparer les méthodes"
       }
     }
   },

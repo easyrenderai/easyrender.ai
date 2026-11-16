@@ -108,6 +108,25 @@
         "cta": "API entdecken"
       },
       "english": "Englisch"
+    },
+    "journey": {
+      "title": "Von deinem Foto zum nächsten Projekt.",
+      "hub": "So funktioniert der Hub",
+      "photo": {
+        "title": "Produkt hochladen",
+        "body": "Starte mit einem vorhandenen Foto."
+      },
+      "model": {
+        "title": "Modell erhalten",
+        "body": "Prüfe die kostenlosen Ansichten und entscheide dann über das 3D-Modell."
+      },
+      "use": {
+        "title": "Im Projekt verwenden",
+        "body": "Lade die Datei für deinen Shop, dein Designprojekt oder deine Szene herunter."
+      }
+    },
+    "customer": {
+      "label": "Verwendet von"
     }
   },
   "Landing": {
@@ -375,6 +394,31 @@
         "material": "Materialien geändert"
       },
       "credits": "{credits} Credits"
+    },
+    "review": {
+      "title": "Was sollte ich vor dem 3D-Aufbau prüfen?",
+      "shape": "Passt die Silhouette zum Produkt?",
+      "parts": "Sind Beine, Griffe und andere Teile vorhanden?",
+      "openings": "Bleiben Öffnungen und Zwischenräume erhalten?"
+    },
+    "correction": {
+      "title": "Was soll korrigiert werden?",
+      "multiple": "Wähle alle passenden Punkte oder beschreibe unten eine andere Änderung.",
+      "tooLong": "Auswahl und Beschreibung dürfen zusammen höchstens {max} Zeichen enthalten.",
+      "labels": {
+        "shape": "Form",
+        "parts": "Teile",
+        "material": "Material"
+      },
+      "instructions": {
+        "shape": "Form und Proportionen an das Originalfoto anpassen.",
+        "parts": "Die im Originalfoto sichtbaren Teile und Öffnungen erhalten.",
+        "material": "Materialien und Farben an das Originalfoto anpassen."
+      },
+      "review": "Korrektur prüfen",
+      "confirmTitle": "Neue Ansichten bestätigen",
+      "confirmBody": "Die Ansichten werden für {credits} Credits neu erstellt. Es wird kein 3D-Modell erzeugt.",
+      "back": "Anweisungen bearbeiten"
     }
   },
   "PromptBar": {
@@ -389,7 +433,11 @@
       "noPhoto": "Häng zuerst ein Foto des Objekts oder Gebäudes an.",
       "upload": "Upload fehlgeschlagen",
       "unreadable": "Dieses Foto lässt sich nicht lesen",
-      "title": "Dieses Rendering konnte nicht gestartet werden"
+      "title": "Dieses Rendering konnte nicht gestartet werden",
+      "small": "Verwende das Originalfoto mit höherer Auflösung.",
+      "large": "Wähle ein kleineres Foto und versuche es erneut.",
+      "aspect": "Verwende ein Foto des ganzen Produkts statt eines sehr schmalen Ausschnitts.",
+      "blank": "Das Bild scheint leer zu sein. Wähle ein Foto, auf dem das Produkt sichtbar ist."
     },
     "photoSize": "Foto · {size}",
     "removePhoto": "Foto entfernen",
@@ -1316,6 +1364,10 @@
           "tools": "Meshy · Sloyd",
           "check": "Prüfe Rigging, Export und kommerzielle Rechte im Tarif."
         }
+      },
+      "groups": {
+        "tools": "Werkzeuge vergleichen",
+        "methods": "Methoden vergleichen"
       }
     }
   },

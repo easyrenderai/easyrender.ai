@@ -108,6 +108,25 @@
         "cta": "Explorar a API"
       },
       "english": "inglês"
+    },
+    "journey": {
+      "title": "Da tua foto ao próximo projeto.",
+      "hub": "Descobre como funciona o Hub",
+      "photo": {
+        "title": "Carrega o teu produto",
+        "body": "Começa com uma foto que já tens."
+      },
+      "model": {
+        "title": "Obtém o modelo",
+        "body": "Revê os ângulos grátis e decide se queres criar o modelo 3D."
+      },
+      "use": {
+        "title": "Usa-o no teu trabalho",
+        "body": "Descarrega o ficheiro para a tua loja, projeto ou cena."
+      }
+    },
+    "customer": {
+      "label": "Utilizado por"
     }
   },
   "Landing": {
@@ -375,6 +394,31 @@
         "material": "Materiais alterados"
       },
       "credits": "{credits} créditos"
+    },
+    "review": {
+      "title": "O que verificar antes de criar o 3D?",
+      "shape": "A silhueta corresponde ao produto?",
+      "parts": "Estão presentes as pernas, os puxadores e as outras peças?",
+      "openings": "Os espaços e as aberturas estão preservados?"
+    },
+    "correction": {
+      "title": "O que precisa de correção?",
+      "multiple": "Marca tudo o que se aplica ou descreve outra alteração abaixo.",
+      "tooLong": "As opções e a descrição devem ter no máximo {max} caracteres.",
+      "labels": {
+        "shape": "Forma",
+        "parts": "Peças",
+        "material": "Material"
+      },
+      "instructions": {
+        "shape": "Ajusta a forma e as proporções à foto original.",
+        "parts": "Preserva as peças e aberturas visíveis na foto original.",
+        "material": "Ajusta os materiais e cores à foto original."
+      },
+      "review": "Rever a correção",
+      "confirmTitle": "Confirmar as novas vistas",
+      "confirmBody": "As vistas serão regeneradas por {credits} créditos. O modelo 3D não será criado.",
+      "back": "Editar instruções"
     }
   },
   "PromptBar": {
@@ -389,7 +433,11 @@
       "noPhoto": "Anexa primeiro uma fotografia do objeto ou do edifício.",
       "upload": "O carregamento falhou",
       "unreadable": "Não foi possível ler esta fotografia",
-      "title": "Não foi possível iniciar este render"
+      "title": "Não foi possível iniciar este render",
+      "small": "Use a foto original com maior resolução.",
+      "large": "Escolha uma foto mais pequena e tente novamente.",
+      "aspect": "Use uma foto do produto inteiro, sem um recorte demasiado estreito.",
+      "blank": "Esta imagem parece vazia. Escolha uma foto onde o produto esteja visível."
     },
     "photoSize": "Foto · {size}",
     "removePhoto": "Remover fotografia",
@@ -1316,6 +1364,10 @@
           "tools": "Meshy · Sloyd",
           "check": "Confirma rigging, exportação e direitos comerciais do plano."
         }
+      },
+      "groups": {
+        "tools": "Comparar ferramentas",
+        "methods": "Comparar métodos"
       }
     }
   },

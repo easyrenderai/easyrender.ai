@@ -77,8 +77,16 @@ export function PromptBar({ signedIn }: { signedIn: boolean }) {
         headers: { ...attributionHeaders(), 'idempotency-key': requestKey.current },
       });
       const data = await response.json().catch(() => ({}));
-      if (!response.ok || typeof data.id !== 'string')
-        throw new Error(data.error ?? t('errors.upload'));
+      if (!response.ok || typeof data.id !== 'string') {
+        const photoErrors: Record<string, string> = {
+          bad_image: t('errors.unreadable'),
+          photo_too_small: t('errors.small'),
+          photo_too_large: t('errors.large'),
+          photo_aspect: t('errors.aspect'),
+          photo_blank: t('errors.blank'),
+        };
+        throw new Error(photoErrors[data.code] ?? data.error ?? t('errors.upload'));
+      }
       observeRender(data);
       captureBrowser('render_preview_created', { source: 'home', has_prompt: Boolean(prompt) });
       // Anonymous visitors can inspect their real, watermarked sheet here. Registration is

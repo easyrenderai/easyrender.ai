@@ -2,17 +2,17 @@ import { ENTERPRISE_BOOKING_URL } from '@easyrender/harness';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { HomeIntegrations } from '@/components/home/home-integrations';
 import { HomeIntro } from '@/components/home/home-intro';
+import { CustomerProof, HomeJourney } from '@/components/home/home-journey';
 import { Faq, Pricing } from '@/components/landing';
 import { PromptBar } from '@/components/prompt-bar';
 import { ResourceLinks } from '@/components/resource-links';
 import { StudioHero } from '@/components/studio/hero';
 import { StudioIndustries } from '@/components/studio/industries';
 import { StudioPipeline } from '@/components/studio/pipeline';
-import { StudioClosing, StudioCompatibility, StudioProof } from '@/components/studio/proof';
+import { StudioClosing, StudioCompatibility } from '@/components/studio/proof';
 import { StudioShelf } from '@/components/studio/shelf';
 import { StudioShell } from '@/components/studio/shell';
 import { StudioTools } from '@/components/studio/tools';
-import { StudioWheel } from '@/components/studio/wheel';
 import type { Locale } from '@/i18n/config';
 import { currentUser } from '@/lib/actor';
 
@@ -31,13 +31,13 @@ export async function HomeView() {
     <StudioShell>
       <StudioHero ctaHref="#try" upload={<PromptBar signedIn={Boolean(user)} />} />
       <StudioCompatibility />
-      <HomeIntro />
       <StudioPipeline />
+      <CustomerProof />
+      <HomeJourney />
+      <HomeIntro />
 
       <StudioIndustries salesHref={ENTERPRISE_BOOKING_URL} />
       <StudioTools />
-      <StudioWheel />
-      <StudioProof />
 
       <HomeIntegrations />
 

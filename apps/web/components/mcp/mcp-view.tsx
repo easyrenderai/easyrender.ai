@@ -52,6 +52,7 @@ export async function McpView({ locale }: { locale: Locale }) {
         }}
       />
       <StudioCompatibility />
+      <IntegrationResult locale={locale} kind="mcp" />
       <Section title={t('intro.title')} description={t('intro.description')}>
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 pb-8 text-sm">
           <p className="text-muted-foreground">{t('clientsLabel')}</p>
@@ -74,7 +75,6 @@ export async function McpView({ locale }: { locale: Locale }) {
         </div>
       </Section>
 
-      <IntegrationResult locale={locale} kind="mcp" />
       <IntegrationCosts locale={locale} kind="mcp" />
       <Section
         id="how-it-works"
