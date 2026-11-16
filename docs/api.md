@@ -177,7 +177,11 @@ transaction. Send the authorized ceiling even though omission remains supported 
 paid revision. `PATCH .../{id}` accepts `{isPublic}`. `GET .../{id}/model` serves textured GLB
 (`model/gltf-binary`); optional `?download=1` requests a download. `/preview`, `/source` and `/qr` serve the corresponding assets. The preview endpoint serves the
 angle sheet (or fallback source), watermarked until paid; `/sheet` is a POST action, not a download. Asset links can exist before assets are ready.
-There is **no REST USDZ/STL export or conversion contract**.
+`POST .../{id}/exports` with JSON `{format}` (`obj`, `fbx` or `blend`) converts the owner's model,
+material edits included, and returns `{format, url, filename, expiresAt}`. `url` is a download
+link that works for ten minutes; OBJ arrives as a zip with its MTL and textures. Owner only, 30
+per hour per account, no credits. It answers `503 exports_unavailable` where exports are not
+configured. There is **no REST USDZ/STL export or conversion contract**.
 
 `GET .../{id}/materials` reads generated material definitions and saved edits.
 `PUT .../{id}/materials` accepts `{edits:[{index,baseColor?,roughness?,metalness?}]}`.

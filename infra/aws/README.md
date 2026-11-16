@@ -87,5 +87,5 @@ role gains two rights here: write the model to convert under `exports/*`, and st
 | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `S3Bucket`, `AwsRoleArn`                          | `S3_BUCKET`, `AWS_ROLE_ARN`                                                                                      |
 | `AssetsCdnUrl`                                    | `ASSETS_CDN_URL`. Leave the `*.cloudfront.net` value in place: stored asset URLs and upload clean-up match on it |
-| `ExportsBucket`, `ExportsUrl`, `ExportsKeyPairId` | Read by the export routes when they ship. None is a secret                                                       |
-| `FunctionName` (`easyrender-exports`)             | `MODEL_EXPORT_FUNCTION`, read by the export routes when they ship. Not a secret                                  |
+| `ExportsBucket`, `ExportsUrl`, `ExportsKeyPairId` | `EXPORTS_BUCKET`, `EXPORTS_CDN_URL`, `EXPORTS_KEY_PAIR_ID`. None is a secret                                     |
+| `FunctionName` (`easyrender-exports`)             | `MODEL_EXPORT_FUNCTION`. Not a secret. With these four set, the export buttons appear                            |

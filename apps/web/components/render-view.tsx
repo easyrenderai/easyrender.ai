@@ -41,6 +41,7 @@ export function RenderView({
   signedIn,
   balance,
   owner,
+  canExport = false,
 }: {
   initial: View;
   // The owner's history of this render, read on the server. A new step refreshes it.
@@ -49,6 +50,8 @@ export function RenderView({
   signedIn: boolean;
   balance: number;
   owner: boolean;
+  /** The deployment can convert models to OBJ, FBX and BLEND. */
+  canExport?: boolean;
 }) {
   const t = useTranslations('Render');
   const format = useFormatter();
@@ -158,6 +161,7 @@ export function RenderView({
         src={`${base}/model?v=${render.modelVersion}`}
         name={render.id}
         downloadUrl={owner ? `${base}/model?download=1` : null}
+        exportsUrl={owner && signedIn && canExport ? `${base}/exports` : null}
         editableRenderId={owner ? render.id : undefined}
         nextStepsHref={owner ? (signedIn ? '/dashboard' : '/#try') : undefined}
       />

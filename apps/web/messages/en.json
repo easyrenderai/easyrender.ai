@@ -355,7 +355,8 @@
       "start": "Could not start the render",
       "sheet": "Could not generate the angle sheet",
       "redraw": "Could not redraw the angle sheet",
-      "upscale": "Could not upscale this picture. Try again in a minute."
+      "upscale": "Could not upscale this picture. Try again in a minute.",
+      "export": "Could not convert the model. Try again in a minute."
     },
     "generateSheet": "Generate angle sheet ({credits} credits)",
     "fixSheetLabel": "Something off in an angle?",
