@@ -86,6 +86,7 @@ export async function improveMaterials(
         sourceCandidates++;
     }
     const hasSourceEvidence = sourceCandidates >= 16;
+    const isAmbiguous = decision.kind === 'neutral';
     if (hasMetalHint && !hasSourceEvidence)
       materialWarnings.push('metal_hint_without_photo_evidence');
     if (decision.kind === 'unknown' && !previous)
@@ -124,8 +125,10 @@ export async function improveMaterials(
       // Existing authored metal masks are evidence. Never turn a mixed atlas wholly metallic.
       let metallic = previous ? previous.data[offset + 2] * (pbr.metallicFactor ?? 1) : 0;
       if (decision.kind === 'dielectric') metallic = 0;
+      // Gray plastic and steel share a neutral colour, so a colour predicate cannot overrule an
+      // authored mask there. Warm brass and copper stay distinguishable and may still refine it.
       else if (hasMetalHint && hasSourceEvidence && hasMatchingUvs)
-        metallic = isExpectedMetal ? 255 : 0;
+        metallic = isAmbiguous && previous ? (metallic > 127 ? 255 : 0) : isExpectedMetal ? 255 : 0;
       const isMetal = metallic > 127;
       if (isMetal) metalCount++;
       const x = p % width;

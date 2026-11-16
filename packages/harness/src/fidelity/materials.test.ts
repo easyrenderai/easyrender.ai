@@ -79,6 +79,32 @@ describe('material output', () => {
     expect(pass.materials[0].metalFraction).toBe(0);
     expect(pass.warnings).toContain('material_0:metal_hint_without_photo_evidence');
   });
+  it('keeps authored nonmetal regions when neutral plastic sits beside steel', async () => {
+    const { bytes, photo } = await fixture();
+    const doc = readDocument(bytes);
+    // Left half: gray plastic authored nonmetal. Right half: steel authored metal.
+    const data = new Uint8Array(32 * 32 * 4);
+    for (let p = 0; p < 32 * 32; p++) data.set([255, 90, p % 32 < 16 ? 0 : 255, 255], p * 4);
+    const base = new Uint8Array(32 * 32 * 4);
+    for (let p = 0; p < 32 * 32; p++) base.set([180, 180, 180, 255], p * 4);
+    const pbr = doc.json.materials?.[0].pbrMetallicRoughness;
+    if (!pbr) throw new Error('Missing fixture material');
+    pbr.baseColorTexture = {
+      index: appendTexture(doc, await png({ data: base, width: 32, height: 32 })),
+    };
+    pbr.metallicRoughnessTexture = {
+      index: appendTexture(doc, await png({ data, width: 32, height: 32 })),
+    };
+    pbr.metallicFactor = 1;
+    const pass = await improveMaterials(writeDocument(doc), photo, 'steel chair');
+    const out = readDocument(pass.bytes);
+    const index =
+      out.json.materials?.[0].pbrMetallicRoughness?.metallicRoughnessTexture?.index ?? -1;
+    const map = await pixels(textureBytes(out, index), 32, 32);
+    const metalAt = (x: number) => map.data[(16 * 32 + x) * 4 + 2];
+    expect(metalAt(4)).toBe(0);
+    expect(metalAt(28)).toBe(255);
+  });
   it('reports flat/missing maps before and varied maps after', async () => {
     const { bytes, photo } = await fixture('wood');
     expect((await inspectMaterials(bytes))[0].warnings).toContain('flat_roughness');
