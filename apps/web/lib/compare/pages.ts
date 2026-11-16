@@ -83,12 +83,12 @@ export const COMPARE_INDEX: Record<Locale, { title: string; description: string 
   en: {
     title: 'Compare 3D modeling methods and tools',
     description:
-      'Compare 3D modeling methods and tools for product work: a modeler vs AI, 360 vs 3D, photogrammetry, Meshy and Tripo.',
+      'Compare 3D modeling methods and tools for product work: a modeler vs AI, 360 vs 3D, photogrammetry, Polycam, Meshy and Tripo.',
   },
   es: {
     title: 'Comparar métodos y herramientas de modelado 3D',
     description:
-      'Comparativas para el trabajo de producto: modelador o IA, 360 o 3D, fotogrametría, Meshy y Tripo.',
+      'Comparativas para el trabajo de producto: modelador o IA, 360 o 3D, fotogrametría, Polycam, Meshy y Tripo.',
   },
   de: {
     title: '3D-Methoden und Werkzeuge vergleichen',

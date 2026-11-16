@@ -352,7 +352,7 @@ function renderBlock(
           />
         </div>
       ) : (
-        <div key={key} data-wide="" className="mt-10 grid grid-cols-2 gap-3 sm:gap-4">
+        <div key={key} data-wide="" className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
           {block.items.map((media) => (
             <Figure
               key={media.src}
@@ -385,18 +385,28 @@ function renderBlock(
             <TableBody>
               {block.rows.map((row) => (
                 <TableRow key={row.join('|')}>
-                  {row.map((cell, column) => (
-                    <TableCell
-                      // biome-ignore lint/suspicious/noArrayIndexKey: static content, never reordered
-                      key={column}
-                      className={cn(
-                        'whitespace-normal px-4 py-3 align-top leading-relaxed',
-                        column === 0 ? 'font-medium' : 'text-muted-foreground',
-                      )}
-                    >
-                      {renderInline(cell, isLive)}
-                    </TableCell>
-                  ))}
+                  {row.map((cell, column) =>
+                    column === 0 ? (
+                      <TableHead
+                        key={cell}
+                        scope="row"
+                        className="whitespace-normal px-4 py-4 align-top font-semibold leading-relaxed"
+                      >
+                        {renderInline(cell, isLive)}
+                      </TableHead>
+                    ) : (
+                      <TableCell
+                        // biome-ignore lint/suspicious/noArrayIndexKey: static content, never reordered
+                        key={column}
+                        className={cn(
+                          'whitespace-normal px-4 py-3 align-top leading-relaxed',
+                          column === 0 ? 'font-medium' : 'text-muted-foreground',
+                        )}
+                      >
+                        {renderInline(cell, isLive)}
+                      </TableCell>
+                    ),
+                  )}
                 </TableRow>
               ))}
             </TableBody>

@@ -15,6 +15,8 @@ El software de fotogrametría construye un modelo 3D a partir de muchas fotos so
 
 ![Ilustración de un busto de mármol, mitad piedra y mitad malla 3D, rodeado de posiciones de cámara](/compare/illustrations/photogrammetry-software/hero.webp "Ilustración conceptual: varios puntos de vista rodean un busto representado como piedra y como malla 3D.")
 
+Para captura con móvil, exportaciones gratis y flujos de una foto, compara las [alternativas a Polycam](/es/comparativas/polycam).
+
 ## ¿De verdad necesitas un programa de fotogrametría?
 
 Hazte primero una pregunta: ¿puedes rodear el objeto? La fotogrametría solo mide lo que vio la cámara, así que necesita la pieza en tus manos, una tarde libre y un espacio despejado. La guía de RealityScan de Epic lo dice sin rodeos: lo que no se ve en varias imágenes no saldrá en el modelo.

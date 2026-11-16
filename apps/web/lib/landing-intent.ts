@@ -10,6 +10,7 @@ const GROUPS = {
   'usdz-file': 'format',
   'compare-meshy': 'tools',
   'compare-tripo': 'tools',
+  'compare-polycam': 'scan',
   'compare-3d-modeler-vs-ai': 'precision',
   'compare-360-vs-3d': 'interactive',
   'compare-photogrammetry-software': 'scan',
