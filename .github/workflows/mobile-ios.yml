@@ -1,0 +1,122 @@
+name: Mobile iOS (Xcode)
+
+# Builds the iOS app with Xcode on a GitHub macOS runner, no Expo account needed.
+# - Pull requests that touch apps/mobile compile the app for the simulator (no secrets).
+# - Run workflow by hand with upload=true to sign it and send it to TestFlight.
+# Setup and the secrets the upload needs: apps/mobile/README.md, "iOS builds with Xcode".
+
+on:
+  pull_request:
+    paths:
+      - "apps/mobile/**"
+      - ".github/workflows/mobile-ios.yml"
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: Sign the app and upload it to TestFlight
+        type: boolean
+        default: true
+
+concurrency:
+  group: mobile-ios-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  # Public values that Expo inlines into the JS bundle at build time (the same ones as eas.json).
+  EXPO_PUBLIC_API_URL: https://easyrender.ai
+  EXPO_PUBLIC_SENTRY_DSN: https://1785255c12cd535f8921f40f47124959@o4512412852551680.ingest.de.sentry.io/4512436161347665
+
+jobs:
+  ios:
+    runs-on: macos-26
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Bun
+        run: npm install -g bun@1.4.2
+      - run: bun install --frozen-lockfile
+
+      # The app is managed by Expo: the native ios/ project is generated, never committed.
+      - name: Generate the native iOS project
+        run: bunx expo prebuild --platform ios
+
+      - name: Xcode version
+        run: xcodebuild -version
+
+      - name: Compile for the simulator
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.upload }}
+        run: |
+          set -euo pipefail
+          workspace=$(ls -d ios/*.xcworkspace | head -n1)
+          scheme=$(basename "$workspace" .xcworkspace)
+          xcodebuild -workspace "$workspace" -scheme "$scheme" -configuration Release \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/derived" \
+            CODE_SIGNING_ALLOWED=NO build
+
+      # Signing and upload: Xcode creates the certificate and provisioning profile itself with the
+      # App Store Connect API key, then uploads straight to TestFlight (destination: upload).
+      - name: Check the App Store Connect credentials
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload }}
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+          ASC_KEY_ID: ${{ vars.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ vars.ASC_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+        run: |
+          missing=()
+          [ -n "$ASC_KEY_P8" ] || missing+=(ASC_API_KEY_P8)
+          [ -n "$ASC_KEY_ID" ] || missing+=(ASC_KEY_ID)
+          [ -n "$ASC_ISSUER_ID" ] || missing+=(ASC_ISSUER_ID)
+          [ -n "$APPLE_TEAM_ID" ] || missing+=(APPLE_TEAM_ID)
+          if [ "${#missing[@]}" -ne 0 ]; then
+            echo "::error::Missing: ${missing[*]}. See apps/mobile/README.md, 'iOS builds with Xcode'."
+            exit 1
+          fi
+          printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/AuthKey.p8"
+
+      - name: Archive, sign and upload to TestFlight
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload }}
+        env:
+          ASC_KEY_ID: ${{ vars.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ vars.ASC_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+        run: |
+          set -euo pipefail
+          workspace=$(ls -d ios/*.xcworkspace | head -n1)
+          scheme=$(basename "$workspace" .xcworkspace)
+          auth=(-allowProvisioningUpdates
+            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8"
+            -authenticationKeyID "$ASC_KEY_ID"
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID")
+          xcodebuild archive -workspace "$workspace" -scheme "$scheme" -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/app.xcarchive" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" CODE_SIGN_STYLE=Automatic \
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" "${auth[@]}"
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$APPLE_TEAM_ID</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/app.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" "${auth[@]}"
+
+      - name: Remove the API key
+        if: ${{ always() }}
+        run: rm -f "$RUNNER_TEMP/AuthKey.p8"

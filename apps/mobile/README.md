@@ -57,6 +57,10 @@ gh variable set ASC_APP_ID --body <numeric app id>               # optional
 
 Keys never go in the repo: the workflow writes them to git-ignored files on the runner. Manual runs of the release workflow can also pick the Google Play track (`internal`, `alpha`, `beta`, `production`).
 
+### iOS builds with Xcode (no Expo account)
+
+`.github/workflows/mobile-ios.yml` builds the iOS app with Xcode on a GitHub macOS runner. Pull requests that touch `apps/mobile` compile it for the simulator, which needs no secrets. Run it by hand (Actions, Mobile iOS (Xcode), Run workflow, `upload` on) to sign it and send it to TestFlight. Xcode creates the signing certificate and provisioning profile itself with the App Store Connect API key, so the key needs the **Admin** role (App Manager cannot create certificates). It needs `ASC_API_KEY_P8` (secret) and `ASC_KEY_ID`, `ASC_ISSUER_ID`, `APPLE_TEAM_ID` (variables) from the setup above; the app record with bundle id `ai.easyrender.app` must exist in App Store Connect first. The build number is the workflow run number. Android is not covered by this workflow.
+
 Test builds without the stores: `bunx eas-cli build --platform all --profile preview`.
 
 ## Error monitoring (Sentry)
