@@ -11,15 +11,15 @@ import { apiRequest, renderIdPath } from './transport';
 
 export class Easyrender implements INodeType {
   description: INodeTypeDescription = {
-    displayName: 'easyrender',
+    displayName: 'Easy Render | Photo to 3D',
     name: 'easyrender',
     icon: { light: 'file:easyrender.svg', dark: 'file:easyrender.dark.svg' },
     group: ['transform'],
     version: 1,
     subtitle: '={{$parameter["operation"]}}',
-    description: 'Create previews and read easyrender models',
+    description: 'Turn any Product Photo into a 3D model',
     usableAsTool: true,
-    defaults: { name: 'easyrender' },
+    defaults: { name: 'Easy Render | Photo to 3D' },
     inputs: [NodeConnectionTypes.Main],
     outputs: [NodeConnectionTypes.Main],
     credentials: [{ name: 'easyrenderApi', required: true }],
