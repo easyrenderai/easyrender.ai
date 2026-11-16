@@ -42,6 +42,10 @@ const C = {
 type Journey = 'web' | 'shop' | 'design';
 const W = 1200;
 const H = 900;
+const FRAME = { x: 70, y: 70, width: 1060, height: 710, header: 66 };
+const BODY_CENTER_Y = (FRAME.height + FRAME.header) / 2;
+const IMPORT_VIEW = { x: 150, y: 105, size: 500 };
+const SHOP_VIEW = { x: 40, y: 110, width: 590, height: 530 };
 function tween(f: number, start: number, end: number, from = 0, to = 1) {
   return interpolate(f, [start, end], [from, to], {
     easing: Easing.inOut(Easing.cubic),
@@ -62,10 +66,10 @@ function Window({
     <div
       style={{
         position: 'absolute',
-        left: 70,
-        top: 70,
-        width: 1060,
-        height: 710,
+        left: FRAME.x,
+        top: FRAME.y,
+        width: FRAME.width,
+        height: FRAME.height,
         border: `1px solid ${C.line}`,
         borderRadius: 26,
         overflow: 'hidden',
@@ -76,7 +80,7 @@ function Window({
     >
       <div
         style={{
-          height: 66,
+          height: FRAME.header,
           borderBottom: `1px solid ${C.line}`,
           display: 'flex',
           alignItems: 'center',
@@ -133,11 +137,13 @@ function Model({
 }
 function Cursor({
   f,
-  points,
+  points = [[0, 0, 0]],
+  position,
   clicks = [],
 }: {
   f: number;
-  points: [number, number, number][];
+  points?: [number, number, number][];
+  position?: { x: number; y: number };
   clicks?: number[];
 }) {
   let x = points[0][1];
@@ -153,8 +159,8 @@ function Cursor({
     <div
       style={{
         position: 'absolute',
-        left: x,
-        top: y,
+        left: position?.x ?? x,
+        top: position?.y ?? y,
         opacity: tween(f, 12, 24),
         filter: 'drop-shadow(0 3px 6px #000)',
       }}
@@ -196,12 +202,17 @@ function File({
         left: x,
         top: y,
         width: 210,
-        padding: '28px 20px',
+        height: 190,
+        padding: '24px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
         borderRadius: 18,
         border: `1px solid ${C.line}`,
         background: C.panel,
         textAlign: 'center',
-        transform: `scale(${scale}) rotate(-5deg)`,
+        transform: `translate(-50%, -50%) scale(${scale}) rotate(-5deg)`,
         opacity,
         boxShadow: '0 20px 45px rgba(0,0,0,.4)',
       }}
@@ -221,21 +232,24 @@ function DownloadScene({ scene, f }: { scene: Group; f: number }) {
       }}
     >
       <Window name="easyrender">
-        <Model scene={scene} x={310} y={90} size={430} rotation={f * 0.009} />
+        <Model scene={scene} x={(FRAME.width - 430) / 2} y={90} size={430} rotation={f * 0.009} />
         <div
           style={{
             position: 'absolute',
-            left: 380,
+            left: '50%',
             top: 555,
+            width: 180,
+            height: 76,
+            justifyContent: 'center',
             display: 'flex',
             alignItems: 'center',
             gap: 18,
-            padding: '20px 32px',
+            padding: 0,
             background: C.text,
             color: C.background,
             borderRadius: 12,
             fontSize: 30,
-            transform: `scale(${1 - tween(f, 64, 69) * 0.025 + tween(f, 70, 80) * 0.025})`,
+            transform: `translateX(-50%) scale(${1 - tween(f, 64, 69) * 0.025 + tween(f, 70, 80) * 0.025})`,
           }}
         >
           <Download size={30} /> GLB
@@ -243,8 +257,10 @@ function DownloadScene({ scene, f }: { scene: Group; f: number }) {
         <div
           style={{
             position: 'absolute',
-            left: 415,
+            left: '50%',
             top: 645,
+            transform: 'translateX(-50%)',
+            alignItems: 'center',
             opacity: tween(f, 76, 90),
             display: 'flex',
             gap: 12,
@@ -260,8 +276,8 @@ function DownloadScene({ scene, f }: { scene: Group; f: number }) {
         points={[
           [0, 920, 700],
           [35, 720, 670],
-          [60, 595, 660],
-          [100, 595, 660],
+          [60, W / 2, FRAME.y + 555 + 38],
+          [100, W / 2, FRAME.y + 555 + 38],
         ]}
         clicks={[66]}
       />
@@ -273,6 +289,15 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
   const loaded = tween(f, 255, 280);
   const result = tween(f, 355, 390);
   const names = { web: 'modelviewer.dev/editor', shop: 'Shopify', design: 'Blender' };
+  // File position is its centre, so scaling cannot move it away from the drop target.
+  const drag = {
+    x: tween(f, 178, 240, 155, FRAME.x + IMPORT_VIEW.x + IMPORT_VIEW.size / 2),
+    y: tween(f, 178, 208, 570, 325) + tween(f, 208, 240, 0, 100),
+  };
+  const cursor = {
+    x: tween(f, 270, 320, drag.x + 30, FRAME.x + 710 + 290 / 2),
+    y: tween(f, 270, 320, drag.y + 60, FRAME.y + 120 + 250 + 38),
+  };
   return (
     <AbsoluteFill style={{ opacity: enter, transform: `translateX(${(1 - enter) * 100}px)` }}>
       <Window name={names[journey]}>
@@ -305,10 +330,10 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
         <div
           style={{
             position: 'absolute',
-            left: 155,
-            top: 104,
-            width: 500,
-            height: 478,
+            left: IMPORT_VIEW.x,
+            top: IMPORT_VIEW.y,
+            width: IMPORT_VIEW.size,
+            height: IMPORT_VIEW.size,
             border: `2px dashed ${C.line}`,
             borderRadius: 16,
             opacity: 1 - loaded,
@@ -345,8 +370,12 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
           ))}
           <div
             style={{
-              marginTop: 68,
-              padding: 21,
+              position: 'absolute',
+              left: 0,
+              top: 250,
+              width: '100%',
+              height: 76,
+              alignItems: 'center',
               background: C.text,
               color: C.background,
               borderRadius: 12,
@@ -370,9 +399,9 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
           <div style={{ opacity: loaded }}>
             <Model
               scene={scene}
-              x={145}
-              y={100}
-              size={510}
+              x={IMPORT_VIEW.x}
+              y={IMPORT_VIEW.y}
+              size={IMPORT_VIEW.size}
               rotation={(f - 270) * 0.009}
               isGrid={journey === 'design'}
             />
@@ -380,23 +409,12 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
         )}
       </Window>
       <File
-        x={tween(f, 178, 240, 30, 380)}
-        y={tween(f, 178, 208, 475, 245) + tween(f, 208, 240, 0, 85)}
+        x={drag.x}
+        y={drag.y}
         scale={tween(f, 230, 270, 1, 0.55)}
         opacity={tween(f, 145, 165) * (1 - tween(f, 245, 270))}
       />
-      <Cursor
-        f={f - 135}
-        points={[
-          [0, 155, 610],
-          [35, 155, 610],
-          [70, 355, 420],
-          [108, 500, 480],
-          [160, 920, 510],
-          [205, 920, 510],
-        ]}
-        clicks={[115, 210]}
-      />
+      <Cursor f={f - 135} position={cursor} clicks={[115, 210]} />
       <div
         style={{
           opacity: result,
@@ -411,8 +429,9 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
             <div
               style={{
                 position: 'absolute',
-                left: 42,
-                top: 110,
+                left: 48,
+                top: BODY_CENTER_Y,
+                transform: 'translateY(-50%)',
                 width: 380,
                 fontSize: 31,
                 lineHeight: 1.7,
@@ -432,7 +451,8 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
               style={{
                 position: 'absolute',
                 left: 48,
-                top: 130,
+                top: BODY_CENTER_Y,
+                transform: 'translateY(-50%)',
                 opacity: tween(f, 410, 435),
                 width: 350,
               }}
@@ -470,7 +490,13 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
                 <MousePointer2 size={36} />
               </div>
             </div>
-            <Model scene={scene} x={430} y={100} size={580} rotation={(f - 355) * 0.012} />
+            <Model
+              scene={scene}
+              x={430}
+              y={BODY_CENTER_Y - 580 / 2}
+              size={580}
+              rotation={(f - 355) * 0.012}
+            />
           </Window>
         )}
         {journey === 'shop' && (
@@ -478,16 +504,30 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
             <div
               style={{
                 position: 'absolute',
-                left: 40,
-                top: 110,
-                width: 590,
-                height: 530,
+                left: SHOP_VIEW.x,
+                top: SHOP_VIEW.y,
+                width: SHOP_VIEW.width,
+                height: SHOP_VIEW.height,
                 background: C.paper,
                 borderRadius: 16,
               }}
             />
-            <Model scene={scene} x={70} y={115} size={540} rotation={(f - 355) * 0.012} />
-            <div style={{ position: 'absolute', left: 690, top: 180 }}>
+            <Model
+              scene={scene}
+              x={SHOP_VIEW.x + (SHOP_VIEW.width - SHOP_VIEW.height) / 2}
+              y={SHOP_VIEW.y}
+              size={SHOP_VIEW.height}
+              rotation={(f - 355) * 0.012}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                left: 690,
+                top: SHOP_VIEW.y + SHOP_VIEW.height / 2,
+                transform: 'translateY(-50%)',
+                width: 255,
+              }}
+            >
               <ShoppingBag size={48} />
               <div
                 style={{
@@ -514,6 +554,8 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
                   width: 255,
                   marginTop: 70,
                   display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   gap: 18,
                   borderRadius: 12,
                   fontSize: 30,
@@ -526,12 +568,20 @@ function Destination({ journey, scene, f }: { journey: Journey; scene: Group; f:
         )}
         {journey === 'design' && (
           <Window name="Blender">
-            <Model scene={scene} x={150} y={65} size={650} rotation={(f - 355) * 0.013} isGrid />
+            <Model
+              scene={scene}
+              x={165}
+              y={BODY_CENTER_Y - 650 / 2}
+              size={650}
+              rotation={(f - 355) * 0.013}
+              isGrid
+            />
             <div
               style={{
                 position: 'absolute',
                 right: 40,
-                top: 145,
+                top: BODY_CENTER_Y,
+                transform: 'translateY(-50%)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 40,
@@ -571,9 +621,10 @@ function Guide({ journey }: { journey: Journey }) {
   if (!scene) return null;
   return (
     <AbsoluteFill
+      className="motion-guide"
       style={{ background: C.background, color: C.text, fontFamily: 'Geist, sans-serif' }}
     >
-      <style>{`@font-face{font-family:Geist;src:url('${staticFile('geist.woff2')}') format('woff2');font-weight:100 900}`}</style>
+      <style>{`.motion-guide,.motion-guide *{box-sizing:border-box} @font-face{font-family:Geist;src:url('${staticFile('geist.woff2')}') format('woff2');font-weight:100 900}`}</style>
       {f < 151 ? <DownloadScene scene={scene} f={f} /> : null}
       {f >= 125 ? <Destination scene={scene} journey={journey} f={f} /> : null}
       <div
