@@ -36,6 +36,12 @@ export const renderSchema = {
     model_glb: z.string().url(),
   }),
 };
+export const modelExportSchema = z.object({
+  format: z.enum(['obj', 'fbx', 'blend']),
+  url: z.string().url(),
+  filename: z.string(),
+  expires_at: z.string(),
+});
 const planSchema = z.object({ price_per_month: z.number(), credits_per_month: z.number() });
 export const quoteSchema = {
   pricing_variant: z.enum(['control', 'test']),

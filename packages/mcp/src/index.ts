@@ -2,8 +2,10 @@ import {
   type Actor,
   assertActorScope,
   createDraft,
+  createModelExport,
   getCreditQuote,
   getRender,
+  MODEL_EXPORT_FORMATS,
   startBuild,
   toView,
 } from '@easyrender/core';
@@ -14,6 +16,7 @@ import { imageInputSchema, MAX_INLINE_IMAGE_BYTES, readImage } from './images';
 import {
   forActor,
   idSchema,
+  modelExportSchema,
   paidActor,
   quoteSchema,
   renderSchema,
@@ -70,9 +73,9 @@ export function createMcpServer(actor: Actor) {
     {
       title: 'Get render',
       description:
-        'Read render status, artifact links and pending credits. Poll every 5–15 seconds. This may advance an already-authorized job; it does not authorize another paid generation. Private links need the same bearer authentication.',
-      inputSchema: { id: idSchema },
-      outputSchema: renderSchema,
+        'Read render status, artifact links and pending credits. Poll every 5–15 seconds. This may advance an already-authorized job; it does not authorize another paid generation. Private links need the same bearer authentication. Pass export_format (obj, fbx or blend) on a ready render you own to also get a signed download link in `export` (valid about 10 minutes; OBJ is a ZIP with its MTL and textures). The first export of a model converts it and can take up to a minute; exports are free and rate limited.',
+      inputSchema: { id: idSchema, export_format: z.enum(MODEL_EXPORT_FORMATS).optional() },
+      outputSchema: { ...renderSchema, export: modelExportSchema.optional() },
       annotations: {
         readOnlyHint: false,
         destructiveHint: false,
@@ -80,7 +83,22 @@ export function createMcpServer(actor: Actor) {
         openWorldHint: true,
       },
     },
-    ({ id }) => forActor(actor, 'read', async () => result(await getRender(id, actor))),
+    ({ id, export_format }) =>
+      forActor(actor, 'read', async (owner) => {
+        const view = result(await getRender(id, actor));
+        if (!export_format) return view;
+        // Owner only, ready renders only: createModelExport answers 404 for anyone else's render.
+        const file = await createModelExport(id, owner, export_format);
+        return {
+          ...view,
+          export: {
+            format: file.format,
+            url: file.url,
+            filename: file.filename,
+            expires_at: file.expiresAt,
+          },
+        };
+      }),
   );
   server.registerTool(
     'render_3d',
