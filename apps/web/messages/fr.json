@@ -125,7 +125,8 @@
           "ar": "Bientôt : l'objet chez toi, en réalité augmentée",
           "api": "Serveur MCP et API REST"
         },
-        "cta": "Acheter des crédits"
+        "cta": "Acheter des crédits",
+        "audience": "Pour un premier projet ou des produits ponctuels. Sans abonnement."
       },
       "pro": {
         "note": "par mois",
@@ -136,7 +137,8 @@
           "cancel": "Résiliable à tout moment",
           "topUp": "Besoin de plus ? Recharge à tout moment au tarif de ta formule."
         },
-        "cta": "Passer à {plan}"
+        "cta": "Passer à {plan}",
+        "audience": "Pour les équipes créant des modèles de produits chaque mois."
       },
       "enterprise": {
         "name": "Entreprise",
@@ -148,10 +150,12 @@
           "support": "Support prioritaire",
           "onboarding": "Appel de prise en main"
         },
-        "cta": "Réserver un appel"
+        "cta": "Réserver un appel",
+        "audience": "Pour les grands catalogues avec accompagnement."
       },
       "tryFree": "Essayer gratuitement",
-      "noCard": "Aperçus gratuits. Sans carte bancaire."
+      "noCard": "Aperçus gratuits. Sans carte bancaire.",
+      "perModel": "par modèle 3D"
     },
     "faq": {
       "title": "Tes questions, nos réponses",
@@ -392,7 +396,7 @@
     "replacePhoto": "Remplacer la photo",
     "attachPhoto": "Ajouter une photo",
     "dropOrPaste": "ou glisse-la ici, ou colle-la",
-    "generate": "Générer",
+    "generate": "Créer un aperçu gratuit",
     "dropToAttach": "Dépose ta photo ici",
     "tryOne": "Essaie :",
     "previewReady": "Ton aperçu est prêt",
@@ -401,7 +405,13 @@
       "title": "Ton aperçu 3D est prêt",
       "description": "Crée un compte gratuit pour voir ta photo sous tous les angles et la transformer en modèle 3D."
     },
-    "reveal": "Inscris-toi gratuitement pour voir tous les angles"
+    "reveal": "Inscris-toi gratuitement pour voir tous les angles",
+    "optionalNotes": "Ajouter des détails (facultatif)",
+    "uploadingReal": "Envoi de la photo…",
+    "uploadingHint": "Le véritable aperçu commence après l’envoi. Son état apparaîtra sur l’écran suivant.",
+    "previewNote": "Aperçu des angles gratuit. La création du modèle 3D téléchargeable utilise des crédits.",
+    "guestNote": "Aperçu des angles gratuit · sans compte ni carte. Limites quotidiennes applicables.",
+    "seeExample": "Ou explorez un exemple terminé :"
   },
   "Library": {
     "metaTitle": "Library · easyrender",
@@ -876,7 +886,25 @@
         }
       }
     },
-    "topUpTitle": "Recharger des crédits"
+    "topUpTitle": "Recharger des crédits",
+    "minimum": "Achat minimum : {price} de crédits, soit {count} modèles complets.",
+    "calculator": {
+      "title": "Estimez votre catalogue",
+      "count": "Nombre de modèles 3D",
+      "consumption": "Valeur des crédits consommés",
+      "purchase": "Achat avec un solde nul",
+      "remaining": "Crédits restants",
+      "range": "Saisissez un entier de 1 à {max}.",
+      "note": "Estimation de modèles 3D standard au tarif à l’usage, sans solde initial. Modifications, images et agrandissements supplémentaires exclus.",
+      "compare": "Comparer les offres"
+    },
+    "conditions": {
+      "title": "Avant d’acheter",
+      "billing": "Le paiement à l’usage est un achat ponctuel de crédits. Pro se renouvelle chaque mois jusqu’à résiliation dans Crédits. Les crédits inutilisés n’expirent pas.",
+      "rights": "Vous conservez vos droits sur les contenus envoyés. Les droits sur les résultats restent soumis aux droits de tiers. Les modèles sont publics par défaut et peuvent être partagés et téléchargés.",
+      "tax": "Vérifiez la devise, les taxes applicables et le total final au paiement.",
+      "link": "Lire les conditions complètes (anglais)"
+    }
   },
   "PaygPicker": {
     "custom": "Ou saisis une quantité",
@@ -946,7 +974,8 @@
       "render": "Rendu PBR",
       "element": "Élément",
       "hint": "Glisse pour tourner",
-      "subtitle": "Regarde-le sous tous les angles, gratuitement. Tu ne dépenses des crédits que si le résultat te plaît."
+      "subtitle": "Vérifiez les angles gratuitement. Payez le modèle 3D téléchargeable lorsque la forme vous convient.",
+      "benefit": "Transformez la photo de votre produit en modèle 3D."
     },
     "pipeline": {
       "lead": "Importe une photo. Le moteur s'occupe du reste.",
@@ -1259,7 +1288,8 @@
         "visual": "Exemple de modèle de fauteuil généré en rotation",
         "play": "Lire la vidéo du produit",
         "pause": "Mettre la vidéo en pause"
-      }
+      },
+      "priceReference": "Les prix de l’article sont des références en USD. Consultez les tarifs pour votre devise et votre offre actuelles."
     },
     "comparisons": {
       "title": "Comparatifs",

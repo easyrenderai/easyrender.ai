@@ -125,7 +125,8 @@
           "ar": "Bald: mit dem Smartphone bei dir im Raum ansehen",
           "api": "MCP-Server und REST-API"
         },
-        "cta": "Credits kaufen"
+        "cta": "Credits kaufen",
+        "audience": "Für ein erstes Projekt oder einzelne Produkte. Ohne Abo."
       },
       "pro": {
         "note": "pro Monat",
@@ -136,7 +137,8 @@
           "cancel": "Jederzeit kündbar",
           "topUp": "Mehr benötigt? Jederzeit zum Preis deines Tarifs aufladen."
         },
-        "cta": "{plan} wählen"
+        "cta": "{plan} wählen",
+        "audience": "Für Teams, die jeden Monat Produktmodelle erstellen."
       },
       "enterprise": {
         "name": "Enterprise",
@@ -148,10 +150,12 @@
           "support": "Priorisierter Support",
           "onboarding": "Einführungsgespräch"
         },
-        "cta": "Termin buchen"
+        "cta": "Termin buchen",
+        "audience": "Für große Kataloge mit persönlicher Einführung."
       },
       "tryFree": "Kostenlos testen",
-      "noCard": "Kostenlose Vorschauen. Keine Kreditkarte nötig."
+      "noCard": "Kostenlose Vorschauen. Keine Kreditkarte nötig.",
+      "perModel": "pro 3D-Modell"
     },
     "faq": {
       "title": "Häufige Fragen",
@@ -392,7 +396,7 @@
     "replacePhoto": "Foto ersetzen",
     "attachPhoto": "Foto anhängen",
     "dropOrPaste": "oder hierher ziehen oder einfügen",
-    "generate": "Erstellen",
+    "generate": "Kostenlose Vorschau erstellen",
     "dropToAttach": "Foto hier ablegen",
     "tryOne": "Probier ein Beispiel:",
     "previewReady": "Deine Vorschau ist fertig",
@@ -401,7 +405,13 @@
       "title": "Deine 3D-Vorschau ist fertig",
       "description": "Leg ein kostenloses Konto an. Dann siehst du dein Foto aus allen Ansichten und kannst daraus ein 3D-Modell machen."
     },
-    "reveal": "Kostenlos registrieren und alle Ansichten sehen"
+    "reveal": "Kostenlos registrieren und alle Ansichten sehen",
+    "optionalNotes": "Details hinzufügen (optional)",
+    "uploadingReal": "Foto wird hochgeladen…",
+    "uploadingHint": "Die echte Vorschau beginnt nach dem Upload. Den Status siehst du auf der nächsten Seite.",
+    "previewNote": "Kostenlose Ansichtenvorschau. Das herunterladbare 3D-Modell kostet Credits.",
+    "guestNote": "Kostenlose Ansichtenvorschau · ohne Konto oder Karte. Es gelten tägliche Limits.",
+    "seeExample": "Oder ein fertiges Beispiel ansehen:"
   },
   "Library": {
     "metaTitle": "Library · easyrender",
@@ -876,7 +886,25 @@
         }
       }
     },
-    "topUpTitle": "Credits aufladen"
+    "topUpTitle": "Credits aufladen",
+    "minimum": "Mindestkauf: {price} in Credits, ausreichend für {count} vollständige Modelle.",
+    "calculator": {
+      "title": "Katalog kalkulieren",
+      "count": "Anzahl der 3D-Modelle",
+      "consumption": "Wert der verbrauchten Credits",
+      "purchase": "Kauf ohne vorhandenes Guthaben",
+      "remaining": "Verbleibende Credits",
+      "range": "Gib eine ganze Zahl von 1 bis {max} ein.",
+      "note": "Schätzung für Standard-3D-Modelle zum Einzelkaufpreis ohne Guthaben. Zusätzliche Bearbeitungen, Bilder und Vergrößerungen sind nicht enthalten.",
+      "compare": "Tarife vergleichen"
+    },
+    "conditions": {
+      "title": "Vor dem Kauf",
+      "billing": "Einzelkauf ist ein einmaliger Credit-Kauf. Pro verlängert sich monatlich bis zur Kündigung unter Credits. Ungenutzte Credits verfallen nicht.",
+      "rights": "Deine Rechte an hochgeladenen Inhalten bleiben erhalten. Rechte an Ergebnissen unterliegen Rechten Dritter. Modelle sind standardmäßig öffentlich und können geteilt und heruntergeladen werden.",
+      "tax": "Prüfe Währung, anfallende Steuern und Endbetrag vor der Zahlung im Checkout.",
+      "link": "Vollständige Bedingungen lesen (Englisch)"
+    }
   },
   "PaygPicker": {
     "custom": "Oder gib eine Menge ein",
@@ -946,7 +974,8 @@
       "render": "PBR-Rendering",
       "element": "Element",
       "hint": "Zum Drehen ziehen",
-      "subtitle": "Prüfe das Objekt kostenlos von allen Seiten. Credits gibst du erst aus, wenn die Form stimmt."
+      "subtitle": "Prüfe die Ansichten kostenlos. Bezahle das herunterladbare 3D-Modell, wenn die Form passt.",
+      "benefit": "Verwandle dein Produktfoto in ein 3D-Modell."
     },
     "pipeline": {
       "lead": "Lade ein Foto hoch. Den Rest übernimmt die Engine.",
@@ -1259,7 +1288,8 @@
         "visual": "Beispiel eines generierten, rotierenden Sesselmodells",
         "play": "Produktvideo abspielen",
         "pause": "Produktvideo pausieren"
-      }
+      },
+      "priceReference": "Artikelpreise sind USD-Referenzpreise. Aktuelle Währung und Angebote findest du unter Preise."
     },
     "comparisons": {
       "title": "Vergleiche",

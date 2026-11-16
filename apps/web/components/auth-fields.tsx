@@ -53,7 +53,7 @@ export function AuthFields({
         ? await authClient.signUp.email({
             email,
             password,
-            name: String(form.get('name') || email.split('@')[0]),
+            name: email.split('@')[0],
             fetchOptions: { body: { attribution: attribution() }, headers: attributionHeaders() },
           })
         : await authClient.signIn.email({ email, password });
@@ -79,7 +79,7 @@ export function AuthFields({
       fetchOptions: { headers: attributionHeaders() },
       callbackURL: target,
       newUserCallbackURL: target,
-      errorCallbackURL: '/sign-in?error=oauth',
+      errorCallbackURL: `/sign-in?error=oauth&next=${encodeURIComponent(target)}`,
     });
     // On success the browser is already redirecting to Google.
     if (result.error) {
@@ -114,17 +114,6 @@ export function AuthFields({
         <Separator className="flex-1" />
       </div>
       <form onSubmit={submit} className="grid gap-4">
-        {mode === 'sign-up' && (
-          <div className="grid gap-2">
-            <Label htmlFor={`${mode}-name`}>{t('name')}</Label>
-            <Input
-              id={`${mode}-name`}
-              name="name"
-              autoComplete="name"
-              placeholder={t('namePlaceholder')}
-            />
-          </div>
-        )}
         <div className="grid gap-2">
           <Label htmlFor={`${mode}-email`}>{t('email')}</Label>
           <Input

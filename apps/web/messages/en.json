@@ -125,7 +125,8 @@
           "ar": "Coming soon: see it in your room from your phone",
           "api": "MCP server and REST API"
         },
-        "cta": "Buy credits"
+        "cta": "Buy credits",
+        "audience": "For a first project or occasional products. No subscription."
       },
       "pro": {
         "note": "per month",
@@ -136,7 +137,8 @@
           "cancel": "Cancel anytime",
           "topUp": "Need more? Top up anytime at your plan’s rate."
         },
-        "cta": "Go {plan}"
+        "cta": "Go {plan}",
+        "audience": "For teams creating product models every month."
       },
       "enterprise": {
         "name": "Enterprise",
@@ -148,10 +150,12 @@
           "support": "Priority support",
           "onboarding": "Onboarding call"
         },
-        "cta": "Book a call"
+        "cta": "Book a call",
+        "audience": "For large catalogs and assisted onboarding."
       },
       "tryFree": "Try it free",
-      "noCard": "Free previews. No credit card required."
+      "noCard": "Free previews. No credit card required.",
+      "perModel": "per 3D model"
     },
     "faq": {
       "title": "Questions, answered",
@@ -392,7 +396,7 @@
     "replacePhoto": "Replace photo",
     "attachPhoto": "Attach photo",
     "dropOrPaste": "or drop, or paste",
-    "generate": "Generate",
+    "generate": "Create free preview",
     "dropToAttach": "Drop your photo to attach it",
     "tryOne": "Try one:",
     "previewReady": "Your preview is ready",
@@ -401,7 +405,13 @@
       "title": "Your 3D preview is ready",
       "description": "Create a free account to see every angle of your photo and turn it into a 3D model."
     },
-    "reveal": "Sign up free to see every angle"
+    "reveal": "Sign up free to see every angle",
+    "optionalNotes": "Add details (optional)",
+    "uploadingReal": "Uploading photo…",
+    "uploadingHint": "Your real preview starts after upload. We will show its status on the next screen.",
+    "previewNote": "Free angle preview. Building the downloadable 3D model uses credits.",
+    "guestNote": "Free angle preview · no account or card required. Daily limits apply.",
+    "seeExample": "Or explore a finished example:"
   },
   "Library": {
     "metaTitle": "Library · easyrender",
@@ -876,7 +886,25 @@
         }
       }
     },
-    "topUpTitle": "Top up credits"
+    "topUpTitle": "Top up credits",
+    "minimum": "Minimum purchase: {price} in credits, enough for {count} complete models.",
+    "calculator": {
+      "title": "Estimate your catalog",
+      "count": "Number of 3D models",
+      "consumption": "Credit value used",
+      "purchase": "Purchase from zero balance",
+      "remaining": "Credits left over",
+      "range": "Enter a whole number from 1 to {max}.",
+      "note": "Estimate for standard 3D builds at pay-as-you-go rates, starting with no credits. Additional edits, images and upscales are not included.",
+      "compare": "Compare plans"
+    },
+    "conditions": {
+      "title": "Before you buy",
+      "billing": "Pay as you go is a one-time credit purchase. Pro renews monthly until cancelled in Credits. Unused credits do not expire.",
+      "rights": "You keep your uploaded-content rights. Output rights are subject to third-party rights. Models are public by default and can be shared and downloaded.",
+      "tax": "Check the currency, applicable taxes and final total in checkout before paying.",
+      "link": "Read the full terms (English)"
+    }
   },
   "PaygPicker": {
     "custom": "Or enter an amount",
@@ -946,7 +974,8 @@
       "render": "PBR render",
       "element": "Element",
       "hint": "Drag to turn",
-      "subtitle": "See it from every angle for free. You only spend credits when it looks right."
+      "subtitle": "Check the angles for free. Pay to build the downloadable 3D model when the shape looks right.",
+      "benefit": "Turn a product photo into a 3D model."
     },
     "pipeline": {
       "lead": "Upload one photo. The engine does the rest.",
@@ -1259,7 +1288,8 @@
         "visual": "Example of a generated armchair model turning",
         "play": "Play product video",
         "pause": "Pause product video"
-      }
+      },
+      "priceReference": "Article prices are USD reference rates. Check Pricing for your current currency and offer."
     },
     "comparisons": {
       "title": "Comparisons",
