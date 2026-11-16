@@ -73,6 +73,13 @@ export const DEFAULT_FINAL_SHEET_SETTINGS: SheetSettings = {
   input: { aspect_ratio: '1:1', resolution: '2K', output_format: 'png' },
 };
 
+// Used for the free preview only when Replicate answers the Lite request with a server error.
+// It is the model a paid build already draws with, at 1K. The 1K value is unverified.
+export const FALLBACK_SHEET_SETTINGS: SheetSettings = {
+  path: FINAL_SHEET_MODEL.path,
+  input: { aspect_ratio: '1:1', resolution: '1K', output_format: 'png' },
+};
+
 export const DEFAULT_BUILD_SETTINGS: BuildSettings = {
   version: BUILD_MODEL.version,
   input: { ...BUILD_MODEL.input },

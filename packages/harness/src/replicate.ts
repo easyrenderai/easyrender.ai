@@ -12,6 +12,8 @@ export class ProviderRequestError extends Error {
   constructor(
     message: string,
     readonly isAmbiguous: boolean,
+    // The HTTP status when Replicate answered; undefined when no response arrived at all.
+    readonly status?: number,
   ) {
     super(message);
     this.name = 'ProviderRequestError';
@@ -29,6 +31,20 @@ export type Prediction = {
 };
 
 export type ReplicateClient = ReturnType<typeof createReplicate>;
+
+const AUTH_STATUSES = new Set([401, 402, 403]);
+const ERROR_DETAIL_CHARS = 300;
+
+// Replicate explains a failure in the body ({"detail": "..."}). Keep a short, single-line copy so
+// logs say why; the body never carries our token.
+async function errorDetail(response: Response): Promise<string> {
+  try {
+    const text = (await response.text()).replace(/\s+/g, ' ').trim();
+    return text ? ` - ${text.slice(0, ERROR_DETAIL_CHARS)}` : '';
+  } catch {
+    return '';
+  }
+}
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -65,10 +81,20 @@ export function createReplicate(token: string, fetchImpl: typeof fetch = fetch) 
       }
     }
     if (!response.ok) {
-      await response.body?.cancel();
+      const detail = await errorDetail(response);
+      const call = `Replicate ${init.method ?? 'GET'} ${path}: ${response.status}`;
+      // A bad, unfunded or forbidden token is definite and will not fix itself: fail fast.
+      if (AUTH_STATUSES.has(response.status)) {
+        throw new ProviderRequestError(
+          `${call} (the API token or billing was rejected)${detail}`,
+          false,
+          response.status,
+        );
+      }
       throw new ProviderRequestError(
-        `Replicate ${init.method ?? 'GET'} ${path}: ${response.status}`,
+        `${call}${detail}`,
         !isRead && (response.status >= 500 || response.status === 408),
+        response.status,
       );
     }
     try {

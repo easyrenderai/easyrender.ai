@@ -14,6 +14,7 @@ import {
   cutCells,
   DEFAULT_FINAL_SHEET_SETTINGS,
   download,
+  FALLBACK_SHEET_SETTINGS,
   FINAL_SHEET_CREDITS,
   FINAL_SHEET_MODEL,
   findGlbUrl,
@@ -78,6 +79,9 @@ export const IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const DAY_MS = 24 * 60 * 60 * 1000;
 // A sheet takes ~1 minute and a 3D build ~2: anything still running after this has been lost.
 const STALE_MS = 45 * 60 * 1000;
+// A start request lasts under a minute. A render with no prediction id after this long never
+// reached Replicate, so it fails and refunds instead of leaving the visitor waiting.
+const NEVER_STARTED_MS = 3 * 60 * 1000;
 export const MAX_ACTIVE_RENDERS = 5;
 const POLL_INTERVAL_MS = 5000;
 
@@ -320,14 +324,30 @@ export async function createDraft(input: {
       recipe.sheetPrompt,
       selectMaterialsFrom(recipe.materials, render.name, prompt),
     );
-    const prediction = await client.start(
-      request.path,
-      request.body,
-      config.webhookUrl(`/api/webhooks/replicate?render=${render.id}`),
-    );
+    const webhook = config.webhookUrl(`/api/webhooks/replicate?render=${render.id}`);
+    let prediction: Prediction;
+    try {
+      prediction = await client.start(request.path, request.body, webhook);
+    } catch (error) {
+      // Replicate answered with a server error for the Lite draw. Try the sturdier model once
+      // (a different request, not a replay) so the visitor still gets a preview.
+      if (!(error instanceof ProviderRequestError) || (error.status ?? 0) < 500) throw error;
+      reportError(error, { renderId: render.id, stage: 'preview_start_fallback' });
+      const fallback = sheetRequest(
+        sourceUrl,
+        prompt,
+        selectSkillFrom(recipe.skills, render.name, prompt),
+        FALLBACK_SHEET_SETTINGS,
+        recipe.sheetPrompt,
+        selectMaterialsFrom(recipe.materials, render.name, prompt),
+      );
+      prediction = await client.start(fallback.path, fallback.body, webhook);
+    }
     return await persistStartedPrediction(render, { sourceUrl, sheetPredictionId: prediction.id });
   } catch (error) {
-    if (error instanceof ProviderRequestError && error.isAmbiguous) {
+    // Hold only when no answer arrived (or the id could not be saved): the job may exist. A
+    // received error response means it was rejected, so fail now instead of hanging.
+    if (error instanceof ProviderRequestError && error.isAmbiguous && error.status === undefined) {
       reportError(error, { renderId: render.id, stage: 'preview_start_uncertain' });
       return (await db().render.findUnique({ where: { id: render.id } })) as Render;
     }
@@ -427,12 +447,14 @@ export async function advance(id: string): Promise<Render | null> {
   if (!render) return null;
   if (!['drafting', 'rendering'].includes(render.status)) return render;
 
-  const stale = Date.now() - render.updatedAt.getTime() > STALE_MS;
+  const age = Date.now() - render.updatedAt.getTime();
+  const stale = age > STALE_MS;
+  const isUnstarted = age > NEVER_STARTED_MS;
 
   try {
     // Never started (the request died between claiming the render and starting Replicate).
     if (
-      stale &&
+      isUnstarted &&
       ((render.status === 'drafting' && !render.sheetPredictionId) ||
         (render.status === 'rendering' &&
           !render.finalSheetPredictionId &&
