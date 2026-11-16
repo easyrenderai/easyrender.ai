@@ -21,10 +21,14 @@ What the workflow does, in order. A failure before step 5 leaves production as i
 
 1. **Verify**: runs `ci.yml` (Biome, UI guards, secrets, typecheck, tests, schema check) on the
    pinned `main` commit.
-2. **Backend**: only when `infra/aws` changed since the previous release and the variable
-   `AWS_DEPLOY_ROLE_ARN` is set. Creates a CloudFormation change set for `easyrenderai-storage`
-   and executes it only if nothing is replaced or removed; otherwise it stops for a person
-   (`infra/aws/README.md`).
+2. **Backend**, two parts, each skipped when it has nothing to do:
+   - The exports converter, when `services/model-export` changed since the previous release and
+     `MODEL_EXPORT_DEPLOY_ROLE_ARN` is set: builds and tests the image, pushes it and points the
+     Lambda function at it (`model-export.yml`).
+   - The storage stack, when `infra/aws` changed since the previous release and
+     `AWS_DEPLOY_ROLE_ARN` is set: creates a CloudFormation change set for `easyrenderai-storage`
+     and executes it only if nothing is replaced or removed; otherwise it stops for a person
+     (`infra/aws/README.md`).
 3. **Stage**: `vercel deploy --prod --skip-domain`. Vercel builds with the project's own variables.
    The production build also syncs the database schema (`packages/db/scripts/deploy.mjs`): additive
    changes apply, anything else fails here, before any user sees the release.
@@ -78,5 +82,5 @@ aws cloudformation deploy --region eu-west-1 --stack-name easyrender-github-rele
 - The mobile app (`apps/mobile`, `mobile-release.yml`) and the desktop shell (`apps/desktop`)
   release on their own.
 - Store plugins (`plugins/`) are packaged and submitted by hand.
-- The exports converter Lambda is not built yet. When it is, its stack is added to the `backend`
-  job and gated the same way.
+- Changes to the converter's own stack (`infra/aws/exports.yml`) are still deployed by hand, see
+  `infra/aws/README.md`.

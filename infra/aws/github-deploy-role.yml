@@ -4,9 +4,13 @@ Description: >-
   GitHub OIDC to apply infra/aws/storage.yml. Created once by a person; nothing deploys it.
 
 Parameters:
-  GitHubRepository:
+  GitHubSubjectPrefix:
     Type: String
-    Default: easyrenderai/easyrender.ai
+    Default: repo:easyrenderai@354822750/easyrender.ai@1451843595
+    Description: >-
+      Start of the OIDC subject GitHub issues for this repository. It uses the immutable form,
+      repo:OWNER@OWNER_ID/REPO@REPO_ID (same value as infra/aws/exports.yml). Read it with
+      gh api repos/OWNER/REPO/actions/oidc/customization/sub (sub_claim_prefix).
   GitHubEnvironment:
     Type: String
     Default: production
@@ -48,7 +52,7 @@ Resources:
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
-                token.actions.githubusercontent.com:sub: !Sub "repo:${GitHubRepository}:environment:${GitHubEnvironment}"
+                token.actions.githubusercontent.com:sub: !Sub "${GitHubSubjectPrefix}:environment:${GitHubEnvironment}"
       Policies:
         - PolicyName: storage-stack
           PolicyDocument:

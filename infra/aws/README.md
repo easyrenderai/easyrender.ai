@@ -74,8 +74,9 @@ aws cloudformation deploy --region eu-west-1 --stack-name easyrender-exports \
   --parameter-overrides ImageTag=<commit sha>
 ```
 
-From then on a merge to `main` that touches `services/model-export` builds, tests and pushes a
-new image and points the function at it. The stack's `ImageTag` keeps the tag it was created
+From then on every Release (`RELEASING.md`) that includes a change under `services/model-export`
+builds, tests and pushes a new image and points the function at it. A merge to `main` ships
+nothing; pull requests still build and test the image. The stack's `ImageTag` keeps the tag it was created
 with; pass the current one when you deploy a template change.
 
 The converter's own role can only read and write `exports/*` in the exports bucket. The Vercel

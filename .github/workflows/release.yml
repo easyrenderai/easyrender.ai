@@ -8,7 +8,8 @@ run-name: Release ${{ inputs.tag }}${{ inputs.stage_only && ' (stage only)' || '
 #
 #   1. verify    runs the full CI workflow once on the pinned commit
 #   2. backend   applies infra/aws when it changed since the last release (optional until
-#                AWS_DEPLOY_ROLE_ARN is set); a Replace or Remove stops here for a person
+#                AWS_DEPLOY_ROLE_ARN is set); a Replace or Remove stops here for a person.
+#                Ships the exports converter (services/model-export) when it changed
 #   3. stage     builds a production deployment with `--skip-domain`, so no domain points at it. The
 #                Vercel build also syncs the database schema, additive changes only (deploy.mjs)
 #   4. smoke     checks the staged deployment answers
@@ -47,6 +48,7 @@ jobs:
     outputs:
       sha: ${{ steps.pin.outputs.sha }}
       has_infra_change: ${{ steps.infra.outputs.has_infra_change }}
+      has_converter_change: ${{ steps.infra.outputs.has_converter_change }}
     steps:
       - name: Require main and a vX.Y.Z tag
         env:
@@ -87,22 +89,39 @@ jobs:
             exit 1
           fi
 
-      - name: Did infra/aws change since the last release?
+      - name: Did the backend change since the last release?
         id: infra
         run: |
           set -euo pipefail
           last="$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n1)"
-          if [ -z "${last}" ] || ! git diff --quiet "${last}" HEAD -- infra/aws; then
-            echo "has_infra_change=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_infra_change=false" >> "$GITHUB_OUTPUT"
-          fi
+          for pair in "has_infra_change:infra/aws" "has_converter_change:services/model-export"; do
+            name="${pair%%:*}"; path="${pair#*:}"
+            if [ -z "${last}" ] || ! git diff --quiet "${last}" HEAD -- "${path}"; then
+              echo "${name}=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "${name}=false" >> "$GITHUB_OUTPUT"
+            fi
+          done
           echo "previous release: ${last:-none}"
 
   verify:
     name: Verify
     needs: validate
     uses: ./.github/workflows/ci.yml
+
+  converter:
+    name: Backend (exports converter)
+    needs: [validate, verify]
+    # Builds, tests and ships the Blender converter image, then points the Lambda function at it
+    # (.github/workflows/model-export.yml). Skipped when services/model-export is unchanged or
+    # MODEL_EXPORT_DEPLOY_ROLE_ARN is not set. A merge to main no longer ships it.
+    if: ${{ needs.validate.outputs.has_converter_change == 'true' && vars.MODEL_EXPORT_DEPLOY_ROLE_ARN != '' }}
+    uses: ./.github/workflows/model-export.yml
+    with:
+      ship: true
+    permissions:
+      contents: read
+      id-token: write
 
   backend:
     name: Backend (AWS)
@@ -163,9 +182,9 @@ jobs:
 
   stage:
     name: Stage production build
-    needs: [validate, verify, backend]
-    # `backend` is skipped on most releases; a skip is fine, a failure is not.
-    if: ${{ !cancelled() && needs.validate.result == 'success' && needs.verify.result == 'success' && (needs.backend.result == 'success' || needs.backend.result == 'skipped') }}
+    needs: [validate, verify, converter, backend]
+    # `converter` and `backend` are skipped on most releases; a skip is fine, a failure is not.
+    if: ${{ !cancelled() && needs.validate.result == 'success' && needs.verify.result == 'success' && (needs.converter.result == 'success' || needs.converter.result == 'skipped') && (needs.backend.result == 'success' || needs.backend.result == 'skipped') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production
