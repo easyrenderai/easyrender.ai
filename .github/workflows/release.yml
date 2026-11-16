@@ -265,30 +265,45 @@ jobs:
     if: ${{ !cancelled() && needs.stage.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    environment: production
     env:
       STAGED_URL: ${{ needs.stage.outputs.url }}
-      # Optional. When Vercel Authentication protects *.vercel.app, store the project's "Protection
-      # Bypass for Automation" secret as VERCEL_AUTOMATION_BYPASS_SECRET so this check can read it.
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+      # Optional. A staged *.vercel.app URL sits behind Vercel Authentication. `vercel curl` gets
+      # through it with the release token. If you prefer your own secret, store the project's
+      # "Protection Bypass for Automation" value as VERCEL_AUTOMATION_BYPASS_SECRET and it wins.
       BYPASS: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
     steps:
+      - name: Install the Vercel CLI
+        run: npm install --global vercel@65.9.0
+
       - name: Check the staged deployment answers
         run: |
-          set -euo pipefail
-          header=()
-          if [ -n "${BYPASS}" ]; then header=(-H "x-vercel-protection-bypass: ${BYPASS}"); fi
+          set -uo pipefail
+          fetch() {
+            if [ -n "${BYPASS}" ]; then
+              curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -H "x-vercel-protection-bypass: ${BYPASS}" "${STAGED_URL%/}$1"
+            else
+              vercel curl "$1" --deployment "${STAGED_URL}" --token "${VERCEL_TOKEN}" -- -sS -o /dev/null -w '%{http_code}' --max-time 20 | tail -c 3
+            fi
+          }
           for path in / /api/openapi.json; do
+            status=""
             for attempt in 1 2 3 4 5 6; do
-              status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${header[@]}" "${STAGED_URL%/}${path}" || true)"
+              status="$(fetch "${path}" 2>>curl.err || true)"
               [ "${status}" = "200" ] && break
               sleep 10
             done
             echo "${path} -> ${status}"
-            if [ "${status}" = "401" ] && [ -z "${BYPASS}" ]; then
-              echo "::error::The staged URL is behind Vercel Authentication. Add VERCEL_AUTOMATION_BYPASS_SECRET, or turn the protection off for production deployments."
+            if [ "${status}" != "200" ]; then
+              tail -n 20 curl.err || true
+              echo "::error::${path} returned '${status}' on the staged deployment."
               exit 1
             fi
-            [ "${status}" = "200" ] || { echo "::error::${path} returned ${status} on the staged deployment."; exit 1; }
           done
+          rm -f curl.err
 
   promote:
     name: Promote to production

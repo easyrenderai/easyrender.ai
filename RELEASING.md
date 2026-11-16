@@ -51,15 +51,15 @@ forward.
 Everything below lives on the GitHub environment `production`, not in the repo. Nothing in this
 list is a secret except the token.
 
-| Name                              | Kind               | Value                                                                                     |
-| --------------------------------- | ------------------ | ----------------------------------------------------------------------------------------- |
-| `VERCEL_TOKEN`                    | secret             | A Vercel token for the `shipshitdev` team that can deploy `easyrender.ai`                 |
-| `VERCEL_ORG_ID`                   | variable           | The team id (`.vercel/project.json` after `vercel link`, or Team Settings)                |
-| `VERCEL_PROJECT_ID`               | variable           | The `easyrender.ai` project id (same file, or Project Settings)                           |
-| `VERCEL_AUTOMATION_BYPASS_SECRET` | secret, optional   | Only if Vercel Authentication protects `*.vercel.app`; lets the staged smoke read it      |
-| `PRODUCTION_URL`                  | variable, optional | Defaults to `https://easyrender.ai`                                                       |
-| `AWS_DEPLOY_ROLE_ARN`             | variable, optional | Output `DeployRoleArn` of `infra/aws/github-deploy-role.yml`. Empty skips the backend job |
-| `AWS_REGION`                      | variable, optional | Defaults to `eu-west-1`                                                                   |
+| Name                              | Kind               | Value                                                                                       |
+| --------------------------------- | ------------------ | ------------------------------------------------------------------------------------------- |
+| `VERCEL_TOKEN`                    | secret             | A Vercel token for the `shipshitdev` team that can deploy `easyrender.ai`                   |
+| `VERCEL_ORG_ID`                   | variable           | The team id (`.vercel/project.json` after `vercel link`, or Team Settings)                  |
+| `VERCEL_PROJECT_ID`               | variable           | The `easyrender.ai` project id (same file, or Project Settings)                             |
+| `VERCEL_AUTOMATION_BYPASS_SECRET` | secret, optional   | Optional. The staged smoke uses `vercel curl` with `VERCEL_TOKEN`; set this to use your own |
+| `PRODUCTION_URL`                  | variable, optional | Defaults to `https://easyrender.ai`                                                         |
+| `AWS_DEPLOY_ROLE_ARN`             | variable, optional | Output `DeployRoleArn` of `infra/aws/github-deploy-role.yml`. Empty skips the backend job   |
+| `AWS_REGION`                      | variable, optional | Defaults to `eu-west-1`                                                                     |
 
 ```bash
 gh api -X PUT repos/easyrenderai/easyrender.ai/environments/production
