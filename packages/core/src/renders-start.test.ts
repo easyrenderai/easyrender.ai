@@ -1,7 +1,8 @@
 import { db, type Render } from '@easyrender/db';
 import { FALLBACK_SHEET_SETTINGS, ProviderRequestError, SHEET_MODEL } from '@easyrender/harness';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { advance, createDraft } from './renders';
+import { advance, createDraft, startSheet } from './renders';
+import { reportError } from './report';
 
 const start = vi.fn();
 
@@ -19,8 +20,15 @@ vi.mock('./config', () => ({
 }));
 vi.mock('./analytics', () => ({ captureRender: vi.fn(), deferAnalytics: vi.fn() }));
 vi.mock('./report', () => ({ reportError: vi.fn() }));
+vi.mock('./credits', () => ({
+  spendCreditsInTransaction: vi.fn(),
+  grantCreditsInTransaction: vi.fn(),
+}));
 vi.mock('./service-email', () => ({ queueRenderServiceEmail: vi.fn() }));
-vi.mock('./storage', () => ({ putFile: vi.fn().mockResolvedValue('local:sources/source.png') }));
+vi.mock('./storage', () => ({
+  putFile: vi.fn().mockResolvedValue('local:sources/source.png'),
+  getFile: vi.fn().mockResolvedValue(new Uint8Array([1, 2, 3])),
+}));
 vi.mock('@easyrender/harness', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@easyrender/harness')>()),
   checkPhoto: async () => ({ ok: true, measures: {}, warnings: [] }),
@@ -39,6 +47,7 @@ function fakeDatabase(initial?: Partial<Render>) {
     $transaction: async (run: (tx: unknown) => unknown) => run(database),
     $executeRaw: vi.fn(),
     user: { findUnique: vi.fn(async () => null) },
+    renderEdit: { create: vi.fn(async () => ({})) },
     viewSet: { count: vi.fn(async () => 0) },
     upscale: { count: vi.fn(async () => 0) },
     render: {
@@ -149,5 +158,84 @@ describe('a preview that never reached Replicate', () => {
     const result = await advance('r1');
     expect(result?.status).toBe('failed');
     expect(stored().status).toBe('failed');
+  });
+
+  it('is reported as a warning that names the lifecycle step, not as an exception', async () => {
+    vi.mocked(reportError).mockClear();
+    fakeDatabase({
+      id: 'r1',
+      status: 'drafting',
+      sourceKey: 'local:sources/source.png',
+      sheetPredictionId: null,
+      sheetKey: null,
+      credits: 0,
+      userId: null,
+      createdAt: new Date(Date.now() - 5 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 5 * 60 * 1000),
+    });
+    await advance('r1');
+    expect(reportError).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'never started' }),
+      expect.objectContaining({ renderId: 'r1', stage: 'preview_never_started' }),
+      'warning',
+    );
+  });
+});
+
+describe('diagnostics for a rejected start', () => {
+  const kindOf = async (error: ProviderRequestError) => {
+    vi.mocked(reportError).mockClear();
+    fakeDatabase();
+    start.mockRejectedValue(error);
+    await createDraft(input).catch(() => undefined);
+    return vi.mocked(reportError).mock.calls.map(([, context]) => context);
+  };
+
+  it('tells an outage from a request the provider will keep rejecting', async () => {
+    const outage = await kindOf(new ProviderRequestError('Replicate POST: 500', true, 500));
+    expect(outage).toContainEqual(expect.objectContaining({ failureKind: 'outage' }));
+    const bad = await kindOf(new ProviderRequestError('Replicate POST: 422', false, 422));
+    expect(bad).toContainEqual(expect.objectContaining({ failureKind: 'input' }));
+    expect(JSON.stringify(bad)).not.toContain('data:image');
+  });
+});
+
+describe('starting a paid angle sheet when Replicate answers 500', () => {
+  const owned = {
+    id: 'r1',
+    status: 'preview_ready',
+    sourceKey: 'local:sources/source.png',
+    sheetKey: null,
+    sheetPredictionId: null,
+    credits: 0,
+    userId: 'u1',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  } as Partial<Render>;
+  it('retries once on the fallback model instead of failing the paid sheet', async () => {
+    const stored = fakeDatabase(owned);
+    start
+      .mockRejectedValueOnce(new ProviderRequestError('Replicate POST: 500', true, 500))
+      .mockResolvedValueOnce({ id: 'pred-fallback', status: 'starting' });
+    await startSheet('r1', { userId: 'u1' });
+    expect(start.mock.calls.map(([path]) => path)).toEqual([
+      SHEET_MODEL.path,
+      FALLBACK_SHEET_SETTINGS.path,
+    ]);
+    expect(stored().sheetPredictionId).toBe('pred-fallback');
+  });
+
+  it('refunds and fails when both attempts are rejected', async () => {
+    const stored = fakeDatabase(owned);
+    start.mockRejectedValue(new ProviderRequestError('Replicate POST: 500', true, 500));
+    await expect(startSheet('r1', { userId: 'u1' })).rejects.toMatchObject({ status: 502 });
+    expect(stored().status).toBe('failed');
+  });
+
+  it('never replays a start that got no answer, because the job may exist', async () => {
+    fakeDatabase(owned);
+    start.mockRejectedValue(new ProviderRequestError('timed out', true));
+    await startSheet('r1', { userId: 'u1' });
+    expect(start).toHaveBeenCalledTimes(1);
   });
 });
