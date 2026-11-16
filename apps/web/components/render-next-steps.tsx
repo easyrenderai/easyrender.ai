@@ -31,16 +31,21 @@ const STEPS = ['download', 'prepare', 'use'] as const;
 export function RenderNextSteps({
   downloads,
   createHref,
+  hasExports = false,
 }: {
   downloads: ReactNode;
   createHref: string;
+  /** The downloads include OBJ, FBX and BLEND, so the intro names them too. */
+  hasExports?: boolean;
 }) {
   const t = useTranslations('Render.nextSteps');
   return (
     <section className="render-next-steps space-y-5 rounded-xl border p-5" aria-label={t('title')}>
       <div className="space-y-2">
         <h2 className="text-lg font-medium tracking-tight">{t('title')}</h2>
-        <p className="text-sm text-muted-foreground">{t('formats')}</p>
+        <p className="text-sm text-muted-foreground">
+          {t(hasExports ? 'formatsWithExports' : 'formats')}
+        </p>
         {downloads}
       </div>
       <div>
