@@ -22,4 +22,5 @@
   under `/exports/*` and deleted after one day. Steps, key handling and rotation:
   `infra/aws/README.md`. Never put a private file on any other path of the distribution.
 - Env var changes only reach a deployment built after the change; redeploy or merge to `main`.
+- `REPLICATE_API_TOKEN` (Vercel production, and the GitHub Actions secret on `easyrenderai/evals`) belongs to the shipshitdev Replicate org. A dead or empty-balance token returns 401/402 and renders and previews fail for users. Rotated 2026-11-16 after an outage: replace the Vercel value, then merge a small PR so a new deployment picks it up. Never store the value anywhere in the repo.
 - Database: Neon Postgres. Use the unpooled URL for schema syncs.
