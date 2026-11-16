@@ -35,6 +35,8 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  emailSubscription EmailSubscription?
+
   sessions  Session[]
   accounts  Account[]
   renders   Render[]
@@ -506,4 +508,77 @@ model AdvertisingSpend {
   importedAt   DateTime @default(now())
   @@unique([platform, accountId, campaignId, date, currency])
   @@index([date])
+}
+
+// Voluntary commercial onboarding only; no enrollment inferred from analytics consent.
+model EmailSubscription {
+  id String @id @default(cuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email String
+  locale String
+  route String
+  timezone String
+  status String @default("pending")
+  consentVersion String
+  consentNonce String
+  unsubscribeNonce String
+  requestedAt DateTime
+  confirmExpiresAt DateTime
+  confirmedAt DateTime?
+  expiresAt DateTime
+  isPaused Boolean @default(false)
+  nextCheckAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deliveries EmailDelivery[]
+  events EmailConsentEvent[]
+  @@index([status, nextCheckAt])
+}
+model EmailConsentEvent {
+  id String @id @default(cuid())
+  subscriptionId String
+  subscription EmailSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  event String
+  version String
+  occurredAt DateTime @default(now())
+  @@index([subscriptionId, occurredAt])
+}
+model EmailDelivery {
+  id String @id @default(cuid())
+  subscriptionId String
+  subscription EmailSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  kind String
+  messageKey String
+  status String @default("pending")
+  payload Json
+  recipient String
+  consentNonce String
+  expiresAt DateTime
+  firstAttemptAt DateTime?
+  lastAttemptAt DateTime?
+  nextAttemptAt DateTime @default(now())
+  attempts Int @default(0)
+  leaseToken String?
+  leaseUntil DateTime?
+  providerId String? @unique
+  acceptedAt DateTime?
+  deliveredAt DateTime?
+  bouncedAt DateTime?
+  complainedAt DateTime?
+  lastError String?
+  createdAt DateTime @default(now())
+  @@unique([subscriptionId, kind, messageKey])
+  @@index([status, nextAttemptAt])
+}
+
+// Authenticated provider facts are retained without message bodies or recipient PII.
+// They may arrive before the send response supplies providerId to EmailDelivery.
+model EmailProviderEvent {
+  id String @id
+  providerId String
+  type String
+  occurredAt DateTime
+  receivedAt DateTime @default(now())
+  @@index([providerId, occurredAt])
 }

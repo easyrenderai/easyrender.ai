@@ -323,3 +323,15 @@ it('does not grant advertising when a withdrawal/GPC signal is present, even wit
     },
   ]);
 });
+
+it('does not send GA pageviews or conversions from email token pages after client navigation', async () => {
+  const page = await googleBrowser();
+  page.api.initializeGa('G-TEST000000');
+  await page.api.setBrowserTools(false, true);
+  const before = page.commands().filter(([command]) => command === 'event').length;
+  page.window.location.pathname = '/email/confirm';
+  page.window.location.search = '?token=private';
+  page.api.gaPageview();
+  page.api.gaEvent('sign_up', { method: 'email' });
+  expect(page.commands().filter(([command]) => command === 'event')).toHaveLength(before);
+});

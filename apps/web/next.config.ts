@@ -32,6 +32,14 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        source: '/email/:path*',
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+          { key: 'Referrer-Policy', value: 'no-referrer' },
+          { key: 'Cache-Control', value: 'private, no-store' },
+        ],
+      },
+      {
         source: '/admin/:path*',
         headers: [
           { key: 'X-Robots-Tag', value: 'noindex, nofollow' },

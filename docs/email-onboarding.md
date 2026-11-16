@@ -1,0 +1,55 @@
+# Educational email onboarding
+
+This implements the approved 30-day educational series, not a blanket subscription at account creation. New accounts see an optional card in Dashboard/Account; email/password and Google users take the same explicit path. Select Spanish or English, consent, request an email and confirm using the button in that email. Neither a cookie choice nor an analytics event grants marketing permission. Historical accounts are not imported.
+
+## Content and scheduling
+
+`messages/{es,en}.json:MailingEmails` contains 54 complete messages per language: nine routes, days 0/2/5/10/20/28. `MailingSystem` contains confirmation/footer copy. `lib/mailing.ts` maps reviewed acquisition paths to routes; unknown paths use general. It uses the existing first-touch `User.landing_path`, never a questionnaire or speculative keyword match. Language is selected explicitly; other languages are not silently sent English.
+
+The window is always `User.createdAt + 30 days`. Late consent, a purchase, retry, return visit or resubscription never resets it. Each slot is eligible only for its own 24-hour window; missed slots are not replayed. Messages requiring an existing task/result are skipped without that evidence. Other bodies include preparation alternatives. Offline exercises are not treated as completed from a click. No purchase automatically stops relevant education.
+
+Educational sends are limited to 09:00–18:59 in the selected browser timezone, and 1 per rolling 24h, 3 per 7d, 6 per 30d. An owned in-progress render or a failure in the previous 24h pauses education. Purchase/access/security email is outside this program. Newsletter and offers are not enabled or covered by this consent.
+
+## Delivery and recovery
+
+- Additive Prisma models store consent history, subscription and immutable outbox payloads; deleting a user cascades their subscription and deliveries. No production database is pushed from a laptop.
+- Confirmation is explicitly requested; POST activates the subscription. GET pages never confirm or unsubscribe, protecting against link preview scanners. Unsubscribe also supports RFC8058 POST with a signed token.
+- Cron `/api/cron/email` uses `CRON_SECRET` and runs every 15 minutes. Explicit confirmation requests can be dispatched after the response and bypass promotional quiet hours; the outbox/cron recover interrupted work. A confirmation expires within 24 hours and never later than the original registration deadline. An explicit resend requires one hour between requests and allows at most three requests per rolling day; it rotates the confirmation nonce and invalidates the previous link.
+- A database lock serializes claims for the account; the persisted delivery ID becomes the provider idempotency key. Payload is never reconstructed on a retry.
+- Retries stop after six attempts or 23 hours from the first attempt, and always before the content/registration deadline. Uncertain expired attempts are held for reconciliation; never re-send with a fresh key. Resend documents a [24-hour idempotency window](https://resend.com/docs/dashboard/emails/idempotency-keys). A `409 concurrent_idempotent_requests` retries the same snapshot/key; a payload-conflict response is terminal. Never bypass a conflict by issuing a new key automatically.
+- Provider acceptance is distinct from delivery. Signed raw webhooks record `email.delivered`, `email.bounced`, `email.complained`, `email.failed` and `email.suppressed` as immutable provider receipts, deduplicated by Svix event ID. Receipts arriving before the send response are reconciled when its provider ID is persisted. Failure marks that delivery failed without revoking subscriber consent; provider suppression, hard bounce or complaint stops pending mail and makes suppression sticky. An event for an earlier address updates the old delivery but does not suppress a different, newly confirmed address. Late/replayed delivery or failure never clears suppression. All facts remain in the receipt ledger; the summary status gives complaint/bounce/suppression priority over delivery, and verified delivery priority over failure.
+- Check consent, address, pause, expiry and pressure again before dispatch. A request already handed to the provider cannot be recalled by a later unsubscribe; no further deliveries are allowed.
+- No open pixel or click tracker is added by the app. Disable provider-level open/click tracking as part of domain configuration. Token pages are noindex/no-referrer/no-store and excluded from analytics; tokens must not enter error telemetry.
+
+## Production setup (required before enablement)
+
+1. Provision the selected provider account. The implementation uses Resend's REST API and Svix webhook verification. No provider subscription or domain was purchased by this change.
+2. Verify the sending domain with the exact DNS records supplied by Resend. Check DKIM/SPF and the domain's DMARC policy; do not overwrite existing mail records blindly. Use a real reply mailbox.
+3. Set production-only `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET`, independent random `EMAIL_TOKEN_SECRET` (32+ characters), `EMAIL_FROM`, `EMAIL_REPLY_TO`, and `EMAIL_LEGAL_IDENTITY` (actual legal name and postal address). `APP_URL` must be the canonical HTTPS origin; `CRON_SECRET` must be set. Values are never committed.
+4. Configure `https://easyrender.ai/api/webhooks/email` for `email.delivered`, `email.bounced`, `email.complained`, `email.failed` and `email.suppressed` with the matching signing secret. Keep provider tracking disabled.
+5. Deploy the schema and app through the normal PR merge/Vercel flow. Leave `EMAIL_ONBOARDING_ENABLED=false` while setup is incomplete. Preview/local deployments never send, even if that flag is set.
+6. For an explicitly authorized launch test, set `EMAIL_ALLOWED_RECIPIENTS` to exact test addresses and enable the flag in production. A test account must be within its original 30-day window. Check opt-in, confirmation, actual inbox rendering, footer, preferences, one-click unsubscribe and webhook delivery. No live inbox test is implied by automated tests.
+7. After sender/domain/webhook/read-back checks, remove the allowlist to serve only voluntarily confirmed accounts. Roll back sending immediately with `EMAIL_ONBOARDING_ENABLED=false`; keep unsubscribe endpoints operational.
+
+The same sender identity must be included in plain text and HTML. Do not invent its postal address. Do not paste API credentials in issues, chat or logs.
+
+## Monitoring and validation
+
+Run `bun run preflight`. Integration tests require `TEST_DATABASE_URL` pointing to a disposable PostgreSQL with the current schema; they use fake HTTP transports and do not send email. Never set that variable to production. Inspect subscriber state, consent events and delivery states for test users after a controlled test, without exposing addresses or tokens in logs.
+
+Monitor pending age, held/failed attempts, delivery vs acceptance, suppression and expiry. Pressure uses provider acceptance time when known, otherwise the conservative first-attempt time; a late accepted retry must not permit another educational message within 24 hours. Reconcile a held attempt in the provider dashboard before any manual decision; the app intentionally does not automatically issue a new idempotency key. Do not report a provider acceptance, click or generation as a useful reviewed result. Business experiments need an agreed observable outcome and cohort window; the copy has not demonstrated a conversion uplift yet.
+
+Current implementation is the educational onboarding only. No newsletter broadcaster, promotional automation, historical-contact backfill or four additional language catalogues are included.
+
+## Provider contract and remaining operational limits
+
+The REST payload uses `from`, `to`, `reply_to`, `subject`, `text`, `html` and custom `headers`; the HTTP `Idempotency-Key` identifies one immutable outbox delivery. See [Resend send API](https://resend.com/docs/api-reference/emails/send-email). Raw body verification runs before JSON parsing, using the endpoint signing secret and Svix headers, as documented in [webhook verification](https://resend.com/docs/webhooks/verify-webhooks-requests).
+
+[Failure events](https://resend.com/docs/webhooks/emails/failed) can represent sending/configuration/quota errors; they do not by themselves mean the subscriber withdrew consent. [Suppression events](https://resend.com/docs/webhooks/emails/suppressed) mean the provider blocked that email, so the local subscription remains suppressed pending an explicit operational review. Provider-side removal alone does not re-enable it.
+
+- An accepted request does not prove inbox delivery or reading. A delivery webhook reports delivery to the recipient mail server, not the reader's attention.
+- A receipt whose provider ID never reaches the outbox can remain unmatched. Preserve it for provider-dashboard reconciliation; do not guess a delivery from a similar subject or create another send automatically. Signed suppression can still stop a known attempted recipient during this race.
+- A cron outage or sustained pause can miss a slot. Recovery intentionally does not replay elapsed slots or extend the 30-day window.
+- Provider webhook retries are finite and endpoints can be disabled after repeated failures. Monitor webhook health and use authenticated provider replays after recovery; see [Resend retry behavior](https://resend.com/docs/webhooks/retries-and-replays).
+- Keep `EMAIL_TOKEN_SECRET` stable while links remain in circulation. Rotating it currently invalidates previous confirmation and unsubscribe links; a planned rotation needs a compatible verification/key-retention strategy. Account-based unsubscribe remains available while sending is disabled.
+- Provider receipts contain no recipient address or raw payload, but are retained without automatic pruning. Define an operational retention/reconciliation policy before deleting receipts or expanding volume.

@@ -8,10 +8,13 @@ import fr from '@/messages/fr.json';
 import itMessages from '@/messages/it.json';
 import pt from '@/messages/pt.json';
 
-// Every language answers for the same keys with the same ICU arguments, so a missing string can
-// never throw on a live page and a price placeholder can never be replaced by a typed number.
+// Every app language answers for the same keys with the same ICU arguments.
+// Email-only copy is deliberately limited to the two explicitly selectable email languages;
+// it is passed as props from en/es rather than requested from the active app locale.
 
 const MESSAGES = { en, es, de, fr, it: itMessages, pt };
+const EMAIL_LOCALES: ReadonlySet<string> = new Set(['en', 'es']);
+const EMAIL_ONLY_NAMESPACES = new Set(['MailingEmails', 'MailingSystem', 'MailingUI']);
 
 type Tree = { [key: string]: string | Tree };
 
@@ -35,16 +38,24 @@ describe('the message files', () => {
 
   // A translation may leave an argument out (Spanish does not need every number), but it may
   // never use one the code does not pass: that string would throw at render time.
-  it.each(LOCALES)('%s has exactly the English keys, and no unknown ICU argument', (locale) => {
-    const messages = flatten(MESSAGES[locale]);
-    expect([...messages.keys()].sort()).toEqual([...reference.keys()].sort());
-    for (const [key, value] of reference) {
-      const allowed = argumentsOf(value);
-      for (const name of argumentsOf(messages.get(key) ?? '')) {
-        expect(allowed, `${locale}: ${key} uses {${name}}`).toContain(name);
+  it.each(LOCALES)(
+    '%s has exactly its supported English keys, and no unknown ICU argument',
+    (locale) => {
+      const messages = flatten(MESSAGES[locale]);
+      const scopedReference = new Map(
+        [...reference].filter(
+          ([key]) => EMAIL_LOCALES.has(locale) || !EMAIL_ONLY_NAMESPACES.has(key.split('.')[0]),
+        ),
+      );
+      expect([...messages.keys()].sort()).toEqual([...scopedReference.keys()].sort());
+      for (const [key, value] of scopedReference) {
+        const allowed = argumentsOf(value);
+        for (const name of argumentsOf(messages.get(key) ?? '')) {
+          expect(allowed, `${locale}: ${key} uses {${name}}`).toContain(name);
+        }
       }
-    }
-  });
+    },
+  );
 
   it.each(['de', 'fr', 'it', 'pt'] as const)(
     '%s writes no credit amount by hand on the home',

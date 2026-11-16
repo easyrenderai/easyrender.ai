@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { attribution, gaPageview, initializeGa, setBrowserTools } from '@/lib/analytics/browser';
 import { type ConsentChoice, readConsent } from '@/lib/analytics/consent';
+import { isMailingTokenLocation } from '@/lib/mailing-privacy';
 
 const hasPosthog = Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY);
 const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '';
@@ -47,6 +48,11 @@ export function ConsentControls() {
   );
 }
 export function Analytics() {
+  const pathname = usePathname();
+  if (isMailingTokenLocation(pathname)) return null;
+  return <EnabledAnalytics />;
+}
+function EnabledAnalytics() {
   const t = useTranslations('Analytics');
   const locale = useLocale();
   const pathname = usePathname();
