@@ -479,6 +479,12 @@
             "body": "Controlla orientamento, materiali e scala. Il modello generato non conserva le misure reali."
           }
         }
+      },
+      "video": {
+        "illustration": "Dimostrazione illustrativa · modello di esempio e interfacce semplificate.",
+        "readSteps": "Leggi i passaggi",
+        "captions": "Sottotitoli dei passaggi",
+        "error": "Impossibile caricare il video. Leggi i passaggi qui sotto."
       }
     }
   },

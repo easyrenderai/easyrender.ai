@@ -1,6 +1,7 @@
-import { ArrowUpRight, Box, Download, Globe, Plus, ShoppingBag, Upload } from 'lucide-react';
+import { ArrowUpRight, Box, Globe, Plus, ShoppingBag } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
+import { RenderJourneyVideo } from '@/components/render-journey-video';
 import { SiteLink } from '@/components/site-link';
 import {
   Accordion,
@@ -9,7 +10,6 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
-import './render-next-steps.css';
 
 const JOURNEYS = [
   { key: 'web', Icon: Globe, href: 'https://modelviewer.dev/editor/' },
@@ -24,11 +24,7 @@ const JOURNEYS = [
     href: 'https://docs.blender.org/manual/en/latest/addons/scene_gltf2.html',
   },
 ] as const;
-const STEPS = [
-  { key: 'download', Icon: Download },
-  { key: 'prepare', Icon: Upload },
-  { key: 'use', Icon: Box },
-] as const;
+const STEPS = ['download', 'prepare', 'use'] as const;
 
 /** Guidance for an owner's finished model. It never uploads, publishes or changes visibility. */
 export function RenderNextSteps({
@@ -58,26 +54,24 @@ export function RenderNextSteps({
                 </span>
               </AccordionTrigger>
               <AccordionContent>
-                <ol className="render-journey">
-                  {STEPS.map(({ key: stepKey, Icon: StepIcon }, index) => (
-                    <li key={stepKey} className="render-journey__step">
-                      <div className="render-journey__marker" aria-hidden>
-                        <StepIcon className="size-4" />
-                      </div>
-                      <div className="min-w-0 space-y-2">
-                        <span className="font-mono text-xs text-muted-foreground">
-                          0{index + 1}
-                        </span>
+                <RenderJourneyVideo journey={key} />
+                <details className="mt-4">
+                  <summary className="cursor-pointer text-sm underline underline-offset-4 focus-visible:outline-ring">
+                    {t('video.readSteps')}
+                  </summary>
+                  <ol className="mt-4 list-decimal space-y-4 pl-5">
+                    {STEPS.map((stepKey) => (
+                      <li key={stepKey}>
                         <h3 className="text-sm font-medium">
                           {t(`${key}.steps.${stepKey}.title`)}
                         </h3>
-                        <p className="text-sm leading-relaxed text-muted-foreground">
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                           {t(`${key}.steps.${stepKey}.body`)}
                         </p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
+                      </li>
+                    ))}
+                  </ol>
+                </details>
                 <Button asChild variant="outline" size="sm" className="mt-5 max-w-full">
                   <a href={href} target="_blank" rel="noopener noreferrer">
                     {t(`${key}.action`)}

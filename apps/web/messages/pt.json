@@ -479,6 +479,12 @@
             "body": "Verifique orientação, materiais e escala. O modelo gerado não preserva as medidas reais."
           }
         }
+      },
+      "video": {
+        "illustration": "Demonstração ilustrativa · modelo de exemplo e interfaces simplificadas.",
+        "readSteps": "Ler os passos",
+        "captions": "Legendas dos passos",
+        "error": "Não foi possível carregar o vídeo. Consulta os passos abaixo."
       }
     }
   },
