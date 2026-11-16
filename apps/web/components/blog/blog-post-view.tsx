@@ -120,8 +120,10 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
                 locale={post.locale}
                 copy={{
                   title: t('post.promo.title'),
-                  input: t('post.promo.input'),
-                  output: t('post.promo.output'),
+                  solution: t('post.promo.solution'),
+                  visual: t('post.promo.visual'),
+                  play: t('post.promo.play'),
+                  pause: t('post.promo.pause'),
                   button: t('post.promo.button'),
                   disclosure: t('post.promo.disclosure'),
                 }}
@@ -158,7 +160,7 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
               <div className="sticky top-24 max-h-[calc(100dvh-7rem)] space-y-5 overflow-y-auto pb-4">
                 <nav
                   aria-label={t('post.toc')}
-                  className="max-h-[min(32dvh,18rem)] overflow-y-auto border-l pl-5 pr-2"
+                  className="max-h-[min(26dvh,14rem)] overflow-y-auto border-l pl-5 pr-2"
                 >
                   <p className="mb-4 font-mono text-xs uppercase tracking-widest text-muted-foreground">
                     {t('post.toc')}
@@ -169,8 +171,10 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
                   locale={post.locale}
                   copy={{
                     title: t('post.promo.title'),
-                    input: t('post.promo.input'),
-                    output: t('post.promo.output'),
+                    solution: t('post.promo.solution'),
+                    visual: t('post.promo.visual'),
+                    play: t('post.promo.play'),
+                    pause: t('post.promo.pause'),
                     button: t('post.promo.button'),
                     disclosure: t('post.promo.disclosure'),
                   }}

@@ -1252,11 +1252,13 @@
       },
       "related": "Continua a ler",
       "promo": {
-        "title": "O teu produto de todos os lados",
-        "input": "A tua foto",
-        "output": "Vistas geradas por IA",
+        "title": "Pedem-te mais fotos?",
         "button": "Experimenta a tua foto grátis",
-        "disclosure": "Pré-visualização grátis. O modelo 3D é pago."
+        "disclosure": "Pré-visualização grátis. O modelo 3D é pago.",
+        "solution": "Mostra-o em 3D. A partir de uma foto.",
+        "visual": "Exemplo de modelo gerado de poltrona a rodar",
+        "play": "Reproduzir vídeo do produto",
+        "pause": "Pausar vídeo do produto"
       }
     },
     "comparisons": {

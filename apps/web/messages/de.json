@@ -1252,11 +1252,13 @@
       },
       "related": "Lies weiter",
       "promo": {
-        "title": "Dein Produkt von allen Seiten",
-        "input": "Dein Foto",
-        "output": "KI-Ansichten",
+        "title": "Kunden wollen mehr Fotos?",
         "button": "Foto kostenlos testen",
-        "disclosure": "Kostenlose Vorschau. Das 3D-Modell ist kostenpflichtig."
+        "disclosure": "Kostenlose Vorschau. Das 3D-Modell ist kostenpflichtig.",
+        "solution": "Zeig es in 3D. Aus einem Foto.",
+        "visual": "Beispiel eines generierten, rotierenden Sesselmodells",
+        "play": "Produktvideo abspielen",
+        "pause": "Produktvideo pausieren"
       }
     },
     "comparisons": {

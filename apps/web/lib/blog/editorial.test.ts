@@ -8,16 +8,19 @@ import { readComparePages } from '@/lib/compare/pages';
 import { parseBlocks } from './markdown';
 
 describe.each(LOCALES)('editorial decisions in %s', (locale) => {
-  it('offers a localized preview with real input and output imagery', async () => {
+  it('offers a localized pain-led CTA with a lightweight video and static fallback', async () => {
     const messages = (await import(`../../messages/${locale}.json`)).default;
     const html = renderToStaticMarkup(
       createElement(ArticlePromo, { locale, copy: messages.Blog.post.promo }),
     );
     expect(html).toContain(locale === 'en' ? 'href="/#try"' : `href="/${locale}#try"`);
-    expect(html).toContain('armchair.jpg');
-    expect(html).toContain('armchair-angles.jpg');
+    expect(html).toContain('product-turn.jpg');
+    expect(html).toContain(messages.Blog.post.promo.title);
+    expect(html).toContain('preload="none"');
+    expect(html).toContain('playsInline');
     expect(html).toContain(messages.Blog.post.promo.disclosure);
-    expect(html).not.toContain('<video');
+    expect(html).toContain('<video');
+    expect(html).not.toContain('src="/blog/promo/product-turn.mp4"');
   });
   it('makes choices and limitations readable without interaction', async () => {
     const messages = (await import(`../../messages/${locale}.json`)).default;
