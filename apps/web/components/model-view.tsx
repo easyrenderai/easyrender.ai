@@ -83,7 +83,11 @@ export function ModelView({
     <div className="space-y-2">
       <div className="flex flex-wrap gap-2">
         <Button variant={nextStepsHref ? 'default' : 'outline'} size="sm" asChild>
-          <a href={downloadUrl} download>
+          <a
+            href={downloadUrl}
+            download
+            onClick={() => captureBrowser('model_download_requested', { format: 'glb' })}
+          >
             <Download />
             GLB
           </a>
@@ -96,6 +100,7 @@ export function ModelView({
             setExporting(true);
             try {
               save(await exportUsdz(src), `easyrender-${name}.usdz`);
+              captureBrowser('model_exported', { format: 'usdz' });
             } finally {
               setExporting(false);
             }

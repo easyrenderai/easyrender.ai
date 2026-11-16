@@ -2,6 +2,7 @@ import { BUILD_MODEL, FINAL_SHEET_MODEL, RENDER_CREDITS, SHEET_MODEL } from '@ea
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
+import { QualityEvidence } from '@/components/quality-evidence';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,6 +26,14 @@ const modelId = (path: string) => path.replace('/models/', '').replace('/predict
 /** The models page of one language: the two steps, their settings and what each costs. */
 export async function ModelsView({ locale }: { locale: Locale }) {
   const t = await getTranslations('Models');
+  const quality = await getTranslations('LandingIntent');
+  const qualityCopy = {
+    title: quality('qualityTitle'),
+    body: quality('qualityBody'),
+    upload: quality('upload'),
+    sample: quality('sample'),
+    evals: quality('evals'),
+  };
   const { creditPrice, currency } = await currentPricing();
   const rows = [
     { key: 'sheet', credits: 0 },
@@ -65,6 +74,7 @@ export async function ModelsView({ locale }: { locale: Locale }) {
         <p className="max-w-2xl text-lg text-muted-foreground text-pretty">{t('description')}</p>
         <p className="text-sm text-muted-foreground">{t('provider')}</p>
       </header>
+      <QualityEvidence locale={locale} copy={qualityCopy} showEvals />
 
       <div className="mt-10 grid gap-4 md:grid-cols-3">
         {steps.map((step, index) => (

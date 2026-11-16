@@ -28,6 +28,7 @@ import {
 } from 'remotion';
 import { Box3, type Group, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { HeroMotion } from './hero';
 
 // Offline artwork uses the exact carbon/bone palette from DESIGN.md. No runtime dependency.
 const C = {
@@ -648,6 +649,14 @@ function Guide({ journey }: { journey: Journey }) {
 function Root() {
   return (
     <>
+      <Composition
+        id="hero"
+        component={HeroMotion}
+        width={1000}
+        height={800}
+        fps={30}
+        durationInFrames={420}
+      />
       {(['web', 'shop', 'design'] as const).map((journey) => (
         <Composition
           key={journey}

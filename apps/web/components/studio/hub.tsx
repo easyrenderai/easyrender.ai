@@ -3,6 +3,11 @@
 import { Code2, Download, Search, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { SiteLink } from '@/components/site-link';
+import { Button } from '@/components/ui/button';
+import type { Locale } from '@/i18n/config';
+import { MODEL_DESTINATIONS } from '@/lib/model-destinations';
+import { ROUTES } from '@/lib/seo/routes';
 import {
   CATALOG,
   CATEGORIES,
@@ -268,6 +273,9 @@ function HubCard({
 
 function HubSheet({ id, fmt, onClose }: { id: string | null; fmt: Format; onClose: () => void }) {
   const t = useTranslations('Hub.sheet');
+  const nextT = useTranslations('Hub.usage');
+  const stepsT = useTranslations('Render.nextSteps');
+  const locale = useLocale() as Locale;
   const catalog = useTranslations('Catalog');
   const dialog = useRef<HTMLDialogElement>(null);
   const stage = useRef<HTMLDivElement>(null);
@@ -394,6 +402,31 @@ function HubSheet({ id, fmt, onClose }: { id: string | null; fmt: Format; onClos
               </h2>
               <p className="sheet__prompt">{catalog(`items.${item.id}.prompt`)}</p>
 
+              <details className="my-5 space-y-3 text-sm">
+                <summary className="cursor-pointer font-medium">{nextT('title')}</summary>
+                <p className="text-muted-foreground">{nextT('body')}</p>
+                <ul className="space-y-3">
+                  {(['web', 'shop', 'design'] as const).map((key) => (
+                    <li key={key}>
+                      <p className="font-medium">{stepsT(`${key}.title`)}</p>
+                      <p className="mt-1 text-muted-foreground">
+                        {stepsT(`${key}.steps.${key === 'shop' ? 'use' : 'prepare'}.body`)}
+                      </p>
+                      <a
+                        href={MODEL_DESTINATIONS[key]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-block underline underline-offset-4"
+                      >
+                        {stepsT(`${key}.action`)}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+              <Button asChild variant="outline" className="mb-4 w-full whitespace-normal">
+                <SiteLink href={`${ROUTES.home.paths[locale]}#try`}>{nextT('create')}</SiteLink>
+              </Button>
               <dl className="spec">
                 <div>
                   <dt>{t('size')}</dt>

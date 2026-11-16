@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Markdown, type TocEntry, tocOf } from '@/lib/blog/markdown';
 import { isLiveBlogLink, readingMinutes } from '@/lib/blog/posts';
 import type { ComparePage } from '@/lib/compare/pages';
+import { landingIntent } from '@/lib/landing-intent';
 import { ROUTES } from '@/lib/seo/routes';
 
 function TocList({ entries }: { entries: TocEntry[] }) {
@@ -40,6 +41,8 @@ export async function CompareView({ page }: { page: ComparePage }) {
     getFormatter({ locale: page.locale }),
   ]);
   const home = ROUTES.home.paths[page.locale];
+  const intent = landingIntent(page.group, page.locale);
+  const nextT = await getTranslations({ locale: page.locale, namespace: 'LandingIntent' });
   const toc = tocOf(page.body);
 
   return (
@@ -120,13 +123,14 @@ export async function CompareView({ page }: { page: ComparePage }) {
             <div className="mb-10 max-w-sm lg:hidden">
               <ArticlePromo
                 locale={page.locale}
+                href={intent.href}
                 copy={{
-                  title: t('post.promo.title'),
-                  solution: t('post.promo.solution'),
+                  title: nextT(`${intent.key}.title`),
+                  solution: nextT(`${intent.key}.body`),
                   visual: t('post.promo.visual'),
                   play: t('post.promo.play'),
                   pause: t('post.promo.pause'),
-                  button: t('post.promo.button'),
+                  button: nextT(intent.action),
                   disclosure: t('post.promo.disclosure'),
                 }}
               />
@@ -165,14 +169,14 @@ export async function CompareView({ page }: { page: ComparePage }) {
 
             <aside className="mt-20 max-w-xl rounded-2xl border bg-muted/40 p-6 sm:p-10">
               <p className="text-2xl font-semibold tracking-tight text-balance">
-                {t('post.cta.title')}
+                {nextT(`${intent.key}.title`)}
               </p>
               {page.cta && (
                 <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">{page.cta}</p>
               )}
               <Button asChild size="lg" className="mt-6">
-                <Link href={`${home}#try`}>
-                  {t('post.cta.button')}
+                <Link href={intent.href}>
+                  {nextT(intent.action)}
                   <ArrowRight />
                 </Link>
               </Button>
@@ -193,13 +197,14 @@ export async function CompareView({ page }: { page: ComparePage }) {
                 </nav>
                 <ArticlePromo
                   locale={page.locale}
+                  href={intent.href}
                   copy={{
-                    title: t('post.promo.title'),
-                    solution: t('post.promo.solution'),
+                    title: nextT(`${intent.key}.title`),
+                    solution: nextT(`${intent.key}.body`),
                     visual: t('post.promo.visual'),
                     play: t('post.promo.play'),
                     pause: t('post.promo.pause'),
-                    button: t('post.promo.button'),
+                    button: nextT(intent.action),
                     disclosure: t('post.promo.disclosure'),
                   }}
                 />

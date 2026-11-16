@@ -1,12 +1,12 @@
 import { ENTERPRISE_BOOKING_URL } from '@easyrender/harness';
 import { getLocale, getTranslations } from 'next-intl/server';
+import { HomeHero } from '@/components/home/home-hero';
 import { HomeIntegrations } from '@/components/home/home-integrations';
 import { HomeIntro } from '@/components/home/home-intro';
 import { HomeJourney } from '@/components/home/home-journey';
 import { Faq, Pricing } from '@/components/landing';
 import { PromptBar } from '@/components/prompt-bar';
 import { ResourceLinks } from '@/components/resource-links';
-import { StudioHero } from '@/components/studio/hero';
 import { StudioIndustries } from '@/components/studio/industries';
 import { StudioPipeline } from '@/components/studio/pipeline';
 import { StudioClosing, StudioCompatibility } from '@/components/studio/proof';
@@ -29,7 +29,7 @@ export async function HomeView() {
 
   return (
     <StudioShell>
-      <StudioHero ctaHref="#try" upload={<PromptBar signedIn={Boolean(user)} />} />
+      <HomeHero upload={<PromptBar signedIn={Boolean(user)} compact />} />
       <StudioCompatibility />
       <StudioPipeline />
       <HomeJourney />

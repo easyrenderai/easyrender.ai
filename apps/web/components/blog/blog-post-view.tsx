@@ -12,6 +12,7 @@ import {
   readingMinutes,
   relatedPosts,
 } from '@/lib/blog/posts';
+import { landingIntent } from '@/lib/landing-intent';
 import { ROUTES } from '@/lib/seo/routes';
 import { DATE_FORMAT, PostCard } from './post-card';
 
@@ -40,6 +41,8 @@ function TocList({ entries }: { entries: TocEntry[] }) {
 export async function BlogPostView({ post }: { post: BlogPost }) {
   const [t, format] = await Promise.all([getTranslations('Blog'), getFormatter()]);
   const hub = ROUTES.blog.paths[post.locale];
+  const intent = landingIntent(post.group, post.locale);
+  const nextT = await getTranslations({ locale: post.locale, namespace: 'LandingIntent' });
   const toc = tocOf(post.body);
   const related = relatedPosts(post);
   const modified = modifiedDate(post);
@@ -125,13 +128,14 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
             <div className="mb-10 max-w-sm lg:hidden">
               <ArticlePromo
                 locale={post.locale}
+                href={intent.href}
                 copy={{
-                  title: t('post.promo.title'),
-                  solution: t('post.promo.solution'),
+                  title: nextT(`${intent.key}.title`),
+                  solution: nextT(`${intent.key}.body`),
                   visual: t('post.promo.visual'),
                   play: t('post.promo.play'),
                   pause: t('post.promo.pause'),
-                  button: t('post.promo.button'),
+                  button: nextT(intent.action),
                   disclosure: t('post.promo.disclosure'),
                 }}
               />
@@ -148,14 +152,14 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
 
             <aside className="mt-20 max-w-xl rounded-2xl border bg-muted/40 p-6 sm:p-10">
               <p className="text-2xl font-semibold tracking-tight text-balance">
-                {t('post.cta.title')}
+                {nextT(`${intent.key}.title`)}
               </p>
               {post.cta && (
                 <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">{post.cta}</p>
               )}
               <Button asChild size="lg" className="mt-6">
-                <Link href={`${ROUTES.home.paths[post.locale]}#try`}>
-                  {t('post.cta.button')}
+                <Link href={intent.href}>
+                  {nextT(intent.action)}
                   <ArrowRight />
                 </Link>
               </Button>
@@ -176,13 +180,14 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
                 </nav>
                 <ArticlePromo
                   locale={post.locale}
+                  href={intent.href}
                   copy={{
-                    title: t('post.promo.title'),
-                    solution: t('post.promo.solution'),
+                    title: nextT(`${intent.key}.title`),
+                    solution: nextT(`${intent.key}.body`),
                     visual: t('post.promo.visual'),
                     play: t('post.promo.play'),
                     pause: t('post.promo.pause'),
-                    button: t('post.promo.button'),
+                    button: nextT(intent.action),
                     disclosure: t('post.promo.disclosure'),
                   }}
                 />

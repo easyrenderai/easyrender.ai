@@ -10,6 +10,7 @@ import { ShellPanel } from '@/components/app-shell/shell-context';
 import { ModelView } from '@/components/model-view';
 import { DATE_FORMAT, RenderDetail } from '@/components/render-detail';
 import { RenderHistory } from '@/components/render-history';
+import { RenderJourneyStatus } from '@/components/render-journey-status';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -28,6 +29,7 @@ import { UpscaleAction } from '@/components/upscale/upscale-action';
 import { latestUpscale, useUpscales } from '@/components/upscale/use-upscales';
 import { captureBrowser, observeRender } from '@/lib/analytics/browser';
 
+import { startRenderPolling } from '@/lib/render-polling';
 import { correctionNote, SHEET_ISSUES, type SheetIssue } from '@/lib/sheet-correction';
 
 const RUNNING = new Set(['drafting', 'rendering']);
@@ -57,6 +59,7 @@ export function RenderView({
   const format = useFormatter();
   const router = useRouter();
   const [render, setRender] = useState(initial);
+  const [hasConnectionError, setHasConnectionError] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -73,11 +76,7 @@ export function RenderView({
 
   useEffect(() => {
     if (!RUNNING.has(render.status)) return;
-    const timer = setInterval(async () => {
-      const response = await fetch(`/api/renders/${render.id}`, { cache: 'no-store' });
-      if (response.ok) setRender(await response.json());
-    }, 3000);
-    return () => clearInterval(timer);
+    return startRenderPolling(render.id, setRender, setHasConnectionError);
   }, [render.id, render.status]);
 
   useEffect(() => {
@@ -236,100 +235,106 @@ export function RenderView({
         </div>
       )}
       {isFixable && (
-        <div className="space-y-2">
-          <fieldset className="space-y-2">
-            <legend className="text-sm font-medium">{t('correction.title')}</legend>
-            <p className="text-xs text-muted-foreground">{t('correction.multiple')}</p>
-            <div className="flex flex-wrap gap-x-5 gap-y-2">
-              {SHEET_ISSUES.map((issue) => (
-                <Label key={issue} className="min-h-11 cursor-pointer gap-2">
-                  <Checkbox
-                    checked={issues.includes(issue)}
+        <details className="text-sm">
+          <summary className="cursor-pointer font-medium">{t('fixSheetLabel')}</summary>
+          <div className="mt-4 space-y-2">
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-medium">{t('correction.title')}</legend>
+              <p className="text-xs text-muted-foreground">{t('correction.multiple')}</p>
+              <div className="flex flex-wrap gap-x-5 gap-y-2">
+                {SHEET_ISSUES.map((issue) => (
+                  <Label key={issue} className="min-h-11 cursor-pointer gap-2">
+                    <Checkbox
+                      checked={issues.includes(issue)}
+                      disabled={starting}
+                      onCheckedChange={(checked) =>
+                        setIssues((current) =>
+                          checked === true
+                            ? [...current.filter((key) => key !== issue), issue]
+                            : current.filter((key) => key !== issue),
+                        )
+                      }
+                    />
+                    {t(`correction.labels.${issue}`)}
+                  </Label>
+                ))}
+              </div>
+            </fieldset>
+            <Label htmlFor="sheet-note">{t('fixSheetLabel')}</Label>
+            <Textarea
+              id="sheet-note"
+              value={note}
+              maxLength={NOTE_MAX_LENGTH}
+              rows={3}
+              placeholder={t('fixSheetPlaceholder')}
+              onChange={(event) => setNote(event.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">{t('fixSheetHint')}</p>
+            {correction.length > NOTE_MAX_LENGTH && (
+              <p role="alert" className="text-sm text-destructive">
+                {t('correction.tooLong', { max: NOTE_MAX_LENGTH })}
+              </p>
+            )}
+            {balance < render.sheetCredits ? (
+              <Button variant="outline" className="w-full" asChild>
+                <Link href={`/credits?next=${next}`}>{t('buyToRedraw')}</Link>
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setIsConfirmingCorrection(true)}
+                disabled={starting || !isCorrectionValid}
+              >
+                {starting ? <Loader2 className="animate-spin" /> : <RefreshCw />}
+                {t('correction.review')}
+              </Button>
+            )}
+            <Dialog open={isConfirmingCorrection} onOpenChange={setIsConfirmingCorrection}>
+              <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{t('correction.confirmTitle')}</DialogTitle>
+                  <DialogDescription>
+                    {t('correction.confirmBody', { credits: render.sheetCredits })}
+                  </DialogDescription>
+                </DialogHeader>
+                <p className="text-sm break-words whitespace-pre-wrap">{correction}</p>
+                {redrawError && (
+                  <p role="alert" className="text-sm text-destructive">
+                    {redrawError}
+                  </p>
+                )}
+                <DialogFooter>
+                  <Button
+                    variant="outline"
                     disabled={starting}
-                    onCheckedChange={(checked) =>
-                      setIssues((current) =>
-                        checked === true
-                          ? [...current.filter((key) => key !== issue), issue]
-                          : current.filter((key) => key !== issue),
-                      )
-                    }
-                  />
-                  {t(`correction.labels.${issue}`)}
-                </Label>
-              ))}
-            </div>
-          </fieldset>
-          <Label htmlFor="sheet-note">{t('fixSheetLabel')}</Label>
-          <Textarea
-            id="sheet-note"
-            value={note}
-            maxLength={NOTE_MAX_LENGTH}
-            rows={3}
-            placeholder={t('fixSheetPlaceholder')}
-            onChange={(event) => setNote(event.target.value)}
-          />
-          <p className="text-xs text-muted-foreground">{t('fixSheetHint')}</p>
-          {correction.length > NOTE_MAX_LENGTH && (
-            <p role="alert" className="text-sm text-destructive">
-              {t('correction.tooLong', { max: NOTE_MAX_LENGTH })}
-            </p>
-          )}
-          {balance < render.sheetCredits ? (
-            <Button variant="outline" className="w-full" asChild>
-              <Link href={`/credits?next=${next}`}>{t('buyToRedraw')}</Link>
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => setIsConfirmingCorrection(true)}
-              disabled={starting || !isCorrectionValid}
-            >
-              {starting ? <Loader2 className="animate-spin" /> : <RefreshCw />}
-              {t('correction.review')}
-            </Button>
-          )}
-          <Dialog open={isConfirmingCorrection} onOpenChange={setIsConfirmingCorrection}>
-            <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>{t('correction.confirmTitle')}</DialogTitle>
-                <DialogDescription>
-                  {t('correction.confirmBody', { credits: render.sheetCredits })}
-                </DialogDescription>
-              </DialogHeader>
-              <p className="text-sm break-words whitespace-pre-wrap">{correction}</p>
-              {redrawError && (
-                <p role="alert" className="text-sm text-destructive">
-                  {redrawError}
-                </p>
-              )}
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  disabled={starting}
-                  onClick={() => setIsConfirmingCorrection(false)}
-                >
-                  {t('correction.back')}
-                </Button>
-                <Button disabled={starting || !isCorrectionValid} onClick={redrawSheet}>
-                  {starting && <Loader2 className="animate-spin" />}
-                  {t('redrawSheet', { credits: render.sheetCredits })}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          {redrawError && (
-            <Alert variant="destructive">
-              <AlertDescription>{redrawError}</AlertDescription>
-            </Alert>
-          )}
-        </div>
+                    onClick={() => setIsConfirmingCorrection(false)}
+                  >
+                    {t('correction.back')}
+                  </Button>
+                  <Button disabled={starting || !isCorrectionValid} onClick={redrawSheet}>
+                    {starting && <Loader2 className="animate-spin" />}
+                    {t('redrawSheet', { credits: render.sheetCredits })}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            {redrawError && (
+              <Alert variant="destructive">
+                <AlertDescription>{redrawError}</AlertDescription>
+              </Alert>
+            )}
+          </div>
+        </details>
       )}
     </div>
   );
 
   const actions = owner ? (
     <>
+      {render.status === 'preview_ready' && (
+        <p className="text-sm text-muted-foreground">{t('journey.buildCost', { credits: owed })}</p>
+      )}
       {render.status === 'preview_ready' &&
         (!signedIn ? (
           <Button size="lg" className="w-full" asChild>
@@ -395,6 +400,16 @@ export function RenderView({
     <>
       <RenderDetail
         isInApp={signedIn}
+        isReviewingAngles={render.status === 'preview_ready'}
+        activity={
+          owner ? (
+            <RenderJourneyStatus
+              status={render.status}
+              hasPreview={render.hasPreview}
+              hasConnectionError={hasConnectionError}
+            />
+          ) : undefined
+        }
         title={title}
         prompt={render.prompt}
         badges={[t(`status.${render.status}`)]}
