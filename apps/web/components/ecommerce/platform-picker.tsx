@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { useSection } from '@/components/studio/use-section';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -22,6 +22,7 @@ export function PlatformPicker<Id extends string>({
   panels: Record<Id, ReactNode>;
 }) {
   const [value, setValue] = useState<string>(platforms[0].id);
+  const panelsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const wanted = new URLSearchParams(window.location.search).get(PARAM);
@@ -33,6 +34,9 @@ export function PlatformPicker<Id extends string>({
     const url = new URL(window.location.href);
     url.searchParams.set(PARAM, next);
     window.history.replaceState(window.history.state, '', url);
+    // The setup sits below the first screen, so a choice also brings it into view.
+    const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    panelsRef.current?.scrollIntoView({ behavior: isReduced ? 'auto' : 'smooth', block: 'start' });
   }
 
   const stage = useSection<HTMLDivElement>(
@@ -77,7 +81,7 @@ export function PlatformPicker<Id extends string>({
           </div>
         </div>
       </div>
-      <div className="mx-auto w-full max-w-6xl px-6 lg:px-10">
+      <div ref={panelsRef} className="mx-auto w-full max-w-6xl scroll-mt-14 px-6 lg:px-10">
         {platforms.map((platform) => (
           <TabsContent
             key={platform.id}
