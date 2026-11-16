@@ -343,7 +343,7 @@ export async function createDraft(input: {
       );
       prediction = await client.start(fallback.path, fallback.body, webhook);
     }
-    return await persistStartedPrediction(render, { sourceUrl, sheetPredictionId: prediction.id });
+    return await persistStartedPrediction(render, { sheetPredictionId: prediction.id });
   } catch (error) {
     // Hold only when no answer arrived (or the id could not be saved): the job may exist. A
     // received error response means it was rejected, so fail now instead of hanging.
@@ -885,7 +885,7 @@ async function startSheetPrediction(render: Render): Promise<Render> {
     request.body,
     config.webhookUrl(`/api/webhooks/replicate?render=${render.id}`),
   );
-  return persistStartedPrediction(render, { sourceUrl, sheetPredictionId: prediction.id });
+  return persistStartedPrediction(render, { sheetPredictionId: prediction.id });
 }
 
 // Redraws the angle sheet of a preview, steered by what the owner says is wrong with it. It costs

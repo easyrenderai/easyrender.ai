@@ -1,6 +1,8 @@
 // Thin Replicate REST client. Serverless friendly: it starts predictions and reads them back,
 // it never waits for one to finish inside a request. The caller polls or receives a webhook.
 
+import sharp from 'sharp';
+
 const API = 'https://api.replicate.com/v1';
 const MAX_ATTEMPTS = 3;
 const REQUEST_TIMEOUT_MS = 10_000;
@@ -44,6 +46,25 @@ async function errorDetail(response: Response): Promise<string> {
   } catch {
     return '';
   }
+}
+
+// Replicate answers 500 to any prediction whose image input is a URL (verified against both
+// nano-banana models, with its own file URLs and public ones), so images travel inline as data URIs.
+// Anything bigger than this is re-encoded first to keep the request body small.
+const INLINE_MAX_BYTES = 3 * 1024 * 1024;
+const INLINE_MAX_EDGE = 2048;
+
+export async function toDataUri(bytes: Uint8Array, contentType: string): Promise<string> {
+  if (bytes.byteLength <= INLINE_MAX_BYTES) {
+    return `data:${contentType};base64,${Buffer.from(bytes).toString('base64')}`;
+  }
+  const jpeg = await sharp(bytes)
+    .rotate()
+    .resize(INLINE_MAX_EDGE, INLINE_MAX_EDGE, { fit: 'inside', withoutEnlargement: true })
+    .flatten({ background: '#ffffff' })
+    .jpeg({ quality: 90 })
+    .toBuffer();
+  return `data:image/jpeg;base64,${jpeg.toString('base64')}`;
 }
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -105,12 +126,10 @@ export function createReplicate(token: string, fetchImpl: typeof fetch = fetch) 
   }
 
   return {
-    // Uploads bytes to Replicate's file store and returns a URL that predictions can read.
-    async upload(bytes: Uint8Array, filename: string, contentType: string): Promise<string> {
-      const form = new FormData();
-      form.append('content', new Blob([bytes as BlobPart], { type: contentType }), filename);
-      const file = await api<{ urls: { get: string } }>('/files', { method: 'POST', body: form });
-      return file.urls.get;
+    // Returns an image reference a prediction can read. It is a data URI, never a URL: see
+    // toDataUri. The filename is unused and kept so callers did not change.
+    async upload(bytes: Uint8Array, _filename: string, contentType: string): Promise<string> {
+      return toDataUri(bytes, contentType);
     },
 
     async start(path: string, body: unknown, webhook?: string): Promise<Prediction> {

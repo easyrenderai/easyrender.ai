@@ -161,7 +161,7 @@ async function startSheet(set: ViewSet): Promise<void> {
         sheetPredictionId: set.sheetPredictionId,
         updatedAt: set.updatedAt,
       },
-      data: { sourceUrl, sheetPredictionId: prediction.id },
+      data: { sheetPredictionId: prediction.id },
     });
   } catch (error) {
     reportError(error, { viewSetId: set.id, stage: 'sheet_start_persistence' });
