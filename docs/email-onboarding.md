@@ -35,6 +35,13 @@ Educational sends are limited to 09:00–18:59 in the selected browser timezone,
 
 The same sender identity must be included in plain text and HTML. Do not invent its postal address. Do not paste API credentials in issues, chat or logs.
 
+## Production status (2026-11-16)
+
+- Resend team `shipshitdev`, domain `easyrender.ai`, region eu-west-1, status verified. Open and click tracking are off, receiving is off.
+- DNS in Route 53 is additive: `resend._domainkey` (DKIM TXT), `rsend` and `send` CNAMEs to Resend, and `_dmarc` (`v=DMARC1; p=none;`). The apex MX and SPF stay on ForwardEmail (`info@` forwards to the team); do not add Resend's receiving MX at the apex, it would replace that forwarding. Tighten DMARC only after checking real traffic.
+- A sending-only API key scoped to the domain and the webhook for `https://easyrender.ai/api/webhooks/email` (the five events above) were created fresh. The key and signing secret exist only in Vercel production and the Resend dashboard.
+- Vercel production has `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET`, `EMAIL_TOKEN_SECRET`, `EMAIL_FROM`, `EMAIL_REPLY_TO`, `EMAIL_LEGAL_IDENTITY` and `EMAIL_ONBOARDING_ENABLED=true`. `SERVICE_EMAIL_ENABLED` and `EMAIL_ALLOWED_RECIPIENTS` are unset.
+
 ## Monitoring and validation
 
 Run `bun run preflight`. Integration tests require `TEST_DATABASE_URL` pointing to a disposable PostgreSQL with the current schema; they use fake HTTP transports and do not send email. Never set that variable to production. Inspect subscriber state, consent events and delivery states for test users after a controlled test, without exposing addresses or tokens in logs.
