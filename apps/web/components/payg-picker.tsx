@@ -17,10 +17,12 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 export function PaygPicker({
+  next,
   pricingVariant = 'control',
   currency = 'usd',
   rate = topupPricing(null, pricingVariant, currency),
 }: {
+  next?: string | null;
   pricingVariant?: PricingVariant;
   currency?: ChargeCurrency;
   rate?: ReturnType<typeof topupPricing>;
@@ -33,7 +35,7 @@ export function PaygPicker({
       style: 'currency',
       currency: rate.currency.toUpperCase(),
     });
-  const [credits, setCredits] = useState(PAYG.presets[1] ?? PAYG.min);
+  const [credits, setCredits] = useState(PAYG.min);
   const isValid = isValidPaygCredits(credits, pricingVariant);
   return (
     <div className="w-full space-y-3">
@@ -90,6 +92,7 @@ export function PaygPicker({
         label={isValid ? t('buyAmount', { credits: format.number(credits) }) : t('buy')}
         body={{
           plan: 'payg',
+          next,
           credits,
           expectedAmountCents: topupAmountCents(credits, rate),
           expectedCurrency: rate.currency,

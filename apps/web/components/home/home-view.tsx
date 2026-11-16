@@ -2,7 +2,7 @@ import { ENTERPRISE_BOOKING_URL } from '@easyrender/harness';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { HomeIntegrations } from '@/components/home/home-integrations';
 import { HomeIntro } from '@/components/home/home-intro';
-import { Faq, Pricing, Section } from '@/components/landing';
+import { Faq, Pricing } from '@/components/landing';
 import { PromptBar } from '@/components/prompt-bar';
 import { ResourceLinks } from '@/components/resource-links';
 import { StudioHero } from '@/components/studio/hero';
@@ -29,16 +29,10 @@ export async function HomeView() {
 
   return (
     <StudioShell>
-      <StudioHero ctaHref="#try" />
+      <StudioHero ctaHref="#try" upload={<PromptBar signedIn={Boolean(user)} />} />
       <StudioCompatibility />
       <HomeIntro />
       <StudioPipeline />
-
-      <Section id="try" title={t('try.title')} description={t('try.description')} narrow>
-        <div className="sec__column">
-          <PromptBar signedIn={Boolean(user)} />
-        </div>
-      </Section>
 
       <StudioIndustries salesHref={ENTERPRISE_BOOKING_URL} />
       <StudioTools />

@@ -410,3 +410,28 @@ export function cohorts(users: CohortMember[], end: string, tz: string): Row[] {
       }),
     );
 }
+
+/** Undated legacy successes stay unknown; mutable updatedAt is never a completion fallback. */
+export function modelCompletedAt(render: {
+  createdAt: Date;
+  completedAt: Date | null;
+}): Date | null {
+  const completed = render.completedAt;
+  return completed && Number.isFinite(+completed) && +completed >= +render.createdAt
+    ? completed
+    : null;
+}
+
+export const JOB_REFUND_REASONS = new Set([
+  'render_failed',
+  'product_views_failed',
+  'product_view_polish_failed',
+  'upscale_failed',
+]);
+
+export function sheetCompletedAt(render: {
+  createdAt: Date;
+  previewCompletedAt: Date | null;
+}): Date | null {
+  return modelCompletedAt({ createdAt: render.createdAt, completedAt: render.previewCompletedAt });
+}

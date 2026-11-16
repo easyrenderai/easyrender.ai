@@ -10,11 +10,13 @@ import {
   fetchPosthog,
   fetchStripe,
   loadDatabase,
+  modelCompletedAt,
   type OverviewSeries,
   periodRange,
   type Range,
   type Section,
   type SourceHealth,
+  sheetCompletedAt,
   type Traffic,
   type View,
 } from '@easyrender/core/admin-analytics';
@@ -105,7 +107,9 @@ const reportCached = unstable_cache(
             postgres.renders.length +
             postgres.purchases.length +
             postgres.ledger.length +
-            postgres.keys.length
+            postgres.keys.length +
+            postgres.viewSets.length +
+            postgres.upscales.length
           : 0,
         error: postgresError,
         missing: process.env.DATABASE_URL ? [] : ['DATABASE_URL'],
@@ -220,12 +224,16 @@ const reportCached = unstable_cache(
       const counts: Record<string, number> = {
         signup: s.users.filter((u) => within(u.createdAt)).length,
         preview_start: s.renders.filter((r) => within(r.createdAt)).length,
-        preview_ready: s.renders.filter((r) => r.sheetKey && within(r.createdAt)).length,
-        render_ready: s.renders.filter(
-          (r) => r.status === 'ready' && r.glbKey && within(r.updatedAt),
-        ).length,
+        preview_ready: s.renders.filter((r) => {
+          const completed = sheetCompletedAt(r);
+          return completed !== null && within(completed);
+        }).length,
+        render_ready: s.renders.filter((r) => {
+          const completed = modelCompletedAt(r);
+          return completed !== null && within(completed);
+        }).length,
         purchase:
-          s.purchases.filter((p) => p.status === 'paid' && within(p.createdAt)).length +
+          s.purchases.filter((p) => p.status === 'paid' && within(p.paidAt ?? p.createdAt)).length +
           s.ledger.filter(
             (l) =>
               l.reason === 'subscription' && l.delta > 0 && !l.purchaseId && within(l.createdAt),

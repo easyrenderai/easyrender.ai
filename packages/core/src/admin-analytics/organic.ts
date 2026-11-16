@@ -1,4 +1,4 @@
-import { channel, type DataTable, type Range, type Row } from './helpers';
+import { channel, type DataTable, type Range, type Row, sheetCompletedAt } from './helpers';
 
 type User = { id: string; createdAt: Date };
 type Attribution = {
@@ -13,6 +13,7 @@ type Render = {
   userId: string | null;
   createdAt: Date;
   completedAt: Date | null;
+  previewCompletedAt: Date | null;
   sheetKey: string | null;
   status: string;
   glbKey: string | null;
@@ -53,8 +54,8 @@ export function organicLandingTable(
   for (const render of renders) {
     const member = render.userId ? members.get(render.userId) : undefined;
     if (!member || +render.createdAt >= end) continue;
-    // A claimed pre-signup sheet is observable now, but its completion time is not immutable.
-    if (render.sheetKey) member.hasPreview = true;
+    const preview = sheetCompletedAt(render);
+    if (preview && +preview < end) member.hasPreview = true;
     if (
       render.completedAt &&
       +render.completedAt >= +member.user.createdAt &&

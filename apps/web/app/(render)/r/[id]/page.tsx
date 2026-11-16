@@ -73,7 +73,7 @@ export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
         ]}
         actions={
           <Button className="w-full" asChild>
-            <Link href="/#top">
+            <Link href="/#try">
               <Sparkles />
               {t('Render.makeYourOwn')}
             </Link>

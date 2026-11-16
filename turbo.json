@@ -35,7 +35,15 @@
         "ANALYTICS_LOCAL_TEST",
         "GA_MEASUREMENT_ID",
         "GA_MEASUREMENT_API_SECRET",
-        "CRON_SECRET"
+        "CRON_SECRET",
+        "EMAIL_ONBOARDING_ENABLED",
+        "RESEND_API_KEY",
+        "RESEND_WEBHOOK_SECRET",
+        "EMAIL_TOKEN_SECRET",
+        "EMAIL_FROM",
+        "EMAIL_REPLY_TO",
+        "EMAIL_LEGAL_IDENTITY",
+        "EMAIL_ALLOWED_RECIPIENTS"
       ],
       "outputs": [".next/**", "!.next/cache/**"]
     },

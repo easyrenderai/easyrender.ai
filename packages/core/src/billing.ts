@@ -16,7 +16,7 @@ import {
   unitAmountCents,
 } from '@easyrender/harness';
 import Stripe from 'stripe';
-import { captureServer, deferAnalytics } from './analytics';
+import { captureServer } from './analytics';
 import { pickAttribution } from './attribution';
 import { config } from './config';
 import { grantCredits } from './credits';
@@ -28,6 +28,7 @@ import {
   purchasedVariant,
   purchasePackId,
 } from './pricing-experiment';
+import { reportError } from './report';
 
 let stripeClient: Stripe | null = null;
 const stripe = () => {
@@ -166,6 +167,14 @@ export async function getTopupPricing(
   );
 }
 
+/** Only known render and product-view routes can be carried through checkout. Authorization is checked there. */
+export function checkoutReturnPath(value: unknown): string | null {
+  return typeof value === 'string' &&
+    /^\/(?:r\/[A-Za-z0-9_-]+|views(?:\/[A-Za-z0-9_-]+)?)$/.test(value)
+    ? value
+    : null;
+}
+
 const devCheckoutUrl = (request: CheckoutRequest) =>
   request.plan === 'payg'
     ? `${config.appUrl()}/api/dev/checkout?plan=payg&credits=${request.credits}`
@@ -178,6 +187,7 @@ export async function createCheckoutDetails(
     credits?: unknown;
     expectedAmountCents?: unknown;
     expectedCurrency?: unknown;
+    next?: unknown;
   },
   context: {
     anonId?: string | null;
@@ -194,6 +204,8 @@ export async function createCheckoutDetails(
       'pricing_changed',
     );
   const request = parseCheckout(input, variant);
+  const next = checkoutReturnPath(input.next);
+  const returnQuery = next ? `&next=${encodeURIComponent(next)}` : '';
   let metadata: Stripe.MetadataParam = {
     userId,
     plan: request.plan,
@@ -203,7 +215,7 @@ export async function createCheckoutDetails(
   const client = stripe();
   if (!client) {
     if (devCheckoutEnabled())
-      return { url: devCheckoutUrl(request), sessionId: null, analytics: null };
+      return { url: `${devCheckoutUrl(request)}${returnQuery}`, sessionId: null, analytics: null };
     throw new AppError('Payments are not configured', 503, 'no_stripe');
   }
   const user = await db().user.findUnique({
@@ -275,8 +287,8 @@ export async function createCheckoutDetails(
     items: [{ item_id: request.plan, quantity: request.plan === 'payg' ? request.credits : 1 }],
   };
   const urls = {
-    success_url: `${config.appUrl()}/credits?status=success&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${config.appUrl()}/credits?status=canceled`,
+    success_url: `${config.appUrl()}/credits?status=success&session_id={CHECKOUT_SESSION_ID}${returnQuery}`,
+    cancel_url: `${config.appUrl()}/credits?status=canceled${returnQuery}`,
   };
 
   if (request.plan !== 'payg') {
@@ -480,12 +492,13 @@ export async function handleStripeWebhook(rawBody: string, signature: string | n
     throw new AppError('Webhook not configured', 400, 'no_stripe');
   const event = await client.webhooks.constructEventAsync(rawBody, signature, secret);
 
+  const paidAt = Number.isFinite(event.created) ? new Date(event.created * 1000) : new Date();
   switch (event.type) {
     case 'checkout.session.async_payment_succeeded':
     case 'checkout.session.completed':
-      return onCheckoutCompleted(event.data.object);
+      return onCheckoutCompleted(event.data.object, paidAt);
     case 'invoice.paid':
-      return onInvoicePaid(event.data.object);
+      return onInvoicePaid(event.data.object, paidAt);
     case 'customer.subscription.created':
     case 'customer.subscription.updated':
     case 'customer.subscription.deleted':
@@ -493,7 +506,7 @@ export async function handleStripeWebhook(rawBody: string, signature: string | n
   }
 }
 
-async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
+async function onCheckoutCompleted(session: Stripe.Checkout.Session, paidAt: Date) {
   const userId = session.client_reference_id;
   const customerId = id(session.customer);
   if (userId && customerId) {
@@ -520,15 +533,19 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
     reason: 'purchase',
     purchaseId: purchase.id,
   });
-  const { count } = await db().purchase.updateMany({
+  await db().purchase.updateMany({
     where: { id: purchase.id, status: 'pending' },
-    data: { status: 'paid' },
+    data: { status: 'paid', paidAt },
   });
+  await db().purchase.updateMany({ where: { id: purchase.id, paidAt: null }, data: { paidAt } });
   await enqueueGooglePurchase(purchase.id);
-  if (count) deferAnalytics(() => capturePurchase(purchase, session.currency ?? 'usd'));
+  await capturePurchase(purchase.id);
 }
 
-async function onInvoicePaid(invoice: Stripe.Invoice) {
+async function onInvoicePaid(invoice: Stripe.Invoice, eventAt: Date) {
+  const paidAt = invoice.status_transitions?.paid_at
+    ? new Date(invoice.status_transitions.paid_at * 1000)
+    : eventAt;
   const details = invoice.parent?.subscription_details;
   const userId = details?.metadata?.userId;
   const plan = planFromInvoice(invoice);
@@ -556,12 +573,13 @@ async function onInvoicePaid(invoice: Stripe.Invoice) {
     reason: 'subscription',
     purchaseId: purchase.id,
   });
-  const { count } = await db().purchase.updateMany({
+  await db().purchase.updateMany({
     where: { id: purchase.id, status: 'pending' },
-    data: { status: 'paid' },
+    data: { status: 'paid', paidAt },
   });
+  await db().purchase.updateMany({ where: { id: purchase.id, paidAt: null }, data: { paidAt } });
   await enqueueGooglePurchase(purchase.id);
-  if (count) deferAnalytics(() => capturePurchase(purchase, invoice.currency ?? 'usd'));
+  await capturePurchase(purchase.id);
 }
 
 async function onSubscriptionChanged(subscription: Stripe.Subscription) {
@@ -615,41 +633,47 @@ function listRevenueUsd(purchase: { packId: string; credits: number }): number |
   return isPlanId(plan) ? unitAmountCents(plan, variant) / 100 : null;
 }
 
-async function capturePurchase(
-  purchase: { id: string; userId: string; packId: string; credits: number; amountCents: number },
-  currency: string,
-) {
-  const user = await db().user.findUniqueOrThrow({ where: { id: purchase.userId } });
-  const first = await db().purchase.findFirst({
-    where: { userId: purchase.userId, status: 'paid' },
-    orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
-    select: { id: true },
-  });
-  for (const event of ['purchase', 'purchase_completed'] as const)
-    captureServer(
-      event,
-      purchase.id,
-      {
-        userId: purchase.userId,
-        previewId: null,
-        source: 'web',
-        attribution: pickAttribution(user),
-      },
-      {
-        pricing_subject: await pricingSubject(purchase.userId),
-        pricing_variant: purchasedVariant(purchase.packId),
-        [`$feature/${PRICING_FLAG}`]: purchasedVariant(purchase.packId),
-        revenue: purchase.amountCents / 100,
-        order_id: purchase.id,
-        pack_id: purchase.packId,
-        credits: purchase.credits,
-        amount: purchase.amountCents / 100,
-        currency: currency.toUpperCase(),
-        list_revenue_usd: listRevenueUsd(purchase),
-        is_first_purchase: first?.id === purchase.id,
-        payment_provider: 'stripe',
-      },
-    );
+export async function capturePurchase(purchaseId: string, hasDeferredDelivery = false) {
+  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
+  try {
+    const purchase = await db().purchase.findUniqueOrThrow({ where: { id: purchaseId } });
+    // A signed replay can supply the real time; never invent it from mutable metadata updates.
+    if (!purchase.paidAt || purchase.status !== 'paid') return;
+    const user = await db().user.findUniqueOrThrow({ where: { id: purchase.userId } });
+    const [first] = await db().$queryRaw<{ id: string }[]>`
+      SELECT id FROM "Purchase" WHERE "userId" = ${purchase.userId} AND status = 'paid'
+      ORDER BY COALESCE("paidAt", "createdAt"), id LIMIT 1`;
+    for (const event of ['purchase', 'purchase_completed'] as const)
+      await captureServer(
+        event,
+        purchase.id,
+        {
+          userId: purchase.userId,
+          previewId: null,
+          source: 'web',
+          hasDeferredDelivery,
+          attribution: pickAttribution(user),
+        },
+        {
+          pricing_subject: await pricingSubject(purchase.userId),
+          pricing_variant: purchasedVariant(purchase.packId),
+          [`$feature/${PRICING_FLAG}`]: purchasedVariant(purchase.packId),
+          revenue: purchase.amountCents / 100,
+          order_id: purchase.id,
+          pack_id: purchase.packId,
+          credits: purchase.credits,
+          amount: purchase.amountCents / 100,
+          currency: purchase.currency.toUpperCase(),
+          list_revenue_usd: listRevenueUsd(purchase),
+          is_first_purchase: first?.id === purchase.id,
+          payment_provider: 'stripe',
+        },
+        undefined,
+        purchase.paidAt,
+      );
+  } catch {
+    reportError(new Error('Unable to record paid purchase analytics'), { component: 'analytics' });
+  }
 }
 
 /** Owner-scoped, DB-confirmed checkout result. Never trust success query parameters. */

@@ -1,4 +1,5 @@
 export * from './analytics';
+export { flushAnalyticsDeliveries } from './analytics-delivery';
 export * from './api-access';
 export * from './api-keys';
 export * from './api-limits';
@@ -10,7 +11,21 @@ export * from './credits';
 export * from './errors';
 export * from './google-measurement';
 export * from './google-outbox';
+export type { MailingCatalog, MailingCopy, MailingLocale, MailingRoute } from './mailing/policy';
+export {
+  confirmMailing,
+  dispatchMailingConfirmation,
+  handleMailingWebhook,
+  mailingAvailable,
+  mailingStatus,
+  requestMailing,
+  runMailing,
+  stopMailing,
+  unsubscribeMailing,
+} from './mailing/service';
+export type { MailingSystemCopy } from './mailing/transport';
 export * from './oauth';
+export { flushPosthogEvents } from './posthog-outbox';
 export * from './pricing-experiment';
 export * from './product-views';
 export * from './remote-image';

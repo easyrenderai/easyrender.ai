@@ -1,4 +1,9 @@
-import { ENTERPRISE_BOOKING_URL, PUBLIC_PLAN_IDS, rendersFor } from '@easyrender/harness';
+import {
+  ENTERPRISE_BOOKING_URL,
+  PUBLIC_PLAN_IDS,
+  RENDER_CREDITS,
+  rendersFor,
+} from '@easyrender/harness';
 import { Check } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { SiteLink as Link } from '@/components/site-link';
@@ -8,7 +13,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { formatCount, formatMoney } from '@/lib/price-format';
 import { cn } from '@/lib/utils';
 
-const BUY = `/sign-up?next=${encodeURIComponent('/credits')}`;
+const buy = (plan: string) => `/credits?plan=${plan}#${plan}`;
 
 /**
  * The three public options: pay as you go, Pro and Enterprise. The home page and the
@@ -28,8 +33,9 @@ export async function PlanCards() {
   const plans = [
     {
       name: t('payg.name'),
-      price: usd(pricing.creditPrice * 100),
-      note: t('payg.note'),
+      price: usd(RENDER_CREDITS * pricing.creditPrice * 100),
+      note: t('perModel'),
+      audience: t('payg.audience'),
       features: [
         t('payg.features.min', {
           credits: formatCount(locale, PAYG.min),
@@ -39,13 +45,14 @@ export async function PlanCards() {
         t('payg.features.ar'),
         t('payg.features.api'),
       ],
-      cta: { href: BUY, label: t('payg.cta') },
+      cta: { href: buy('payg'), label: t('payg.cta') },
       featured: false,
     },
     ...PUBLIC_PLAN_IDS.map((id) => ({
       name: SUBSCRIPTION_PLANS[id].label,
       price: usd(SUBSCRIPTION_PLANS[id].priceCents),
       note: t('pro.note'),
+      audience: t('pro.audience'),
       features: [
         t('pro.features.credits', {
           credits: formatCount(locale, SUBSCRIPTION_PLANS[id].monthlyCredits),
@@ -55,13 +62,14 @@ export async function PlanCards() {
         t('pro.features.topUp'),
         t('pro.features.cancel'),
       ],
-      cta: { href: BUY, label: t('pro.cta', { plan: SUBSCRIPTION_PLANS[id].label }) },
+      cta: { href: buy(id), label: t('pro.cta', { plan: SUBSCRIPTION_PLANS[id].label }) },
       featured: id === 'pro',
     })),
     {
       name: t('enterprise.name'),
       price: t('enterprise.price'),
       note: t('enterprise.note'),
+      audience: t('enterprise.audience'),
       features: [
         t('enterprise.features.volume'),
         t('enterprise.features.invoice'),
@@ -88,6 +96,7 @@ export async function PlanCards() {
             </p>
           </CardHeader>
           <CardContent className="flex-1">
+            <p className="mb-4 text-sm text-muted-foreground">{plan.audience}</p>
             <ul className="space-y-2 text-sm">
               {plan.features.map((feature) => (
                 <li key={feature} className="flex items-center gap-2">

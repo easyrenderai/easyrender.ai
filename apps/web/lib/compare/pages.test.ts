@@ -2,11 +2,11 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { LOCALES } from '@/i18n/config';
-import { BLOG_IMAGES, parseImage } from '@/lib/blog/images';
+import { BLOG_IMAGES, parseImage, schemaImage } from '@/lib/blog/images';
 import { heroSource, parseBlocks } from '@/lib/blog/markdown';
 import { llmsFullTxt, llmsTxt } from '@/lib/seo/llms';
 import { isNoindexPath } from '@/lib/seo/noindex';
-import { postTitle } from '@/lib/seo/pages';
+import { comparePageMetadata, postTitle } from '@/lib/seo/pages';
 import { ROUTES } from '@/lib/seo/routes';
 import { localeSitemapXml } from '@/lib/seo/sitemap';
 import {
@@ -29,6 +29,31 @@ const pages = readComparePages();
 const ROOT = process.cwd();
 const raw = (slug: string) =>
   readFileSync(join(ROOT, 'content', 'compare', 'en', `${slug}.md`), 'utf8');
+
+describe.each(readComparePages('es').map((page) => [page.slug, page] as const))(
+  'Spanish comparison image %s',
+  (_, page) => {
+    it('shows its own translated illustration and uses it for the sharing card', () => {
+      const english = pages.find((candidate) => candidate.group === page.group);
+      const expected = schemaImage(english?.body ?? '')?.src;
+      expect(expected).toBeDefined();
+      expect(schemaImage(page.body)?.src).toBe(expected);
+      const image = page.body
+        .split('\n')
+        .map(parseImage)
+        .find((item) => item?.src === expected);
+      expect(image?.alt).toMatch(/^Ilustración de /);
+      expect(image?.caption).toMatch(/^Ilustración conceptual:/);
+      expect(comparePageMetadata(page).openGraph?.images).toEqual([
+        expect.objectContaining({
+          url: `https://easyrender.ai${expected}`,
+          width: 1280,
+          height: 720,
+        }),
+      ]);
+    });
+  },
+);
 
 /** Every file under a directory, recursively, with one of the given extensions. */
 function filesUnder(dir: string, extensions: string[]): string[] {
@@ -73,12 +98,16 @@ describe.each(pages.map((page) => [page.slug, page] as const))('compare page %s'
     expect(page.faq.length).toBeLessThanOrEqual(6);
   });
 
-  it('opens with its own illustration directly under the first paragraph', () => {
+  it('keeps its illustration and puts the choice table first on alternative pages', () => {
     const blocks = parseBlocks(page.body);
     expect(blocks[0]?.kind).toBe('paragraph');
-    const hero = heroSource(blocks);
     const src = `/compare/illustrations/${slug}/hero.webp`;
-    expect(hero).toBe(src);
+    if (slug === 'meshy' || slug === 'tripo') {
+      expect(blocks[2]?.kind).toBe('table');
+      expect(schemaImage(page.body)?.src).toBe(src);
+    } else {
+      expect(heroSource(blocks)).toBe(src);
+    }
     expect(BLOG_IMAGES[src]).toEqual({ width: 1280, height: 720 });
     expect(
       statSync(join(ROOT, 'public', 'compare', 'illustrations', slug, 'hero.webp')).isFile(),
@@ -131,6 +160,40 @@ describe.each(pages.map((page) => [page.slug, page] as const))('compare page %s'
       [...page.body.matchAll(/\]\((https?:\/\/[^)\s]+)\)/g)].map((m) => m[1] as string),
     );
     expect(external.size).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe.each(LOCALES)('alternative choices in %s', (locale) => {
+  it('offers four alternatives before the artwork and shows the trial evidence', () => {
+    const alternatives = readComparePages(locale).filter((page) =>
+      ['compare-meshy', 'compare-tripo'].includes(page.group),
+    );
+    expect(alternatives).toHaveLength(2);
+    for (const page of alternatives) {
+      const blocks = parseBlocks(page.body);
+      const table = blocks[2];
+      expect(table?.kind, page.path).toBe('table');
+      if (table?.kind !== 'table') continue;
+      for (const tool of ['easyrender', 'Meshy', 'Tripo', 'Rodin', 'Sloyd']) {
+        expect(
+          table.rows.some((row) => row[0]?.includes(tool)),
+          `${page.path}: ${tool}`,
+        ).toBe(true);
+      }
+      const images = blocks.flatMap((block) => (block.kind === 'media' ? block.items : []));
+      for (const src of [
+        '/showcase/armchair.jpg',
+        '/showcase/armchair-angles.jpg',
+        '/benchmarks/2026-11-15/meshy-viewer.jpg',
+        '/benchmarks/2026-11-15/tripo-viewer.jpg',
+      ]) {
+        expect(
+          images.some((item) => item.src === src && item.caption),
+          page.path,
+        ).toBe(true);
+      }
+      expect(page.body).toContain('/benchmarks/2026-11-15/measurements.json');
+    }
   });
 });
 

@@ -125,7 +125,8 @@
           "ar": "Em breve: ver a peça em casa pelo telemóvel",
           "api": "Servidor MCP e API REST"
         },
-        "cta": "Comprar créditos"
+        "cta": "Comprar créditos",
+        "audience": "Para um primeiro projeto ou produtos pontuais. Sem subscrição."
       },
       "pro": {
         "note": "por mês",
@@ -136,7 +137,8 @@
           "cancel": "Podes cancelar quando quiseres",
           "topUp": "Precisas de mais? Recarrega quando quiseres à tarifa do teu plano."
         },
-        "cta": "Passar a {plan}"
+        "cta": "Passar a {plan}",
+        "audience": "Para equipas que criam modelos de produtos todos os meses."
       },
       "enterprise": {
         "name": "Empresas",
@@ -148,10 +150,12 @@
           "support": "Suporte prioritário",
           "onboarding": "Sessão de arranque"
         },
-        "cta": "Marcar uma chamada"
+        "cta": "Marcar uma chamada",
+        "audience": "Para catálogos grandes com arranque acompanhado."
       },
       "tryFree": "Experimenta grátis",
-      "noCard": "Pré-visualizações grátis. Sem cartão de crédito."
+      "noCard": "Pré-visualizações grátis. Sem cartão de crédito.",
+      "perModel": "por modelo 3D"
     },
     "faq": {
       "title": "Perguntas frequentes",
@@ -392,7 +396,7 @@
     "replacePhoto": "Substituir fotografia",
     "attachPhoto": "Anexar fotografia",
     "dropOrPaste": "ou arrasta, ou cola",
-    "generate": "Gerar",
+    "generate": "Criar pré-visualização grátis",
     "dropToAttach": "Larga a fotografia para a anexar",
     "tryOne": "Experimenta uma:",
     "previewReady": "A tua pré-visualização está pronta",
@@ -401,7 +405,13 @@
       "title": "A tua pré-visualização 3D está pronta",
       "description": "Cria uma conta grátis para veres a tua fotografia de todos os ângulos e a transformares num modelo 3D."
     },
-    "reveal": "Regista-te grátis para veres todos os ângulos"
+    "reveal": "Regista-te grátis para veres todos os ângulos",
+    "optionalNotes": "Adicionar detalhes (opcional)",
+    "uploadingReal": "A carregar a foto…",
+    "uploadingHint": "A pré-visualização real começa após o carregamento. Verás o estado no ecrã seguinte.",
+    "previewNote": "Pré-visualização de ângulos grátis. Criar o modelo 3D descarregável consome créditos.",
+    "guestNote": "Pré-visualização de ângulos grátis · sem conta nem cartão. Aplicam-se limites diários.",
+    "seeExample": "Ou explora um exemplo concluído:"
   },
   "Library": {
     "metaTitle": "Library · easyrender",
@@ -876,7 +886,25 @@
         }
       }
     },
-    "topUpTitle": "Recarregar créditos"
+    "topUpTitle": "Recarregar créditos",
+    "minimum": "Compra mínima: {price} em créditos, suficientes para {count} modelos completos.",
+    "calculator": {
+      "title": "Calcula o teu catálogo",
+      "count": "Número de modelos 3D",
+      "consumption": "Valor dos créditos consumidos",
+      "purchase": "Compra a partir de saldo zero",
+      "remaining": "Créditos restantes",
+      "range": "Introduz um número inteiro de 1 a {max}.",
+      "note": "Estimativa de modelos 3D padrão ao preço por utilização, sem saldo inicial. Não inclui edições, imagens nem ampliações adicionais.",
+      "compare": "Comparar planos"
+    },
+    "conditions": {
+      "title": "Antes de comprar",
+      "billing": "O pagamento por utilização é uma compra pontual de créditos. O Pro renova mensalmente até ser cancelado em Créditos. Os créditos não utilizados não expiram.",
+      "rights": "Manténs os direitos sobre os conteúdos carregados. Os direitos sobre os resultados estão sujeitos a direitos de terceiros. Os modelos são públicos por predefinição e podem ser partilhados e descarregados.",
+      "tax": "Confirma a moeda, os impostos aplicáveis e o total final antes de pagar.",
+      "link": "Ler as condições completas (inglês)"
+    }
   },
   "PaygPicker": {
     "custom": "Ou introduz uma quantidade",
@@ -946,7 +974,8 @@
       "render": "Render PBR",
       "element": "Elemento",
       "hint": "Arrasta para rodar",
-      "subtitle": "Vê o objeto de todos os ângulos, grátis. Só gastas créditos quando a forma te convencer."
+      "subtitle": "Verifica os ângulos grátis. Paga pelo modelo 3D descarregável quando a forma te convencer.",
+      "benefit": "Transforma a foto do teu produto num modelo 3D."
     },
     "pipeline": {
       "lead": "Carrega uma fotografia. O motor faz o resto.",
@@ -1250,12 +1279,40 @@
         "title": "Experimenta com uma fotografia",
         "button": "Carregar fotografia"
       },
-      "related": "Continua a ler"
+      "related": "Continua a ler",
+      "promo": {
+        "title": "Pedem-te mais fotos?",
+        "button": "Experimenta a tua foto grátis",
+        "disclosure": "Pré-visualização grátis. O modelo 3D é pago.",
+        "solution": "Mostra-o em 3D. A partir de uma foto.",
+        "visual": "Exemplo de modelo gerado de poltrona a rodar",
+        "play": "Reproduzir vídeo do produto",
+        "pause": "Pausar vídeo do produto"
+      },
+      "priceReference": "Os preços do artigo são referências em USD. Consulta Preços para ver a moeda e a oferta atuais."
     },
     "comparisons": {
       "title": "Comparações",
       "description": "Métodos e ferramentas de modelação 3D lado a lado, quando um guia não chega para escolher.",
-      "read": "Ler a comparação"
+      "read": "Ler a comparação",
+      "choices": {
+        "title": "Escolhe conforme a necessidade",
+        "photo": {
+          "need": "Uma foto de produto",
+          "tools": "easyrender",
+          "check": "Revê as vistas gratuitas antes de pagar pelo modelo."
+        },
+        "views": {
+          "need": "Fotos de vários lados",
+          "tools": "Tripo · Rodin",
+          "check": "Mostra os detalhes ocultos com vistas reais do produto."
+        },
+        "animation": {
+          "need": "Personagens e animação",
+          "tools": "Meshy · Sloyd",
+          "check": "Confirma rigging, exportação e direitos comerciais do plano."
+        }
+      }
     }
   },
   "Models": {
@@ -1367,25 +1424,28 @@
   },
   "Analytics": {
     "title": "Cookies e análise",
-    "banner": "O Google Analytics é opcional: pode aceitá-lo ou rejeitá-lo. Também usamos o PostHog sem cookies, que permanece ativo independentemente desta escolha.",
-    "accept": "Aceitar",
-    "reject": "Rejeitar",
+    "banner": "Escolhe apenas Google Analytics, adiciona medição publicitária opcional ou rejeita ambas. A medição publicitária associa cliques permitidos a conversões; a personalização continua desligada. O PostHog sem cookies mantém-se ativo separadamente.",
+    "accept": "Apenas análise",
+    "reject": "Rejeitar opcionais",
     "details": "Detalhes dos cookies",
-    "intro": "Aqui explicamos o armazenamento do navegador, o Google Analytics opcional e a nossa análise de produto sem cookies.",
+    "intro": "Como usamos o armazenamento do navegador, a medição opcional da Google e a análise de produto separada sem cookies.",
     "anonTitle": "er_anon",
     "anon": "Este cookie próprio identifica as tuas pré-visualizações anónimas, aplica o limite diário gratuito e permite associá-las à tua conta. Também mantém os teus preços durante um teste de preços, mesmo que recuses as análises. É criado na primeira visita e dura um ano.",
     "consentTitle": "er_consent",
-    "consent": "Guarda a tua escolha de análise, a data e a versão durante um ano. Só é criado quando escolhes.",
+    "consent": "Guarda durante um ano as tuas escolhas separadas de análise e medição publicitária, a data e a versão, apenas após escolheres. Uma aceitação anterior da análise nunca autoriza publicidade.",
     "gaTitle": "Google Analytics 4: _ga e _ga_*",
-    "ga": "Os cookies do Google Analytics medem visitas e duram até dois anos. Nas regiões mais restritivas exigem consentimento; nas restantes a análise está ativa salvo rejeição ou GPC. Quando permitido, er_campaign guarda os campos de campanha admitidos no armazenamento de sessão durante um máximo de 30 minutos e é eliminado ao rejeitar. As compras confirmadas podem ser enviadas pelo servidor com a mesma identidade de medição, mesmo sem regressar do checkout. O armazenamento publicitário e a personalização permanecem desativados.",
+    "ga": "Os cookies do Google Analytics medem visitas e podem durar dois anos. Nas regiões restritas exigem aceitação; nas restantes, a análise funciona salvo rejeição ou GPC. Quando permitida, er_campaign guarda campos normalizados de campanha por até 30 minutos. As compras confirmadas podem ser medidas no servidor com os mesmos identificadores de cliente e sessão, mesmo sem regressares do pagamento.",
     "posthogTitle": "PostHog (UE), sem cookies",
     "posthog": "O PostHog carrega em todas as regiões, mesmo após rejeição ou com GPC. O SDK do navegador não usa cookies nem armazenamento persistente e não cria perfis de pessoas. Recolhemos também eventos de servidor para registos, renders e pagamentos, associados a identificadores internos da conta ou da pré-visualização. Um identificador de preços com hash liga visitas aos preços a registos e compras para medir a experiência de preços.",
     "attributionTitle": "Atribuição do primeiro contacto",
-    "attribution": "Os parâmetros de campanha e a página de origem ficam em memória e são guardados ao criar uma pré-visualização ou conta. Quando o Google Analytics é permitido, estes campos também ficam temporariamente no armazenamento de sessão, como explicado acima. Não guardamos identificadores de cliques publicitários. Os eventos operacionais do servidor são independentes da medição Google opcional.",
+    "attribution": "As campanhas normalizadas e os caminhos de referência ficam em memória e são guardados com pré-visualizações ou contas quando criadas. Os identificadores de cliques publicitários não entram nesses registos nem no PostHog. A atribuição publicitária opcional usa o armazenamento temporário separado descrito acima.",
     "change": "Altera a tua escolha",
-    "withdraw": "Rejeitar interrompe o Google Analytics opcional, elimina os seus cookies e o armazenamento de sessão er_campaign e pede o cancelamento das medições de compras pendentes no servidor para a sua conta com sessão iniciada. O GPC bloqueia o Google Analytics opcional. O PostHog sem cookies e os eventos operacionais do servidor permanecem ativos. Este controlo não retira os dados já enviados.",
+    "withdraw": "Rejeitar desativa a medição opcional da Google, apaga os respetivos cookies e o nosso armazenamento de campanhas e cliques, e pede o cancelamento das medições pendentes no servidor para a tua conta com sessão iniciada. Apenas análise também apaga a atribuição publicitária e cancela contextos pendentes. O GPC bloqueia ambas as finalidades opcionais da Google. Os eventos já enviados não podem ser retirados aqui. O PostHog sem cookies e os eventos operacionais continuam ativos.",
     "metaTitle": "Cookies e análise · easyrender",
-    "metaDescription": "Como o easyrender utiliza cookies e análise, que dados recolhe e como alterar as tuas escolhas de consentimento."
+    "metaDescription": "Como o easyrender utiliza cookies e análise, que dados recolhe e como alterar as tuas escolhas de consentimento.",
+    "acceptAdvertising": "Análise + medição de anúncios",
+    "advertisingTitle": "Medição publicitária opcional: er_ad_touch e _gcl_*",
+    "advertising": "Só uma escolha publicitária explícita permite armazenamento publicitário da Google e utilização de dados para medir anúncios. Guardamos identificadores de clique Google permitidos em er_ad_touch por até 30 minutos, enviamo-los apenas à Google e retiramo-los do endereço após a captura. A Google pode guardar os seus próprios cookies de ligação de conversões. A personalização e o Google Signals continuam desligados. Aceitar análise não ativa esta opção. A Google também pode conservar dados de ligação nos cookies _gcl_* e no armazenamento local _gcl_ls; a sua duração é distinta do nosso registo de 30 minutos. Estes identificadores Google acessíveis são apagados quando retiras a permissão publicitária."
   },
   "Ar": {
     "metaTitle": "Veja na sua casa",
@@ -1433,6 +1493,43 @@
     "invalid": "Esta ligação expirou. Abra novamente a aplicação na Shopify.",
     "error": "Não foi possível ligar a loja."
   },
+  "AdminGift": {
+    "title": "Regalar créditos",
+    "eyebrow": "easyrender / administración",
+    "description": "Busca una cuenta, revisa sus movimientos y añade créditos con un motivo registrado.",
+    "internal": "Interno · acceso restringido",
+    "findTitle": "Buscar cuenta",
+    "findDescription": "Introduce el correo electrónico exacto de la persona.",
+    "email": "Correo electrónico",
+    "find": "Buscar usuario",
+    "searching": "Buscando…",
+    "balance": "Saldo actual · créditos",
+    "recentLedger": "Últimos movimientos",
+    "noEntries": "No hay movimientos todavía.",
+    "date": "Fecha",
+    "movement": "Créditos",
+    "ledgerReason": "Motivo",
+    "emptyState": "Busca una cuenta para ver su saldo y sus últimos movimientos.",
+    "giftTitle": "Añadir créditos",
+    "giftDescription": "El saldo se actualiza al confirmar y el movimiento queda registrado.",
+    "amount": "Cantidad de créditos",
+    "amountHint": "Max {max} credits (≈{models} 3D models).",
+    "reason": "Motivo (obligatorio)",
+    "review": "Revisar regalo",
+    "confirmTitle": "Confirmar regalo de créditos",
+    "confirmDescription": "Comprueba la cuenta, la cantidad y el motivo antes de continuar.",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar y regalar",
+    "granting": "Añadiendo…",
+    "success": "Créditos añadidos correctamente. Nuevo saldo: {balance} créditos.",
+    "duplicate": "Esta solicitud ya se había procesado. Saldo actual: {balance} créditos.",
+    "invalid_email": "Introduce un correo electrónico válido.",
+    "invalid_amount": "Enter a whole number between 1 and {max}.",
+    "invalid_reason": "Introduce un motivo de hasta 500 caracteres.",
+    "invalid_key": "La solicitud no es válida. Vuelve a revisar el regalo.",
+    "not_found": "No encontramos ninguna cuenta con ese correo.",
+    "requestFailed": "No se pudo completar la solicitud. Inténtalo de nuevo."
+  },
   "AdminAnalytics": {
     "title": "Admin analytics",
     "eyebrow": "easyrender / internal intelligence",
@@ -1446,6 +1543,7 @@
       "product": "Product usage",
       "icp": "Customer profile",
       "health": "Data sources & health",
+      "giftCredits": "Regalar créditos",
       "adminNav": "Admin navigation",
       "all": "All",
       "auto": "Auto",
@@ -1491,7 +1589,7 @@
       "consumed": "Credits consumed (gross)",
       "free": "Other credits granted",
       "returned": "Failed-job credits returned",
-      "providerCost": "Provider cost · USD",
+      "providerCost": "Custo estimado do fornecedor · USD",
       "gross": "Gross revenue",
       "refunds": "Cash refunds",
       "net": "Net revenue",
@@ -1584,8 +1682,8 @@
       "sheets": "Angle sheets ready",
       "failure": "Failure rate · settled rows",
       "success": "Success rate · settled rows",
-      "generationMedian": "Generation median · minutes",
-      "generationP90": "Generation p90 · minutes",
+      "generationMedian": "Conclusão 3D mediana · minutos",
+      "generationP90": "Conclusão 3D p90 · minutos",
       "costModel": "Provider cost / model · USD",
       "publicShare": "Public model share",
       "keysCreated": "API keys created",
@@ -1632,10 +1730,10 @@
       "stripeUnavailable": "Stripe unavailable or incomplete · using DB fallback",
       "profilePlanned": "Business profile · not measurable yet",
       "profileDetails": "Business type, store platform and self-reported catalog size need a profile question at signup (planned).",
-      "periodDefinitions": "Activation follows signups in the selected period through its end. Usage follows render creation; revenue follows payments. Previous means the immediately preceding equal-duration window. Current subscriptions have no historical comparison.",
-      "mutableRenderTimes": "Render completion and generation times are proxies: updatedAt also changes after completion; no immutable sheet completion timestamp exists. A sheet requires sheetKey; a model requires ready + glbKey.",
+      "periodDefinitions": "A ativação acompanha coortes de registo até ao fim do período. Os totais de produto usam coortes de criação; a atividade de pré-visualizações/modelos do resumo usa conclusões, a receita usa pagamentos. Comparação com o período anterior de igual duração. As subscrições atuais não têm comparação histórica.",
+      "mutableRenderTimes": "O histórico de pré-visualizações e modelos usa datas de conclusão imutáveis; sucessos antigos sem data são excluídos. Edições posteriores não alteram estas datas. Estado e visibilidade são atuais. As durações abrangem apenas conclusões 3D com data.",
       "boundedSnapshot": "Read-only snapshot, capped at 50,000 rows per table. Exceeding a cap stops the report rather than publishing partial totals.",
-      "dbFallback": "DB fallback (no Stripe fees/refunds/MRR from Stripe). Paid purchases use stored USD amounts for PAYG and subscriptions; only legacy subscription grants without a purchase link infer catalog prices. Net assumes no observable cash refunds. Dev grants are not revenue.",
+      "dbFallback": "Fonte BD alternativa: a receita bruta usa compras guardadas; só os créditos antigos de subscrição estimam preços de catálogo. Reembolsos monetários, taxas, receita líquida, ARPU líquido e margem ficam desconhecidos sem reconciliação Stripe completa. Créditos de desenvolvimento não são receita.",
       "anonymousTeamCaveat": "Team exclusions apply to known account emails. Anonymous previews and cookieless traffic cannot reliably exclude the team.",
       "multipleCurrencies": "Tables separate currencies. Charts show the first currency only; no FX conversion or cross-currency total is calculated. Provider margin is USD only.",
       "attributionScope": "First-touch signup cohort and period payment activity. Visit joins use matching dimensions; missing traffic stays unknown. Signals require at least 20 signups.",
@@ -1643,7 +1741,7 @@
       "visitsCaveat": "Visits = landing_view; pageviews = $pageview. Unique visitors sum daily hash estimates, not distinct people across the period. Consent and blockers bias traffic; do not compare markets as equal coverage.",
       "cohortDefinition": "Each cell is cumulative conversion by the end of cohort week 0–8. Unfinished weeks are blank. Revenue is gross in the first displayed currency through the selected end.",
       "anonymousLink": "anonId + userId proves a claimed preview, not signup conversion: startBuild/startSheet assigns ownership after signup. A trustworthy anonymous-preview → signup rate needs a signup-time link.",
-      "reconciliationScope": "DB excludes team by default; PostHog includes all events. Sheet counts use creation-time proxies, model counts updatedAt; event timestamps and snapshot state can differ. Investigate differences; equality is not proof of correct tracking.",
+      "reconciliationScope": "A BD exclui a equipa por predefinição; o PostHog inclui todos os eventos. A reconciliação de pré-visualizações/modelos usa conclusões imutáveis válidas, sem sucessos antigos sem data. Diferenças podem refletir cobertura e datas. Igualdade não prova um rastreio correto.",
       "healthNotes": "Refresh invalidates database (5 min) and external-source (10 min) caches. Missing sources never become zero. Errors are sanitized; raw API responses and secrets stay server-side.",
       "stripeScope": "Stripe payments without a known account are excluded with team filtering. Current subscriptions are filtered by customer identity. First-payer classification and LTV are bounded by fetched Stripe history.",
       "w0": "Week 0",
@@ -1698,7 +1796,35 @@
       "previewAccounts": "Accounts with preview (current state)",
       "cohortPayers": "Signup cohort payers",
       "repeatPayers": "Accounts with two payments",
-      "organicCohortDefinition": "Organic-search accounts signed up within the period, with outcomes before its end. Models use recorded completedAt; undated legacy successes are separate. Preview is current stored sheet state, without an immutable completion time. Positive payments are deduplicated observations from the financial source, not net revenue. This is not visit-to-signup conversion or a required sequence of steps. Recent cohorts have less observation time."
+      "organicCohortDefinition": "Contas de pesquisa orgânica registadas no período, com resultados antes do fim. Pré-visualizações e modelos exigem conclusões imutáveis; os modelos antigos sem data aparecem separados. Os pagamentos positivos são observações deduplicadas, não receita líquida. Não é conversão de visitas nem sequência obrigatória. Coortes recentes têm menos tempo de observação.",
+      "providerCostScope": "Os custos são estimativas acumuladas de renders, conjuntos de vistas e ampliações, atribuídas à criação de cada operação, não à fatura ou à despesa diária. Folhas reutilizadas contam uma vez. Processamento posterior pode alterar coortes antigas. O custo por modelo 3D usa apenas renders.",
+      "renderCostScope": "Os custos por canal abrangem apenas operações Render; operações de imagem avançadas não guardam o canal de criação. O custo total do fornecedor inclui-as separadamente.",
+      "advertisingSpend": "Despesa publicitária importada",
+      "campaign": "UTM da campanha (associação)",
+      "adSpend": "Despesa importada",
+      "clicks": "Cliques",
+      "impressions": "Impressões",
+      "newPayers": "Novos pagadores correspondentes",
+      "cacEstimate": "CAC estimado",
+      "importedDays": "Dias importados",
+      "expectedDays": "Dias do período",
+      "spendCoverage": "Cobertura da importação",
+      "spendComplete": "Todos os dias importados",
+      "spendPartial": "Faltam dias",
+      "spendMissing": "Sem despesa importada",
+      "spendAmbiguous": "Campanha ambígua",
+      "advertisingSpendScope": "Importação diária manual. Correspondência: primeiro contacto pago no Google + campanha normalizada exata + moeda do pagamento. Dias em falta ou IDs ambíguos impedem o CAC. Atribuição desconhecida ou não correspondente é excluída; não encontrar pagadores não prova ausência de conversões. Usa-se o primeiro pagamento observado. Estimativa por período de atividade, não atribuição de cliques Ads, CAC de coorte madura, ROAS ou lucro líquido.",
+      "spendProvisional": "Exportação diária provisória",
+      "spendImportTitle": "Importar despesa publicitária diária",
+      "spendImportHelp": "Seleciona o JSON normalizado pelo conversor CSV Google Ads. Máximo de 512 KB e 1.000 registos diários. Reimportar substitui os valores correspondentes. Campanhas e orçamentos não mudam.",
+      "spendImportFile": "JSON da despesa diária",
+      "spendImportAction": "Importar despesa",
+      "spendImportPending": "A importar…",
+      "spendImportSuccess": "Importados {count} registos diários. O relatório está a atualizar.",
+      "spendImportTooLarge": "O ficheiro ultrapassa 512 KB. Divide-o em lotes menores.",
+      "spendImportInvalid": "Importação inválida. Verifica o formato JSON, datas, moeda e contadores inteiros não negativos.",
+      "spendImportDenied": "Permissão de administrador em falta ou expirada. Inicia sessão com uma conta verificada autorizada.",
+      "spendImportFailed": "Não foi possível confirmar a importação. Verifica a ligação e tenta novamente com o mesmo ficheiro; os registos diários não serão duplicados."
     }
   },
   "McpLanding": {
@@ -2086,7 +2212,7 @@
         },
         "cookies": {
           "title": "7. Cookies, analytics and your choices",
-          "body": "Essential storage supports sign-in, anonymous previews, language preferences and remembering your consent choice. PostHog uses its EU endpoint in cookieless, in-memory mode, with session recording and automatic interaction capture disabled. In the current implementation it runs independently of the optional analytics consent choice, and operational server events also continue after rejection. GA4 uses Consent Mode v2: analytics storage defaults to denied, and advertising storage, advertising user data and ad personalization remain denied. Optional GA4 measurement requires acceptance in strict-consent regions, including the EEA; in other supported regions it may run until you reject it. Global Privacy Control blocks optional GA4. You can change your choice on the cookie information page. Rejection stops optional GA4, removes its cookies and campaign session storage, and requests cancellation of pending server purchase measurement for your signed-in account. It does not retract data already sent or stop PostHog. Contact us to object to processing based on legitimate interests."
+          "body": "O armazenamento essencial permite iniciar sessão, gerir pré-visualizações anónimas, preferências de idioma e recordar a tua escolha. O PostHog carrega em todas as regiões, mesmo após rejeição ou com GPC. O SDK do navegador não usa cookies nem armazenamento persistente e não cria perfis de pessoas. Recolhemos também eventos de servidor para registos, renders e pagamentos, associados a identificadores internos da conta ou da pré-visualização. Um identificador de preços com hash liga visitas aos preços a registos e compras para medir a experiência de preços. Os cookies do Google Analytics medem visitas e podem durar dois anos. Nas regiões restritas exigem aceitação; nas restantes, a análise funciona salvo rejeição ou GPC. Quando permitida, er_campaign guarda campos normalizados de campanha por até 30 minutos. As compras confirmadas podem ser medidas no servidor com os mesmos identificadores de cliente e sessão, mesmo sem regressares do pagamento. Só uma escolha publicitária explícita permite armazenamento publicitário da Google e utilização de dados para medir anúncios. Guardamos identificadores de clique Google permitidos em er_ad_touch por até 30 minutos, enviamo-los apenas à Google e retiramo-los do endereço após a captura. A Google pode guardar os seus próprios cookies de ligação de conversões. A personalização e o Google Signals continuam desligados. Aceitar análise não ativa esta opção. A Google também pode conservar dados de ligação nos cookies _gcl_* e no armazenamento local _gcl_ls; a sua duração é distinta do nosso registo de 30 minutos. Estes identificadores Google acessíveis são apagados quando retiras a permissão publicitária. Rejeitar desativa a medição opcional da Google, apaga os respetivos cookies e o nosso armazenamento de campanhas e cliques, e pede o cancelamento das medições pendentes no servidor para a tua conta com sessão iniciada. Apenas análise também apaga a atribuição publicitária e cancela contextos pendentes. O GPC bloqueia ambas as finalidades opcionais da Google. Os eventos já enviados não podem ser retirados aqui. O PostHog sem cookies e os eventos operacionais continuam ativos. Contacta-nos para te opores ao tratamento baseado em interesses legítimos."
         },
         "rights": {
           "title": "8. Your rights and complaints",

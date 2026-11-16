@@ -20,6 +20,7 @@ const render = (id: string, completedAt: Date | null, userId = 'new') => ({
   userId,
   createdAt: date(3),
   completedAt,
+  previewCompletedAt: date(3),
   sheetKey: 'sheet',
   status: 'ready',
   glbKey: 'glb',
@@ -71,4 +72,18 @@ describe('organic signup cohorts by landing page', () => {
       cohortPayers: 0,
     });
   });
+});
+
+it('does not treat an undated or later preview as a completed preview in an organic cohort', () => {
+  const rows = organicLandingTable(
+    users,
+    attribution,
+    [
+      { ...render('legacy', null), previewCompletedAt: null },
+      { ...render('future', null), previewCompletedAt: date(11) },
+    ],
+    [],
+    range,
+  ).rows;
+  expect(rows[0].previewAccounts).toBe(0);
 });

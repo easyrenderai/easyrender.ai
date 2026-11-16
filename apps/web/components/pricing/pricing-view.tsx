@@ -2,6 +2,7 @@ import { PUBLIC_PLAN_IDS, RENDER_CREDITS, rendersFor } from '@easyrender/harness
 import { ChevronDown } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { PaygPicker } from '@/components/payg-picker';
+import { CatalogCalculator } from '@/components/pricing/catalog-calculator';
 import { PlanCards } from '@/components/pricing/plan-cards';
 import { PricingExposure } from '@/components/pricing-exposure';
 import { SiteLink as Link } from '@/components/site-link';
@@ -117,6 +118,9 @@ export async function PricingView({ locale }: { locale: Locale }) {
         <p className="text-lg text-muted-foreground text-pretty">
           {t('description', { credits: RENDER_CREDITS, price })}
         </p>
+        <p className="font-medium">
+          {t('minimum', { price: usd(payg.min * creditPrice * 100), count: rendersFor(payg.min) })}
+        </p>
         <Button size="lg" asChild>
           <Link href={`${ROUTES.home.paths[locale]}#try`}>{tPlans('tryFree')}</Link>
         </Button>
@@ -127,6 +131,22 @@ export async function PricingView({ locale }: { locale: Locale }) {
         <PlanCards />
         <p className="mt-4 text-center text-sm text-muted-foreground">{t('note')}</p>
       </div>
+
+      <CatalogCalculator variant={pricing.variant} currency={currency} />
+      <section
+        className="mt-8 space-y-2 text-sm text-muted-foreground"
+        aria-labelledby="purchase-terms"
+      >
+        <h2 id="purchase-terms" className="font-medium text-foreground">
+          {t('conditions.title')}
+        </h2>
+        <p>{t('conditions.billing')}</p>
+        <p>{t('conditions.rights')}</p>
+        <p>{t('conditions.tax')}</p>
+        <Link href={ROUTES.terms.paths[locale]} className="underline">
+          {t('conditions.link')}
+        </Link>
+      </section>
 
       {topup.plan && (
         <section className="mx-auto mt-8 max-w-lg space-y-4" aria-labelledby="pricing-topups">

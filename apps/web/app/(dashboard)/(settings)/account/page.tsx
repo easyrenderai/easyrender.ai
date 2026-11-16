@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { BuyButton } from '@/components/buy-button';
+import { MailingPreferences } from '@/components/mailing-preferences';
 import { SignOutButton } from '@/components/sign-out-button';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -54,6 +55,7 @@ export default async function AccountPage() {
           </div>
         </CardContent>
       </Card>
+      <MailingPreferences userId={user.id} />
     </div>
   );
 }

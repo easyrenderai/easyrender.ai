@@ -1,6 +1,7 @@
 import {
   cleanApiRateWindows,
   cleanExpiredUploads,
+  flushAnalyticsDeliveries,
   recoverAdvancedGenerations,
   recoverRenders,
 } from '@easyrender/core';
@@ -12,11 +13,12 @@ export const GET = (request: Request) =>
     const secret = process.env.CRON_SECRET;
     if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`)
       return new Response(null, { status: 401 });
-    const [recovered, advanced, , removedUploads] = await Promise.all([
+    const [recovered, advanced, , removedUploads, analytics] = await Promise.all([
       recoverRenders(3),
       recoverAdvancedGenerations(3),
       cleanApiRateWindows(),
       cleanExpiredUploads(),
+      flushAnalyticsDeliveries(),
     ]);
-    return Response.json({ recovered, advanced, removedUploads });
+    return Response.json({ recovered, advanced, removedUploads, analytics });
   });

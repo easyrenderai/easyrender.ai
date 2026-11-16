@@ -8,6 +8,7 @@ import {
   AdminNavigation,
   DashboardView,
 } from '@/components/admin-analytics/dashboard';
+import { SpendImport } from '@/components/admin-analytics/spend-import';
 import { AnalyticsTable } from '@/components/admin-analytics/table';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { requireAdmin } from '@/lib/admin-analytics/auth';
@@ -178,6 +179,7 @@ export default async function AnalyticsPage({
       </header>
       <AdminNavigation labels={labels} section={section} />
       <AdminControls labels={labels} range={range} />
+      {section === 'attribution' && <SpendImport labels={labels} />}
       {section === 'overview' && (
         <Suspense fallback={<OverviewSkeleton />}>
           <Overview range={range} labels={labels} />

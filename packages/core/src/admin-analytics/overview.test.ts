@@ -38,6 +38,8 @@ const render = (
   sheetKey: 'sheet',
   glbKey: 'model',
   status: 'ready',
+  completedAt: new Date('2026-03-28T12:10:00Z'),
+  previewCompletedAt: new Date('2026-03-28T12:05:00Z'),
   ...fields,
 });
 
@@ -82,14 +84,14 @@ describe('overview time series', () => {
         .payingCustomers,
     ).toBe(2);
   });
-  it('uses the Product creation timestamps and counts sheets plus ready GLBs, including anonymous sheets', () => {
+  it('counts creation-dated sheets and immutable model successes, including anonymous sheets', () => {
     const result = buildOverviewSeries({
       ...input,
       renders: [
         render(),
-        render({ status: 'rendering' }),
-        render({ sheetKey: null }),
-        render({ userId: null, status: 'preview_ready', glbKey: null }),
+        render({ status: 'rendering', completedAt: null }),
+        render({ sheetKey: null, previewCompletedAt: null }),
+        render({ userId: null, status: 'preview_ready', glbKey: null, completedAt: null }),
         render({ createdAt: new Date(range.end) }),
       ],
     });
@@ -202,4 +204,31 @@ describe('overview time series', () => {
       ).granularity,
     ).toBe('week');
   });
+});
+
+it('buckets model completion by immutable completion day and retains it after later state changes', () => {
+  const result = buildOverviewSeries({
+    ...input,
+    renders: [
+      render({ status: 'failed', glbKey: null, completedAt: new Date('2026-03-29T12:00:00Z') }),
+    ],
+  });
+  expect(result.rows[0]).toMatchObject({ sheets: 1, models: 0, uses: 1 });
+  expect(result.rows[1]).toMatchObject({ sheets: 0, models: 1, uses: 1 });
+});
+it('does not bucket an undated legacy model or future completion as historical activity', () => {
+  const result = buildOverviewSeries({
+    ...input,
+    renders: [render({ completedAt: null }), render({ completedAt: new Date('2027-01-01') })],
+  });
+  expect(result.rows.reduce((sum, row) => sum + row.models, 0)).toBe(0);
+});
+
+it('places preview activity on the first immutable preview completion rather than upload date', () => {
+  const result = buildOverviewSeries({
+    ...input,
+    renders: [render({ completedAt: null, previewCompletedAt: new Date('2026-03-29T12:00:00Z') })],
+  });
+  expect(result.rows[0]).toMatchObject({ sheets: 0, models: 0, uses: 0 });
+  expect(result.rows[1]).toMatchObject({ sheets: 1, models: 0, uses: 1 });
 });

@@ -1,4 +1,4 @@
-import { getBalance, getBillingStatus } from '@easyrender/core';
+import { checkoutReturnPath, getBalance, getBillingStatus } from '@easyrender/core';
 import {
   ENTERPRISE_BOOKING_URL,
   type PlanId,
@@ -45,9 +45,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const SIGN_UP = `/sign-up?next=${encodeURIComponent('/credits')}`;
-
 function PlanCard({
+  id,
   title,
   description,
   price,
@@ -57,6 +56,7 @@ function PlanCard({
   features,
   footer,
 }: {
+  id?: string;
   title: string;
   description: string;
   price: string;
@@ -67,7 +67,13 @@ function PlanCard({
   footer: ReactNode;
 }) {
   return (
-    <Card className={cn(featured && 'border-primary shadow-md')}>
+    <Card
+      id={id}
+      className={cn(
+        'scroll-mt-24 target:ring-2 target:ring-primary',
+        featured && 'border-primary shadow-md',
+      )}
+    >
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>{title}</CardTitle>
@@ -110,21 +116,23 @@ export default async function CreditsPage({ searchParams }: PageProps<'/credits'
       minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
     });
   const credits = (value: number) => format.number(value);
-  const back =
-    typeof next === 'string' && next.startsWith('/') && !next.startsWith('//') ? next : null;
-  const signUp = (
-    <Button className="w-full" asChild>
-      <Link href={SIGN_UP}>{t('signUpToBuy')}</Link>
-    </Button>
-  );
+  const back = checkoutReturnPath(next);
+  const signUp = (plan: string) => {
+    const destination = `/credits?plan=${plan}${back ? `&next=${encodeURIComponent(back)}` : ''}#${plan}`;
+    return (
+      <Button className="w-full" asChild>
+        <Link href={`/sign-up?next=${encodeURIComponent(destination)}`}>{t('signUpToBuy')}</Link>
+      </Button>
+    );
+  };
 
   const planFooter = (id: PlanId): ReactNode => {
-    if (!user) return signUp;
+    if (!user) return signUp(id);
     if (!billing.plan) {
       return (
         <BuyButton
           label={t('subscribe', { plan: SUBSCRIPTION_PLANS[id].label })}
-          body={{ plan: id }}
+          body={{ plan: id, next: back }}
           pricingVariant={pricing.variant}
         />
       );
@@ -195,6 +203,7 @@ export default async function CreditsPage({ searchParams }: PageProps<'/credits'
       </div>
       <div className="grid gap-4 lg:grid-cols-3">
         <PlanCard
+          id="payg"
           title={t(topup.plan ? 'topUp.title' : 'payg.title')}
           description={t(topup.plan ? 'topUp.description' : 'payg.description', {
             price: usd(pricing.payg.min * pricing.creditPrice * 100),
@@ -210,9 +219,14 @@ export default async function CreditsPage({ searchParams }: PageProps<'/credits'
           features={[t('payg.features.downloads'), t('payg.features.api'), t('topUp.noExpiry')]}
           footer={
             user ? (
-              <PaygPicker pricingVariant={pricing.variant} currency={topup.currency} rate={topup} />
+              <PaygPicker
+                next={back}
+                pricingVariant={pricing.variant}
+                currency={topup.currency}
+                rate={topup}
+              />
             ) : (
-              signUp
+              signUp('payg')
             )
           }
         />
@@ -221,6 +235,7 @@ export default async function CreditsPage({ searchParams }: PageProps<'/credits'
           return (
             <PlanCard
               key={id}
+              id={id}
               title={plan.label}
               description={t('pro.description', {
                 credits: credits(plan.monthlyCredits),

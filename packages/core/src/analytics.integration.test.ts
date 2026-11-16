@@ -5,10 +5,12 @@ import { db } from '@easyrender/db';
 import { pricingFor, RENDER_CREDITS, SUBSCRIPTION_PLANS } from '@easyrender/harness';
 import Stripe from 'stripe';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { setAnalyticsScheduler } from './analytics';
+import { eventUuid, setAnalyticsScheduler } from './analytics';
+import { reconcileBusinessAnalytics } from './analytics-recovery';
 import { classifyCountry, normalizeAttribution } from './attribution';
 import { confirmedPurchase, handleStripeWebhook } from './billing';
 import { listCatalog, submitCatalog, tickCatalog } from './catalog';
+import { flushPosthogEvents } from './posthog-outbox';
 import { advance, createDraft, startBuild } from './renders';
 import { signupAttribution } from './signup-attribution';
 
@@ -154,6 +156,11 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
       output: 'https://provider.invalid/sheet.png',
     });
     await Promise.all([advance(preview.id), advance(preview.id)]);
+    expect(
+      await db().posthogDelivery.findUnique({
+        where: { id: eventUuid(`preview_ready:${preview.id}`) },
+      }),
+    ).toMatchObject({ event: 'preview_ready' });
     const userId = await newUser();
     await signupAttribution({
       userId,
@@ -178,6 +185,28 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
       output: 'https://provider.invalid/model.glb',
     });
     await Promise.all([advance(preview.id), advance(preview.id)]);
+    const completed = await db().render.findUniqueOrThrow({ where: { id: preview.id } });
+    await db().posthogDelivery.deleteMany({
+      where: {
+        id: {
+          in: [eventUuid(`render_ready:${preview.id}`), eventUuid(`preview_ready:${preview.id}`)],
+        },
+      },
+    });
+    await reconcileBusinessAnalytics();
+    await flushPosthogEvents({
+      eventIds: [eventUuid(`render_ready:${preview.id}`), eventUuid(`preview_ready:${preview.id}`)],
+    });
+    expect(
+      await db().posthogDelivery.findUnique({
+        where: { id: eventUuid(`render_ready:${preview.id}`) },
+      }),
+    ).toMatchObject({ occurredAt: completed.completedAt });
+    expect(
+      await db().posthogDelivery.findUnique({
+        where: { id: eventUuid(`preview_ready:${preview.id}`) },
+      }),
+    ).toMatchObject({ event: 'preview_ready' });
     await drain();
     expect(
       (await db().render.findUniqueOrThrow({ where: { id: preview.id } })).quality,
@@ -396,10 +425,12 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
     const purchase = await db().purchase.create({
       data: { userId, stripeSessionId: sessionId, packId: 'payg', credits: 500, amountCents: 500 },
     });
-    const send = async (status: string) => {
+    const eventCreated = Math.floor(Date.now() / 1000) - 3600;
+    const send = async (status: string, created = eventCreated) => {
       const body = JSON.stringify({
         id: `evt_${sessionId}`,
         type: 'checkout.session.completed',
+        created,
         data: {
           object: {
             id: sessionId,
@@ -422,7 +453,19 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
       events.filter((e) => e.event === 'purchase' && e.properties.order_id === purchase.id),
     ).toHaveLength(0);
     await send('paid');
-    await send('paid');
+    const recorded = await db().purchase.findUniqueOrThrow({ where: { id: purchase.id } });
+    expect(recorded.paidAt).toEqual(new Date(eventCreated * 1000));
+    // Simulate an enqueue lost after the paid state committed, then repair on signed replay.
+    await db().posthogDelivery.deleteMany({ where: { id: eventUuid(`purchase:${purchase.id}`) } });
+    await send('paid', eventCreated + 3600);
+    expect((await db().purchase.findUniqueOrThrow({ where: { id: purchase.id } })).paidAt).toEqual(
+      recorded.paidAt,
+    );
+    expect(
+      await db().posthogDelivery.findUnique({
+        where: { id: eventUuid(`purchase:${purchase.id}`) },
+      }),
+    ).toMatchObject({ occurredAt: recorded.paidAt });
     await drain();
     const captures = events.filter(
       (e) => e.event === 'purchase' && e.properties.order_id === purchase.id,
