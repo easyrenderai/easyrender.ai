@@ -1,4 +1,5 @@
 import { type Range, SECTIONS, type Section } from '@easyrender/core/admin-analytics/helpers';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
@@ -10,6 +11,7 @@ import {
 } from '@/components/admin-analytics/dashboard';
 import { SpendImport } from '@/components/admin-analytics/spend-import';
 import { AnalyticsTable } from '@/components/admin-analytics/table';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { requireAdmin } from '@/lib/admin-analytics/auth';
 import {
@@ -161,6 +163,7 @@ export default async function AnalyticsPage({
     Object.entries(await searchParams).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v]),
   );
   const range = await adminRange(search);
+  const trialText = await getTranslations('FirstModelAdmin');
   const t = await getTranslations('AdminAnalytics');
   const labels = (await getMessages()).AdminAnalytics.labels as Record<string, string>;
   return (
@@ -177,6 +180,9 @@ export default async function AnalyticsPage({
           {t('internal')}
         </span>
       </header>
+      <Button variant="outline" asChild>
+        <Link href="/admin/experiments">{trialText('title')}</Link>
+      </Button>
       <AdminNavigation labels={labels} section={section} />
       <AdminControls labels={labels} range={range} />
       {section === 'attribution' && <SpendImport labels={labels} />}

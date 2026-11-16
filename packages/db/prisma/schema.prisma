@@ -50,6 +50,7 @@ model User {
   shopifyShops ShopifyShop[]
   viewSets  ViewSet[]
   upscales  Upscale[]
+  firstModelEnrollment FirstModelEnrollment?
 
   @@map("user")
 }
@@ -102,6 +103,39 @@ model Verification {
 }
 
 // ── App ─────────────────────────────────────────────────────
+
+// One bounded pilot. Pausing stops enrollment, never cancels an existing offer.
+model FirstModelCampaign {
+  id String @id
+  isActive Boolean @default(false)
+  maxOffers Int
+  startedAt DateTime @default(now())
+  endsAt DateTime
+  enrolled Int @default(0)
+  nextVariant String?
+  enrollments FirstModelEnrollment[]
+}
+
+model FirstModelEnrollment {
+  id String @id @default(cuid())
+  campaignId String
+  campaign FirstModelCampaign @relation(fields: [campaignId], references: [id])
+  anonId String @unique
+  userId String? @unique
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  // A deleted account must not make its anonymous reservation redeemable again.
+  boundAt DateTime?
+  ipHash String
+  variant String
+  pricingVariant String
+  enrolledAt DateTime @default(now())
+  grantedAt DateTime?
+  grantRenderId String? @unique
+  grantCredits Int @default(0)
+
+  @@index([campaignId, enrolledAt])
+  @@index([ipHash, enrolledAt])
+}
 
 enum RenderStatus {
   drafting

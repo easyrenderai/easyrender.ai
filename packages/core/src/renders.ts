@@ -37,6 +37,7 @@ import { type Attribution, classifyCountry, normalizeAttribution } from './attri
 import { config } from './config';
 import { grantCreditsInTransaction, spendCreditsInTransaction } from './credits';
 import { AppError, notFound } from './errors';
+import { grantFirstModelInTransaction } from './first-model-experiment';
 import { type RenderEditView, toEditView } from './render-edits';
 import { finishMaterialFidelity } from './render-fidelity';
 import { type RenderQuality, withQuality } from './render-quality';
@@ -53,6 +54,7 @@ export type Actor = {
   apiKeyId?: string;
   apiKeyScopes?: string[];
   maxCredits?: number;
+  isUsingFreeModel?: boolean;
   // Transport that creates the generation; credentials alone do not distinguish API from MCP.
   source?: RenderSource;
 };
@@ -695,13 +697,26 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
     render = current;
     alreadyPaid = current.credits;
     owed = Math.max(0, buildTotal(current) - alreadyPaid);
-    assertAuthorizedCredits(owed, actor);
     await assertGenerationConcurrency(actor, tx);
+    if (actor.isUsingFreeModel) {
+      const isGranted = await grantFirstModelInTransaction(tx, id, actor, owed);
+      if (!isGranted)
+        throw new AppError(
+          'The free model is not available. Refresh to see your options.',
+          409,
+          'trial_unavailable',
+        );
+    }
+    assertAuthorizedCredits(actor.isUsingFreeModel ? 0 : owed, actor);
     const { count } = await tx.render.updateMany({
       where: { id, status: 'preview_ready' },
       data: { status: 'rendering', userId: actor.userId, credits: alreadyPaid + owed },
     });
-    if (!count) return false;
+    if (!count) {
+      if (actor.isUsingFreeModel)
+        throw new AppError('This render has changed. Refresh and try again.', 409, 'bad_state');
+      return false;
+    }
     await spendCreditsInTransaction(tx, {
       userId: actor.userId as string,
       apiKeyId: actor.apiKeyId,

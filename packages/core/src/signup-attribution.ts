@@ -2,6 +2,7 @@ import { db } from '@easyrender/db';
 import { PRICING_FLAG } from '@easyrender/harness';
 import { captureServer } from './analytics';
 import { ATTRIBUTION_KEYS, type Attribution, hasFirstTouch, pickAttribution } from './attribution';
+import { bindFirstModelEnrollment } from './first-model-experiment';
 import { assignedPricing, pricingSubject } from './pricing-experiment';
 import { reportError } from './report';
 
@@ -12,6 +13,12 @@ export async function signupAttribution(input: {
   attribution: Attribution;
   method: 'email' | 'google' | 'otro';
 }) {
+  try {
+    await bindFirstModelEnrollment(input.userId, input.anonId);
+  } catch {
+    // An experiment must never prevent account creation; the owner page retries binding.
+    reportError(new Error('Unable to bind first model experiment'), { component: 'experiment' });
+  }
   const preview = input.anonId
     ? await db().render.findFirst({
         where: { anonId: input.anonId, userId: null },
