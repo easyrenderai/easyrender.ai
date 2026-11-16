@@ -1,8 +1,9 @@
 import { AppError, parseAuthorizeRequest } from '@easyrender/core';
-import { Plug, ShieldCheck, TriangleAlert } from 'lucide-react';
+import { BadgeCheck, Laptop, Plug, ShieldAlert, ShieldCheck, TriangleAlert } from 'lucide-react';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -33,6 +34,9 @@ export default async function AuthorizePage({ searchParams }: PageProps<'/oauth/
     if (!(error instanceof AppError)) throw error;
   }
 
+  const host = request ? new URL(request.redirectUri).host : '';
+  const isUnverified = request?.trust === 'unverified';
+
   if (request) {
     const user = await currentUser();
     if (!user) redirect(`/sign-in?next=${encodeURIComponent(`/oauth/authorize?${params}`)}`);
@@ -54,11 +58,28 @@ export default async function AuthorizePage({ searchParams }: PageProps<'/oauth/
               <CardDescription>
                 {t('description', {
                   client: request.client.name,
-                  host: new URL(request.redirectUri).host,
+                  host,
                 })}
               </CardDescription>
             </CardHeader>
             <CardContent>
+              <Alert variant={isUnverified ? 'destructive' : 'default'} className="mb-4">
+                {request.trust === 'verified' ? (
+                  <BadgeCheck />
+                ) : request.trust === 'local' ? (
+                  <Laptop />
+                ) : (
+                  <ShieldAlert />
+                )}
+                <AlertTitle>{t(`trust.${request.trust}`)}</AlertTitle>
+                <AlertDescription>
+                  {t(`trust.${request.trust}Body`, { client: request.client.name, host })}
+                </AlertDescription>
+              </Alert>
+              <p className="mb-4 text-sm text-muted-foreground">
+                {t('trust.returnsTo')}{' '}
+                <span className="break-all font-mono text-foreground">{host}</span>
+              </p>
               <ul className="space-y-2 text-sm">
                 {(['create', 'read', 'spend'] as const).map((key) => (
                   <li key={key} className="flex items-start gap-2">
@@ -70,10 +91,21 @@ export default async function AuthorizePage({ searchParams }: PageProps<'/oauth/
               <p className="mt-4 text-xs text-muted-foreground">{t('revoke')}</p>
             </CardContent>
             <CardFooter className="gap-2">
-              <Button type="submit" name="decision" value="approve" className="flex-1">
-                {t('approve')}
+              <Button
+                type="submit"
+                name="decision"
+                value="approve"
+                variant={isUnverified ? 'outline' : 'default'}
+                className="flex-1"
+              >
+                {t(isUnverified ? 'trust.approveAnyway' : 'approve')}
               </Button>
-              <Button type="submit" name="decision" value="deny" variant="outline">
+              <Button
+                type="submit"
+                name="decision"
+                value="deny"
+                variant={isUnverified ? 'default' : 'outline'}
+              >
                 {t('deny')}
               </Button>
             </CardFooter>

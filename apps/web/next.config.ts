@@ -64,6 +64,16 @@ const nextConfig: NextConfig = {
         source,
         headers: [{ key: 'x-robots-tag', value: 'noindex, follow' }],
       })),
+      // The consent screen must never be framed: a hidden frame would let another site
+      // click-jack the Allow button.
+      {
+        source: '/oauth/authorize',
+        headers: [
+          { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'Cache-Control', value: 'private, no-store' },
+        ],
+      },
       // The Shopify app's page is shown inside the Shopify admin, so only Shopify may frame it.
       {
         source: '/shopify',

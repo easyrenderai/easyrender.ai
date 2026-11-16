@@ -13,9 +13,14 @@ vi.mock('./api-keys', () => ({
   },
 }));
 
-const { exchangeCode, issueCode, parseAuthorizeRequest, readClient, registerClient } = await import(
-  './oauth'
-);
+const {
+  exchangeCode,
+  issueCode,
+  parseAuthorizeRequest,
+  readClient,
+  redirectTrust,
+  registerClient,
+} = await import('./oauth');
 
 const REDIRECT = 'https://claude.ai/api/mcp/auth_callback';
 const verifier = 'v'.repeat(64);
@@ -58,6 +63,30 @@ describe('client registration', () => {
     expect(() => registerClient({ redirect_uris: ['http://localhost:6274/cb'] })).not.toThrow();
   });
 
+  it('rejects wildcard, credentialed and oversized redirect URIs', () => {
+    for (const uri of [
+      'https://*.example.com/cb',
+      'https://example.com/*',
+      'https://claude.ai@evil.example.com/cb',
+      'https://user:pass@example.com/cb',
+      `https://example.com/${'a'.repeat(2100)}`,
+    ]) {
+      expect(() => registerClient({ redirect_uris: [uri] })).toThrow(/redirect_uris/);
+    }
+  });
+
+  it('cleans the client name before it reaches the consent screen', () => {
+    const { client_name } = registerClient({
+      client_name: '  Claude\n\u202Ereal\u0000  app  '.padEnd(200, 'x'),
+      redirect_uris: [REDIRECT],
+    });
+    expect(client_name).not.toMatch(/[\p{Cc}\p{Cf}]/u);
+    expect(client_name.length).toBeLessThanOrEqual(60);
+    expect(registerClient({ client_name: '\n\u202E', redirect_uris: [REDIRECT] }).client_name).toBe(
+      'MCP client',
+    );
+  });
+
   it('rejects a client id that was tampered with', () => {
     const { client_id } = registerClient({ redirect_uris: [REDIRECT] });
     const [body, sig] = client_id.split('.');
@@ -78,6 +107,35 @@ describe('authorize request', () => {
     expect(() => authorize(client_id, { code_challenge_method: 'plain' })).toThrow();
     expect(() => authorize(client_id, { response_type: 'token' })).toThrow();
     expect(() => authorize('garbage')).toThrow();
+  });
+});
+
+describe('client trust shown on the consent screen', () => {
+  const trustOf = (redirect: string, name = 'Claude') =>
+    parseAuthorizeRequest(
+      new URLSearchParams({
+        client_id: registerClient({ client_name: name, redirect_uris: [redirect] }).client_id,
+        redirect_uri: redirect,
+        response_type: 'code',
+        code_challenge: challenge,
+        code_challenge_method: 'S256',
+      }),
+    ).trust;
+
+  it('verifies known client hosts and loopback apps, and nothing else', () => {
+    expect(trustOf('https://claude.ai/api/mcp/auth_callback')).toBe('verified');
+    expect(trustOf('https://chatgpt.com/connector_platform_oauth_redirect')).toBe('verified');
+    expect(trustOf('http://localhost:6274/oauth/callback')).toBe('local');
+    expect(trustOf('http://127.0.0.1:33418/callback')).toBe('local');
+    expect(trustOf('https://attacker.example.com/cb')).toBe('unverified');
+  });
+
+  it('does not trust a name, a lookalike host or a subdomain of a known host', () => {
+    expect(trustOf('https://attacker.example.com/cb', 'Claude')).toBe('unverified');
+    expect(trustOf('https://claude.ai.evil.example.com/cb')).toBe('unverified');
+    expect(trustOf('https://evil-claude.ai/cb')).toBe('unverified');
+    expect(trustOf('https://sub.claude.ai/cb')).toBe('unverified');
+    expect(redirectTrust('not a url')).toBe('unverified');
   });
 });
 
