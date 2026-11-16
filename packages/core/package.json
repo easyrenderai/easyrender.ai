@@ -20,7 +20,9 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@aws-sdk/client-lambda": "3.1165.0",
     "@aws-sdk/client-s3": "3.1165.0",
+    "@aws-sdk/client-secrets-manager": "3.1165.0",
     "@easyrender/db": "workspace:*",
     "@easyrender/harness": "workspace:*",
     "@sentry/core": "11.12.0",

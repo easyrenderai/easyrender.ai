@@ -17,6 +17,7 @@ const PRODUCT_EVENTS = [
   ['render_visibility_changed', { is_public: true }],
   ['material_edits_saved', { material_count: 2 }],
   ['material_edits_reset', { material_count: 0 }],
+  ['model_exported', { format: 'obj' }],
   ['api_key_created', {}],
   ['integration_key_verified', { channel: 'shared' }],
   ['integration_setup_copy', { channel: 'mcp', client: 'codex' }],

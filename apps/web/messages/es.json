@@ -355,7 +355,8 @@
       "start": "No se pudo iniciar el render",
       "sheet": "No se pudo generar la hoja de ángulos",
       "redraw": "No se pudo redibujar la hoja de ángulos",
-      "upscale": "No se pudo ampliar esta imagen. Inténtalo de nuevo en un minuto."
+      "upscale": "No se pudo ampliar esta imagen. Inténtalo de nuevo en un minuto.",
+      "export": "No se pudo convertir el modelo. Vuelve a intentarlo en un minuto."
     },
     "generateSheet": "Generar hoja de ángulos ({credits} créditos)",
     "fixSheetLabel": "¿Algún ángulo no es correcto?",

@@ -24,6 +24,7 @@ export {
   unsubscribeMailing,
 } from './mailing/service';
 export type { MailingSystemCopy } from './mailing/transport';
+export * from './model-exports';
 export * from './oauth';
 export { flushPosthogEvents } from './posthog-outbox';
 export * from './pricing-experiment';

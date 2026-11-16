@@ -302,6 +302,20 @@ export const openapi = {
         requestBody: jsonBody(object({ edits: array(ref('MaterialEdit')) })),
       },
     },
+    '/api/renders/{id}/exports': {
+      post: {
+        ...operation(
+          'exportRenderModel',
+          'Convert the owned model to OBJ, FBX or BLEND and return a ten-minute download link',
+          ['read'],
+          ref('ModelExport'),
+        ),
+        parameters: [id],
+        requestBody: jsonBody(
+          object({ format: { type: 'string', enum: ['obj', 'fbx', 'blend'] } }),
+        ),
+      },
+    },
     '/api/product-views': {
       get: operation(
         'listProductViews',
@@ -554,6 +568,12 @@ export const openapi = {
         ),
         edits: array(ref('MaterialEdit')),
         version: integer,
+      }),
+      ModelExport: object({
+        format: { type: 'string', enum: ['obj', 'fbx', 'blend'] },
+        url: string,
+        filename: string,
+        expiresAt: string,
       }),
       ViewSet: object({
         id: string,

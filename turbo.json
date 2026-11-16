@@ -14,6 +14,8 @@
         "ASSETS_CDN_URL",
         "AWS_REGION",
         "AWS_ROLE_ARN",
+        "EXPORTS_*",
+        "MODEL_EXPORT_FUNCTION",
         "NEXT_PUBLIC_*",
         "SENTRY_*",
         "SHOPIFY_*",
