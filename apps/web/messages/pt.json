@@ -436,6 +436,7 @@
     "nextSteps": {
       "title": "O modelo está pronto. Dê-lhe uso.",
       "formats": "Descarregue GLB para sites e cenas 3D, ou USDZ para apps Apple compatíveis.",
+      "formatsWithExports": "Descarregue GLB para sites e cenas 3D, USDZ para apps Apple compatíveis, ou OBJ, FBX e BLEND para software 3D.",
       "choose": "Onde pretende utilizá-lo?",
       "createAnother": "Criar outro modelo",
       "web": {

@@ -145,7 +145,11 @@ export function ModelView({
         />
       </div>
       {nextStepsHref && downloads ? (
-        <RenderNextSteps downloads={downloads} createHref={nextStepsHref} />
+        <RenderNextSteps
+          downloads={downloads}
+          createHref={nextStepsHref}
+          hasExports={Boolean(exportsUrl)}
+        />
       ) : (
         downloads
       )}
