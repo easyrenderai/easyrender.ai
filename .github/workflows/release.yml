@@ -118,7 +118,8 @@ jobs:
     if: ${{ needs.validate.outputs.has_converter_change == 'true' && vars.MODEL_EXPORT_DEPLOY_ROLE_ARN != '' }}
     uses: ./.github/workflows/model-export.yml
     with:
-      ship: true
+      # A rehearsal still builds and tests the image, but never pushes it or moves the function.
+      ship: ${{ !inputs.stage_only }}
     permissions:
       contents: read
       id-token: write
@@ -126,9 +127,10 @@ jobs:
   backend:
     name: Backend (AWS)
     needs: [validate, verify]
-    # Skipped until the deploy role exists (infra/aws/github-deploy-role.yml) and its ARN is stored
-    # as the AWS_DEPLOY_ROLE_ARN variable, and skipped when infra/aws did not change.
-    if: ${{ needs.validate.outputs.has_infra_change == 'true' && vars.AWS_DEPLOY_ROLE_ARN != '' }}
+    # Skipped when infra/aws did not change. The role variable lives on the `production`
+    # environment, which a job-level `if` cannot read, so the first step checks it. A rehearsal
+    # (stage_only) creates and reviews the change set but does not execute it.
+    if: ${{ needs.validate.outputs.has_infra_change == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production
@@ -138,19 +140,35 @@ jobs:
     env:
       AWS_REGION: ${{ vars.AWS_REGION || 'eu-west-1' }}
       STACK: easyrenderai-storage
+      STAGE_ONLY: ${{ inputs.stage_only }}
     steps:
+      - name: Is the deploy role configured?
+        id: cfg
+        env:
+          ROLE: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+        run: |
+          if [ -n "${ROLE}" ]; then
+            echo "has_role=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_role=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::AWS_DEPLOY_ROLE_ARN is not set on the production environment; skipping the storage stack."
+          fi
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: ${{ steps.cfg.outputs.has_role == 'true' }}
         with:
           ref: ${{ needs.validate.outputs.sha }}
           persist-credentials: false
 
       - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        if: ${{ steps.cfg.outputs.has_role == 'true' }}
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       # Parameters that are not passed keep the value the stack already has (infra/aws/README.md).
       - name: Create the change set
+        if: ${{ steps.cfg.outputs.has_role == 'true' }}
         run: |
           set -euo pipefail
           aws cloudformation deploy --stack-name "${STACK}" \
@@ -158,6 +176,7 @@ jobs:
             --no-execute-changeset --no-fail-on-empty-changeset
 
       - name: Review the change set, then execute it
+        if: ${{ steps.cfg.outputs.has_role == 'true' }}
         run: |
           set -euo pipefail
           arn="$(aws cloudformation list-change-sets --stack-name "${STACK}" \
@@ -176,6 +195,11 @@ jobs:
             echo "::error::The change set would replace or remove: ${risky}. Review it by hand (infra/aws/README.md); the release stops here and production is untouched."
             aws cloudformation delete-change-set --change-set-name "${arn}"
             exit 1
+          fi
+          if [ "${STAGE_ONLY}" = "true" ]; then
+            echo "Rehearsal: the change set is safe to execute; leaving the stack alone."
+            aws cloudformation delete-change-set --change-set-name "${arn}"
+            exit 0
           fi
           aws cloudformation execute-change-set --change-set-name "${arn}"
           aws cloudformation wait stack-update-complete --stack-name "${STACK}"
@@ -232,9 +256,13 @@ jobs:
           echo "url=${url}" >> "$GITHUB_OUTPUT"
           echo "Staged ${url} (no domain points at it yet)" >> "$GITHUB_STEP_SUMMARY"
 
+  # The jobs below test their direct needs explicitly with `!cancelled()`. Without it GitHub also
+  # requires every ancestor job to have succeeded, and `converter` and `backend` are skipped on most
+  # releases, which would skip the smoke, the promote and the publish too.
   smoke-staged:
     name: Smoke staged build
     needs: stage
+    if: ${{ !cancelled() && needs.stage.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -265,7 +293,7 @@ jobs:
   promote:
     name: Promote to production
     needs: [validate, stage, smoke-staged]
-    if: ${{ !inputs.stage_only }}
+    if: ${{ !cancelled() && !inputs.stage_only && needs.stage.result == 'success' && needs.smoke-staged.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: production
@@ -299,6 +327,7 @@ jobs:
   publish:
     name: Tag and publish release
     needs: [validate, stage, promote]
+    if: ${{ !cancelled() && needs.promote.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
