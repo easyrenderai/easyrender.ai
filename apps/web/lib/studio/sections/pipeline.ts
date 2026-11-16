@@ -22,7 +22,7 @@ import {
 import type { Format } from '../format';
 import type { Scope } from '../scope';
 
-const ITEMS = ['armchair', 'sneaker', 'lamp', 'bedside-table', 'cactus'];
+const ITEMS = ['coffee-table', 'sneaker', 'lamp', 'bedside-table', 'cactus'];
 // Seconds into the loop at which each beat starts.
 const T = {
   photo: 0.35,

@@ -62,14 +62,6 @@ export const SHOWCASE: ShowcaseItem[] = [
     '50 × 48.5 × 50 cm',
   ),
   item('vase', 'Stoneware vase', 'Matte stoneware vase', 'Decor', '12.5 × 20 × 12 cm', true),
-  item(
-    'armchair',
-    'Bouclé lounge armchair',
-    'Bouclé lounge armchair with a brushed steel frame',
-    'Furniture',
-    '70 × 77 × 85 cm',
-    true,
-  ),
   item('clay-vase', 'Clay vase', 'Aged clay vase', 'Decor', '35 × 40 × 35 cm'),
   item(
     'bedside-table',

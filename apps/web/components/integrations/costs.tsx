@@ -7,6 +7,17 @@ import { formatCount, formatMoney } from '@/lib/price-format';
 const EXAMPLE_MODELS = 100;
 
 export async function IntegrationCosts({ locale, kind }: { locale: Locale; kind: 'api' | 'mcp' }) {
+  if (kind === 'mcp') {
+    const t = await getTranslations({ locale, namespace: 'IntegrationLanding.costs' });
+    return (
+      <Section id="integration-cost" title={t('mcp.title')} description={t('mcp.description')}>
+        <p className="mx-auto max-w-3xl text-sm leading-relaxed text-muted-foreground">
+          {t('mcp.check')}
+        </p>
+      </Section>
+    );
+  }
+
   const { currentPricing } = await import('@/lib/pricing');
   const [pricing, t] = await Promise.all([
     currentPricing(),

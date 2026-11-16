@@ -214,9 +214,9 @@
   "AgentDemo": {
     "window": "Your agent · easyrender MCP",
     "illustration": "Illustrative conversation and tool sequence. No request runs on this page.",
-    "ask": "Turn this armchair photo into a 3D model. Show me the preview and cost, then wait for my approval before building.",
+    "ask": "Turn this table photo into a 3D model. Show me the preview, then wait for my approval before building.",
     "approval": "In this example, you instruct your agent to wait for approval. Configure that behavior in your client; the paid tool itself does not enforce a confirmation dialog.",
-    "budget": "Planning a catalogue? {count} full 3D builds = {credits} credits.",
+    "budget": "Planning a catalogue? Review and approve each object before building its model.",
     "budgetNote": "A budget example, not a completed batch. Your agent must create and track each render separately. Extra edits and AI-client charges are additional.",
     "calls": {
       "create_render": "Submit the product photo and request the free preview.",
@@ -284,6 +284,10 @@
       "bedside-table": {
         "title": "Comodino",
         "prompt": "Comodino in legno massello con cassetto"
+      },
+      "table": {
+        "title": "Tavolo in legno",
+        "prompt": "Tavolo rettangolare in legno"
       }
     }
   },
@@ -1830,13 +1834,13 @@
   "McpLanding": {
     "meta": {
       "title": "Image to 3D MCP server for AI agents · easyrender",
-      "description": "Connect Claude, Cursor or VS Code to easyrender. Turn product photos into 3D models through MCP: preview the result, spend credits to build and download a GLB."
+      "description": "Connect Claude, Cursor or VS Code to easyrender. Turn product photos into 3D models through MCP: review the free preview and download the GLB when ready."
     },
     "hero": {
       "title": "Product photos to 3D. From your agent.",
       "subtitle": "Connect easyrender through MCP. Give your agent a product photo, review the preview and build a textured GLB without switching to a modeling tool.",
       "cta": "Connect your agent",
-      "note": "Preview first. Credits for the 3D build."
+      "note": "Review the free preview before building the 3D model."
     },
     "clientsLabel": "Setup guides included for",
     "intro": {
@@ -1943,7 +1947,7 @@
       "requirement": "Requires Node.js/npm for the installer and an Agent Skills-compatible client. Installation adds instructions; it does not connect your account or start a render. You can also copy the skill folder from GitHub.",
       "exampleLabel": "Try this with your photo",
       "example": "Use the easyrender-image-to-3d skill to turn this product photo into a GLB. Show me the preview and cost before spending any credits.",
-      "cost": "The skill is open source under the MIT license. 3D builds use your easyrender credits at the current rate shown above; your AI client may charge separately. Instructions are in English, and the agent can respond in your language."
+      "cost": "The skill is open source under the MIT license. Check the current cost with your agent before approving a build; your AI client may charge separately. Instructions are in English, and the agent can respond in your language."
     }
   },
   "ApiLanding": {
@@ -2086,17 +2090,17 @@
     "result": {
       "photo": {
         "label": "Source photo",
-        "alt": "Source photo of a mustard armchair with a metal frame",
+        "alt": "Foto originale di un tavolo rettangolare in legno",
         "body": "One clear image of the object. No 3D file or multi-camera capture required."
       },
       "angles": {
         "label": "Generated angle sheet",
-        "alt": "Nine generated views of the same mustard armchair",
+        "alt": "Nove viste generate dello stesso tavolo in legno",
         "body": "See how the object is interpreted from different sides before using the final asset."
       },
       "model": {
         "label": "Textured GLB",
-        "alt": "Interactive generated 3D model of the mustard armchair",
+        "alt": "Modello 3D interattivo generato del tavolo in legno",
         "body": "Drag to rotate the model. Download it to inspect in your own 3D viewer.",
         "hint": "Trascina per ruotare"
       },
@@ -2112,9 +2116,9 @@
       },
       "evidence": {
         "title": "Cosa puoi verificare",
-        "provenance": "Questi file provengono da una generazione nell’ambiente di test di easyrender. I materiali della poltrona sono stati adattati alla foto e le texture compresse per il web. È un esempio del prodotto, non una registrazione inalterata dell’API o del MCP.",
-        "measurementTitle": "Prezzo e durata",
-        "measurement": "I prezzi sotto sono preventivi attuali, non la ricevuta di questo esempio. Questa demo storica non ha una durata totale verificata; fanno fede lo stato e l’addebito della tua generazione."
+        "provenance": "Questi file sono copie inalterate di un rendering pubblico esistente di un tavolo easyrender. La foto originale, il foglio delle viste e il GLB appartengono allo stesso rendering. È un esempio già generato, non una registrazione in diretta dell’API o del MCP.",
+        "measurementTitle": "Stato della generazione",
+        "measurement": "Questo esempio esistente non ha una durata totale verificata. Segui lo stato del tuo rendering per sapere quando i file sono pronti."
       }
     },
     "costs": {
@@ -2124,9 +2128,9 @@
         "check": "Read renderCredits in the render response before building; it is the credit cost for that render. Keep approval and spending limits in your application."
       },
       "mcp": {
-        "title": "What does the image to 3D MCP server cost?",
-        "description": "Connect your agent to your easyrender account. The 3D build spends credits; there is no separate MCP access subscription.",
-        "check": "Ask your agent to call get_credits and confirm the cost before render_3d. Your AI client or model provider may charge separately; those fees are not included here."
+        "title": "Review before you build",
+        "description": "The preview is free, subject to your account’s preview limits. Inspect the angles before deciding to build the GLB.",
+        "check": "Ask your agent to check get_credits and wait for your approval before calling render_3d. Your AI client may charge separately."
       },
       "preview": {
         "label": "Angle-sheet preview",
@@ -2154,7 +2158,7 @@
     "apiDemo": {
       "title": "Your application · easyrender REST API",
       "illustration": "Illustrative application flow and partial JSON response. No upload or paid request runs here.",
-      "photoAlt": "Armchair photo used as an example upload",
+      "photoAlt": "Foto di un tavolo usata come esempio di caricamento",
       "upload": "Product photo received",
       "flow": "Your backend sends the photo to POST /api/renders. Show the preview, display the returned cost and let the user approve the paid build. Poll the render status to retrieve the finished model.",
       "cost": "Use the render’s current renderCredits field before building; the cost can change when a finished sheet is reused. Keep the API key on your server.",

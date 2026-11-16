@@ -45,7 +45,7 @@ export function StudioWheel() {
             {/* biome-ignore lint/performance/noImgElement: swapped by the 3D code on every lap */}
             <img
               data-er="photo"
-              src={photoUrl('armchair')}
+              src={photoUrl('bedside-table')}
               alt=""
               width={720}
               height={720}

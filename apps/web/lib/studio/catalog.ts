@@ -56,7 +56,8 @@ export type CatalogItem = {
   formats: string[];
 };
 
-export const CATALOG = data as CatalogItem[];
+// The rejected armchair remains an archived asset, never a promoted catalog example.
+export const CATALOG = (data as CatalogItem[]).filter((item) => item.id !== 'armchair');
 
 export const CATEGORIES: CategoryKey[] = [
   'furniture',

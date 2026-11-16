@@ -33,10 +33,9 @@ describe('public GLB cache version', () => {
     );
   });
 
-  it('points the demo armchair and its studio copies at the corrected file', () => {
+  it('retires the armchair from showcase while preserving historical asset URLs', () => {
     const armchair = SHOWCASE.find((entry) => entry.slug === 'armchair');
-    expect(armchair?.model).toBe(`/showcase/armchair.glb?v=${PUBLIC_MODEL_VERSION}`);
-    expect(armchair?.photo).toBe(`/showcase/armchair.jpg?v=${PUBLIC_PHOTO_VERSION}`);
+    expect(armchair).toBeUndefined();
     expect(modelUrl('armchair.glb')).toBe(`/studio/models/armchair.glb?v=${PUBLIC_MODEL_VERSION}`);
     expect(modelUrl('armchair.hd.glb')).toBe(
       `/studio/models/armchair.hd.glb?v=${PUBLIC_MODEL_VERSION}`,

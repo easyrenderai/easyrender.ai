@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { IntegrationCosts } from '@/components/integrations/costs';
 import { IntegrationLink } from '@/components/integrations/link';
 import { IntegrationResult } from '@/components/integrations/result';
-import { Pricing, Section } from '@/components/landing';
+import { Section } from '@/components/landing';
 import { McpSkill } from '@/components/mcp/mcp-skill';
 import { McpSetup } from '@/components/mcp-setup';
 import { ResourceLinks } from '@/components/resource-links';
@@ -156,7 +156,6 @@ export async function McpView({ locale }: { locale: Locale }) {
       </Section>
 
       <McpSkill locale={locale} />
-      <Pricing />
       <Section id="faq" title={t('faq.title')} narrow>
         <div className="sec__column">
           {items.map((item) => (

@@ -21,7 +21,22 @@ vi.mock('next-intl/server', () => ({
     }),
 }));
 vi.mock('@/components/landing', () => ({
-  Section: ({ children }: { children: ReactNode }) => createElement('section', null, children),
+  Section: ({
+    children,
+    title,
+    description,
+  }: {
+    children: ReactNode;
+    title: string;
+    description: string;
+  }) =>
+    createElement(
+      'section',
+      null,
+      createElement('h2', null, title),
+      createElement('p', null, description),
+      children,
+    ),
 }));
 
 describe('integration cost disclosure', () => {
@@ -31,32 +46,39 @@ describe('integration cost disclosure', () => {
     ['control', 'eur', '€0.64', '€64.00', '€5.00'],
     ['test', 'eur', '€1.28', '€128.00', '€10.00'],
   ])(
-    'uses the checkout offer %s in %s for either integration',
+    'uses the checkout offer %s in %s for the API integration',
     async (variant, currency, build, batch, minimum) => {
       Object.assign(state, { variant, currency });
-      for (const kind of ['api', 'mcp'] as const) {
+      for (const kind of ['api'] as const) {
         const html = renderToStaticMarkup(await IntegrationCosts({ locale: 'en', kind }));
         expect(html).toContain(build);
         expect(html).toContain(batch);
         expect(html).toContain(minimum);
         expect(html).toContain('64 credits for the final angle sheet');
         expect(html).toContain('Failed 3D builds refund their credits');
-        expect(html).toContain(
-          kind === 'api'
-            ? 'renderCredits'
-            : 'Your AI client or model provider may charge separately',
-        );
+        expect(html).toContain('renderCredits');
       }
     },
   );
 
   it('shows Spanish credit and currency amounts without untranslated placeholders', async () => {
     Object.assign(state, { variant: 'test', currency: 'eur' });
-    const html = renderToStaticMarkup(await IntegrationCosts({ locale: 'es', kind: 'mcp' }));
+    const html = renderToStaticMarkup(await IntegrationCosts({ locale: 'es', kind: 'api' }));
     expect(html).toContain('1,28');
     expect(html).toContain('128,00');
     expect(html).toContain('64 créditos por la hoja final');
-    expect(html).toContain('no están incluidas aquí');
+    expect(html).toContain('renderCredits');
     expect(html).not.toMatch(/\{(?:price|credits|unit|count)\}/);
   });
 });
+
+it.each(['en', 'es'] as const)(
+  'keeps MCP costs free of amounts and plans in %s',
+  async (locale) => {
+    const html = renderToStaticMarkup(await IntegrationCosts({ locale, kind: 'mcp' }));
+    expect(html).not.toMatch(
+      /[$€]|\d[\d.,\s]*\s*(credits|créditos)|subscription|suscripción|pay as you go/i,
+    );
+    expect(html).toContain(locale === 'es' ? 'gratis' : 'free');
+  },
+);

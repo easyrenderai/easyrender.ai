@@ -1,11 +1,8 @@
-import { RENDER_CREDITS } from '@easyrender/harness';
 import { Bot, Wrench } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import type { Locale } from '@/i18n/config';
-import { formatCount } from '@/lib/price-format';
 
-const BATCH_SIZE = 24;
 const CALLS = ['create_render', 'get_render', 'get_credits', 'render_3d'] as const;
 
 /** An illustrative workflow, never a live progress indicator or a completed customer run. */
@@ -24,12 +21,7 @@ export async function AgentDemo({ locale }: { locale: Locale }) {
         <div className="space-y-4">
           <p className="rounded-xl border bg-muted/40 p-4 text-sm leading-relaxed">{t('ask')}</p>
           <p className="text-sm leading-relaxed text-muted-foreground">{t('approval')}</p>
-          <p className="border-t pt-4 text-sm leading-relaxed">
-            {t('budget', {
-              count: formatCount(locale, BATCH_SIZE),
-              credits: formatCount(locale, BATCH_SIZE * RENDER_CREDITS),
-            })}
-          </p>
+          <p className="border-t pt-4 text-sm leading-relaxed">{t('budget')}</p>
           <p className="text-xs leading-relaxed text-muted-foreground">{t('budgetNote')}</p>
         </div>
         <ol className="space-y-3">

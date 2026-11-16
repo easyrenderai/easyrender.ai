@@ -4,12 +4,12 @@ import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import type { Locale } from '@/i18n/config';
-import { versionedPublicModel } from '@/lib/public-models';
+import { TABLE_EXAMPLE } from '@/lib/marketing-examples';
 
 export async function ApiDemo({ locale }: { locale: Locale }) {
   const t = await getTranslations({ locale, namespace: 'IntegrationLanding.apiDemo' });
   const response = JSON.stringify(
-    { id: 'sample_armchair', status: 'ready', hasModel: true, credits: RENDER_CREDITS },
+    { id: 'sample_table', status: 'ready', hasModel: true, credits: RENDER_CREDITS },
     null,
     2,
   );
@@ -26,7 +26,7 @@ export async function ApiDemo({ locale }: { locale: Locale }) {
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <Image
-              src={versionedPublicModel('/showcase/armchair.jpg')}
+              src={TABLE_EXAMPLE.photo}
               alt={t('photoAlt')}
               width={88}
               height={88}
@@ -37,7 +37,7 @@ export async function ApiDemo({ locale }: { locale: Locale }) {
             <div className="min-w-0 space-y-1">
               <p className="text-sm font-medium">{t('upload')}</p>
               <p className="break-words font-mono text-xs text-muted-foreground">
-                armchair.jpg <ArrowRight aria-hidden="true" className="inline size-3" /> GLB
+                table.jpg <ArrowRight aria-hidden="true" className="inline size-3" /> GLB
               </p>
             </div>
           </div>
