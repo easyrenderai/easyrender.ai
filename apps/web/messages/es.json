@@ -127,6 +127,17 @@
     },
     "customer": {
       "label": "Utilizado por"
+    },
+    "motionHero": {
+      "title": "Tu producto. En todas sus dimensiones.",
+      "description": "Empieza con una foto. Revisa los ángulos gratis y decide después si quieres crear el modelo 3D.",
+      "label": "Ejemplo existente: una foto se convierte en vistas y después en un modelo 3D con textura que gira. Los tiempos son ilustrativos.",
+      "play": "Reproducir el proceso",
+      "pause": "Pausar el proceso",
+      "photo": "Foto",
+      "angles": "Ángulos gratis",
+      "model": "Modelo 3D",
+      "example": "Explorar este ejemplo"
     }
   },
   "Landing": {
@@ -486,6 +497,23 @@
         "captions": "Subtítulos de los pasos",
         "error": "No se ha podido cargar el vídeo. Consulta los pasos debajo."
       }
+    },
+    "journey": {
+      "photo": "Tu foto recibida",
+      "angles": "Revisa los ángulos",
+      "model": "Tu modelo 3D",
+      "draftingTitle": "Preparando tus ángulos gratis",
+      "draftingBody": "Estamos trabajando con tu foto. Después podrás revisar la forma antes de gastar créditos.",
+      "preview_readyTitle": "Tus ángulos están listos para revisar",
+      "preview_readyBody": "Compara la forma y los detalles con tu foto. Crea el modelo 3D cuando estés conforme con ellos.",
+      "renderingTitle": "Creando tu modelo 3D",
+      "renderingBody": "Tus vistas se están convirtiendo en geometría y texturas. Esta página se actualiza cuando esté listo.",
+      "readyTitle": "Listo para explorar",
+      "readyBody": "Gira tu modelo, comprueba los materiales y elige cómo usarlo.",
+      "failedTitle": "El proceso se ha detenido",
+      "failedBody": "Revisa el error que aparece abajo antes de probar otra foto.",
+      "connection": "Se ha interrumpido la conexión. Seguiremos comprobando; tu trabajo continúa en el servidor.",
+      "buildCost": "Crear este modelo utiliza {credits} créditos. Tú decides cuándo empezar."
     }
   },
   "PromptBar": {
@@ -530,7 +558,9 @@
     "uploadingHint": "La vista previa real empieza tras la subida. Verás su estado en la siguiente pantalla.",
     "previewNote": "Vista previa de ángulos gratis. Crear el modelo 3D descargable consume créditos.",
     "guestNote": "Vista previa de ángulos gratis · sin cuenta ni tarjeta. Se aplican límites diarios.",
-    "seeExample": "O explora un ejemplo terminado:"
+    "seeExample": "O explora un ejemplo terminado:",
+    "startPreview": "Subir una foto",
+    "compactNote": "Vista previa sin cuenta ni tarjeta. El modelo 3D utiliza créditos."
   },
   "Library": {
     "metaTitle": "Biblioteca · easyrender",
@@ -1379,6 +1409,11 @@
       "embed": "Copiar código de inserción",
       "copied": "Código copiado",
       "copyFailed": "No se pudo copiar. Inténtalo de nuevo"
+    },
+    "usage": {
+      "title": "Cómo usar este modelo",
+      "body": "Descarga el GLB y elige dónde usarlo. Comprueba la escala y los materiales antes de publicarlo.",
+      "create": "Crear uno con mi foto"
     }
   },
   "Blog": {
@@ -2872,5 +2907,43 @@
       "body": "No se ha podido completar tu trabajo de renderizado. Abre easyrender para ver su estado y los siguientes pasos disponibles.",
       "action": "Revisar mi trabajo"
     }
+  },
+  "LandingIntent": {
+    "photo": {
+      "title": "Descubre en qué puede convertirse tu foto",
+      "body": "Sube una foto de producto y revisa los ángulos gratis antes de decidir si generas el modelo."
+    },
+    "commerce": {
+      "title": "Pruébalo primero con un producto",
+      "body": "Comprueba la forma y los materiales y usa el GLB en tu ficha de producto o escena 3D."
+    },
+    "format": {
+      "title": "Inspecciona un archivo real antes de empezar",
+      "body": "Abre el ejemplo existente de la mesa para comparar la foto, las vistas y el modelo interactivo."
+    },
+    "tools": {
+      "title": "Compara el mismo producto, además de las funciones",
+      "body": "Prueba con tu foto y valora la silueta, las superficies ocultas y la textura según el uso que le darás."
+    },
+    "precision": {
+      "title": "Comprueba si el resultado encaja con tu trabajo",
+      "body": "La IA de una foto infiere las superficies ocultas. Revisa las proporciones; si necesitas medidas exactas, utiliza modelado con mediciones."
+    },
+    "interactive": {
+      "title": "Decide qué necesita hacer tu comprador",
+      "body": "Un modelo 3D permite girar libremente e incorporarlo a una escena. Empieza por inspeccionar un ejemplo existente."
+    },
+    "scan": {
+      "title": "Prueba la opción de una sola foto",
+      "body": "La IA infiere la geometría de una imagen. Para reconstruir con medidas, compara un proceso de captura con varias fotos."
+    },
+    "inspect": "Inspeccionar el ejemplo",
+    "upload": "Subir mi foto",
+    "qualityTitle": "Valora el resultado, además del nombre del modelo",
+    "qualityBody": "Compara la foto y el resultado. Los detalles finos, las superficies transparentes y los lados ocultos pueden necesitar correcciones; la geometría generada no es un modelo CAD con medidas verificadas.",
+    "sample": "Inspeccionar un ejemplo",
+    "evals": "Ver controles de calidad",
+    "create": "Crear uno con mi foto",
+    "galleryBody": "Abre el resultado para comparar la foto y el modelo 3D. Puedes inspeccionar los ejemplos públicos; las descargas dependen de la propiedad."
   }
 }

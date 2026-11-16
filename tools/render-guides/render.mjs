@@ -17,6 +17,13 @@ await copyFile(
   join(dirname(require.resolve('geist/font/sans')), 'fonts/geist-sans/Geist-Variable.woff2'),
   join(assets, 'geist.woff2'),
 );
+for (const [source, target] of [
+  ['table.glb', 'hero-table.glb'],
+  ['table.jpg', 'hero-photo.jpg'],
+  ['table-angles.png', 'hero-angles.png'],
+]) {
+  await copyFile(join(root, 'apps/web/public/showcase', source), join(assets, target));
+}
 try {
   const serveUrl = await bundle({ entryPoint: join(here, 'scene.tsx'), publicDir: assets });
   for (const id of process.argv.slice(2).filter((arg) => !arg.startsWith('--')).length
@@ -26,7 +33,7 @@ try {
     const common = { serveUrl, composition, chromiumOptions: { gl: 'angle' } };
     await renderStill({
       ...common,
-      frame: 450,
+      frame: id === 'hero' ? 310 : 450,
       output: join(output, `${id}.jpg`),
       imageFormat: 'jpeg',
     });
@@ -40,6 +47,10 @@ try {
         concurrency: 3,
         outputLocation: join(output, `${id}.mp4`),
       });
+    if (id === 'hero') {
+      process.stdout.write('Rendered hero\n');
+      continue;
+    }
     for (const locale of ['en', 'es', 'de', 'fr', 'it', 'pt']) {
       const messages = JSON.parse(
         await readFile(join(root, `apps/web/messages/${locale}.json`), 'utf8'),

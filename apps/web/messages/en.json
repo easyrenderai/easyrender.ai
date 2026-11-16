@@ -127,6 +127,17 @@
     },
     "customer": {
       "label": "Used by"
+    },
+    "motionHero": {
+      "title": "Your product. In every dimension.",
+      "description": "Start with a photo. Preview the angles for free, then choose whether to build the 3D model.",
+      "label": "Existing example: a photo becomes an angle sheet, then a textured, rotating 3D model. Timing is illustrative.",
+      "play": "Play the process",
+      "pause": "Pause the process",
+      "photo": "Photo",
+      "angles": "Free angles",
+      "model": "3D model",
+      "example": "Explore this example"
     }
   },
   "Landing": {
@@ -486,6 +497,23 @@
         "captions": "Step captions",
         "error": "The video could not load. Read the steps below."
       }
+    },
+    "journey": {
+      "photo": "Your photo is in",
+      "angles": "Review the angles",
+      "model": "Your 3D model",
+      "draftingTitle": "Preparing your free angles",
+      "draftingBody": "We are working from your photo. The next step is to review the shape before spending credits.",
+      "preview_readyTitle": "Your angles are ready to review",
+      "preview_readyBody": "Compare the shape and details with your photo. Build the 3D model only when you are happy with them.",
+      "renderingTitle": "Building your 3D model",
+      "renderingBody": "Your angle sheet is being turned into geometry and textures. This page updates when it is ready.",
+      "readyTitle": "Ready to explore",
+      "readyBody": "Rotate your model, check the materials and choose how to use it.",
+      "failedTitle": "The process stopped",
+      "failedBody": "Review the error below before trying another photo.",
+      "connection": "Connection interrupted. We will keep checking; your job continues on the server.",
+      "buildCost": "Building this model uses {credits} credits. You choose when to start."
     }
   },
   "PromptBar": {
@@ -530,7 +558,9 @@
     "uploadingHint": "Your real preview starts after upload. We will show its status on the next screen.",
     "previewNote": "Free angle preview. Building the downloadable 3D model uses credits.",
     "guestNote": "Free angle preview · no account or card required. Daily limits apply.",
-    "seeExample": "Or explore a finished example:"
+    "seeExample": "Or explore a finished example:",
+    "startPreview": "Upload a photo",
+    "compactNote": "No account or card for the preview. The 3D model uses credits."
   },
   "Library": {
     "metaTitle": "Library · easyrender",
@@ -1379,6 +1409,11 @@
       "embed": "Copy embed code",
       "copied": "Code copied",
       "copyFailed": "Could not copy. Try again"
+    },
+    "usage": {
+      "title": "How to use this model",
+      "body": "Download the GLB, then choose your destination. Verify scale and materials before publishing.",
+      "create": "Make one from my photo"
     }
   },
   "Blog": {
@@ -2872,5 +2907,43 @@
       "body": "Your rendering job could not be completed. Open easyrender to see its status and any available next steps.",
       "action": "Review my job"
     }
+  },
+  "LandingIntent": {
+    "photo": {
+      "title": "See what your photo can become",
+      "body": "Upload one product photo and inspect the free angles before choosing to build."
+    },
+    "commerce": {
+      "title": "Try it on one product first",
+      "body": "Check the shape and materials, then use the GLB in your product page or 3D scene."
+    },
+    "format": {
+      "title": "Inspect a real file before you start",
+      "body": "Open the existing table example to compare the source photo, angle sheet and interactive model."
+    },
+    "tools": {
+      "title": "Compare the same product, not just feature lists",
+      "body": "Try your photo and judge the silhouette, hidden surfaces and texture against your intended use."
+    },
+    "precision": {
+      "title": "Check whether the result fits the job",
+      "body": "Single-photo AI infers unseen surfaces. Inspect proportions; use measured modeling when exact dimensions matter."
+    },
+    "interactive": {
+      "title": "Decide what your shopper needs to do",
+      "body": "A 3D model can rotate freely and enter a scene. Start by inspecting one existing example."
+    },
+    "scan": {
+      "title": "Test the one-photo route",
+      "body": "AI infers geometry from one image. For measured reconstruction, compare a multi-photo capture workflow."
+    },
+    "inspect": "Inspect the example",
+    "upload": "Upload my photo",
+    "qualityTitle": "Check the result, not just the model name",
+    "qualityBody": "Compare the source and result. Fine details, transparent surfaces and unseen sides may need correction; generated geometry is not a measured CAD model.",
+    "sample": "Inspect an example",
+    "evals": "See quality checks",
+    "create": "Make one from my photo",
+    "galleryBody": "Open the result to compare its photo and 3D model. Public examples can be inspected; downloads depend on ownership."
   }
 }

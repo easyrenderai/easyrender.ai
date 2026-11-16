@@ -6,7 +6,6 @@ import { ShellPanel } from '@/components/app-shell/shell-context';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
 
 export type DetailMeta = { label: string; value: ReactNode };
 
@@ -22,7 +21,11 @@ export function RenderDetail({
   actions,
   isInApp = false,
   isViewerFirst = true,
+  isReviewingAngles = false,
+  activity,
 }: {
+  activity?: ReactNode;
+  isReviewingAngles?: boolean;
   title: string;
   prompt: string | null;
   badges?: string[];
@@ -102,7 +105,9 @@ export function RenderDetail({
   if (isInApp) {
     return (
       <div className="space-y-6">
+        {activity}
         {isViewerFirst && viewer}
+        {isReviewingAngles && anglesCard}
         <Card>
           <CardHeader className="gap-3">
             {badgeRow}
@@ -113,11 +118,11 @@ export function RenderDetail({
             {actions && <div className="space-y-3">{actions}</div>}
           </CardContent>
         </Card>
-        {!isViewerFirst && viewer}
+        {!isViewerFirst && !isReviewingAngles && viewer}
         <ShellPanel>
           <div className="space-y-4 xl:p-4">
             {inputCard}
-            {anglesCard}
+            {!isReviewingAngles && anglesCard}
             <Card className="gap-3 py-4">
               <CardHeader className="px-4">
                 <CardTitle className="text-sm">{t('details')}</CardTitle>
@@ -132,6 +137,7 @@ export function RenderDetail({
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6 sm:py-10">
+      {activity}
       <nav className="flex items-center gap-1 text-sm text-muted-foreground">
         <Link href="/explore" className="hover:text-foreground">
           {t('gallery')}
@@ -147,7 +153,7 @@ export function RenderDetail({
             {inputCard}
             {anglesCard}
           </div>
-          {!isViewerFirst && viewer}
+          {!isViewerFirst && !isReviewingAngles && viewer}
         </div>
 
         <div className="space-y-4 lg:sticky lg:top-20 lg:self-start">
