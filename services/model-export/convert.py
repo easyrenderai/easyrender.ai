@@ -19,21 +19,9 @@ from pathlib import Path
 import bpy
 import numpy as np
 
-FORMATS = ("obj", "fbx", "blend")
-
-# What the customer downloads for each format.
-OUTPUT_EXTENSION = {"obj": "zip", "fbx": "fbx", "blend": "blend"}
-OUTPUT_CONTENT_TYPE = {
-    "obj": "application/zip",
-    "fbx": "application/octet-stream",
-    "blend": "application/x-blender",
-}
+from formats import FORMATS, ConversionError
 
 _IMAGE_EXTENSION = {"PNG": "png", "JPEG": "jpg", "WEBP": "webp"}
-
-
-class ConversionError(Exception):
-    """The input could not be converted. The message is safe to show to the caller."""
 
 
 def convert(source: Path, fmt: str, work_dir: Path) -> Path:

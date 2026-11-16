@@ -9,7 +9,7 @@ RUN dnf install -y \
 COPY requirements.txt ${LAMBDA_TASK_ROOT}/
 RUN pip install --no-cache-dir -r ${LAMBDA_TASK_ROOT}/requirements.txt
 
-COPY convert.py handler.py ${LAMBDA_TASK_ROOT}/
+COPY convert.py formats.py handler.py ${LAMBDA_TASK_ROOT}/
 
 # Lambda's filesystem is read-only except /tmp, and Blender writes its settings under HOME.
 ENV HOME=/tmp \

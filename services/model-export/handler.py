@@ -23,12 +23,11 @@ from typing import Any
 import boto3
 from botocore.exceptions import ClientError
 
-from convert import (
+from formats import (
     FORMATS,
     OUTPUT_CONTENT_TYPE,
     OUTPUT_EXTENSION,
     ConversionError,
-    convert,
 )
 
 PREFIX = "exports/"
@@ -87,6 +86,10 @@ def handler(event: dict[str, Any], _context: Any = None) -> dict[str, Any]:
             if size > max_bytes:
                 raise ConversionError("The model is too large to convert")
             _client().download_file(bucket, source_key, str(source))
+
+            # Blender loads here, on the first conversion, not when the container starts: see
+            # formats.py. A refused request never loads it.
+            from convert import convert
 
             output = convert(source, fmt, work_dir)
             output_bytes = output.stat().st_size
