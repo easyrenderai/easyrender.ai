@@ -17,5 +17,9 @@
   `*.cloudfront.net` address until a custom host is added: redeploy the stack with the `CdnDomain`
   and `CertificateArn` parameters (ACM certificate from us-east-1, DNS validated in Route 53), point
   a CNAME at the `DistributionDomain` output, then switch `ASSETS_CDN_URL`.
+- Private files: `renders/*` is public to anyone with the URL. Converted models (OBJ, FBX, BLEND)
+  go to the separate exports bucket in the same stack, served only as signed, short-lived links
+  under `/exports/*` and deleted after one day. Steps, key handling and rotation:
+  `infra/aws/README.md`. Never put a private file on any other path of the distribution.
 - Env var changes only reach a deployment built after the change; redeploy or merge to `main`.
 - Database: Neon Postgres. Use the unpooled URL for schema syncs.
