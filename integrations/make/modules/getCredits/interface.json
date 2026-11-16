@@ -1,0 +1,42 @@
+[
+  {
+    "name": "balance",
+    "label": "Balance",
+    "type": "number"
+  },
+  {
+    "name": "currency",
+    "label": "Currency",
+    "type": "text"
+  },
+  {
+    "name": "render_credits",
+    "label": "Render Quote",
+    "type": "number"
+  },
+  {
+    "name": "sheet_credits",
+    "label": "Sheet Quote",
+    "type": "number"
+  },
+  {
+    "name": "upscale_credits",
+    "label": "Upscale Quote",
+    "type": "number"
+  },
+  {
+    "name": "product_views_credits",
+    "label": "Product Views Quote",
+    "type": "number"
+  },
+  {
+    "name": "view_polish_credits",
+    "label": "View Polish Quote",
+    "type": "number"
+  },
+  {
+    "name": "build_from_views_credits",
+    "label": "Build from Views Quote",
+    "type": "number"
+  }
+]

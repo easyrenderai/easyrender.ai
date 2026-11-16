@@ -1,0 +1,38 @@
+[
+  {
+    "name": "imageUrl",
+    "label": "Image URL",
+    "type": "url",
+    "required": true,
+    "validate": {
+      "pattern": "^https://"
+    },
+    "help": "Public HTTPS JPEG, PNG or WebP. Start the 3D build separately in easyrender."
+  },
+  {
+    "name": "idempotencyKey",
+    "label": "Idempotency Key",
+    "type": "text",
+    "required": true,
+    "validate": {
+      "pattern": "^[!-~]{1,128}$"
+    },
+    "help": "Map a stable source event ID. Reuse it on retries for the same photo and input."
+  },
+  {
+    "name": "name",
+    "label": "Name",
+    "type": "text",
+    "validate": {
+      "max": 120
+    }
+  },
+  {
+    "name": "prompt",
+    "label": "Prompt",
+    "type": "text",
+    "validate": {
+      "max": 500
+    }
+  }
+]

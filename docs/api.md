@@ -14,6 +14,14 @@ preview, live quote and balance, an explicitly authorized credit ceiling, bounde
 private GLB download. Preview-only is the default. Their local smoke tests use a fake server and
 never call a paid provider. Optional receipts measure the current invocation, not full job latency.
 
+## Automation integrations
+
+Source packages for [n8n](../integrations/n8n/README.md), [Zapier](../integrations/zapier/README.md),
+and [Make](../integrations/make/README.md) use this REST contract. They create private previews,
+read render/status and account data, and poll a selected render for model completion.
+They require deployment of the `image_url` support described below. Publication and platform
+review remain separate steps; see the [listing guide](integrations/LISTING.md).
+
 ## Authentication, privacy and capabilities
 
 Send `Authorization: Bearer <key>` from a trusted server or the MCP client's secure credential
@@ -86,8 +94,13 @@ Raw storage URLs are not returned by this endpoint, but storage URLs themselves 
 authentication boundary. Keep any such URL out of public logs and shared output. Creating a render
 copies its source into that render's storage; expiring an upload does not delete the render.
 
-`POST /api/renders` accepts either multipart `image` or `upload_id` (exactly one), or JSON
-`{upload_id, prompt?, name?, isPublic?}`. `prompt` is at most 500 characters. API callers default to
+`POST /api/renders` accepts exactly one multipart source (`image`, `upload_id`, or `image_url`), or JSON
+`{upload_id, prompt?, name?, isPublic?}` or `{image_url, prompt?, name?, isPublic?}`.
+Supply exactly one image source. `image_url` must be a public HTTPS JPEG, PNG or WebP
+(up to **4 MiB**); the server applies the same DNS-pinned, private-network, redirect and
+timeout protections as MCP and never forwards the API key to the image host. Multipart
+also accepts `image_url` as its sole source. `/api/uploads` remains file-only.
+`prompt` is at most 500 characters. API callers default to
 `isPublic:false`. HTTP 201 returns a render with its stable `id`; creation starts a usage-limited
 free preview. Use `Idempotency-Key` for network-safe creation: 1–128 printable ASCII characters without spaces,
 unique per intended photo/input. The same user's same key and input return the same render;

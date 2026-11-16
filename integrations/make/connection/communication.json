@@ -1,0 +1,24 @@
+{
+  "url": "https://easyrender.ai/api/credits",
+  "method": "GET",
+  "headers": {
+    "authorization": "Bearer {{parameters.apiKey}}"
+  },
+  "response": {
+    "valid": "{{statusCode === 200}}",
+    "error": {
+      "message": "[{{statusCode}}] {{body.error}} ({{body.code}}; request: {{body.request_id}})",
+      "401": {
+        "type": "InvalidAccessTokenError",
+        "message": "Reconnect easyrender with a valid API key."
+      },
+      "429": {
+        "type": "RateLimitError",
+        "message": "easyrender rate limit reached. Retry after {{headers.`retry-after`}} seconds. Request: {{body.request_id}}"
+      }
+    }
+  },
+  "log": {
+    "sanitize": ["request.headers.authorization"]
+  }
+}

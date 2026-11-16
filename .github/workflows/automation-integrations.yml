@@ -1,0 +1,40 @@
+name: Automation integrations
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "integrations/**"
+      - "apps/web/lib/api-upload*"
+      - "apps/web/lib/api/openapi*"
+      - ".github/workflows/automation-integrations.yml"
+permissions:
+  contents: read
+jobs:
+  packages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - name: n8n build, lint, behavior tests and package contents
+        working-directory: integrations/n8n
+        run: |
+          npm ci
+          npm run lint
+          npm test
+          npm pack --dry-run
+      - name: Zapier mocks, local validation and build
+        working-directory: integrations/zapier
+        run: |
+          npm ci
+          npm test
+          npm run validate
+          npm run build
+      - name: Make definition checks
+        working-directory: integrations/make
+        run: npm test

@@ -1,0 +1,22 @@
+{
+  "name": "easyrender-zapier",
+  "version": "0.1.0",
+  "private": true,
+  "description": "easyrender integration for Zapier",
+  "main": "index.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "validate": "zapier-platform validate --without-style",
+    "build": "zapier-platform build"
+  },
+  "dependencies": {
+    "zapier-platform-core": "19.3.0"
+  },
+  "devDependencies": {
+    "zapier-platform-cli": "19.3.0",
+    "nock": "15.0.6"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "url": "/credits",
+  "method": "GET",
+  "response": {
+    "output": "{{body}}"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "name": "easyrender",
+  "label": "easyrender",
+  "version": 1,
+  "description": "Turn product photos into 3D workflows with easyrender.",
+  "theme": "#17211e",
+  "language": "en",
+  "modules": [
+    {
+      "name": "createRender",
+      "label": "Create a Render",
+      "type": "action",
+      "description": "Creates a private free preview from a public image URL.",
+      "connection": "easyrender"
+    },
+    {
+      "name": "getRender",
+      "label": "Get a Render",
+      "type": "action",
+      "description": "Retrieves a render and its current status.",
+      "connection": "easyrender"
+    },
+    {
+      "name": "listRenders",
+      "label": "List Renders",
+      "type": "search",
+      "description": "Lists renders with optional status filtering.",
+      "connection": "easyrender"
+    },
+    {
+      "name": "getCredits",
+      "label": "Get Credits",
+      "type": "action",
+      "description": "Retrieves the current account balance and live quote.",
+      "connection": "easyrender"
+    },
+    {
+      "name": "modelReady",
+      "label": "Watch a Ready Model",
+      "type": "trigger",
+      "description": "Triggers when a selected render has a ready 3D model.",
+      "connection": "easyrender"
+    },
+    {
+      "name": "apiCall",
+      "label": "Make an API Call",
+      "type": "universal",
+      "description": "Performs an arbitrary authorized API call.",
+      "connection": "easyrender"
+    }
+  ]
+}
