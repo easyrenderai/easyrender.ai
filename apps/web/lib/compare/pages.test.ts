@@ -218,7 +218,9 @@ describe('once they are published', () => {
       // The English hub is an alternate of the localized hub, not a second canonical.
       expect(xml, locale).toContain('hreflang="en" href="https://easyrender.ai/compare"');
     }
-  });
+    // Renders every language's sitemap and both llms files, which is the whole corpus several
+    // times over. It takes about 1.5 s alone and has passed 5 s on a busy CI runner.
+  }, 20_000);
 
   it('are linked from the English guides hub and from related guides, not from chrome', () => {
     const hub = readFileSync(join(ROOT, 'components', 'blog', 'blog-index-view.tsx'), 'utf8');
