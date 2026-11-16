@@ -8,5 +8,6 @@
 4. Open a PR with `.github/pull_request_template.md`. State the finish condition and the evidence.
    Name any new env var that Vercel needs.
 5. Wait for CI. Fix red checks on the same branch. Do not skip or delete a failing test.
-6. Squash-merge when green. Production deploys from `main` through Vercel; check the deployment
-   finished before you report it done.
+6. Squash-merge when green. Merging does not deploy; production ships through the Release
+   workflow (`RELEASING.md`). If the change should go live, say so and name the release it needs,
+   and report it done only after that release's run finished green.

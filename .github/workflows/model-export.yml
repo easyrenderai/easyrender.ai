@@ -2,16 +2,19 @@ name: Model export
 
 # Builds the Blender converter image (services/model-export) and runs its tests inside it, so
 # the thing that is tested is the thing Lambda runs. On main it then pushes the image to the
-# registry and points the function at it (infra/aws/exports.yml). Shipping stays off until the
+# registry and points the function at it (infra/aws/exports.yml), but only when release.yml calls
+# it with `ship: true`: a merge to main ships nothing. Shipping also stays off until the
 # repository variable MODEL_EXPORT_DEPLOY_ROLE_ARN holds that stack's DeployRoleArn output.
 on:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      ship:
+        description: "Push the image and point the function at it"
+        required: false
+        default: false
+        type: boolean
   pull_request:
-    paths:
-      - "services/model-export/**"
-      - ".github/workflows/model-export.yml"
-  push:
-    branches: [main]
     paths:
       - "services/model-export/**"
       - ".github/workflows/model-export.yml"
@@ -65,7 +68,7 @@ jobs:
     name: Ship the image
     needs: image
     if: >-
-      github.ref == 'refs/heads/main' && github.event_name != 'pull_request' &&
+      inputs.ship && github.ref == 'refs/heads/main' &&
       vars.MODEL_EXPORT_DEPLOY_ROLE_ARN != ''
     runs-on: ubuntu-latest
     timeout-minutes: 20

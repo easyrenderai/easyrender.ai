@@ -2,13 +2,13 @@
 
 Each of these has broken, or can break, production.
 
-1. **Never push to `main`.** PR only. Merge triggers a production deploy.
+1. **Never push to `main`.** PR only. Merge does not deploy; the Release workflow does (`RELEASING.md`).
 2. **Never commit a secret.** `.env*` is ignored except `.env.example`. Stripe keys, webhook
    secrets, Replicate tokens, AWS credentials, Better Auth secrets stay in Vercel.
 3. **Never run `prisma db push --accept-data-loss` against production by hand.** Use
    `DB_ACCEPT_DATA_LOSS=1` on one Vercel production build, then remove it.
 4. **Never move or rename `apps/web` without changing the Vercel project root directory in the
-   same change.** The Git integration builds from that path; a mismatch fails every deploy.
+   same change.** The Release workflow and the Vercel project both build from that path; a mismatch fails every deploy.
 5. **Never change `/api/mcp`, `/api/webhooks/*`, `/api/oauth/*` or `/.well-known/*` paths without
    a redirect or an updated Stripe, Replicate and MCP client configuration.** Customers hold
    keys and connectors that point at them.

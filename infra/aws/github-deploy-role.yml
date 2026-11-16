@@ -1,0 +1,114 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Role that the Release workflow (.github/workflows/release.yml, `backend` job) assumes through
+  GitHub OIDC to apply infra/aws/storage.yml. Created once by a person; nothing deploys it.
+
+Parameters:
+  GitHubSubjectPrefix:
+    Type: String
+    Default: repo:easyrenderai@354822750/easyrender.ai@1451843595
+    Description: >-
+      Start of the OIDC subject GitHub issues for this repository. It uses the immutable form,
+      repo:OWNER@OWNER_ID/REPO@REPO_ID (same value as infra/aws/exports.yml). Read it with
+      gh api repos/OWNER/REPO/actions/oidc/customization/sub (sub_claim_prefix).
+  GitHubEnvironment:
+    Type: String
+    Default: production
+    Description: Only jobs that run in this GitHub environment can assume the role.
+  StorageStackName:
+    Type: String
+    Default: easyrenderai-storage
+  CreateOidcProvider:
+    Type: String
+    AllowedValues: ["true", "false"]
+    Default: "true"
+    Description: Set to false when the account already has the token.actions.githubusercontent.com provider.
+
+Conditions:
+  MakeProvider: !Equals [!Ref CreateOidcProvider, "true"]
+
+Resources:
+  GitHubOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Condition: MakeProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+
+  DeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: easyrender-github-release
+      Description: Applies infra/aws/storage.yml for the easyrender.ai Release workflow.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub "${GitHubSubjectPrefix}:environment:${GitHubEnvironment}"
+      Policies:
+        - PolicyName: storage-stack
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: cloudformation:*
+                Resource: !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/${StorageStackName}/*"
+              - Effect: Allow
+                Action:
+                  - cloudformation:ListChangeSets
+                  - cloudformation:GetTemplateSummary
+                  - cloudformation:ValidateTemplate
+                Resource: "*"
+              # The resources storage.yml owns. Nothing outside them.
+              - Effect: Allow
+                Action: s3:*
+                Resource:
+                  - !Sub "arn:aws:s3:::${StorageStackName}-*"
+                  - !Sub "arn:aws:s3:::${StorageStackName}-*/*"
+              - Effect: Allow
+                Action: cloudfront:*
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - route53:GetHostedZone
+                  - route53:ListResourceRecordSets
+                  - route53:ChangeResourceRecordSets
+                  - route53:GetChange
+                Resource: "*"
+              - Effect: Allow
+                Action: acm:DescribeCertificate
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - iam:GetRole
+                  - iam:CreateRole
+                  - iam:UpdateRole
+                  - iam:DeleteRole
+                  - iam:PutRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:GetRolePolicy
+                  - iam:UpdateAssumeRolePolicy
+                  - iam:TagRole
+                  - iam:UntagRole
+                  - iam:PassRole
+                Resource: !Sub "arn:aws:iam::${AWS::AccountId}:role/${StorageStackName}-*"
+              - Effect: Allow
+                Action:
+                  - iam:GetOpenIDConnectProvider
+                  - iam:CreateOpenIDConnectProvider
+                  - iam:UpdateOpenIDConnectProviderThumbprint
+                  - iam:AddClientIDToOpenIDConnectProvider
+                Resource: !Sub "arn:aws:iam::${AWS::AccountId}:oidc-provider/oidc.vercel.com/*"
+
+Outputs:
+  DeployRoleArn:
+    Value: !GetAtt DeployRole.Arn
+    Description: Store as the AWS_DEPLOY_ROLE_ARN variable on the GitHub repository.

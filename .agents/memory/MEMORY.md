@@ -13,7 +13,7 @@ a line here. Keep this map short.
 
 - **Where things live:** [project structure](context/project-structure.md).
 - **Money, credits, pricing, Stripe:** [credits and pricing](context/credits-and-pricing.md).
-- **Deploys, env vars, database:** [deploys and environments](context/deploys-and-environments.md).
+- **Deploys, env vars, database:** [deploys and environments](context/deploys-and-environments.md). Shipping to prod: `RELEASING.md` (release based, merge does not deploy).
 - **UI work:** `DESIGN.md` at the repo root.
 - **Material realism (what stone, wood, metal can do):** [marble and stone](context/materials-marble-stone.md),
   [wood](context/materials-wood.md), [metal tube](context/materials-metal-tube.md),

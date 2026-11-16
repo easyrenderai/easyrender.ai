@@ -1,20 +1,23 @@
 name: CI
 run-name: "CI · ${{ github.event.pull_request.title }}"
 
-# Production deploys through the Vercel Git integration on merge to main. This workflow only checks
-# pull requests; it never deploys. "CI Gate" is the one required check: it fails if any job fails.
+# Merging to main deploys nothing: production ships through release.yml. This workflow only checks
+# (pull requests, and once more on the pinned commit when a release runs); it never deploys.
+# "CI Gate" is the one required check: it fails if any job fails.
 # The "Schema change" job runs the same additive-only check the production build runs, so a risky
 # schema change fails here instead of stopping the deploy after the merge.
 on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
+  # Called by release.yml, which re-verifies the exact commit it is about to ship.
+  workflow_call:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.event.pull_request.number }}
+  group: ci-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
@@ -99,7 +102,7 @@ jobs:
       - name: Apply the schema on main to an empty database
         working-directory: packages/db
         run: |
-          git show "origin/${{ github.base_ref }}:packages/db/prisma/schema.prisma" > "$RUNNER_TEMP/main.prisma"
+          git show "origin/${{ github.base_ref || 'main' }}:packages/db/prisma/schema.prisma" > "$RUNNER_TEMP/main.prisma"
           bun run prisma db push --schema "$RUNNER_TEMP/main.prisma"
       - name: Check that this branch's schema change is additive
         run: bun run --cwd packages/db db:check
