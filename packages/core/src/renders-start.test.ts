@@ -27,7 +27,7 @@ vi.mock('@easyrender/harness', async (importOriginal) => ({
   loadHarness: async () =>
     (await importOriginal<typeof import('@easyrender/harness')>()).DEFAULT_HARNESS,
   createReplicate: () => ({
-    upload: async () => 'https://files.example.test/source.png',
+    upload: async () => 'data:image/png;base64,AQID',
     start: (...args: unknown[]) => start(...args),
   }),
 }));
@@ -96,6 +96,16 @@ describe('starting a preview when Replicate rejects the request', () => {
     ]);
     expect(stored().status).toBe('drafting');
     expect(stored().sheetPredictionId).toBe('pred-fallback');
+  });
+
+  it('sends the photo inline and never stores it as a link, because Replicate rejects image URLs', async () => {
+    const stored = fakeDatabase();
+    start.mockResolvedValueOnce({ id: 'pred-1', status: 'starting' });
+    await createDraft(input);
+    const body = start.mock.calls[0]?.[1] as { input: { image_input: string[] } };
+    expect(body.input.image_input).toHaveLength(1);
+    expect(body.input.image_input[0]).toMatch(/^data:image\/png;base64,/);
+    expect(stored().sourceUrl ?? null).toBeNull();
   });
 
   it('fails and tells the visitor when the fallback is rejected too', async () => {
