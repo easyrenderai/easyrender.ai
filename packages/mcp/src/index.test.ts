@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const core = vi.hoisted(() => ({
   createDraft: vi.fn(),
+  createModelExport: vi.fn(),
   getRender: vi.fn(),
   startBuild: vi.fn(),
   fetchRemoteImage: vi.fn(),
@@ -139,6 +140,61 @@ describe('MCP protocol contract', () => {
       type: 'text',
       text: JSON.stringify(result.structuredContent),
     });
+  });
+  it('returns a signed export link for the owner only when export_format is set', async () => {
+    core.getRender.mockResolvedValue({ ...render, status: 'ready', hasModel: true });
+    core.createModelExport.mockResolvedValue({
+      format: 'fbx',
+      url: 'https://cdn.easyrender.ai/exports/r1/1/model-fbx.fbx?Expires=1',
+      filename: 'easyrender-r1-fbx.fbx',
+      expiresAt: '2026-11-16T23:00:00.000Z',
+    });
+    const client = await connect();
+    const plain = await client.callTool({ name: 'get_render', arguments: { id: 'r1' } });
+    expect(plain.structuredContent).not.toHaveProperty('export');
+    expect(core.createModelExport).not.toHaveBeenCalled();
+    const result = await client.callTool({
+      name: 'get_render',
+      arguments: { id: 'r1', export_format: 'fbx' },
+    });
+    expect(result.structuredContent).toMatchObject({
+      id: 'r1',
+      export: {
+        format: 'fbx',
+        filename: 'easyrender-r1-fbx.fbx',
+        expires_at: '2026-11-16T23:00:00.000Z',
+      },
+    });
+    expect(core.createModelExport).toHaveBeenCalledWith(
+      'r1',
+      expect.objectContaining({ userId: 'u1' }),
+      'fbx',
+    );
+  });
+  it('does not export a render that is not the caller’s or an unknown format', async () => {
+    const { AppError } = await import('@easyrender/core');
+    core.getRender.mockResolvedValue({ ...render, status: 'ready' });
+    core.createModelExport.mockRejectedValue(new AppError('Not found', 404, 'not_found'));
+    const client = await connect();
+    expect(
+      await client.callTool({ name: 'get_render', arguments: { id: 'r1', export_format: 'obj' } }),
+    ).toMatchObject({
+      isError: true,
+      structuredContent: { error: { code: 'not_found', status: 404 } },
+    });
+    await expect(
+      client.callTool({ name: 'get_render', arguments: { id: 'r1', export_format: 'stl' } }),
+    ).resolves.toMatchObject({ isError: true });
+    const anonymous = createMcpServer({});
+    const anon = new Client({ name: 'anon', version: '1' });
+    const [c, s] = InMemoryTransport.createLinkedPair();
+    await anonymous.connect(s);
+    await anon.connect(c);
+    connections.push({ client: anon, server: anonymous });
+    expect(
+      await anon.callTool({ name: 'get_render', arguments: { id: 'r1', export_format: 'obj' } }),
+    ).toMatchObject({ isError: true, structuredContent: { error: { status: 401 } } });
+    expect(core.createModelExport).toHaveBeenCalledTimes(1);
   });
   it('keeps application errors structured and identifies retryability', async () => {
     const { AppError } = await import('@easyrender/core');
