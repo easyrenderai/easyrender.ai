@@ -419,6 +419,66 @@
       "confirmTitle": "Confirm the new angle sheet",
       "confirmBody": "This regenerates the angles for {credits} credits. It does not build the 3D model.",
       "back": "Edit instructions"
+    },
+    "nextSteps": {
+      "title": "Your model is ready. Put it to work.",
+      "formats": "Download GLB for websites and 3D scenes, or USDZ for compatible Apple apps.",
+      "choose": "How would you like to use it?",
+      "createAnother": "Create another model",
+      "web": {
+        "title": "On a website",
+        "action": "Open the model-viewer editor",
+        "steps": {
+          "download": {
+            "title": "Download the GLB",
+            "body": "Save the model using the GLB button above."
+          },
+          "prepare": {
+            "title": "Prepare your viewer",
+            "body": "Open the editor and drag in your GLB. Adjust the camera and lighting."
+          },
+          "use": {
+            "title": "Add it to your site",
+            "body": "Export the viewer and its files. Ask your developer to add them to your website."
+          }
+        }
+      },
+      "shop": {
+        "title": "In a Shopify store",
+        "action": "See the Shopify steps",
+        "steps": {
+          "download": {
+            "title": "Download the GLB",
+            "body": "Save the model using the GLB button above."
+          },
+          "prepare": {
+            "title": "Open your product",
+            "body": "In Shopify, go to Products and choose the product that matches your model."
+          },
+          "use": {
+            "title": "Add the model",
+            "body": "Upload the GLB in Media. Preview the product page before publishing."
+          }
+        }
+      },
+      "design": {
+        "title": "In a design project",
+        "action": "See the Blender import guide",
+        "steps": {
+          "download": {
+            "title": "Download the GLB",
+            "body": "Save the model with its materials using the GLB button above."
+          },
+          "prepare": {
+            "title": "Import it into Blender",
+            "body": "Choose File → Import → glTF 2.0 and select your GLB."
+          },
+          "use": {
+            "title": "Fit it to your scene",
+            "body": "Check orientation, materials and scale. The generated model does not preserve real-world measurements."
+          }
+        }
+      }
     }
   },
   "PromptBar": {

@@ -419,6 +419,66 @@
       "confirmTitle": "Confirmer les nouvelles vues",
       "confirmBody": "Les vues seront régénérées pour {credits} crédits. Aucun modèle 3D ne sera créé.",
       "back": "Modifier les instructions"
+    },
+    "nextSteps": {
+      "title": "Votre modèle est prêt. Utilisez-le.",
+      "formats": "Téléchargez le GLB pour les sites et scènes 3D, ou le USDZ pour les apps Apple compatibles.",
+      "choose": "Où souhaitez-vous l’utiliser ?",
+      "createAnother": "Créer un autre modèle",
+      "web": {
+        "title": "Sur un site web",
+        "action": "Ouvrir l’éditeur model-viewer",
+        "steps": {
+          "download": {
+            "title": "Téléchargez le GLB",
+            "body": "Enregistrez le modèle avec le bouton GLB ci-dessus."
+          },
+          "prepare": {
+            "title": "Préparez le visualiseur",
+            "body": "Ouvrez l’éditeur et glissez votre GLB. Réglez la caméra et l’éclairage."
+          },
+          "use": {
+            "title": "Ajoutez-le à votre site",
+            "body": "Exportez le visualiseur et ses fichiers. Demandez à votre développeur de les intégrer au site."
+          }
+        }
+      },
+      "shop": {
+        "title": "Dans une boutique Shopify",
+        "action": "Voir les étapes Shopify",
+        "steps": {
+          "download": {
+            "title": "Téléchargez le GLB",
+            "body": "Enregistrez le modèle avec le bouton GLB ci-dessus."
+          },
+          "prepare": {
+            "title": "Ouvrez votre produit",
+            "body": "Dans Shopify, allez dans Produits et choisissez le produit correspondant."
+          },
+          "use": {
+            "title": "Ajoutez le modèle",
+            "body": "Importez le GLB dans Médias. Vérifiez la fiche avant de la publier."
+          }
+        }
+      },
+      "design": {
+        "title": "Dans un projet de design",
+        "action": "Voir le guide d’import Blender",
+        "steps": {
+          "download": {
+            "title": "Téléchargez le GLB",
+            "body": "Enregistrez le modèle et ses matériaux avec le bouton GLB ci-dessus."
+          },
+          "prepare": {
+            "title": "Importez-le dans Blender",
+            "body": "Choisissez Fichier → Importer → glTF 2.0, puis votre GLB."
+          },
+          "use": {
+            "title": "Adaptez-le à la scène",
+            "body": "Vérifiez orientation, matériaux et échelle. Le modèle généré ne conserve pas les dimensions réelles."
+          }
+        }
+      }
     }
   },
   "PromptBar": {

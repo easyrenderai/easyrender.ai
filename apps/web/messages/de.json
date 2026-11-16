@@ -419,6 +419,66 @@
       "confirmTitle": "Neue Ansichten bestätigen",
       "confirmBody": "Die Ansichten werden für {credits} Credits neu erstellt. Es wird kein 3D-Modell erzeugt.",
       "back": "Anweisungen bearbeiten"
+    },
+    "nextSteps": {
+      "title": "Dein Modell ist fertig. Nutze es.",
+      "formats": "Lade GLB für Websites und 3D-Szenen oder USDZ für kompatible Apple-Apps herunter.",
+      "choose": "Wo möchtest du es verwenden?",
+      "createAnother": "Weiteres Modell erstellen",
+      "web": {
+        "title": "Auf einer Website",
+        "action": "model-viewer-Editor öffnen",
+        "steps": {
+          "download": {
+            "title": "GLB herunterladen",
+            "body": "Speichere das Modell über die GLB-Schaltfläche oben."
+          },
+          "prepare": {
+            "title": "Viewer vorbereiten",
+            "body": "Öffne den Editor und ziehe deine GLB hinein. Passe Kamera und Beleuchtung an."
+          },
+          "use": {
+            "title": "In die Website einfügen",
+            "body": "Exportiere den Viewer und seine Dateien. Bitte deine Webentwicklung, sie einzubinden."
+          }
+        }
+      },
+      "shop": {
+        "title": "In einem Shopify-Shop",
+        "action": "Shopify-Anleitung ansehen",
+        "steps": {
+          "download": {
+            "title": "GLB herunterladen",
+            "body": "Speichere das Modell über die GLB-Schaltfläche oben."
+          },
+          "prepare": {
+            "title": "Produkt öffnen",
+            "body": "Gehe in Shopify zu Produkte und wähle das passende Produkt."
+          },
+          "use": {
+            "title": "Modell hinzufügen",
+            "body": "Lade die GLB unter Medien hoch. Prüfe die Produktseite vor der Veröffentlichung."
+          }
+        }
+      },
+      "design": {
+        "title": "In einem Designprojekt",
+        "action": "Blender-Importanleitung ansehen",
+        "steps": {
+          "download": {
+            "title": "GLB herunterladen",
+            "body": "Speichere das Modell samt Materialien über die GLB-Schaltfläche oben."
+          },
+          "prepare": {
+            "title": "In Blender importieren",
+            "body": "Wähle Datei → Importieren → glTF 2.0 und dann deine GLB."
+          },
+          "use": {
+            "title": "An die Szene anpassen",
+            "body": "Prüfe Ausrichtung, Materialien und Maßstab. Das generierte Modell übernimmt keine realen Maße."
+          }
+        }
+      }
     }
   },
   "PromptBar": {

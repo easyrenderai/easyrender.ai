@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { MaterialPanel } from '@/components/material-panel';
 import { ModelViewer } from '@/components/model-viewer';
+import { RenderNextSteps } from '@/components/render-next-steps';
 import { Button } from '@/components/ui/button';
 
 function save(blob: Blob, filename: string) {
@@ -32,16 +33,46 @@ export function ModelView({
   name,
   downloadUrl,
   editableRenderId,
+  nextStepsHref,
 }: {
   src: string;
   name: string;
   downloadUrl?: string | null;
   /** Set for the owner of a finished render: shows the material controls under the viewer. */
   editableRenderId?: string;
+  /** Only the owner of a finished render gets the usage walkthrough. */
+  nextStepsHref?: string;
 }) {
   const t = useTranslations('Render');
   const [exporting, setExporting] = useState(false);
   const [viewer, setViewer] = useState<HTMLElement | null>(null);
+
+  const downloads = downloadUrl ? (
+    <div className="flex flex-wrap gap-2">
+      <Button variant={nextStepsHref ? 'default' : 'outline'} size="sm" asChild>
+        <a href={downloadUrl} download>
+          <Download />
+          GLB
+        </a>
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={exporting}
+        onClick={async () => {
+          setExporting(true);
+          try {
+            save(await exportUsdz(src), `easyrender-${name}.usdz`);
+          } finally {
+            setExporting(false);
+          }
+        }}
+      >
+        {exporting ? <Loader2 className="animate-spin" /> : <Download />}
+        USDZ
+      </Button>
+    </div>
+  ) : null;
 
   return (
     <div className="space-y-3">
@@ -55,31 +86,10 @@ export function ModelView({
           onLoad={setViewer}
         />
       </div>
-      {downloadUrl && (
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" asChild>
-            <a href={downloadUrl} download>
-              <Download />
-              GLB
-            </a>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={exporting}
-            onClick={async () => {
-              setExporting(true);
-              try {
-                save(await exportUsdz(src), `easyrender-${name}.usdz`);
-              } finally {
-                setExporting(false);
-              }
-            }}
-          >
-            {exporting ? <Loader2 className="animate-spin" /> : <Download />}
-            USDZ
-          </Button>
-        </div>
+      {nextStepsHref && downloads ? (
+        <RenderNextSteps downloads={downloads} createHref={nextStepsHref} />
+      ) : (
+        downloads
       )}
       {editableRenderId && <MaterialPanel renderId={editableRenderId} viewer={viewer} />}
     </div>
