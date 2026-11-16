@@ -209,7 +209,9 @@ describe('the home FAQ copy', () => {
 });
 
 it('offers one monthly plan and explicitly describes subscriber top-ups', () => {
-  expect(llmsTxt()).toContain('monthly plan: Pro');
-  expect(llmsTxt()).toContain('without changing plans');
-  expect(llmsTxt()).not.toMatch(/Creator|Scale/);
+  // Rendered once: each call walks the whole content corpus.
+  const text = llmsTxt();
+  expect(text).toContain('monthly plan: Pro');
+  expect(text).toContain('without changing plans');
+  expect(text).not.toMatch(/Creator|Scale/);
 });
