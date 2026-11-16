@@ -61,15 +61,15 @@ export function PlatformPicker<Id extends string>({
           aria-hidden="true"
           className="absolute inset-0 -z-10 bg-radial from-background/85 via-background/50 to-transparent to-75%"
         />
-        <div className="mx-auto w-full max-w-3xl space-y-10 text-center">
+        <div className="mx-auto w-full max-w-4xl space-y-10 text-center">
           {hero}
-          <div className="mx-auto w-full max-w-2xl space-y-3">
+          <div className="mx-auto w-full space-y-3">
             <p id="platform-picker-label" className="text-sm text-muted-foreground">
               {label}
             </p>
             <TabsList
               aria-labelledby="platform-picker-label"
-              className="grid h-auto w-full grid-cols-2 gap-1 border bg-card/80 p-1 backdrop-blur sm:grid-cols-4"
+              className="grid h-auto w-full grid-cols-2 gap-1 border bg-card/80 p-1 backdrop-blur sm:grid-cols-3 lg:grid-cols-5"
             >
               {platforms.map((platform) => (
                 <TabsTrigger key={platform.id} value={platform.id} className="h-12 gap-2 px-3">

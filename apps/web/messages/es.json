@@ -2932,6 +2932,20 @@
         "secondary": "Crea tu clave de API",
         "note": "Un zip que subes tú; todavía no está en PrestaShop Addons. PrestaShop 1.7.7+ u 8.x, fotos por https."
       },
+      "tiendanube": {
+        "name": "Tiendanube",
+        "title": "easyrender para Tiendanube",
+        "steps": {
+          "one": "Crea tu cuenta",
+          "two": "Pasa tus productos a 3D",
+          "three": "Copia el id del modelo",
+          "four": "Pégalo en la descripción del producto"
+        },
+        "path": "Productos › Editar › Descripción › HTML",
+        "cta": "Crea tu cuenta",
+        "secondary": "Pide la app de Tiendanube",
+        "note": "Todavía no hay app de Tiendanube: el botón son dos líneas de HTML que se pegan en la descripción de cada producto o en tu tema. El modelo tiene que ser público o estar compartido por enlace."
+      },
       "other": {
         "name": "Otra plataforma",
         "title": "easyrender en cualquier otra tienda",

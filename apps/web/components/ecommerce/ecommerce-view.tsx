@@ -4,6 +4,8 @@ import {
   ArrowRight,
   Box,
   ChevronDownIcon,
+  ClipboardPaste,
+  Cloud,
   Code2,
   Copy,
   Download,
@@ -39,7 +41,7 @@ import { formatCount, formatMoney } from '@/lib/price-format';
 import { isPublished, ROUTES } from '@/lib/seo/routes';
 import { SITE_URL } from '@/lib/seo/site';
 
-const PLATFORMS = ['shopify', 'woocommerce', 'prestashop', 'other'] as const;
+const PLATFORMS = ['shopify', 'woocommerce', 'prestashop', 'tiendanube', 'other'] as const;
 type Platform = (typeof PLATFORMS)[number];
 
 const STEPS = ['one', 'two', 'three', 'four'] as const;
@@ -48,6 +50,7 @@ const STEP_ICONS: Record<Platform, readonly LucideIcon[]> = {
   shopify: [Download, Link2, Sparkles, LayoutTemplate],
   woocommerce: [Upload, KeyRound, Sparkles, Box],
   prestashop: [Upload, KeyRound, Sparkles, Box],
+  tiendanube: [UserPlus, ImageUp, Copy, ClipboardPaste],
   other: [UserPlus, ImageUp, Copy, Code2],
 };
 const SHOPPER = [
@@ -93,12 +96,15 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
     shopify: { primary: ENTERPRISE_BOOKING_URL, secondary: accountHref },
     woocommerce: { primary: `${SOURCE}/woocommerce`, secondary: accountHref },
     prestashop: { primary: `${SOURCE}/prestashop`, secondary: accountHref },
+    // No Tiendanube app yet: the store pastes the two lines, and can ask for a native app.
+    tiendanube: { primary: accountHref, secondary: ENTERPRISE_BOOKING_URL },
     other: { primary: accountHref, secondary: ROUTES.api.paths[apiLocale] },
   };
   const icons: Record<Platform, ReactNode> = {
     shopify: <ShopifyMark className="size-4" />,
     woocommerce: <WooMark className="size-5" />,
     prestashop: <PrestaShopMark className="size-4" />,
+    tiendanube: <Cloud aria-hidden="true" className="size-4" />,
     other: <Store aria-hidden="true" className="size-4" />,
   };
 
@@ -173,7 +179,7 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
         <p>{t('mock.adminLabel')}</p>
         <p className="font-mono">{t(`platforms.${platform}.path`)}</p>
       </div>
-      {platform === 'other' ? (
+      {platform === 'other' || platform === 'tiendanube' ? (
         <div className="p-4">
           <CodeSnippet
             code={snippet(t('mock.button'), t('mock.qrCaption'), t('snippet.placeholder'))}
@@ -288,6 +294,7 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
           shopify: panel('shopify'),
           woocommerce: panel('woocommerce'),
           prestashop: panel('prestashop'),
+          tiendanube: panel('tiendanube'),
           other: panel('other'),
         }}
       />
