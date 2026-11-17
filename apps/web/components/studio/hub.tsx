@@ -220,14 +220,16 @@ function HubCard({
     const element = host.current;
     if (!element) return;
     const scope = new Scope();
+    const controller = new AbortController();
     import('@/lib/studio/sections/hub')
       .then((hub) => {
-        if (!scope.alive) return;
+        if (controller.signal.aborted) return;
         card.current = hub.mountCard(element, item.id, scope, () => setReady(true));
         card.current.setMode(wanted.current);
       })
       .catch((error) => console.warn('hub: card failed to start', item.id, error));
     return () => {
+      controller.abort();
       scope.dispose();
       card.current = null;
       setReady(false);
@@ -310,18 +312,16 @@ function HubSheet({ id, fmt, onClose }: { id: string | null; fmt: Format; onClos
     closer.current?.focus({ preventScroll: true });
     setPass('beauty');
     setCopy('idle');
-    let cancelled = false;
+    const controller = new AbortController();
     (async () => {
       if (!sheet.current) {
         const hub = await import('@/lib/studio/sections/hub');
-        if (cancelled || !stage.current || !scope.current?.alive) return;
+        if (controller.signal.aborted || !stage.current || !scope.current?.alive) return;
         sheet.current = hub.mountSheet(stage.current, scope.current);
       }
       await sheet.current.show(id);
     })().catch((error) => console.warn('hub: sheet failed to open', id, error));
-    return () => {
-      cancelled = true;
-    };
+    return () => controller.abort();
   }, [id]);
 
   const choose = (next: HubPass) => {

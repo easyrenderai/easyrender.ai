@@ -101,7 +101,11 @@ export function CatalogLibrary({
   }, [items]);
 
   useEffect(() => {
-    import('@google/model-viewer').then(() => setViewerReady(true));
+    const controller = new AbortController();
+    import('@google/model-viewer').then(() => {
+      if (!controller.signal.aborted) setViewerReady(true);
+    });
+    return () => controller.abort();
   }, []);
 
   // One poll at a time. A poll that started before a local change (an upload or a build
@@ -262,16 +266,21 @@ export function CatalogLibrary({
   }, []);
 
   // A photo attached on the home page before signing up is uploaded here, once, for this account.
-  const claimed = useRef(false);
+  // The handoff from the home composer is claimed once. Each effect run (Strict Mode runs two)
+  // only reports it while it is still mounted.
+  const handoff = useRef<Promise<boolean> | null>(null);
   // biome-ignore lint/correctness/useExhaustiveDependencies: runs once on mount
   useEffect(() => {
-    if (claimed.current) return;
-    claimed.current = true;
-    void takePending().then(async (saved) => {
-      if (!saved) return;
+    const controller = new AbortController();
+    handoff.current ??= takePending().then(async (saved) => {
+      if (!saved) return false;
       await addFiles([saved.file], saved.prompt);
-      setNotice(t('fromHome'));
+      return true;
     });
+    void handoff.current.then((isAdded) => {
+      if (isAdded && !controller.signal.aborted) setNotice(t('fromHome'));
+    });
+    return () => controller.abort();
   }, []);
 
   const pending = items.filter((item) => item.status === 'preview_ready');

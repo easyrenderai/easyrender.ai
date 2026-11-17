@@ -46,7 +46,7 @@ export function ModelViewer({ id, version }: { id: string; version: string }) {
   const [viewerLoaded, setViewerLoaded] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
     setPhase('downloading');
     (async () => {
       try {
@@ -56,17 +56,15 @@ export function ModelViewer({ id, version }: { id: string; version: string }) {
           idempotent: true,
         });
         const base64 = await saved.base64();
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setDataUrl(`data:model/gltf-binary;base64,${base64}`);
           setPhase('rendering');
         }
       } catch {
-        if (!cancelled) setPhase('error');
+        if (!controller.signal.aborted) setPhase('error');
       }
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => controller.abort();
   }, [id, version]);
 
   useEffect(() => {

@@ -98,21 +98,20 @@ export function MaterialPanel({ renderId, viewer }: Props) {
   }, []);
 
   useEffect(() => {
-    let alive = true;
-    fetch(`/api/renders/${renderId}/materials`, { cache: 'no-store' })
+    const controller = new AbortController();
+    fetch(`/api/renders/${renderId}/materials`, { cache: 'no-store', signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error(String(response.status));
         return (await response.json()) as Loaded;
       })
       .then((data) => {
-        if (!alive) return;
         adopt(data);
         setStatus('ready');
       })
-      .catch(() => alive && setStatus('error'));
-    return () => {
-      alive = false;
-    };
+      .catch(() => {
+        if (!controller.signal.aborted) setStatus('error');
+      });
+    return () => controller.abort();
   }, [renderId, adopt]);
 
   const materials = loaded?.materials ?? [];
