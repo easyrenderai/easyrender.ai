@@ -12,7 +12,13 @@ import es from '@/messages/es.json';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
-type Props = { searchParams: Promise<{ next?: string; error?: string; locale?: string }> };
+type Props = {
+  searchParams: Promise<{
+    next?: string | string[];
+    error?: string | string[];
+    locale?: string | string[];
+  }>;
+};
 
 export default async function AdminVerificationPage({ searchParams }: Props) {
   const params = await searchParams;
@@ -29,7 +35,7 @@ export default async function AdminVerificationPage({ searchParams }: Props) {
       next={next}
       locale={locale}
       isGoogleAvailable={Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)}
-      hasOAuthError={params.error === 'oauth'}
+      hasOAuthError={Boolean(params.error)}
       copy={(locale === 'es' ? es : en).AuthService.adminAccess}
     />
   );

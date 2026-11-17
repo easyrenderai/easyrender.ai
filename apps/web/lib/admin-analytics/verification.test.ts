@@ -92,3 +92,12 @@ it('shows recovery only for an unverified allowlisted session', async () => {
   const page = await AdminVerificationPage({ searchParams: Promise.resolve({ locale: 'es' }) });
   expect(renderToStaticMarkup(page)).toContain(es.AuthService.adminAccess.title);
 });
+
+it('shows the recovery error when Google returns its own OAuth error code', async () => {
+  vi.stubEnv('ADMIN_EMAILS', 'admin@example.test');
+  fixture.user = { email: 'admin@example.test', emailVerified: false };
+  const page = await AdminVerificationPage({
+    searchParams: Promise.resolve({ error: 'access_denied' }),
+  });
+  expect(renderToStaticMarkup(page)).toContain(en.AuthService.adminAccess.error);
+});

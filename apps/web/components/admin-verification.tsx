@@ -37,7 +37,7 @@ export function AdminVerification({
         provider: 'google',
         callbackURL: target,
         newUserCallbackURL: target,
-        errorCallbackURL: `${adminVerificationPath(target)}&locale=${locale}&error=oauth`,
+        errorCallbackURL: `${adminVerificationPath(target)}&locale=${locale}`,
       });
       if (result.error) {
         setHasError(true);
