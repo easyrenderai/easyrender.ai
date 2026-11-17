@@ -58,7 +58,7 @@ list is a secret except the token.
 | `VERCEL_TOKEN`                    | secret             | A Vercel token for the `shipshitdev` team that can deploy `easyrender.ai`                   |
 | `VERCEL_ORG_ID`                   | variable           | The team id (`.vercel/project.json` after `vercel link`, or Team Settings)                  |
 | `VERCEL_PROJECT_ID`               | variable           | The `easyrender.ai` project id (same file, or Project Settings)                             |
-| `VERCEL_AUTOMATION_BYPASS_SECRET` | secret, optional   | Optional. The staged smoke uses `vercel curl` with `VERCEL_TOKEN`; set this to use your own |
+| `VERCEL_AUTOMATION_BYPASS_SECRET` | secret, optional   | Overrides the staged smoke bypass; otherwise `VERCEL_TOKEN` fetches or generates it via the Vercel API |
 | `PRODUCTION_URL`                  | variable, optional | Defaults to `https://easyrender.ai`                                                         |
 | `AWS_DEPLOY_ROLE_ARN`             | variable, optional | Output `DeployRoleArn` of `infra/aws/github-deploy-role.yml`. Empty skips the backend job   |
 | `AWS_REGION`                      | variable, optional | Defaults to `eu-west-1`                                                                     |
