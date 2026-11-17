@@ -11,6 +11,12 @@ import {
 import { png } from './images';
 import { readRenderScene, renderNeutral } from './renderer';
 
+// The default 15s render budget and the 20s test timeout are wall clock, so a loaded CI runner
+// (these tests take 16-18s there) can turn an `accepted` verdict into `skipped`. Tests that assert
+// a verdict get room on both.
+const ROOMY = { budgetMs: 120_000 };
+const ROOMY_TIMEOUT = 60_000;
+
 async function sample() {
   const { bytes } = await fixture('wood');
   const doc = readDocument(bytes);
@@ -53,14 +59,14 @@ describe('source-photo correction loop', () => {
 
   it('corrects a faded texture, remeasures it, and keeps the geometry byte-for-byte', async () => {
     const { bytes, photo } = await sample();
-    const result = await correctFidelity(bytes, photo);
+    const result = await correctFidelity(bytes, photo, ROOMY);
     expect(result.report.status).toBe('accepted');
     if (!result.report.before || !result.report.after) throw new Error('Missing measurements');
     expect(result.report.after.meanDeltaE).toBeLessThan(result.report.before.meanDeltaE * 0.8);
     expect(result.report.after.detailError).toBeLessThan(result.report.before.detailError);
     expect(result.report.changedTexels).toBeGreaterThan(100);
     expect(geometryHash(result.bytes)).toBe(geometryHash(bytes));
-  }, 20_000);
+  }, ROOMY_TIMEOUT);
   it('preserves the input when the photo mask or camera is unreliable', async () => {
     const { bytes } = await sample();
     const blank = await png({ width: 64, height: 64, data: new Uint8Array(64 * 64 * 4).fill(255) });
@@ -109,22 +115,22 @@ describe('source-photo correction loop', () => {
     doc.json.nodes?.push({ mesh: 1, translation: [0, 0, -0.5] });
     doc.json.scenes?.[0].nodes?.push(1);
     const input = writeDocument(doc);
-    const result = await correctFidelity(input, photo);
+    const result = await correctFidelity(input, photo, ROOMY);
     expect(result.report.status).toBe('accepted');
     const out = readDocument(result.bytes);
     expect(out.json.materials?.[1].pbrMetallicRoughness?.baseColorTexture?.index).toBe(index);
     expect(textureBytes(out, index)).toEqual(textureBytes(doc, index));
     expect(geometryHash(result.bytes)).toBe(geometryHash(input));
-  }, 20_000);
+  }, ROOMY_TIMEOUT);
   it('preserves a faithful model when no meaningful improvement can be verified', async () => {
     const { bytes } = await sample();
     const photo = await png(renderNeutral(await readRenderScene(bytes, 512), 0, 0, 256));
-    const result = await correctFidelity(bytes, photo);
+    const result = await correctFidelity(bytes, photo, ROOMY);
     expect(result.bytes).toEqual(bytes);
     expect(result.report.status).toBe('rejected');
     expect(result.report.reason).toBe('no_verified_improvement');
     expect(result.report.changedTexels).toBe(0);
-  }, 20_000);
+  }, ROOMY_TIMEOUT);
   it('skips transformed UVs instead of projecting into the wrong texture coordinates', async () => {
     const { bytes, photo } = await sample();
     const doc = readDocument(bytes);
