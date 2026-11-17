@@ -77,3 +77,28 @@ The REST payload uses `from`, `to`, `reply_to`, `subject`, `text`, `html` and cu
 - `EMAIL_ALLOWED_RECIPIENTS` applies to both streams during controlled production testing. Sender, reply mailbox, legal identity, domain, API key and webhook secret are shared; education additionally uses `EMAIL_TOKEN_SECRET`. Disabling education does not disable service, and vice versa.
 
 Token-bearing pages and endpoints are noindex/no-referrer/no-store and excluded from analytics/error-token telemetry. Automated integration tests use scratch PostgreSQL and fake provider transports. They verify real auth-to-encrypted-outbox-to-verification/recovery behavior, OAuth compatibility, render rollback/atomicity, webhook races and cross-stream suppression; they do not prove inbox rendering or production DNS/provider configuration. Production activation still requires the controlled inbox test above.
+
+## Email presentation
+
+Service and educational emails share `packages/core/src/mailing/template.ts`: a static PNG
+of the existing brand mark, a readable easyrender wordmark, a short heading, an inline-styled
+primary action and a restrained footer. The palette resolves the product tokens from
+`DESIGN.md` because email clients cannot load the app stylesheet. Layout tables are presentational;
+no JavaScript, web fonts, SVG embedding or recipient-specific image URLs are sent.
+The PNG is served at `/email/brand-mark.png`; its editable source sits alongside it.
+
+English and Spanish copy remains in the message catalogs. Service notices follow the action,
+including expiry and unexpected-request advice. Educational stories retain their existing
+segmentation and end with Jorge's signature, project action, preferences and unsubscribe links.
+Plain-text alternatives include every action and service notice. Account emails have no marketing
+unsubscribe headers. Sender, Reply-To, consent, timing and transport retries are unchanged.
+
+Queued payloads are immutable snapshots: the new design applies to newly composed messages after
+release. Do not rewrite pending deliveries or resend old account emails just to update styling.
+No new environment variables are required. The logo inside the message does not configure the
+mailbox's sender avatar.
+
+Local Chromium checks cover 375px and 900px, both system color preferences and blocked images.
+The template deliberately requests a light reading surface. Client-specific dark-mode inversion
+and Outlook/Gmail inbox rendering still need an actual inbox check; browser screenshots are
+previews, not proof of delivery. Examples: `docs/screenshots/branded-emails/`.

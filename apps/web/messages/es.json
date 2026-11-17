@@ -2528,13 +2528,17 @@
     "requestedLanguage": "Idioma solicitado para los correos: {language}"
   },
   "MailingSystem": {
-    "confirmSubject": "Confirma tus correos educativos de Easy Render",
-    "confirmBody": "Has solicitado correos prácticos de Easy Render. Confirma tu elección abajo. La serie incluye hasta seis correos educativos durante los 30 días desde tu primera confirmación. No incluye una newsletter ni futuras ofertas. Si no lo solicitaste, ignora este mensaje.",
-    "confirmAction": "Confirmar mis correos educativos",
+    "confirmSubject": "Confirma tus correos prácticos de 3D · easyrender",
+    "confirmBody": "Has pedido ideas prácticas para mostrar mejor tus productos: historias, ejemplos y pequeños ejercicios que puedes aplicar a tu próximo proyecto.\n\nConfirma abajo para recibir hasta seis correos durante los próximos 30 días, desde tu primera confirmación. Esta serie no te suscribe a una newsletter ni a futuras ofertas.\n\nSi no has solicitado estos correos, puedes ignorar este mensaje.",
+    "confirmAction": "Quiero recibir las ideas",
     "footerReason": "Recibes esta serie educativa porque la solicitaste y confirmaste. Termina a los 30 días de tu primera confirmación.",
     "unsubscribeLabel": "Dejar de recibir estos correos",
     "preferencesLabel": "Gestionar preferencias de email",
-    "educationalActionLabel": "Continuar en Easy Render"
+    "educationalActionLabel": "Continuar en easyrender",
+    "lang": "es",
+    "signature": "Jorge Rodríguez\neasyrender",
+    "confirmTitle": "Otra forma de mirar tus productos.",
+    "confirmPreheader": "Confirma que quieres recibir ideas prácticas de 3D."
   },
   "MailingEmails": {
     "ecommerce_d00": {
@@ -2910,24 +2914,42 @@
   },
   "ServiceEmails": {
     "verify_email": {
-      "subject": "Verifica tu email de Easy Render",
-      "body": "Gracias por crear tu cuenta de Easy Render. Confirma que esta dirección de email es tuya con el enlace de abajo.\n\nEl enlace caduca en una hora. Si no has creado esta cuenta, ignora este mensaje. Es un correo de tu cuenta, no una suscripción comercial.",
-      "action": "Verificar mi email"
+      "subject": "Confirma tu email · easyrender",
+      "title": "Tu cuenta, a un paso.",
+      "preheader": "Confirma tu dirección para terminar de configurar tu cuenta de easyrender.",
+      "body": "Una foto de producto es el principio. En tu cuenta de easyrender puedes reunir tus proyectos y explorarlos en 3D.\n\nConfirma tu email para terminar de configurar tu cuenta.",
+      "action": "Confirmar mi email",
+      "notice": "Este enlace caduca en una hora. Si no has creado esta cuenta, puedes ignorar este correo.",
+      "lang": "es",
+      "footerReason": "Un aviso sobre tu cuenta o tu proyecto en easyrender. ¿Necesitas ayuda? Responde a este correo."
     },
     "reset_password": {
-      "subject": "Restablece tu contraseña de Easy Render",
-      "body": "Se ha solicitado un cambio de contraseña para tu cuenta de Easy Render. Usa el enlace de abajo para elegir una nueva contraseña.\n\nEl enlace caduca en una hora y solo se puede usar una vez. Si no lo has solicitado, ignora este correo: tu contraseña seguirá siendo la misma.",
-      "action": "Elegir una nueva contraseña"
+      "subject": "Restablece tu contraseña · easyrender",
+      "title": "Vuelve a tus proyectos.",
+      "preheader": "Elige una nueva contraseña para tu cuenta de easyrender.",
+      "body": "Has solicitado una nueva contraseña para tu cuenta de easyrender. Elígela abajo para volver a tus proyectos.",
+      "action": "Elegir una nueva contraseña",
+      "notice": "Este enlace caduca en una hora y solo se puede usar una vez. Si no lo has solicitado, ignora este correo. Tu contraseña seguirá siendo la misma.",
+      "lang": "es",
+      "footerReason": "Un aviso sobre tu cuenta o tu proyecto en easyrender. ¿Necesitas ayuda? Responde a este correo."
     },
     "render_ready": {
-      "subject": "Tu resultado de Easy Render está listo",
-      "body": "Tu trabajo de renderizado ha terminado. Abre Easy Render para revisar el resultado y las opciones disponibles.",
-      "action": "Ver mi resultado"
+      "subject": "Tu resultado está listo para revisar · easyrender",
+      "title": "Es hora de mirar los detalles.",
+      "preheader": "Abre tu resultado y compáralo con la foto de tu producto.",
+      "body": "Tu render ha terminado. Abre el resultado en easyrender y compáralo con tu foto original.\n\nEmpieza por lo que hace reconocible a tu producto: su silueta, sus proporciones y su acabado. En la página del proyecto encontrarás los siguientes pasos disponibles.",
+      "action": "Ver mi resultado",
+      "lang": "es",
+      "footerReason": "Un aviso sobre tu cuenta o tu proyecto en easyrender. ¿Necesitas ayuda? Responde a este correo."
     },
     "render_failed": {
-      "subject": "Tu trabajo de Easy Render no ha podido terminar",
-      "body": "No se ha podido completar tu trabajo de renderizado. Abre Easy Render para ver su estado y los siguientes pasos disponibles.",
-      "action": "Revisar mi trabajo"
+      "subject": "Una actualización de tu render · easyrender",
+      "title": "Este render no ha terminado.",
+      "preheader": "Abre tu proyecto para revisar su estado y los siguientes pasos.",
+      "body": "No hemos podido completar este render. Abre tu proyecto para consultar su estado y los siguientes pasos disponibles.\n\nSi necesitas ayuda, responde a este correo con el enlace del proyecto para que podamos revisarlo.",
+      "action": "Revisar mi proyecto",
+      "lang": "es",
+      "footerReason": "Un aviso sobre tu cuenta o tu proyecto en easyrender. ¿Necesitas ayuda? Responde a este correo."
     }
   },
   "LandingIntent": {
