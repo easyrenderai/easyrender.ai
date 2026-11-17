@@ -30,6 +30,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { UpscaleAction } from '@/components/upscale/upscale-action';
 import { latestUpscale, useUpscales } from '@/components/upscale/use-upscales';
 import { captureBrowser, observeRender } from '@/lib/analytics/browser';
+import { newRenderHref } from '@/lib/new-render-href';
 
 import { startRenderPolling } from '@/lib/render-polling';
 import { correctionNote, SHEET_ISSUES, type SheetIssue } from '@/lib/sheet-correction';
@@ -78,6 +79,8 @@ export function RenderView({
     note,
   );
   const isCorrectionValid = correction.length > 0 && correction.length <= NOTE_MAX_LENGTH;
+  // Signed-in people start a new render in the app (the dashboard composer), not on the marketing home.
+  const newHref = newRenderHref(signedIn);
   const upscales = useUpscales({ renderId: initial.id }, owner && signedIn && initial.canUpscale);
 
   useEffect(() => {
@@ -201,7 +204,7 @@ export function RenderView({
         downloadUrl={owner ? `${base}/model?download=1` : null}
         exportsUrl={owner && signedIn && canExport ? `${base}/exports` : null}
         editableRenderId={owner ? render.id : undefined}
-        nextStepsHref={owner ? (signedIn ? '/dashboard' : '/#try') : undefined}
+        nextStepsHref={owner ? newHref : undefined}
       />
     ) : (
       <div className="flex aspect-square w-full flex-col items-center justify-center gap-3 rounded-xl border bg-muted/40 p-6 text-center text-muted-foreground sm:aspect-[4/3]">
@@ -432,7 +435,7 @@ export function RenderView({
         )}
       {render.status === 'failed' && (
         <Button variant="outline" className="w-full" asChild>
-          <Link href="/">{t('tryAnother')}</Link>
+          <Link href={newHref}>{t('tryAnother')}</Link>
         </Button>
       )}
       {signedIn && render.status !== 'failed' && (
@@ -457,7 +460,7 @@ export function RenderView({
     </>
   ) : (
     <Button className="w-full" asChild>
-      <Link href="/#top">
+      <Link href={signedIn ? newHref : '/#top'}>
         <Sparkles />
         {t('makeYourOwn')}
       </Link>
