@@ -1,10 +1,15 @@
+import { readFileSync } from 'node:fs';
 import { db, type Render } from '@easyrender/db';
 import { FALLBACK_SHEET_SETTINGS, ProviderRequestError, SHEET_MODEL } from '@easyrender/harness';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { grantCreditsInTransaction } from './credits';
 import { advance, createDraft, startSheet } from './renders';
 import { reportError } from './report';
+import { putFile } from './storage';
 
 const start = vi.fn();
+const getPrediction = vi.fn();
+const downloadFile = vi.fn();
 
 vi.mock('@easyrender/db', () => ({ db: vi.fn() }));
 vi.mock('./config', () => ({
@@ -32,11 +37,13 @@ vi.mock('./storage', () => ({
 vi.mock('@easyrender/harness', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@easyrender/harness')>()),
   checkPhoto: async () => ({ ok: true, measures: {}, warnings: [] }),
+  download: (...args: unknown[]) => downloadFile(...args),
   loadHarness: async () =>
     (await importOriginal<typeof import('@easyrender/harness')>()).DEFAULT_HARNESS,
   createReplicate: () => ({
     upload: async () => 'data:image/png;base64,AQID',
     start: (...args: unknown[]) => start(...args),
+    get: (...args: unknown[]) => getPrediction(...args),
   }),
 }));
 
@@ -89,7 +96,11 @@ const input = {
 
 beforeEach(() => {
   start.mockReset();
+  getPrediction.mockReset();
+  downloadFile.mockReset();
   vi.mocked(db).mockReset();
+  vi.mocked(putFile).mockClear();
+  vi.mocked(grantCreditsInTransaction).mockClear();
 });
 
 describe('starting a preview when Replicate rejects the request', () => {
@@ -237,5 +248,59 @@ describe('starting a paid angle sheet when Replicate answers 500', () => {
     start.mockRejectedValue(new ProviderRequestError('timed out', true));
     await startSheet('r1', { userId: 'u1' });
     expect(start).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('an angle sheet that repeats one view', () => {
+  // The showcase vase is one view pasted into every cell: what Sentry EASYRENDERAI-D rejected.
+  const repeatedSheet = new Uint8Array(
+    readFileSync(new URL('../../../apps/web/public/showcase/vase-angles.jpg', import.meta.url)),
+  );
+  const drafting = {
+    id: 'r1',
+    status: 'drafting',
+    sourceKey: 'local:sources/source.png',
+    sheetPredictionId: 'pred-1',
+    sheetKey: null,
+    credits: 8,
+    userId: 'u1',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  } as Partial<Render>;
+
+  async function advanceWithRepeatedSheet() {
+    vi.mocked(reportError).mockClear();
+    const stored = fakeDatabase(drafting);
+    getPrediction.mockResolvedValue({
+      id: 'pred-1',
+      status: 'succeeded',
+      output: 'https://replicate.example/sheet.png',
+    });
+    downloadFile.mockResolvedValue(repeatedSheet);
+    const result = await advance('r1');
+    return { stored, result };
+  }
+
+  it('never keeps the sheet or starts the 3D build, and ends the render as failed', async () => {
+    const { stored, result } = await advanceWithRepeatedSheet();
+    expect(result?.status).toBe('failed');
+    expect(stored().status).toBe('failed');
+    expect(stored().error).toContain('sheet_repeated_views');
+    expect(stored().sheetKey).toBeNull();
+    expect(putFile).not.toHaveBeenCalled();
+    expect(start).not.toHaveBeenCalled();
+  });
+
+  it('refunds the credits and reports a warning, not an exception', async () => {
+    await advanceWithRepeatedSheet();
+    expect(grantCreditsInTransaction).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ userId: 'u1', amount: 8, reason: 'render_failed' }),
+    );
+    expect(reportError).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.stringContaining('sheet_repeated_views') }),
+      expect.objectContaining({ renderId: 'r1' }),
+      'warning',
+    );
   });
 });

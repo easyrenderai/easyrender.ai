@@ -9,6 +9,7 @@ it('drops the MCP client mistakes Sentry reported as server errors', () => {
     'Pass an easyrender API key as Authorization: Bearer er_...',
     'Bad Request: Unsupported protocol version: 2026-07-28 (supported: 2025-11-25)',
     'Error: Bad Request: Parse error: Invalid JSON',
+    'Not Acceptable: Client must accept both application/json and text/event-stream',
   ])
     expect(isExpected(EXPECTED_SERVER_ERRORS, message)).toBe(true);
 });

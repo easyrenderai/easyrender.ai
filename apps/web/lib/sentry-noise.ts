@@ -8,6 +8,9 @@ export const EXPECTED_SERVER_ERRORS: RegExp[] = [
   /Unsupported protocol version/,
   // Malformed MCP requests are refused by the SDK transport with a "Bad Request:" message.
   /^(?:Error: )?Bad Request: /,
+  // The SDK's 406 for a client whose Accept header lacks application/json or text/event-stream.
+  // The client gets a JSON-RPC error that names the fix.
+  /^(?:Error: )?Not Acceptable: /,
 ];
 
 // Wallet and address-autofill extensions patch the page and throw from their own injected script.
