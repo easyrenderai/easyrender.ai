@@ -38,15 +38,6 @@
   "apps/web/components/shopify-app.tsx": {
     "use_effect": 2
   },
-  "apps/web/components/studio/hub.tsx": {
-    "use_effect": 6
-  },
-  "apps/web/components/studio/use-section.ts": {
-    "use_effect": 1
-  },
-  "apps/web/components/upscale/use-upscales.ts": {
-    "use_effect": 2
-  },
   "tools/render-guides/hero.tsx": {
     "use_effect": 2
   },

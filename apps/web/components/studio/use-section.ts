@@ -17,6 +17,7 @@ export function useSection<T extends HTMLElement>(
   const ref = useRef<T>(null);
   const run = useEffectEvent(setup);
 
+  // use-effect-audit: ignore observes the element with an IntersectionObserver and starts the 3D section, outside React
   // biome-ignore lint/correctness/useExhaustiveDependencies: `key` is the caller's signal to set the section up again
   useEffect(() => {
     const root = ref.current;

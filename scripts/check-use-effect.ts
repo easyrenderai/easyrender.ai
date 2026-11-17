@@ -44,7 +44,7 @@ const HINT = [
   '',
   'Do not add effects: derive the value in render, run the work in the event handler that caused it,',
   'or reset state with a key. An async effect needs an AbortController signal. For a subscription to',
-  'a system outside React, put "// use-effect-audit: ignore <reason>" on the line above the call.',
+  'a system outside React, put "// use-effect-audit: ignore <reason>" in the comment lines directly above the call.',
   'After removing effects, lower the baseline with: bun run check:use-effects --prune',
 ].join('\n');
 

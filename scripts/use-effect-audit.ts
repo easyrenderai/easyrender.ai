@@ -7,7 +7,8 @@ export type EffectCounts = Record<EffectMetric, number>;
 
 export const METRICS: readonly EffectMetric[] = ['use_effect', 'async_effect_without_abort'];
 
-// One escape hatch: `// use-effect-audit: ignore <reason>` on the line above the effect call.
+// One escape hatch: `// use-effect-audit: ignore <reason>` in the comment lines directly above the
+// effect call (so it can sit next to a biome-ignore comment).
 const IGNORE = /^\s*\/\/\s*use-effect-audit:\s*ignore(?:\s+(\S.*?))?\s*$/;
 const EFFECT_HOOKS = new Set(['useEffect', 'useLayoutEffect']);
 const ABORT_NAMES = new Set(['AbortController', 'AbortSignal', 'signal']);
@@ -68,6 +69,15 @@ function mentionsAbort(node: ts.Node): boolean {
   return found;
 }
 
+// The ignore comment, if one is in the run of `//` comment lines that ends on the line above.
+function ignoreAbove(lines: string[], line: number): RegExpExecArray | null {
+  for (let index = line - 2; index >= 0 && /^\s*\/\//.test(lines[index] ?? ''); index -= 1) {
+    const match = IGNORE.exec(lines[index] ?? '');
+    if (match) return match;
+  }
+  return null;
+}
+
 export function auditSource(fileName: string, source: string): EffectAudit {
   const kind =
     fileName.endsWith('.tsx') || fileName.endsWith('.jsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
@@ -86,8 +96,7 @@ export function auditSource(fileName: string, source: string): EffectAudit {
       const name = hookName(node);
       if (name && EFFECT_HOOKS.has(name)) {
         const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
-        const above = lines[line - 2] ?? '';
-        const ignore = IGNORE.exec(above);
+        const ignore = ignoreAbove(lines, line);
         const callback = node.arguments[0];
         const isFunction =
           callback !== undefined &&

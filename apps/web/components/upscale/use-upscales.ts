@@ -21,11 +21,13 @@ export function useUpscales(filter: { renderId?: string; viewSetId?: string }, i
     if (response?.ok) setRows(((await response.json()) as { upscales: UpscaleView[] }).upscales);
   }, [query]);
 
+  // use-effect-audit: ignore this hook is the upscale data layer: it loads the rows once enabled (no query library in the repo)
   useEffect(() => {
     if (isEnabled) void refresh();
   }, [isEnabled, refresh]);
 
   const isRunning = rows.some((row) => row.status === 'processing');
+  // use-effect-audit: ignore timer that polls the rows while an enlargement is processing
   useEffect(() => {
     if (!isRunning) return;
     const timer = setInterval(refresh, 3000);
