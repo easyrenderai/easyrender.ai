@@ -30,6 +30,7 @@ function StudioLight() {
   const { gl, scene } = useThree();
   // Install the environment before Remotion advances its first frame. Otherwise
   // the single-frame poster can capture different lighting from the video.
+  // use-effect-audit: ignore builds and disposes the three.js environment map before the first frame
   useLayoutEffect(() => {
     const room = new RoomEnvironment();
     const generator = new PMREMGenerator(gl);
@@ -49,6 +50,7 @@ export function HeroMotion() {
   const f = useCurrentFrame();
   const [scene, setScene] = useState<Group | null>(null);
   const [handle] = useState(() => delayRender('Load existing table example'));
+  // use-effect-audit: ignore loads the GLB into the Remotion scene, holding the render with delayRender
   useEffect(() => {
     new GLTFLoader().load(
       staticFile('hero-table.glb'),

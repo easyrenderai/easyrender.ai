@@ -59,17 +59,20 @@ export default function RenderScreen() {
     }
   }, [id, upsert]);
 
+  // use-effect-audit: ignore loads the render on mount; the mobile app has no query library (own lockfile)
   useEffect(() => {
     void load();
   }, [load]);
 
   // A finished build or preview changes the credit balance.
+  // use-effect-audit: ignore refreshes the shared credit balance when the render status changes, outside React state
   // biome-ignore lint/correctness/useExhaustiveDependencies: refresh only when the status changes
   useEffect(() => {
     if (status) void refresh();
   }, [status]);
 
   const inFlight = render ? isInFlight(render) : false;
+  // use-effect-audit: ignore timer that polls the render while it is in flight
   useEffect(() => {
     if (!inFlight) return;
     const timer = setInterval(() => void load(), POLL_MS);

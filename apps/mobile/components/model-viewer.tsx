@@ -45,6 +45,7 @@ export function ModelViewer({ id, version }: { id: string; version: string }) {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
   const [viewerLoaded, setViewerLoaded] = useState(false);
 
+  // use-effect-audit: ignore downloads the GLB to the cache and aborts on cleanup; the mobile app has no query library
   useEffect(() => {
     const controller = new AbortController();
     setPhase('downloading');
@@ -67,6 +68,7 @@ export function ModelViewer({ id, version }: { id: string; version: string }) {
     return () => controller.abort();
   }, [id, version]);
 
+  // use-effect-audit: ignore injects the model into the WebView, a widget outside React
   useEffect(() => {
     if (dataUrl && viewerLoaded) {
       web.current?.injectJavaScript(`window.setModel(${JSON.stringify(dataUrl)}); true;`);

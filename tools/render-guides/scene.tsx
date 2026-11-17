@@ -602,6 +602,7 @@ function Guide({ journey }: { journey: Journey }) {
   const f = useCurrentFrame();
   const [scene, setScene] = useState<Group | null>(null);
   const [handle] = useState(() => delayRender('Loading the textured wood table model'));
+  // use-effect-audit: ignore loads the GLB into the Remotion scene, holding the render with delayRender
   useEffect(() => {
     new GLTFLoader().load(
       staticFile('table.glb'),
