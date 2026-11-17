@@ -23,6 +23,7 @@ const AuthContext = createContext<AuthState | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null | undefined>(undefined);
 
+  // use-effect-audit: ignore restores the session on launch and subscribes to the unauthorized handler of the API client
   useEffect(() => {
     const controller = new AbortController();
     api

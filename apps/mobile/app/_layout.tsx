@@ -15,6 +15,7 @@ function Routes() {
   const { user } = useAuth();
   const t = useTheme();
 
+  // use-effect-audit: ignore hides the native splash screen once the sign-in state is known, an external system
   useEffect(() => {
     if (user !== undefined) void SplashScreen.hideAsync();
   }, [user]);
