@@ -2,7 +2,7 @@ import { createCipheriv, createDecipheriv, createHash, randomBytes, randomUUID }
 import { db, type Prisma, type ServiceEmailDelivery } from '@easyrender/db';
 import { Webhook } from 'svix';
 import { AppError } from './errors';
-import { escapeMailHtml } from './mailing/security';
+import { buildServiceMailPayload, type ServiceEmailCopy } from './mailing/service-template';
 import {
   type MailPayload,
   resendConfig,
@@ -10,7 +10,7 @@ import {
   sendResendMail,
 } from './mailing/transport';
 
-export type ServiceEmailCopy = { subject: string; body: string; action: string };
+export type { ServiceEmailCopy } from './mailing/service-template';
 export type ServiceEmailTexts = Record<
   'en' | 'es',
   Record<'render_ready' | 'render_failed', ServiceEmailCopy>
@@ -81,22 +81,7 @@ const aad = (entry: Pick<ServiceEmailDelivery, 'id' | 'purpose' | 'email'>) =>
 function buildPayload(email: string, url: string, copy: ServiceEmailCopy): MailPayload {
   const config = serviceConfig();
   if (!config) return unavailable();
-  if (/[\r\n]/.test(email + copy.subject) || new URL(url).origin !== config.appUrl)
-    throw new AppError('Invalid service email', 400, 'invalid_service_email');
-  return {
-    from: config.from,
-    to: [email],
-    reply_to: config.replyTo,
-    subject: copy.subject,
-    text: `${copy.body}\n\n${copy.action}: ${url}\n\n${config.identity}`,
-    html: `<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"></head><body><main style="max-width:600px;margin:0 auto;padding:24px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;overflow-wrap:anywhere">${copy.body
-      .split(/\n\n+/)
-      .map((p) => `<p>${escapeMailHtml(p).replace(/\n/g, '<br>')}</p>`)
-      .join(
-        '',
-      )}<p><a href="${escapeMailHtml(url)}">${escapeMailHtml(copy.action)}</a></p><p>${escapeMailHtml(config.identity)}</p></main></body></html>`,
-    headers: {},
-  };
+  return buildServiceMailPayload(email, url, copy, config);
 }
 async function isSuppressed(tx: Prisma.TransactionClient, email: string): Promise<boolean> {
   return (

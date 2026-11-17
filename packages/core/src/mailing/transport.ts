@@ -1,6 +1,10 @@
 import type { MailingCopy } from './policy';
-import { escapeMailHtml } from './security';
+import { renderBrandedEmail } from './template';
 export type MailingSystemCopy = {
+  lang?: string;
+  signature?: string;
+  confirmTitle?: string;
+  confirmPreheader?: string;
   educationalActionLabel?: string;
   confirmSubject: string;
   confirmBody: string;
@@ -102,6 +106,7 @@ export function buildMailPayload(
   }
   const content = [
     copy.body,
+    links.confirm ? '' : text.signature,
     links.confirm ? `${text.confirmAction}: ${links.confirm}` : '',
     links.action ? `${links.action.label}: ${links.action.url}` : '',
   ]
@@ -115,10 +120,6 @@ export function buildMailPayload(
   ]
     .filter(Boolean)
     .join('\n');
-  const paragraphs = copy.body
-    .split(/\n\n+/)
-    .map((p) => `<p>${escapeMailHtml(p).replace(/\n/g, '<br>')}</p>`)
-    .join('\n');
   const oneClick = new URL(links.unsubscribe);
   oneClick.pathname = '/api/email/unsubscribe';
   return {
@@ -127,7 +128,21 @@ export function buildMailPayload(
     reply_to: config.replyTo,
     subject: copy.subject,
     text: `${content}\n\n${footer}`,
-    html: `<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0"><div style="display:none;max-height:0;overflow:hidden">${escapeMailHtml(copy.preheader)}</div><main style="max-width:600px;margin:0 auto;padding:24px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;overflow-wrap:anywhere">${paragraphs}${links.action ? `<p><a href="${escapeMailHtml(links.action.url)}" style="display:inline-block;padding:12px 18px;border:1px solid currentColor;border-radius:8px;font-weight:bold">${escapeMailHtml(links.action.label)}</a></p>` : ''}${links.confirm ? `<p><a href="${escapeMailHtml(links.confirm)}">${escapeMailHtml(text.confirmAction)}</a></p>` : ''}<p>${escapeMailHtml(config.identity)}</p><p>${links.confirm ? '' : escapeMailHtml(text.footerReason)}</p><p><a href="${escapeMailHtml(links.preferences)}">${escapeMailHtml(text.preferencesLabel)}</a> · <a href="${escapeMailHtml(links.unsubscribe)}">${escapeMailHtml(text.unsubscribeLabel)}</a></p></main></body></html>`,
+    html: renderBrandedEmail({
+      appUrl: config.appUrl,
+      lang: text.lang,
+      title: links.confirm ? (text.confirmTitle ?? copy.subject) : copy.subject,
+      preheader: links.confirm ? (text.confirmPreheader ?? copy.preheader) : copy.preheader,
+      body: copy.body,
+      signature: links.confirm ? undefined : text.signature,
+      action: links.confirm ? { url: links.confirm, label: text.confirmAction } : links.action,
+      footerReason: links.confirm ? undefined : text.footerReason,
+      identity: config.identity,
+      footerLinks: [
+        { url: links.preferences, label: text.preferencesLabel },
+        { url: links.unsubscribe, label: text.unsubscribeLabel },
+      ],
+    }),
     headers: {
       'List-Unsubscribe': `<${oneClick}>`,
       'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',

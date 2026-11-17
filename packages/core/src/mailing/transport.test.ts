@@ -56,7 +56,9 @@ it('renders useful plain text, escaped HTML and RFC8058 headers without tracking
   expect(mail.text).toContain('Review one item');
   expect(mail.headers['List-Unsubscribe-Post']).toBe('List-Unsubscribe=One-Click');
   expect(mail.headers['List-Unsubscribe']).toContain('/api/email/unsubscribe');
-  expect(mail.html).not.toContain('<img');
+  expect(mail.html.match(/<img\b/g)).toHaveLength(1);
+  expect(mail.html).toContain('src="https://example.com/email/brand-mark.png"');
+  expect(mail.html).not.toContain('width="1"');
 });
 it('uses the same idempotency key and immutable payload on transport retry', async () => {
   env();
