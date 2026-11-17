@@ -1,0 +1,119 @@
+{
+  "apps/mobile/app/_layout.tsx": {
+    "use_effect": 1
+  },
+  "apps/mobile/app/render/[id].tsx": {
+    "use_effect": 3
+  },
+  "apps/mobile/components/model-viewer.tsx": {
+    "use_effect": 2,
+    "async_effect_without_abort": 1
+  },
+  "apps/mobile/components/render-image.tsx": {
+    "use_effect": 1,
+    "async_effect_without_abort": 1
+  },
+  "apps/mobile/lib/auth-context.tsx": {
+    "use_effect": 1,
+    "async_effect_without_abort": 1
+  },
+  "apps/mobile/lib/library-context.tsx": {
+    "use_effect": 2
+  },
+  "apps/web/app/global-error.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/analytics.tsx": {
+    "use_effect": 3
+  },
+  "apps/web/components/app-shell/app-shell.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/app-shell/home-composer.tsx": {
+    "use_effect": 2
+  },
+  "apps/web/components/app-shell/rail-item.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/app-shell/renders-panel.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/app-shell/shell-context.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/blog/article-tracking.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/blog/blog-model.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/blog/promo-video.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/catalog-library.tsx": {
+    "use_effect": 5,
+    "async_effect_without_abort": 2
+  },
+  "apps/web/components/code-snippet.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/ecommerce/platform-picker.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/locale-menu.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/material-panel.tsx": {
+    "use_effect": 2,
+    "async_effect_without_abort": 1
+  },
+  "apps/web/components/mcp-setup.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/model-viewer.tsx": {
+    "use_effect": 2,
+    "async_effect_without_abort": 1
+  },
+  "apps/web/components/pricing-exposure.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/product-views-detail.tsx": {
+    "use_effect": 1,
+    "async_effect_without_abort": 1
+  },
+  "apps/web/components/prompt-bar.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/purchase-conversion.tsx": {
+    "use_effect": 1,
+    "async_effect_without_abort": 1
+  },
+  "apps/web/components/render-journey-video.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/render-view.tsx": {
+    "use_effect": 3
+  },
+  "apps/web/components/shopify-app.tsx": {
+    "use_effect": 2
+  },
+  "apps/web/components/site-menu.tsx": {
+    "use_effect": 1
+  },
+  "apps/web/components/studio/hub.tsx": {
+    "use_effect": 6,
+    "async_effect_without_abort": 2
+  },
+  "apps/web/components/studio/use-section.ts": {
+    "use_effect": 1
+  },
+  "apps/web/components/upscale/use-upscales.ts": {
+    "use_effect": 2
+  },
+  "tools/render-guides/hero.tsx": {
+    "use_effect": 2
+  },
+  "tools/render-guides/scene.tsx": {
+    "use_effect": 1
+  }
+}

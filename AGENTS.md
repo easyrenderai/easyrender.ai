@@ -68,7 +68,8 @@ bun run test                      # vitest in core and harness
 bun run lint                      # biome check .
 bun run format                    # biome check --write .
 bun run check:ui-guards           # no raw HTML controls in apps/web
-bun run preflight                 # what CI runs: biome, ui guards, typecheck, tests
+bun run check:use-effects         # useEffect ratchet; --prune after removing effects, --report to list
+bun run preflight                 # what CI runs: biome, ui guards, effect ratchet, typecheck, tests
 bun run db:generate               # prisma generate
 cd apps/mobile && bun install && bunx expo export --platform android   # mobile bundle check
 cd apps/desktop && bun install && bun run typecheck && bun run test    # desktop; `bun run dev` opens the window
@@ -90,6 +91,20 @@ Postgres in `TEST_DATABASE_URL` and skips without it.
 5. Components are `function` declarations. Server components by default; add `'use client'`
    only when you need state or effects.
 6. Do not hand-edit generated output (`generated/`, `.next/`).
+
+### React effects
+
+- Do not add `useEffect` (or `useLayoutEffect`). `bun run check:use-effects` counts them per file
+  against `scripts/use-effect-baseline.json`: a new file or a higher count fails, and a lower
+  count fails until you run `bun run check:use-effects --prune` and commit the smaller baseline.
+  The baseline only shrinks (CI also compares it with `main`). In order of preference: derive
+  the value in render, do the work in the event handler that caused it, reset state with a `key`,
+  or use the existing data hook. Keep an effect only to subscribe to a system outside React
+  (DOM and browser APIs, timers, sockets, a third-party widget) and mark it with
+  `// use-effect-audit: ignore <reason>` on the line above (the reason is required).
+- An async effect (it awaits, uses `.then` or `fetch`) must create an `AbortController` and pass
+  its `signal`, and abort in the cleanup. One that never mentions `AbortController`,
+  `AbortSignal` or `signal` is counted as `async_effect_without_abort`.
 
 ### UI
 
