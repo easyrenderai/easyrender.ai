@@ -284,11 +284,11 @@ jobs:
           set -uo pipefail
           fetch() {
             if [ -n "${BYPASS}" ]; then
-              curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -H "x-vercel-protection-bypass: ${BYPASS}" "${STAGED_URL%/}$1"
+              curl -sS -o /dev/null -D headers.txt -w '%{http_code}' --max-time 20 -H "x-vercel-protection-bypass: ${BYPASS}" "${STAGED_URL%/}$1"
             else
               # Vercel reads VERCEL_TOKEN from the job environment. An explicit
               # --token here is forwarded to system curl by CLI 65.9.0.
-              vercel curl "$1" --deployment "${STAGED_URL}" -- -sS -o /dev/null -w '%{http_code}' --max-time 20 | tail -c 3
+              vercel curl "$1" --deployment "${STAGED_URL}" -- -sS -o /dev/null -D headers.txt -w '%{http_code}' --max-time 20 | tail -c 3
             fi
           }
           for path in / /api/openapi.json; do
@@ -301,11 +301,14 @@ jobs:
             echo "${path} -> ${status}"
             if [ "${status}" != "200" ]; then
               tail -n 20 curl.err || true
+              # Say where a redirect points (host and path only, never the query) so a protection
+              # page can be told apart from an application redirect.
+              grep -i '^location:' headers.txt 2>/dev/null | sed -E 's/\?.*//' | head -n 3 || true
               echo "::error::${path} returned '${status}' on the staged deployment."
               exit 1
             fi
           done
-          rm -f curl.err
+          rm -f curl.err headers.txt
 
   promote:
     name: Promote to production
