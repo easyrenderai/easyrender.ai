@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { ACCOUNT_NAV, APP_NAV, isActivePath, SETTINGS_NAV } from './nav';
+import { ACCOUNT_NAV, ADMIN_HREF, APP_NAV, isActivePath, isAdminPath, SETTINGS_NAV } from './nav';
 
 // The page name lives here, so the pages themselves carry no title or description. Nested pages
 // add a crumb each: the module first, then the page.
@@ -12,9 +12,10 @@ export function AppBreadcrumb() {
   const nav = useTranslations('DashboardNav');
   const pathname = usePathname();
   const module = [...APP_NAV, ACCOUNT_NAV].find((item) => isActivePath(pathname, item.href));
-  const crumbs: { href: string; label: string }[] = [
-    { href: module?.href ?? '/dashboard', label: nav(module?.key ?? 'overview') },
-  ];
+  // Admin is its own module with no rail item; its pages carry their own titles.
+  const crumbs: { href: string; label: string }[] = isAdminPath(pathname)
+    ? [{ href: ADMIN_HREF, label: nav('admin') }]
+    : [{ href: module?.href ?? '/dashboard', label: nav(module?.key ?? 'overview') }];
   // A render's page is one level inside the Library.
   if (pathname.startsWith('/r/')) crumbs.push({ href: pathname, label: t('model') });
   // Credits and Connectors sit one level inside Account.

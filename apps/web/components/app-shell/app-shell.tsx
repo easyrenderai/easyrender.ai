@@ -12,7 +12,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { AppBreadcrumb } from './app-breadcrumb';
-import { ACCOUNT_NAV, APP_NAV, isActivePath, isSettingsPath } from './nav';
+import { ACCOUNT_NAV, APP_NAV, isActivePath, isAdminPath, isSettingsPath } from './nav';
 import { RailItem } from './rail-item';
 import { RailPreview } from './rail-preview';
 import { RendersPanel } from './renders-panel';
@@ -69,9 +69,11 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
   const isMd = useMediaQuery(MD_QUERY);
   const isXl = useMediaQuery(XL_QUERY);
   const { setLeftNode, setRightNode, hasLeftContext, hasRightContext, slot } = usePanelSlotState();
-  const isSettings = isSettingsPath(pathname);
-  const hasLeft = isMd && !isSettings;
-  const hasRight = isXl && !isSettings && hasRightContext;
+  const isAdmin = isAdminPath(pathname);
+  // Settings and admin are full pages: no drawers.
+  const isFullPage = isSettingsPath(pathname) || isAdmin;
+  const hasLeft = isMd && !isFullPage;
+  const hasRight = isXl && !isFullPage && hasRightContext;
   // A render page also offers its edit history, so the left drawer gets a second tab.
   const [leftTab, setLeftTab] = useState('history');
 
@@ -109,7 +111,13 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
 
   const page = (
     <main className="h-full min-w-0 overflow-y-auto">
-      <div className="mx-auto flex min-h-full max-w-5xl flex-col px-4 py-6 sm:px-6 lg:py-8">
+      <div
+        className={cn(
+          'mx-auto flex min-h-full flex-col px-4 py-6 sm:px-6 lg:py-8',
+          // Admin tables and charts need more room than the app's pages.
+          isAdmin ? 'max-w-[90rem]' : 'max-w-5xl',
+        )}
+      >
         {children}
       </div>
     </main>
@@ -209,7 +217,7 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
 
         <div className="flex min-h-0 flex-1 overflow-hidden border-t bg-background md:mr-2 md:mb-2 md:rounded-lg md:border">
           <PanelSlotProvider value={slot}>
-            {isMd && !isSettings ? (
+            {isMd && !isFullPage ? (
               <ResizablePanelGroup
                 orientation="horizontal"
                 id={LAYOUT_KEY}
