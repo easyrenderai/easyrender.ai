@@ -19,7 +19,14 @@ to `/sign-in?next=...` with an admin return path; a signed-in user outside the l
 `emailVerified = true`: otherwise anyone could register an allowlisted address that has no
 account yet. In practice admins sign in with Google, which marks the email verified; an
 unverified allowlisted account is redirected to `/sign-in/admin`, which explains verification and
-offers Google sign-in using the same address or a link to Account. This page independently checks
+offers a two-step recovery using the same Google address or a link to Account.
+An existing unverified account must first explicitly connect Google while signed in, then
+sign in with Google to verify the address. The page reads whether Google is already linked
+and offers the appropriate step. Implicit linking of unverified accounts remains blocked.
+The Google redirect callback requires the original live session and a matching, verified
+provider email before linking; recovery sign-in applies the same checks before account writes,
+so choosing another Google account cannot create a second user. Direct Google ID-token linking
+is rejected in favor of the state/PKCE/nonce-protected redirect flow. This page independently checks
 the session and allowlist. Google success returns to the original admin path and report filters;
 OAuth failure offers a retry. Admin data, actions and APIs still require a verified email, and
 non-admin sessions still receive 404 on pages. Google sign-in is only offered when configured.

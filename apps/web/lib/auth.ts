@@ -1,6 +1,7 @@
 import 'server-only';
 import { dash } from '@better-auth/infra';
 import { reportError, serviceEmailAvailable, signupAttribution } from '@easyrender/core';
+import { adminDecision } from '@easyrender/core/admin-analytics/helpers';
 import { normalizeAttribution } from '@easyrender/core/attribution';
 import { db } from '@easyrender/db';
 import { betterAuth } from 'better-auth';
@@ -21,12 +22,50 @@ function createAuth() {
     database: prismaAdapter(db(), { provider: 'postgresql' }),
     // Existing Better Auth state cookie carries only its CSRF nonce; attribution stays in DB state.
     account: { storeStateStrategy: 'database' },
+    user: {
+      validateUserInfo: async ({ user, source }, ctx) => {
+        if (source.oauth?.providerId !== 'google') return;
+        const state = await getOAuthState();
+        const isExplicitLink = source.action === 'link-account' && Boolean(state?.link);
+        const recoverySessionId = state?.serverContext?.adminRecoverySessionId;
+        if (!isExplicitLink && !recoverySessionId) return;
+        const session = await getSessionFromCtx(ctx);
+        const expectedSessionId = isExplicitLink
+          ? state?.serverContext?.googleLinkSessionId
+          : recoverySessionId;
+        // Check the live initiating session and Google's verified email before any account write.
+        if (
+          !session ||
+          session.session.id !== expectedSessionId ||
+          user.emailVerified !== true ||
+          user.email?.toLowerCase() !== session.user.email.toLowerCase() ||
+          (isExplicitLink && state?.link?.userId !== session.user.id)
+        )
+          return { error: 'google_account_verification_failed' };
+        if (
+          recoverySessionId &&
+          adminDecision(session.user, process.env.ADMIN_EMAILS ?? '') !== 'allow'
+        )
+          return { error: 'admin_access_required' };
+      },
+    },
     // Hash recovery bearer tokens without changing OAuth state identifiers.
     verification: {
       storeIdentifier: { default: 'plain', overrides: { 'reset-password:': 'hashed' } },
     },
     hooks: {
       before: createAuthMiddleware(async (ctx) => {
+        if (ctx.path === '/link-social' && ctx.body?.provider === 'google') {
+          const session = await getSessionFromCtx(ctx);
+          if (!session)
+            throw new APIError('UNAUTHORIZED', { message: 'Sign in before linking Google' });
+          // The redirect flow supplies state/PKCE/nonce and a live-session check on its callback.
+          if (ctx.body.idToken)
+            throw new APIError('BAD_REQUEST', { message: 'Use the Google redirect flow' });
+          await addOAuthServerContext({ googleLinkSessionId: session.session.id });
+          ctx.body.additionalData = {};
+          return;
+        }
         if (ctx.path === '/send-verification-email') {
           const session = await getSessionFromCtx(ctx);
           if (!session)
@@ -64,7 +103,19 @@ function createAuth() {
         }
         if (ctx.path !== '/sign-in/social') return;
         const h = ctx.headers ?? new Headers();
+        let adminRecoverySessionId: string | undefined;
+        if (ctx.body?.additionalData?.adminRecovery === true) {
+          const session = await getSessionFromCtx(ctx);
+          if (
+            !session ||
+            ctx.body.provider !== 'google' ||
+            adminDecision(session.user, process.env.ADMIN_EMAILS ?? '') !== 'allow'
+          )
+            throw new APIError('FORBIDDEN', { message: 'Sign in with your admin account first' });
+          adminRecoverySessionId = session.session.id;
+        }
         await addOAuthServerContext({
+          ...(adminRecoverySessionId ? { adminRecoverySessionId } : {}),
           attribution: normalizeAttribution(
             ctx.body?.additionalData?.attribution,
             ctx.context.baseURL,

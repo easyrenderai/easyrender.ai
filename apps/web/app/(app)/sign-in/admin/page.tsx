@@ -1,4 +1,5 @@
 import { adminDecision } from '@easyrender/core/admin-analytics/helpers';
+import { db } from '@easyrender/db';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
@@ -28,12 +29,19 @@ export default async function AdminVerificationPage({ searchParams }: Props) {
   if (!session || decision === 'signin') redirect(`/sign-in?next=${encodeURIComponent(next)}`);
   if (decision === 'notFound') notFound();
   if (decision === 'allow') redirect(next);
+  const hasGoogleAccount = Boolean(
+    await db().account.findFirst({
+      where: { userId: session.user.id, providerId: 'google' },
+      select: { id: true },
+    }),
+  );
   const locale = (params.locale ?? (await getLocale())) === 'es' ? 'es' : 'en';
   return (
     <AdminVerification
       email={session.user.email}
       next={next}
       locale={locale}
+      hasGoogleAccount={hasGoogleAccount}
       isGoogleAvailable={Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)}
       hasOAuthError={Boolean(params.error)}
       copy={(locale === 'es' ? es : en).AuthService.adminAccess}

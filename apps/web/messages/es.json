@@ -2891,12 +2891,14 @@
       "title": "Verifica tu email para acceder al admin",
       "description": "Tu cuenta necesita un email verificado para abrir el panel de administración.",
       "account": "Has iniciado sesión como",
-      "instructions": "Continúa con Google y elige esta misma dirección de email. Tras verificarla, volverás a la página del admin que querías abrir.",
-      "google": "Continuar con Google",
+      "instructions": "Primero conecta Google con el email de arriba. Después inicia sesión con Google para verificar tu email y abrir el panel de administración.",
+      "google": "Conectar mi cuenta de Google",
       "connecting": "Conectando con Google…",
       "manageAccount": "Verificar por email o gestionar tu cuenta",
       "googleUnavailable": "El acceso con Google no está disponible ahora. Abre tu cuenta para consultar las opciones de verificación por email.",
-      "error": "No se ha podido completar el acceso con Google. Inténtalo de nuevo eligiendo el email de arriba o abre tu cuenta."
+      "error": "No hemos podido verificar tu cuenta de Google. Elige el mismo email de arriba. Si tu sesión ha caducado, vuelve a iniciar sesión en easyrender e inténtalo de nuevo.",
+      "verifyGoogle": "Verificar y entrar con Google",
+      "linkedInstructions": "Google ya está conectado. Inicia sesión con esa misma cuenta de Google para verificar tu email y volver a la página del admin que querías abrir."
     }
   },
   "ServiceEmails": {
