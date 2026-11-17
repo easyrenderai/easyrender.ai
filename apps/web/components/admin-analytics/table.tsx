@@ -9,6 +9,7 @@ import { ArrowDownUp, Download } from 'lucide-react';
 import { useId, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -120,12 +121,10 @@ export function AnalyticsTable({
           />
           {options.length > 1 &&
             options.map((value) => (
-              <Label key={value} className="flex items-center gap-1 text-xs">
-                <Input
-                  className="size-4"
-                  type="checkbox"
+              <Label key={value} className="flex min-h-9 items-center gap-2 text-xs">
+                <Checkbox
                   checked={selected.includes(value)}
-                  onChange={() => {
+                  onCheckedChange={() => {
                     setSelected((old) =>
                       old.includes(value) ? old.filter((v) => v !== value) : [...old, value],
                     );

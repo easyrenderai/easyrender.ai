@@ -53,7 +53,7 @@ export function AuthForm({
         {mode === 'sign-in' && recovery && (
           <Link
             href={`/forgot-password?locale=${recovery.locale}`}
-            className="text-center text-sm underline underline-offset-4"
+            className="py-2 text-center text-sm underline underline-offset-4"
           >
             {recovery.label}
           </Link>

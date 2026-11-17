@@ -154,7 +154,7 @@ export function AuthFields({
           {submitLabel ?? (mode === 'sign-up' ? t('createAccount') : t('signIn'))}
         </Button>
       </form>
-      <Link href={cookiesPath(locale)} className="text-center text-xs underline">
+      <Link href={cookiesPath(locale)} className="py-2 text-center text-xs underline">
         {a('details')}
       </Link>
     </div>

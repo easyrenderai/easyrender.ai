@@ -64,7 +64,10 @@ export async function SiteFooter() {
     <footer className="border-t bg-muted/30">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_repeat(3,1fr)]">
         <div className="space-y-3">
-          <Link href={home} className="flex items-center gap-2 font-semibold tracking-tight">
+          <Link
+            href={home}
+            className="flex min-h-10 items-center gap-2 font-semibold tracking-tight"
+          >
             <BrandMark className="size-[1.375rem]" />
             Easy Render
           </Link>
