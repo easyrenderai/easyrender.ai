@@ -624,8 +624,8 @@ export async function advance(id: string): Promise<Render | null> {
         if (stale) throw new TerminalRenderError('final angle sheet timed out');
         return render;
       }
-      // A final sheet that failed or was rejected never fails the build: it carries on from the
-      // draft the visitor already saw, and the problem is reported.
+      // A rejected final sheet can fall back to the draft, provided that draft still passes
+      // today's guardrails. Old previews may predate the structural checks.
       let finalSheet: Uint8Array | null = null;
       let finalMeasures: RenderQuality['finalSheet'];
       let finalProblem = 'redraw_failed';
@@ -648,6 +648,7 @@ export async function advance(id: string): Promise<Render | null> {
       const finalKey = finalSheet
         ? await putFile('sheets/sheet.png', finalSheet, 'image/png')
         : null;
+      const sheetForBuild = finalSheet ?? (await checkedBuildSheet(render.sheetKey));
       // Only the call that wins this claim starts the build, so webhook and polling cannot both.
       const claimedAt = new Date();
       const { count } = await db().render.updateMany({
@@ -666,7 +667,6 @@ export async function advance(id: string): Promise<Render | null> {
         },
       });
       if (count === 0) return db().render.findUnique({ where: { id } });
-      const sheetForBuild = finalSheet ?? (render.sheetKey ? await getFile(render.sheetKey) : null);
       const started = await startThreeD(id, render.sourceKey, sheetForBuild);
       return persistStartedPrediction(
         { ...render, buildClaimedAt: claimedAt },
@@ -852,7 +852,7 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
         return await persistStartedPrediction(render, { finalSheetPredictionId: prediction.id });
       }
     }
-    const sheet = render.sheetKey ? await getFile(render.sheetKey) : null;
+    const sheet = await checkedBuildSheet(render.sheetKey);
     const prediction = await startThreeD(id, render.sourceKey, sheet);
     return await persistStartedPrediction(render, {
       buildPredictionId: prediction.id,
@@ -872,7 +872,19 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
   }
 }
 
-// Starts the 3D build from the photo and, when there is one, the sheet's nine views.
+// Revalidate stored sheets before reusing them. A rejected sheet must never reach the 3D
+// provider; both callers handle this as a terminal failure with an atomic credit refund.
+async function checkedBuildSheet(key: string | null): Promise<Uint8Array | null> {
+  if (!key) return null;
+  const sheet = await getFile(key);
+  const quality = await checkSheet(sheet, (await harness()).limits);
+  if (!quality.ok) {
+    throw new TerminalRenderError(`sheet rejected (${quality.code}): ${quality.message}`);
+  }
+  return sheet;
+}
+
+// Starts the 3D build from the photo and, when there is one, the checked sheet's nine views.
 async function startThreeD(id: string, sourceKey: string, sheet: Uint8Array | null) {
   const client = replicate();
   const source = await getFile(sourceKey);
@@ -1158,6 +1170,24 @@ export async function listEdits(id: string, actor: Actor): Promise<RenderEditVie
     take: 100,
   });
   return rows.map(toEditView).filter((edit): edit is RenderEditView => edit !== null);
+}
+
+// Diagnostic read-back for the owner. Public/link sharing never exposes QA artifacts, and
+// this read cannot advance a generation or start provider work.
+export async function getRenderQuality(id: string, actor: Actor): Promise<RenderQuality> {
+  const render = await db().render.findUnique({ where: { id } });
+  if (!render || !canAccess(render, actor)) throw notFound();
+  const quality = storedQuality(render);
+  return {
+    photo: quality.photo,
+    draftSheet: quality.draftSheet,
+    sheetRecoveryAttempts: quality.sheetRecoveryAttempts,
+    finalSheet: quality.finalSheet,
+    isDraftUsed: quality.isDraftUsed,
+    finalSheetProblem: quality.finalSheetProblem,
+    glb: quality.glb,
+    fidelity: quality.fidelity ? { report: quality.fidelity.report } : undefined,
+  };
 }
 
 export async function getRender(id: string, actor: Actor): Promise<Render> {
