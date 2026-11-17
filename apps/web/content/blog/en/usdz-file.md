@@ -15,6 +15,8 @@ A USDZ file is a 3D model packed in Pixar's Universal Scene Description format, 
 
 ![Illustration of a glowing mushroom table lamp beside a phone lying flat, the lamp's left half lit warm and its right half in matte grey clay with a white wireframe mesh, on a dark background](/blog/illustrations/usdz-file/hero.webp "Illustration, not an easyrender result: a lamp drawn half lit, half as a clay-and-wireframe mesh, beside a phone.")
 
+> **Choose the format for the device.** Use USDZ for Apple Quick Look and keep a GLB version for the web and Android. Test the exported file on the actual phone.
+
 ## What is inside a USDZ file?
 
 USD is the scene format Pixar built for film production. The [USDZ specification](https://openusd.org/release/spec_usdz.html) describes a zip archive with zero compression that holds USD layers and the images they use. Each file inside starts at a multiple of 64 bytes, so a device can read it in place without unpacking anything.

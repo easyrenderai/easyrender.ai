@@ -15,6 +15,8 @@ A GLB file is a 3D model saved in the binary version of glTF 2.0, an open format
 
 ![Illustration of a celadon teapot, the left half in real glaze and the right half in matte grey clay under a white wireframe mesh whose UV panels peel away from the body, on a dark background](/blog/illustrations/glb-file/hero.webp "Illustration, not an easyrender result: a teapot drawn half as glaze, half as a wireframe mesh with its UV panels peeling off.")
 
+> **Check the file in its destination viewer.** Inspect textures, orientation and loading on mobile before adding a model to your product page. A valid GLB can still show the wrong product.
+
 ## What is inside a GLB file?
 
 A glTF model can come as a .gltf text file plus separate texture images and a .bin file for the geometry. A GLB packs all of that into one binary file, which is easier to upload, email and host. The [glTF 2.0 specification](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html) defines both.

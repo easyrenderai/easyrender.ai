@@ -15,6 +15,8 @@ Good product photography for ecommerce comes from a setup you can repeat: one la
 
 ![Illustration of a gooseneck kettle, one half in black enamel with a copper handle and knob, the other half and the spout in matte grey clay with a white wireframe mesh, on a dark background](/blog/illustrations/product-photography-for-ecommerce/hero.webp "Illustration, not an easyrender result: a kettle drawn half in its real finish, half as a clay-and-wireframe mesh.")
 
+> **Fix the capture before the edit.** Keep the whole product visible, stabilize the camera and use soft, consistent light. A sharp image with clear edges gives you a stronger starting point for both the listing and 3D.
+
 ## What equipment do you need for ecommerce product photography?
 
 A tripod matters more than the camera. It keeps every product at the same height and angle, so your category pages line up, and it lets you shoot in window light at slow shutter speeds without blur.

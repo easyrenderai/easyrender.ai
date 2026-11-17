@@ -15,6 +15,8 @@ To sell vintage furniture online, pick a platform that fits the piece's value, p
 
 ![Illustration of a teak mid-century sideboard with sliding doors and tapered legs, its left side in real wood fading into matte grey clay with a white wireframe mesh on the right, on a dark background](/blog/illustrations/sell-vintage-furniture-online/hero.webp "Illustration, not an easyrender result: a sideboard drawn as teak on one side and as a clay-and-wireframe mesh on the other.")
 
+> **Remove uncertainty before discussing price.** Show dimensions, condition and defects clearly, then explain collection or delivery. Choose the marketplace for the piece and its buyer.
+
 ## Where can you sell vintage furniture online?
 
 Match the platform to the piece. A signed mid-century lounge chair and a 1970s pine dresser have different buyers.

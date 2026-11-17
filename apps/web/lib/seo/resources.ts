@@ -1,5 +1,6 @@
 import type { Locale } from '@/i18n/config';
 import { listPosts } from '@/lib/blog/posts';
+import { listComparePages } from '@/lib/compare/pages';
 import { isPublished, ROUTES } from './routes';
 
 export type ResourceContext = 'home' | 'mcp' | 'api' | 'article';
@@ -21,9 +22,15 @@ export function resourceLinks(locale: Locale, context: ResourceContext, now = ne
       : context === 'api'
         ? (['mcp', 'compare', 'pricing'] as const)
         : context === 'article'
-          ? (['pricing', 'mcp', 'api'] as const)
+          ? (['compare', 'pricing', 'mcp', 'api'] as const)
           : (['compare'] as const);
   return {
+    comparisons:
+      context === 'article'
+        ? []
+        : listComparePages(locale)
+            .filter((page) => ['compare-meshy', 'compare-tripo'].includes(page.group))
+            .map((page) => ({ href: page.path, title: page.title })),
     guides: context === 'article' ? [] : guides,
     routes: routes
       .filter((key) => isPublished(key, locale))

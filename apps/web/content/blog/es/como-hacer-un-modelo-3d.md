@@ -14,11 +14,20 @@ Puedes hacer un modelo 3D de cinco maneras: construirlo en un programa como Blen
 
 <!-- IMAGE PENDING: creativo original obligatorio (tono §5c). Propuesta: esquema de los cinco métodos (programa, fotogrametría, LiDAR, IA desde una foto, artista) con lo que pide cada uno. Si se usa una imagen generada, pie «Ilustración, no es un resultado de easyrender». -->
 
+> **Empieza por lo que tienes.** Una foto permite generar con IA; un objeto que puedes rodear permite escanear. Si necesitas medidas y geometría exactas, utiliza modelado con referencias medidas.
+
 ## ¿Qué método te conviene?
 
 Si el objeto aún no existe, modélalo en un programa o encárgaselo a un artista. Si existe y lo tienes delante, escanéalo. Si solo tienes una foto, usa imagen a 3D.
 
 A grandes rasgos, cuanto más trabajo, más fidelidad. Un artista que trabaja a partir de medidas da el modelo más exacto. Un modelo generado a partir de una foto permite partir de esa imagen, pero su parte de atrás es una estimación.
+
+| Lo que tienes                                    | Método a considerar          | Qué debes comprobar                              |
+| ------------------------------------------------ | ---------------------------- | ------------------------------------------------ |
+| **Una foto del proveedor**                       | Imagen a 3D                  | Trasera, base y piezas que la foto no muestra    |
+| **El objeto y acceso a todos sus lados**         | Fotogrametría                | Cobertura y superficies brillantes o sin textura |
+| **Una pieza grande y un dispositivo compatible** | LiDAR                        | Detalles finos y escala antes de usar el archivo |
+| **Medidas y una forma que debe ser exacta**      | Modelado manual o un artista | Cotas, materiales y formato de entrega           |
 
 ## Método 1: modelarlo tú en un programa
 

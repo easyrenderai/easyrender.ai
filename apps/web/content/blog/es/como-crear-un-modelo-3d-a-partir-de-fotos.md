@@ -16,6 +16,8 @@ La otra vía es la fotogrametría, que necesita al menos 20 fotos solapadas hech
 
 <!-- IMAGE PENDING: reutilizar la ilustración EN de la regadera (mitad metal galvanizado, mitad malla de arcilla y alambre). Pie: «Ilustración, no es un resultado de easyrender: una regadera, mitad metal galvanizado y mitad malla 3D». -->
 
+> **¿Una foto o muchas?** Usa una foto existente para una representación visual. Captura fotografías solapadas para registrar la superficie real. En ambos casos, revisa la trasera, la base y las piezas finas.
+
 ## ¿Una foto o muchas?
 
 El número de fotos depende de una sola pregunta: ¿tienes el objeto delante? La fotogrametría y el escaneo LiDAR lo necesitan ahí. La imagen a 3D solo necesita una imagen, y por eso es la vía para la foto que te pasa el proveedor de un aparador que nunca has tocado.

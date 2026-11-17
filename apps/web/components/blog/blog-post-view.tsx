@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { ArticlePromo } from '@/components/blog/article-promo';
+import { ArticleTracking } from '@/components/blog/article-tracking';
 import { ResourceLinks } from '@/components/resource-links';
 import { Button } from '@/components/ui/button';
 import { Markdown, type TocEntry, tocOf } from '@/lib/blog/markdown';
@@ -66,7 +67,8 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
         </ol>
       </nav>
 
-      <article>
+      <article data-editorial-root>
+        <ArticleTracking group={post.group} locale={post.locale} path={post.path} />
         {/\$|USD/.test(post.body) && (
           <p className="mt-6 text-sm text-muted-foreground">
             <Link href={ROUTES.pricing.paths[post.locale]} className="underline underline-offset-4">
@@ -128,6 +130,7 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
 
             <div className="mb-10 max-w-sm lg:hidden">
               <ArticlePromo
+                position="mobile"
                 locale={post.locale}
                 href={intent.href}
                 copy={{
@@ -159,7 +162,7 @@ export async function BlogPostView({ post }: { post: BlogPost }) {
                 <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">{post.cta}</p>
               )}
               <Button asChild size="lg" className="mt-6">
-                <Link href={intent.href}>
+                <Link href={intent.href} data-article-cta="closing">
                   {nextT(intent.action)}
                   <ArrowRight />
                 </Link>

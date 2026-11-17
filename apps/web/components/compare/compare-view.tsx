@@ -3,6 +3,7 @@ import { ArrowRight, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { ArticlePromo } from '@/components/blog/article-promo';
+import { ArticleTracking } from '@/components/blog/article-tracking';
 import { DATE_FORMAT } from '@/components/blog/post-card';
 import { ComparisonChoices } from '@/components/compare/comparison-choices';
 import { ResourceLinks } from '@/components/resource-links';
@@ -69,7 +70,8 @@ export async function CompareView({ page }: { page: ComparePage }) {
         </ol>
       </nav>
 
-      <article>
+      <article data-editorial-root>
+        <ArticleTracking group={page.group} locale={page.locale} path={page.path} />
         <header className="mt-10 max-w-4xl sm:mt-14">
           <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground tabular-nums">
             {t('post.readingTime', { minutes: readingMinutes(page.body) })}
@@ -123,6 +125,7 @@ export async function CompareView({ page }: { page: ComparePage }) {
 
             <div className="mb-10 max-w-sm lg:hidden">
               <ArticlePromo
+                position="mobile"
                 locale={page.locale}
                 href={intent.href}
                 copy={{
@@ -176,7 +179,7 @@ export async function CompareView({ page }: { page: ComparePage }) {
                 <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">{page.cta}</p>
               )}
               <Button asChild size="lg" className="mt-6">
-                <Link href={intent.href}>
+                <Link href={intent.href} data-article-cta="closing">
                   {nextT(intent.action)}
                   <ArrowRight />
                 </Link>

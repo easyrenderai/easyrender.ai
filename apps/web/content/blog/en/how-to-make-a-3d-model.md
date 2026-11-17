@@ -15,6 +15,8 @@ You can make a 3D model in five ways: build it in software like Blender, scan th
 
 ![Illustration of a walnut chess knight, its face and front in real carved wood and its back in matte grey clay with a white wireframe mesh, on a dark background](/blog/illustrations/how-to-make-a-3d-model/hero.webp "Illustration, not an easyrender result: a chess knight drawn half as walnut, half as a clay-and-wireframe mesh.")
 
+> **Start with what you have.** A photo points to image-to-3D; an object you can walk around points to scanning. Use measured modeling when dimensions and hidden geometry must be exact.
+
 ## Which method should you pick?
 
 If the object does not exist yet, model it in software or hire an artist. If it exists and is in front of you, scan it. If all you have is a photo of it, use image-to-3D.
