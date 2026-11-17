@@ -24,7 +24,8 @@
     "sections": "Secções",
     "menuOpen": "Abrir menu",
     "menuClose": "Fechar menu",
-    "upload": "Carregar uma foto"
+    "upload": "Carregar uma foto",
+    "account": "Minha conta"
   },
   "Footer": {
     "tagline": "Transforma qualquer fotografia de produto num modelo 3D",
@@ -520,7 +521,9 @@
     "modelLoading": "A carregar o modelo 3D…",
     "modelLoadError": "Não foi possível carregar o modelo 3D. Recarrega a página para tentar novamente.",
     "sheetLoading": "A carregar a folha de vistas…",
-    "sheetLoadError": "Não foi possível carregar a folha de vistas. Recarrega a página para tentar novamente."
+    "sheetLoadError": "Não foi possível carregar a folha de vistas. Recarrega a página para tentar novamente.",
+    "repeatedViewsFailure": "Não foi possível gerar ângulos distintos. Tente outra foto. Os créditos cobrados foram devolvidos.",
+    "inconsistentStructureFailure": "Os ângulos gerados alteraram a forma do seu objeto. Tente outra foto. Os créditos cobrados foram devolvidos."
   },
   "PromptBar": {
     "steps": {

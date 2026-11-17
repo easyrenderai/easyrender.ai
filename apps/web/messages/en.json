@@ -18,6 +18,7 @@
       "pricing": "Pricing"
     },
     "dashboard": "Dashboard",
+    "account": "My account",
     "signIn": "Sign in",
     "connect": "Connect",
     "connectSuffix": "your agent",
@@ -520,7 +521,9 @@
     "modelLoading": "Loading 3D model…",
     "modelLoadError": "The 3D model could not load. Reload the page to try again.",
     "sheetLoading": "Loading angle sheet…",
-    "sheetLoadError": "The angle sheet could not load. Reload the page to try again."
+    "sheetLoadError": "The angle sheet could not load. Reload the page to try again.",
+    "repeatedViewsFailure": "We could not generate distinct angles. Try another photo. Any credits charged were refunded.",
+    "inconsistentStructureFailure": "The generated angles changed the shape of your object. Try another photo. Any credits charged were refunded."
   },
   "PromptBar": {
     "steps": {
@@ -1717,13 +1720,13 @@
       "uniqueVisitors": "Daily unique estimates",
       "pageviews": "Pageviews",
       "signups": "Signups",
-      "activatedSheet": "Signups with a sheet",
-      "activatedModel": "Signups with a model",
+      "activatedSheet": "Signups with a completed preview",
+      "activatedModel": "Signups with a completed 3D model",
       "anonymous": "Unclaimed anonymous previews",
       "paying": "Paying accounts",
       "newPaying": "New paying accounts",
       "totalPayers": "Total paying accounts",
-      "sheetActivation": "Sheet activation rate",
+      "sheetActivation": "Preview activation rate",
       "modelActivation": "Model activation rate",
       "sold": "Paid credits granted",
       "consumed": "Credits consumed (gross)",

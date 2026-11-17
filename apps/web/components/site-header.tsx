@@ -60,11 +60,9 @@ export async function SiteHeader() {
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <LocaleSwitcher />
-          {!user && (
-            <Button variant="ghost" size="sm" className="max-sm:hidden" asChild>
-              <Link href="/sign-in">{t('signIn')}</Link>
-            </Button>
-          )}
+          <Button variant="ghost" size="sm" className="max-sm:hidden" asChild>
+            <Link href={user ? '/account' : '/sign-in'}>{t(user ? 'account' : 'signIn')}</Link>
+          </Button>
           <HeaderConnect
             locale={locale as Locale}
             connect={t('connect')}
@@ -89,11 +87,9 @@ export async function SiteHeader() {
               ))}
             </nav>
             {/* Phones: sign-in moves here, because translated labels push the header row past the screen. */}
-            {!user && (
-              <Button variant="outline" className="mt-2 sm:hidden" asChild>
-                <Link href="/sign-in">{t('signIn')}</Link>
-              </Button>
-            )}
+            <Button variant="outline" className="mt-2 sm:hidden" asChild>
+              <Link href={user ? '/account' : '/sign-in'}>{t(user ? 'account' : 'signIn')}</Link>
+            </Button>
           </SiteMenu>
         </div>
       </div>

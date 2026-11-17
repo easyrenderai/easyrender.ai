@@ -209,7 +209,13 @@ export function RenderView({
     ) : (
       <div className="flex aspect-square w-full flex-col items-center justify-center gap-3 rounded-xl border bg-muted/40 p-6 text-center text-muted-foreground sm:aspect-[4/3]">
         {render.status === 'failed' ? (
-          <p className="text-sm">{render.error}</p>
+          <p className="text-sm">
+            {render.failureReason === 'repeated_views'
+              ? t('repeatedViewsFailure')
+              : render.failureReason === 'inconsistent_structure'
+                ? t('inconsistentStructureFailure')
+                : render.error}
+          </p>
         ) : RUNNING.has(render.status) ? (
           <>
             <Loader2 className="size-6 animate-spin" />

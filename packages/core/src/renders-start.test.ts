@@ -3,7 +3,7 @@ import { db, type Render } from '@easyrender/db';
 import { FALLBACK_SHEET_SETTINGS, ProviderRequestError, SHEET_MODEL } from '@easyrender/harness';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { grantCreditsInTransaction } from './credits';
-import { advance, createDraft, startSheet } from './renders';
+import { advance, createDraft, startSheet, toView } from './renders';
 import { reportError } from './report';
 import { putFile } from './storage';
 
@@ -78,10 +78,20 @@ function fakeDatabase(initial?: Partial<Render>) {
       }),
       findUnique: vi.fn(async () => stored),
       findUniqueOrThrow: vi.fn(async () => stored as Render),
-      updateMany: vi.fn(async ({ data }: { data: Partial<Render> }) => {
-        stored = { ...stored, ...data, updatedAt: new Date() } as Render;
-        return { count: 1 };
-      }),
+      updateMany: vi.fn(
+        async ({ data, where }: { data: Partial<Render>; where?: Partial<Render> }) => {
+          for (const [key, value] of Object.entries(where ?? {})) {
+            if (
+              value !== undefined &&
+              (value === null || typeof value !== 'object') &&
+              stored?.[key as keyof Render] !== value
+            )
+              return { count: 0 };
+          }
+          stored = { ...stored, ...data, updatedAt: new Date() } as Render;
+          return { count: 1 };
+        },
+      ),
     },
   };
   vi.mocked(db).mockReturnValue(database as unknown as ReturnType<typeof db>);
@@ -270,7 +280,7 @@ describe('an angle sheet that repeats one view', () => {
 
   async function advanceWithRepeatedSheet() {
     vi.mocked(reportError).mockClear();
-    const stored = fakeDatabase(drafting);
+    const stored = fakeDatabase({ ...drafting, quality: { sheetRecoveryAttempts: 1 } });
     getPrediction.mockResolvedValue({
       id: 'pred-1',
       status: 'succeeded',
@@ -280,6 +290,121 @@ describe('an angle sheet that repeats one view', () => {
     const result = await advance('r1');
     return { stored, result };
   }
+
+  it.each(['repeated', 'inconsistent'])(
+    'recovers a %s sheet once without charging again, then accepts valid views',
+    async (problem) => {
+      const stored = fakeDatabase({ ...drafting, quality: {}, credits: 0 });
+      getPrediction.mockResolvedValue({
+        status: 'succeeded',
+        output: 'https://replicate.example/sheet.png',
+      });
+      const invalidSheet =
+        problem === 'repeated'
+          ? repeatedSheet
+          : readFileSync(
+              new URL('../../harness/src/fixtures/inconsistent-table.webp', import.meta.url),
+            );
+      downloadFile
+        .mockResolvedValueOnce(invalidSheet)
+        .mockResolvedValueOnce(
+          new Uint8Array(
+            readFileSync(
+              new URL('../../../apps/web/public/showcase/table-angles.png', import.meta.url),
+            ),
+          ),
+        );
+      start.mockResolvedValue({ id: 'recovery-1', status: 'starting' });
+      const recovering = await advance('r1');
+      expect(recovering?.status).toBe('drafting');
+      expect(recovering?.sheetPredictionId).toBe('recovery-1');
+      expect(recovering?.quality).toMatchObject({ sheetRecoveryAttempts: 1 });
+      expect(recovering?.credits).toBe(0);
+      const ready = await advance('r1');
+      expect(ready?.status).toBe('preview_ready');
+      expect(stored().sheetKey).toBeTruthy();
+      expect(start).toHaveBeenCalledTimes(1);
+      expect(grantCreditsInTransaction).not.toHaveBeenCalled();
+    },
+  );
+
+  it('never delivers persistent structural changes and explains the refund without leaking provider details', async () => {
+    fakeDatabase({ ...drafting, quality: { sheetRecoveryAttempts: 1 } });
+    getPrediction.mockResolvedValue({
+      status: 'succeeded',
+      output: 'https://replicate.example/sheet.png',
+    });
+    downloadFile.mockResolvedValue(
+      readFileSync(new URL('../../harness/src/fixtures/inconsistent-table.webp', import.meta.url)),
+    );
+    const result = await advance('r1');
+    expect(result?.status).toBe('failed');
+    expect(toView(result as Render)).toMatchObject({
+      failureReason: 'inconsistent_structure',
+      hasSheet: false,
+    });
+    expect(toView(result as Render).error).toContain('refunded');
+    expect(putFile).not.toHaveBeenCalled();
+    expect(start).not.toHaveBeenCalled();
+    expect(grantCreditsInTransaction).toHaveBeenCalledTimes(1);
+  });
+
+  it('exposes a safe actionable repeated-view failure after the retry is exhausted', async () => {
+    const { result } = await advanceWithRepeatedSheet();
+    expect(toView(result as Render).error).toContain('distinct angles');
+    expect(toView(result as Render).error).toContain('refunded');
+    expect(toView(result as Render).error).not.toContain('sheet_repeated_views');
+  });
+
+  it('concurrent polling claims only one retry and persistent repetition fails with a refund', async () => {
+    fakeDatabase({ ...drafting, quality: {} });
+    getPrediction.mockResolvedValue({
+      status: 'succeeded',
+      output: 'https://replicate.example/sheet.png',
+    });
+    downloadFile.mockResolvedValue(repeatedSheet);
+    start.mockResolvedValue({ id: 'recovery-1', status: 'starting' });
+    await Promise.all([advance('r1'), advance('r1')]);
+    expect(start).toHaveBeenCalledTimes(1);
+    const result = await advance('r1');
+    expect(result?.status).toBe('failed');
+    expect(result?.sheetKey).toBeNull();
+    expect(start).toHaveBeenCalledTimes(1);
+    expect(grantCreditsInTransaction).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not replay or immediately refund an ambiguous recovery start', async () => {
+    fakeDatabase({ ...drafting, quality: {} });
+    getPrediction.mockResolvedValue({
+      status: 'succeeded',
+      output: 'https://replicate.example/sheet.png',
+    });
+    downloadFile.mockResolvedValue(repeatedSheet);
+    start.mockRejectedValue(new ProviderRequestError('No response', true));
+    const result = await advance('r1');
+    expect(result?.status).toBe('drafting');
+    expect(result?.sheetPredictionId).toBeNull();
+    await advance('r1');
+    expect(start).toHaveBeenCalledTimes(1);
+    expect(grantCreditsInTransaction).not.toHaveBeenCalled();
+  });
+
+  it('keeps the existing approved sheet when a paid correction repeats views', async () => {
+    fakeDatabase({ ...drafting, sheetKey: 'approved-sheet', sheetRedraws: 1 });
+    getPrediction.mockResolvedValue({
+      status: 'succeeded',
+      output: 'https://replicate.example/sheet.png',
+    });
+    downloadFile.mockResolvedValue(repeatedSheet);
+    const result = await advance('r1');
+    expect(result?.status).toBe('preview_ready');
+    expect(result?.sheetKey).toBe('approved-sheet');
+    expect(start).not.toHaveBeenCalled();
+    expect(grantCreditsInTransaction).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ reason: 'sheet_redraw_failed' }),
+    );
+  });
 
   it('never keeps the sheet or starts the 3D build, and ends the render as failed', async () => {
     const { stored, result } = await advanceWithRepeatedSheet();

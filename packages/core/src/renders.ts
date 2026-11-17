@@ -40,7 +40,7 @@ import { AppError, notFound } from './errors';
 import { grantFirstModelInTransaction } from './first-model-experiment';
 import { type RenderEditView, toEditView } from './render-edits';
 import { finishMaterialFidelity } from './render-fidelity';
-import { type RenderQuality, withQuality } from './render-quality';
+import { type RenderQuality, storedQuality, withQuality } from './render-quality';
 import { reportError } from './report';
 import { queueRenderServiceEmail } from './service-email';
 import { getFile, putFile } from './storage';
@@ -536,6 +536,36 @@ export async function advance(id: string): Promise<Render | null> {
       if (!url) throw new TerminalRenderError(prediction.error ?? `sheet ${prediction.status}`);
       const sheet = await download(url);
       const quality = await checkSheet(sheet, (await harness()).limits);
+      if (
+        !quality.ok &&
+        ['sheet_repeated_views', 'sheet_inconsistent_structure'].includes(quality.code) &&
+        !render.sheetKey &&
+        !storedQuality(render).sheetRecoveryAttempts
+      ) {
+        // Claim before any provider call: polling/webhooks cannot both retry the same sheet.
+        // A cleared prediction with no saved replacement is recovered by the normal timeout;
+        // an ambiguous start must never cause another provider request.
+        const { count } = await db().render.updateMany({
+          where: renderStage(render),
+          data: {
+            sheetPredictionId: null,
+            quality: withQuality(render, { sheetRecoveryAttempts: 1 }),
+            costUsd: { increment: SHEET_MODEL.costUsd },
+          },
+        });
+        if (!count) return db().render.findUnique({ where: { id } });
+        const claimed = await db().render.findUniqueOrThrow({ where: { id } });
+        try {
+          return await startSheetPrediction(claimed);
+        } catch (error) {
+          if (isUncertainStart(error)) {
+            reportError(error, { renderId: id, stage: 'sheet_recovery_start_uncertain' });
+          } else {
+            await fail(id, error, claimed);
+          }
+          return db().render.findUnique({ where: { id } });
+        }
+      }
       if (!quality.ok)
         throw new TerminalRenderError(`sheet rejected (${quality.code}): ${quality.message}`);
       const sheetKey = await putFile('sheets/sheet.png', sheet, 'image/png');
@@ -1054,6 +1084,7 @@ export type RenderView = {
   prompt: string | null;
   name: string | null;
   error: string | null;
+  failureReason?: 'repeated_views' | 'inconsistent_structure';
   hasPreview: boolean;
   // True once the 3x3 angle sheet exists. Without it the preview is the plain photo.
   hasSheet: boolean;
@@ -1075,12 +1106,28 @@ export type RenderView = {
 };
 
 export function toView(render: Render): RenderView {
+  const failureReason =
+    render.status === 'failed'
+      ? render.error?.includes('sheet_repeated_views')
+        ? 'repeated_views'
+        : render.error?.includes('sheet_inconsistent_structure')
+          ? 'inconsistent_structure'
+          : undefined
+      : undefined;
   return {
     id: render.id,
     status: render.status,
     prompt: render.prompt,
     name: render.name,
-    error: render.status === 'failed' ? 'Generation failed. Credits, if any, were refunded.' : null,
+    error:
+      render.status === 'failed'
+        ? failureReason === 'inconsistent_structure'
+          ? 'The generated angles changed the object structure. Try another photo. Credits, if any, were refunded.'
+          : failureReason === 'repeated_views'
+            ? 'We could not generate distinct angles. Try another photo. Credits, if any, were refunded.'
+            : 'Generation failed. Credits, if any, were refunded.'
+        : null,
+    ...(failureReason ? { failureReason } : {}),
     hasPreview: render.status !== 'drafting' && render.status !== 'failed',
     hasSheet: Boolean(render.sheetKey),
     sheetNote: render.sheetNote,

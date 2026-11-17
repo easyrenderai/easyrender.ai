@@ -24,7 +24,8 @@
     "sections": "Bereiche",
     "menuOpen": "Menü öffnen",
     "menuClose": "Menü schließen",
-    "upload": "Foto hochladen"
+    "upload": "Foto hochladen",
+    "account": "Mein Konto"
   },
   "Footer": {
     "tagline": "Verwandle jedes Produktfoto in ein 3D-Modell",
@@ -520,7 +521,9 @@
     "modelLoading": "3D-Modell wird geladen…",
     "modelLoadError": "Das 3D-Modell konnte nicht geladen werden. Lade die Seite erneut.",
     "sheetLoading": "Ansichten werden geladen…",
-    "sheetLoadError": "Die Ansichten konnten nicht geladen werden. Lade die Seite erneut."
+    "sheetLoadError": "Die Ansichten konnten nicht geladen werden. Lade die Seite erneut.",
+    "repeatedViewsFailure": "Es konnten keine unterschiedlichen Ansichten erstellt werden. Versuche ein anderes Foto. Berechnete Credits wurden erstattet.",
+    "inconsistentStructureFailure": "Die erzeugten Ansichten haben die Form deines Objekts verändert. Versuche ein anderes Foto. Berechnete Credits wurden erstattet."
   },
   "PromptBar": {
     "steps": {

@@ -1,6 +1,7 @@
 import sharp from 'sharp';
 import { cleanNote } from './note';
 import { cutCells, VIEWS } from './sheet';
+import { inconsistentOppositeViews } from './sheet-structure';
 
 // Checks that run before and after the paid model calls. Inputs are rejected early, so a bad
 // photo never costs a generation; outputs are checked before they are stored, so a broken sheet
@@ -43,6 +44,9 @@ export const LIMITS = {
   // view differs by under 0.01.
   duplicateViewDistance: 0.015,
   maxDuplicateViews: 3,
+  sheetMaxOpenFill: 0.52,
+  sheetMinClosedFill: 0.84,
+  sheetMaxOppositeFillGap: 0.38,
   // Product views: each view is checked on its own before it is kept. A view that fails is drawn
   // again on its own (up to `viewMaxRetries` times) and, if it still fails, kept and flagged.
   viewMinObjectSide: 240, // longest side of the object, in pixels of the drawn view
@@ -199,6 +203,13 @@ export async function checkSheet(
     return reject(
       'sheet_repeated_views',
       `The angle sheet repeats the same view in ${repeated} of 8 cells.`,
+    );
+  }
+  const inconsistent = await inconsistentOppositeViews(cells, limits);
+  if (inconsistent.length) {
+    return reject(
+      'sheet_inconsistent_structure',
+      `Opposite views close a large opening in the object (${inconsistent.join(', ')}).`,
     );
   }
   return ok(

@@ -24,7 +24,8 @@
     "sections": "Sezioni",
     "menuOpen": "Apri il menu",
     "menuClose": "Chiudi il menu",
-    "upload": "Carica una foto"
+    "upload": "Carica una foto",
+    "account": "Il mio account"
   },
   "Footer": {
     "tagline": "Trasforma qualsiasi foto di prodotto in un modello 3D",
@@ -520,7 +521,9 @@
     "modelLoading": "Caricamento del modello 3D…",
     "modelLoadError": "Impossibile caricare il modello 3D. Ricarica la pagina per riprovare.",
     "sheetLoading": "Caricamento delle viste…",
-    "sheetLoadError": "Impossibile caricare le viste. Ricarica la pagina per riprovare."
+    "sheetLoadError": "Impossibile caricare le viste. Ricarica la pagina per riprovare.",
+    "repeatedViewsFailure": "Non siamo riusciti a generare angolazioni distinte. Prova un’altra foto. I crediti addebitati sono stati rimborsati.",
+    "inconsistentStructureFailure": "Le angolazioni generate hanno modificato la forma del tuo oggetto. Prova un’altra foto. I crediti addebitati sono stati rimborsati."
   },
   "PromptBar": {
     "steps": {
