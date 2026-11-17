@@ -16,13 +16,16 @@ export async function promoteDeployment(
   )
     throw new Error('Invalid release configuration');
   const request = async (path, method = 'GET') => {
-    const response = await fetchImpl(`https://api.vercel.com${path}?teamId=${teamId}`, {
-      method,
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      ...(method === 'POST' ? { body: '{}' } : {}),
-      signal: AbortSignal.timeout(30_000),
-      redirect: 'error',
-    });
+    const response = await fetchImpl(
+      `https://api.vercel.com${path}${path.includes('?') ? '&' : '?'}teamId=${teamId}`,
+      {
+        method,
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        ...(method === 'POST' ? { body: '{}' } : {}),
+        signal: AbortSignal.timeout(30_000),
+        redirect: 'error',
+      },
+    );
     if (!response.ok) throw new Error(`Vercel API returned HTTP ${response.status}`);
     return response;
   };
@@ -40,7 +43,7 @@ export async function promoteDeployment(
   await request(`/v10/projects/${projectId}/promote/${deployment.id}`, 'POST');
   const deadline = now() + 300_000;
   while (now() < deadline) {
-    const project = await (await request(`/v9/projects/${projectId}`)).json();
+    const project = await (await request(`/v9/projects/${projectId}?rollbackInfo=true`)).json();
     const promotion = project.lastAliasRequest;
     if (promotion?.toDeploymentId === deployment.id) {
       if (promotion.jobStatus === 'succeeded') return deployment.id;
