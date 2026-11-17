@@ -5,7 +5,7 @@ export function renderIdPath(id: string): string {
   return `/renders/${encodeURIComponent(id)}`;
 }
 
-// Use n8n's credential-aware transport only. Never fetch image URLs in the connector.
+// Use n8n's credential-aware transport for the fixed easyrender API origin.
 export async function apiRequest(
   this: IExecuteFunctions | IPollFunctions,
   method: 'GET' | 'POST',

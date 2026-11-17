@@ -1,0 +1,92 @@
+{
+  "name": "Easy Render - see a preview in n8n",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-start",
+      "name": "Start preview example",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "imageUrl": "https://example.com/replace-with-your-product-photo.jpg",
+        "idempotencyKey": "replace-with-stable-product-event-id",
+        "additionalFields": {
+          "name": "Example product"
+        }
+      },
+      "id": "create-preview",
+      "name": "Create preview",
+      "type": "n8n-nodes-easyrender.easyrender",
+      "typeVersion": 1,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "wait-preview",
+      "name": "Wait for preview",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [480, 0],
+      "webhookId": "easyrender-preview-wait"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "renderId": "={{ $('Create preview').item.json.id }}",
+        "downloadImages": true
+      },
+      "id": "get-preview",
+      "name": "See images and model links",
+      "type": "n8n-nodes-easyrender.easyrender",
+      "typeVersion": 1,
+      "position": [720, 0]
+    }
+  ],
+  "connections": {
+    "Start preview example": {
+      "main": [
+        [
+          {
+            "node": "Create preview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create preview": {
+      "main": [
+        [
+          {
+            "node": "Wait for preview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for preview": {
+      "main": [
+        [
+          {
+            "node": "See images and model links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

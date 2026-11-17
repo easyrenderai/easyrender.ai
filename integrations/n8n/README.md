@@ -18,13 +18,13 @@ Create Render. See the [API contract](../../docs/api.md). No base URL override i
 
 | Node / operation                 | Behavior                                                                                                                 |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| easyrender / Create Render       | Creates a private free preview from a public HTTPS image URL. Requires a stable idempotency key.                         |
-| easyrender / Get Render          | Reads a render and advances its current job status.                                                                      |
+| easyrender / Create Render       | Creates a private preview from a public HTTPS image URL. Requires a stable idempotency key.                              |
+| easyrender / Get Render          | Reads status, downloads available images into Binary, and adds viewer/model links.                                       |
 | easyrender / List Renders        | Returns one envelope with `renders`, `balance`, `nextCursor`; retain filters and pass that cursor to fetch another page. |
-| easyrender / Get Credits         | Returns the live account quote and balance without hard-coded prices.                                                    |
+| easyrender / Get Credits         | Returns current account usage information.                                                                               |
 | easyrender Trigger / Model Ready | Polls one configured render ID. Emits only `status=ready` and `hasModel=true`.                                           |
 
-Creation does not start a paid 3D build. Review the preview and authorize the build
+Creation starts a preview. Review the preview and angle sheet, then start the 3D build
 separately in easyrender. No spend or share scope is needed by these nodes.
 Images must be public HTTPS JPEG, PNG or WebP, at most 4 MiB. The easyrender server
 fetches the photo through its protected image loader; n8n never sends the API key to the image host.
@@ -32,6 +32,48 @@ fetches the photo through its protected image loader; n8n never sends the API ke
 Map a stable source event ID into **Idempotency Key** (1–128 printable ASCII characters,
 no spaces). Reuse the same key and exact image/input after a lost response. Do not
 retry with a fresh key or silently change the image at the same URL.
+
+## See the result in n8n
+
+1. **Create Render** starts a preview and returns an `id`. It does not start the 3D build.
+2. After a Wait step, use **Get Render** with that ID and **Download Images** enabled
+   (the default). Open the node's **Output → Binary** tab, then **View** on `preview`
+   or `sheet` to inspect the image. PNG, JPEG and WebP keep their response MIME type
+   and matching filename extension.
+3. Open `viewerUrl`, sign in as the owner for a private render, and create/review the
+   angle sheet before starting **Build 3D** in easyrender.
+4. Run Get Render again, or use **Model Ready** in a separate workflow with the fixed
+   render ID. When ready, inspect the images in Binary and use the model links in JSON.
+
+Both Get Render and Model Ready preserve all existing JSON fields and add:
+
+| Field       | Meaning                                                                                                                                                             |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `viewerUrl` | `https://easyrender.ai/r/<id>`; public renders are viewable publicly, private renders require owner access. This does not publish a render.                         |
+| `glbUrl`    | Model download endpoint when `status=ready` and `hasModel=true`; otherwise `null`. Private downloads require the same bearer API key (or an owner browser session). |
+| `usdzUrl`   | `null`: USDZ is converted in the browser, with no server download URL. Open the viewer and choose USDZ to export it.                                                |
+| `summary`   | A readable status and next step, such as `Ready - 3D model available`.                                                                                              |
+
+The API's `/preview` endpoint returns the photo before a sheet exists, and the angle
+sheet once available. `binary.preview` contains that current preview; when `hasSheet`
+is true, `binary.sheet` also exposes the sheet with its own filename. Both refer to
+the same downloaded asset, fetched once. Private image requests use your Easyrender API
+credential; credentials are never put in output links or forwarded through redirects.
+Missing images (absent flags, HTTP 404 or 410) leave JSON intact without binary data.
+Other download errors are surfaced so authentication and service failures remain visible.
+Disable **Download Images** to return only JSON and links.
+
+Import [the example workflow JSON](examples/see-result-in-n8n.json), select your Easyrender
+API credential in both Easy Render nodes, and replace the example image URL and
+idempotency key. It creates a preview, waits, and reads the result with images enabled.
+The wait is not a completion guarantee: if still processing, run Get Render again with
+that ID. Review and start the 3D build in the viewer, then run Get Render for model links.
+For production automation, use a bounded wait/poll loop with ready/failed checks.
+
+To download a private GLB within n8n, add an **HTTP Request** node: GET `{{$json.glbUrl}}`,
+Authentication → Predefined Credential Type → Easyrender API, Response Format → File.
+Images are already present in the Easy Render output; a GLB remains a file, not an
+interactive 3D viewport inside n8n.
 
 ## Example workflows
 
@@ -69,6 +111,7 @@ Inspect an uncertain job by ID before retrying a mutation; preserve `request_id`
 cd integrations/n8n
 npm ci
 npm run lint
+npm run build
 npm test
 npm pack --dry-run
 npm run dev
