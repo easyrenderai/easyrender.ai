@@ -61,6 +61,20 @@ const CANDIDATES: Candidate[] = [
     imageKey: 'image_input',
   },
   {
+    id: 'nb21-2k',
+    model: 'google/nano-banana-2.1',
+    costUsd: 0.0504,
+    input: { ...SQUARE, resolution: '2K' },
+    imageKey: 'image_input',
+  },
+  {
+    id: 'nb21-1k',
+    model: 'google/nano-banana-2.1',
+    costUsd: 0.0336,
+    input: { ...SQUARE, resolution: '1K' },
+    imageKey: 'image_input',
+  },
+  {
     id: 'lite-1k',
     model: 'google/nano-banana-2-lite',
     costUsd: 0.034,

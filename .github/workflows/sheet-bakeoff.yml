@@ -13,7 +13,7 @@ on:
         required: true
         type: string
       candidates:
-        description: "Comma-separated ids: pro-2k, nb2-2k, nb2-1k, lite-1k, gpt-low, gpt-medium, gpt-high"
+        description: "Comma-separated ids: pro-2k, nb2-2k, nb2-1k, nb21-2k, nb21-1k, lite-1k, gpt-low, gpt-medium, gpt-high"
         required: true
         default: "pro-2k,nb2-2k,nb2-1k,lite-1k,gpt-low,gpt-medium,gpt-high"
         type: string
