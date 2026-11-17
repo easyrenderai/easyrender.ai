@@ -70,3 +70,41 @@ export function statistics(values: number[]) {
     max: values.length ? values.reduce((a, b) => Math.max(a, b), -Infinity) : 0,
   };
 }
+
+export function normalizeObject(image: Pixels, mask: Uint8Array, size = 192): Pixels {
+  let left = image.width,
+    right = 0,
+    top = image.height,
+    bottom = 0;
+  for (let p = 0; p < mask.length; p++)
+    if (mask[p]) {
+      left = Math.min(left, p % image.width);
+      right = Math.max(right, p % image.width);
+      top = Math.min(top, Math.floor(p / image.width));
+      bottom = Math.max(bottom, Math.floor(p / image.width));
+    }
+  if (left > right || top > bottom) throw new Error('No object mask');
+  const scale = (size - 12) / Math.max(right - left + 1, bottom - top + 1);
+  const data = new Uint8Array(size * size * 4);
+  for (let y = 0; y < size; y++)
+    for (let x = 0; x < size; x++) {
+      const sx = Math.round((x - size / 2) / scale + (left + right) / 2);
+      const sy = Math.round((y - size / 2) / scale + (top + bottom) / 2);
+      if (sx < 0 || sy < 0 || sx >= image.width || sy >= image.height) continue;
+      const p = sy * image.width + sx;
+      if (mask[p]) data.set(image.data.subarray(p * 4, p * 4 + 4), (y * size + x) * 4);
+    }
+  return { data, width: size, height: size };
+}
+
+export function overlap(a: Pixels, b: Pixels) {
+  let intersection = 0,
+    union = 0;
+  for (let i = 3; i < a.data.length; i += 4) {
+    const hasA = a.data[i] > 127,
+      hasB = b.data[i] > 127;
+    if (hasA && hasB) intersection++;
+    if (hasA || hasB) union++;
+  }
+  return intersection / Math.max(1, union);
+}

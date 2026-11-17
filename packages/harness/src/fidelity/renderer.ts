@@ -7,9 +7,13 @@ import { linear, srgb } from './color';
 import { readDocument } from './glb-document';
 import { type Pixels, pixels } from './images';
 
-type Vec = [number, number, number];
+export type Vec = [number, number, number];
 type Vertex = { position: Vec; normal: Vec | null; uv: number[]; mrUv: number[] };
 type Surface = {
+  index: number;
+  hasUv: boolean;
+  isDoubleSided: boolean;
+  isOpaque: boolean;
   color: Pixels | null;
   mr: Pixels | null;
   factor: number[];
@@ -32,7 +36,7 @@ const cross = (a: Vec, b: Vec): Vec => [
 ];
 const dot = (a: Vec, b: Vec) => a.reduce((sum, v, i) => sum + v * b[i], 0);
 
-export async function readRenderScene(bytes: Uint8Array): Promise<RenderScene> {
+export async function readRenderScene(bytes: Uint8Array, textureSize = 256): Promise<RenderScene> {
   const raw = readDocument(bytes);
   if (raw.json.images?.some((image) => image.uri && !image.uri.startsWith('data:image/')))
     throw new Error('External QA images are not fetched');
@@ -54,7 +58,7 @@ export async function readRenderScene(bytes: Uint8Array): Promise<RenderScene> {
     if (!textures.has(texture)) {
       const image = texture.getImage();
       if (!image) throw new Error('Missing texture');
-      textures.set(texture, await pixels(image));
+      textures.set(texture, await pixels(image, textureSize));
     }
     return textures.get(texture) ?? null;
   };
@@ -63,6 +67,10 @@ export async function readRenderScene(bytes: Uint8Array): Promise<RenderScene> {
     let result = surfaces.get(material);
     if (!result) {
       result = {
+        index: material ? doc.getRoot().listMaterials().indexOf(material) : -1,
+        hasUv: true,
+        isDoubleSided: material?.getDoubleSided() ?? false,
+        isOpaque: (material?.getAlphaMode() ?? 'OPAQUE') === 'OPAQUE',
         color: await sample(material?.getBaseColorTexture() ?? null),
         mr: await sample(material?.getMetallicRoughnessTexture() ?? null),
         factor: material?.getBaseColorFactor() ?? [1, 1, 1, 1],
@@ -109,6 +117,8 @@ export async function readRenderScene(bytes: Uint8Array): Promise<RenderScene> {
       if (material?.getAlphaMode() === 'BLEND') warnings.push('transparent_material_approximation');
       const s = await surface(material);
       const uv = primitive.getAttribute(`TEXCOORD_${s.colorInfo?.getTexCoord() ?? 0}`);
+      if (!uv) s.hasUv = false;
+      if (primitive.getAttribute('COLOR_0')) warnings.push('vertex_colors_unsupported');
       const mrUv = primitive.getAttribute(`TEXCOORD_${s.mrInfo?.getTexCoord() ?? 0}`);
       for (let i = 0; i < count; i += 3) {
         const vertices: Vertex[] = [];
@@ -179,36 +189,60 @@ function texel(texture: Pixels | null, uv: number[], info: TextureInfo | null): 
   ].map((c) => c / 255);
 }
 
-// A bounded software rasterizer: neutral white studio approximation, orthographic camera,
-// z buffer, base colour and metallic/roughness. No GPU, network, browser, or paid inference.
-export function renderNeutral(
+export type FidelityCamera = { azimuth: number; elevation: number; distance?: number };
+export type RenderView = {
+  image: Pixels;
+  depth: Float64Array;
+  triangle: Int32Array;
+  gain: Float32Array;
+  bias: Float32Array;
+  eye: Vec;
+  pixelWorldSize: number;
+  project: (position: Vec) => Vec;
+};
+
+// A bounded software rasterizer. Distance is in object-width units; omitted = orthographic.
+// Captured depth and triangle IDs allow visibility-checked transfer to the original UV atlas.
+export function renderView(
   scene: RenderScene,
-  azimuth: number,
-  elevation = 15,
+  camera: FidelityCamera,
   size = 192,
-): Pixels {
+  isMaskOnly = false,
+): RenderView {
   const start = Date.now();
-  const theta = (azimuth * Math.PI) / 180,
-    phi = (elevation * Math.PI) / 180;
+  const theta = (camera.azimuth * Math.PI) / 180,
+    phi = (camera.elevation * Math.PI) / 180;
   const eye: Vec = [
     Math.sin(theta) * Math.cos(phi),
     Math.sin(phi),
     Math.cos(theta) * Math.cos(phi),
   ];
-  const right = normalize(cross([0, 1, 0], eye));
-  const up = cross(eye, right);
-  const project = (position: Vec): Vec => [
-    dot(position, right),
-    dot(position, up),
-    dot(position, eye),
-  ];
+  const right = normalize(cross([0, 1, 0], eye)),
+    up = cross(eye, right);
+  const low = [Infinity, Infinity, Infinity],
+    high = [-Infinity, -Infinity, -Infinity];
+  for (const triangle of scene.triangles)
+    for (const v of triangle.vertices)
+      for (let c = 0; c < 3; c++) {
+        low[c] = Math.min(low[c], v.position[c]);
+        high[c] = Math.max(high[c], v.position[c]);
+      }
+  const origin = low.map((v, i) => (v + high[i]) / 2) as Vec;
+  const extent = Math.max(...high.map((v, i) => v - low[i]), 0.0001);
+  const distance = camera.distance ? Math.max(1, camera.distance) * extent : Infinity;
+  const rawProject = (position: Vec): Vec => {
+    const p = subtract(position, origin),
+      z = dot(p, eye);
+    const perspective = Number.isFinite(distance) ? distance / (distance - z) : 1;
+    return [dot(p, right) * perspective, dot(p, up) * perspective, z];
+  };
   let minX = Infinity,
     maxX = -Infinity,
     minY = Infinity,
     maxY = -Infinity;
   for (const triangle of scene.triangles)
     for (const v of triangle.vertices) {
-      const [x, y] = project(v.position);
+      const [x, y] = rawProject(v.position);
       minX = Math.min(minX, x);
       maxX = Math.max(maxX, x);
       minY = Math.min(minY, y);
@@ -216,21 +250,21 @@ export function renderNeutral(
     }
   const scale = (size - 12) / Math.max(maxX - minX, maxY - minY, 0.0001);
   const center = [(minX + maxX) / 2, (minY + maxY) / 2];
+  const project = (position: Vec): Vec => {
+    const p = rawProject(position);
+    return [(p[0] - center[0]) * scale + size / 2, size / 2 - (p[1] - center[1]) * scale, p[2]];
+  };
   const output = new Uint8Array(size * size * 4);
   const depth = new Float64Array(size * size).fill(-Infinity);
+  const triangleIds = new Int32Array(size * size).fill(-1);
+  const gain = new Float32Array(size * size),
+    bias = new Float32Array(size * size);
   const edge = (a: Vec, b: Vec, x: number, y: number) =>
     (b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0]);
   for (let t = 0; t < scene.triangles.length; t++) {
     if (t % 1000 === 0 && Date.now() - start > 4000) throw new Error('QA raster budget exceeded');
     const { vertices, surface } = scene.triangles[t];
-    const v = vertices.map(({ position }) => {
-      const p = project(position);
-      return [
-        (p[0] - center[0]) * scale + size / 2,
-        size / 2 - (p[1] - center[1]) * scale,
-        p[2],
-      ] as Vec;
-    });
+    const v = vertices.map(({ position }) => project(position));
     const area = edge(v[0], v[1], v[2][0], v[2][1]);
     if (Math.abs(area) < 1e-8) continue;
     const n = normalize(
@@ -239,7 +273,7 @@ export function renderNeutral(
         subtract(vertices[2].position, vertices[0].position),
       ),
     );
-
+    if (!surface.isDoubleSided && dot(n, eye) <= 0) continue;
     const bounds = [
       Math.max(0, Math.floor(Math.min(...v.map((p) => p[0])))),
       Math.min(size - 1, Math.ceil(Math.max(...v.map((p) => p[0])))),
@@ -248,19 +282,30 @@ export function renderNeutral(
     ];
     for (let y = bounds[2]; y <= bounds[3]; y++)
       for (let x = bounds[0]; x <= bounds[1]; x++) {
-        const w = [
+        let w = [
           edge(v[1], v[2], x + 0.5, y + 0.5) / area,
           edge(v[2], v[0], x + 0.5, y + 0.5) / area,
           edge(v[0], v[1], x + 0.5, y + 0.5) / area,
         ];
         if (w.some((a) => a < 0)) continue;
-        const z = w.reduce((sum, a, i) => sum + a * v[i][2], 0);
-        const p = y * size + x;
+        if (Number.isFinite(distance)) {
+          w = w.map((a, i) => a / (distance - v[i][2]));
+          const total = w.reduce((sum, a) => sum + a, 0);
+          w = w.map((a) => a / total);
+        }
+        const z = w.reduce((sum, a, i) => sum + a * v[i][2], 0),
+          p = y * size + x;
         if (z <= depth[p]) continue;
+        if (isMaskOnly && surface.isOpaque) {
+          output[p * 4 + 3] = 255;
+          depth[p] = z;
+          triangleIds[p] = t;
+          continue;
+        }
         const interpolate = (key: 'uv' | 'mrUv') =>
           [0, 1].map((c) => w.reduce((sum, a, i) => sum + a * vertices[i][key][c], 0));
         const color = texel(surface.color, interpolate('uv'), surface.colorInfo);
-        if (color[3] * surface.factor[3] < 0.5) continue;
+        if (!surface.isOpaque && color[3] * surface.factor[3] < 0.5) continue;
         const mr = texel(surface.mr, interpolate('mrUv'), surface.mrInfo);
         const rough = mr[1] * surface.roughness,
           metal = mr[2] * surface.metallic;
@@ -272,16 +317,34 @@ export function renderNeutral(
         const facing = Math.abs(dot(normal, eye));
         const lighting = 0.72 + 0.28 * Math.abs(dot(normal, normalize([0.4, 0.8, 0.5])));
         const highlight = (1 - rough) * 0.18 * facing ** (4 + (1 - rough) * 20);
+        gain[p] = lighting * (1 - 0.1 * metal) + highlight * metal;
+        bias[p] = highlight * 0.04 * (1 - metal);
         for (let c = 0; c < 3; c++) {
-          const base = linear(color[c]) * surface.factor[c];
-          // Metals tint specular reflection; dielectric F0 is neutral 0.04.
-          const value =
-            base * lighting * (1 - 0.1 * metal) + highlight * (0.04 * (1 - metal) + base * metal);
+          const value = linear(color[c]) * surface.factor[c] * gain[p] + bias[p];
           output[p * 4 + c] = Math.round(255 * Math.max(0, Math.min(1, srgb(value))));
         }
         output[p * 4 + 3] = 255;
         depth[p] = z;
+        triangleIds[p] = t;
       }
   }
-  return { data: output, width: size, height: size };
+  return {
+    image: { data: output, width: size, height: size },
+    depth,
+    triangle: triangleIds,
+    gain,
+    bias,
+    eye,
+    pixelWorldSize: extent / (size - 12),
+    project,
+  };
+}
+
+export function renderNeutral(
+  scene: RenderScene,
+  azimuth: number,
+  elevation = 15,
+  size = 192,
+): Pixels {
+  return renderView(scene, { azimuth, elevation }, size).image;
 }

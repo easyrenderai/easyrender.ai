@@ -1,5 +1,7 @@
 import {
   assessFidelity,
+  type CorrectionReport,
+  correctFidelity,
   type FidelityReport,
   improveMaterials,
   reportHtml,
@@ -34,7 +36,18 @@ export async function finishMaterialFidelity(
       warnings.push('material_pass_unavailable_original_preserved');
       reportError(error, { renderId: render.id, stage: 'material_fidelity' });
     }
-    const artifacts = await assessFidelity(bytes, source, { context });
+    let correction: CorrectionReport | undefined;
+    try {
+      const corrected = await correctFidelity(bytes, source);
+      bytes = corrected.bytes;
+      correction = corrected.report;
+      if (correction.status !== 'accepted') warnings.push(`correction:${correction.reason}`);
+    } catch (error) {
+      warnings.push('correction_unavailable_original_preserved');
+      reportError(error, { renderId: render.id, stage: 'fidelity_correction' });
+    }
+    const artifacts = await assessFidelity(bytes, source, { context, ...correction?.camera });
+    artifacts.report.correction = correction;
     artifacts.report.warnings.push(...warnings);
     artifacts.report.isFlagged ||= warnings.length > 0;
     const fidelity: StoredFidelity = { report: artifacts.report };

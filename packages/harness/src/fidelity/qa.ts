@@ -1,10 +1,11 @@
 import sharp from 'sharp';
 import { deltaE2000, type Lab, rgbToLab } from './color';
+import type { CorrectionReport } from './correction';
 import { detectMaterial, isMetalColor } from './detection';
 import { geometryHash } from './glb-document';
-import { objectMask, type Pixels, photoPixels, png } from './images';
+import { normalizeObject, objectMask, overlap, type Pixels, photoPixels, png } from './images';
 import { inspectMaterials, type MaterialMeasure } from './materials';
-import { readRenderScene, renderNeutral } from './renderer';
+import { readRenderScene, renderView } from './renderer';
 
 import { FIDELITY_THRESHOLDS } from './thresholds';
 
@@ -16,9 +17,11 @@ export type FidelityReport = {
   warnings: string[];
   thresholds: typeof FIDELITY_THRESHOLDS;
   geometryHash?: string;
+  correction?: CorrectionReport;
   camera?: {
     azimuth: number;
     elevation: number;
+    distance?: number;
     method: 'supplied' | 'silhouette-search';
     silhouetteIoU: number;
   };
@@ -40,44 +43,6 @@ export function unavailableReport(reason: string): FidelityReport {
     warnings: [reason],
     thresholds: FIDELITY_THRESHOLDS,
   };
-}
-
-function normalizeObject(image: Pixels, mask: Uint8Array, size = 192): Pixels {
-  let left = image.width,
-    right = 0,
-    top = image.height,
-    bottom = 0;
-  for (let p = 0; p < mask.length; p++)
-    if (mask[p]) {
-      left = Math.min(left, p % image.width);
-      right = Math.max(right, p % image.width);
-      top = Math.min(top, Math.floor(p / image.width));
-      bottom = Math.max(bottom, Math.floor(p / image.width));
-    }
-  if (left > right || top > bottom) throw new Error('No object mask');
-  const scale = (size - 12) / Math.max(right - left + 1, bottom - top + 1);
-  const data = new Uint8Array(size * size * 4);
-  for (let y = 0; y < size; y++)
-    for (let x = 0; x < size; x++) {
-      const sx = Math.round((x - size / 2) / scale + (left + right) / 2);
-      const sy = Math.round((y - size / 2) / scale + (top + bottom) / 2);
-      if (sx < 0 || sy < 0 || sx >= image.width || sy >= image.height) continue;
-      const p = sy * image.width + sx;
-      if (mask[p]) data.set(image.data.subarray(p * 4, p * 4 + 4), (y * size + x) * 4);
-    }
-  return { data, width: size, height: size };
-}
-
-function overlap(a: Pixels, b: Pixels) {
-  let intersection = 0,
-    union = 0;
-  for (let i = 3; i < a.data.length; i += 4) {
-    const hasA = a.data[i] > 127,
-      hasB = b.data[i] > 127;
-    if (hasA && hasB) intersection++;
-    if (hasA || hasB) union++;
-  }
-  return intersection / Math.max(1, union);
 }
 
 export function compareRegions(a: Pixels, b: Pixels): NonNullable<FidelityReport['color']> {
@@ -137,7 +102,7 @@ export function reportHtml(report: FidelityReport, comparison?: Uint8Array): str
 export async function assessFidelity(
   bytes: Uint8Array,
   photo: Uint8Array,
-  options: { context?: string; azimuth?: number; elevation?: number } = {},
+  options: { context?: string; azimuth?: number; elevation?: number; distance?: number } = {},
 ): Promise<FidelityArtifacts> {
   try {
     const source = await photoPixels(photo, 192);
@@ -155,7 +120,7 @@ export async function assessFidelity(
     for (const azimuth of angles) {
       if (Date.now() - renderStartedAt > 12_000)
         throw new Error('QA camera search budget exceeded');
-      const image = renderNeutral(scene, azimuth, elevation);
+      const image = renderView(scene, { azimuth, elevation, distance: options.distance }).image;
       const score = overlap(normalized, image);
       if (!best || score > best.score) best = { image, score, azimuth };
     }
@@ -188,6 +153,7 @@ export async function assessFidelity(
       camera: {
         azimuth: best.azimuth,
         elevation,
+        distance: options.distance,
         method: options.azimuth === undefined ? 'silhouette-search' : 'supplied',
         silhouetteIoU: best.score,
       },
