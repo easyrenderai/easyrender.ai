@@ -1,7 +1,9 @@
 'use client';
 
 import type { UpscaleView } from '@easyrender/core';
-import { useCallback, useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { upscalePollInterval } from '@/lib/upscale-polling';
 
 export type UpscaleTarget =
   | { kind: 'view'; viewSetId: string; view: string }
@@ -12,27 +14,22 @@ export function useUpscales(filter: { renderId?: string; viewSetId?: string }, i
   const query = filter.renderId
     ? `renderId=${encodeURIComponent(filter.renderId)}`
     : `viewSetId=${encodeURIComponent(filter.viewSetId ?? '')}`;
-  const [rows, setRows] = useState<UpscaleView[]>([]);
+  const client = useQueryClient();
+  const queryKey = ['upscales', query];
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const refresh = useCallback(async () => {
-    const response = await fetch(`/api/upscales?${query}`, { cache: 'no-store' }).catch(() => null);
-    if (response?.ok) setRows(((await response.json()) as { upscales: UpscaleView[] }).upscales);
-  }, [query]);
-
-  // use-effect-audit: ignore this hook is the upscale data layer: it loads the rows once enabled (no query library in the repo)
-  useEffect(() => {
-    if (isEnabled) void refresh();
-  }, [isEnabled, refresh]);
-
-  const isRunning = rows.some((row) => row.status === 'processing');
-  // use-effect-audit: ignore timer that polls the rows while an enlargement is processing
-  useEffect(() => {
-    if (!isRunning) return;
-    const timer = setInterval(refresh, 3000);
-    return () => clearInterval(timer);
-  }, [isRunning, refresh]);
+  const { data: rows = [] } = useQuery({
+    queryKey,
+    enabled: isEnabled,
+    queryFn: async ({ signal }) => {
+      const response = await fetch(`/api/upscales?${query}`, { cache: 'no-store', signal });
+      if (!response.ok) throw new Error(String(response.status));
+      return ((await response.json()) as { upscales: UpscaleView[] }).upscales;
+    },
+    // Poll while an enlargement is processing; a failed poll keeps the rows and the next one retries.
+    refetchInterval: (current) => upscalePollInterval(current.state.data),
+  });
 
   async function start(target: UpscaleTarget, key: string, fallback: string) {
     setBusyKey(key);
@@ -44,7 +41,10 @@ export function useUpscales(filter: { renderId?: string; viewSetId?: string }, i
     }).catch(() => null);
     const data = await response?.json().catch(() => null);
     if (response?.ok && data) {
-      setRows((previous) => [data as UpscaleView, ...previous.filter((row) => row.id !== data.id)]);
+      client.setQueryData<UpscaleView[]>(queryKey, (previous = []) => [
+        data as UpscaleView,
+        ...previous.filter((row) => row.id !== data.id),
+      ]);
     } else setError(data?.error ?? fallback);
     setBusyKey(null);
   }
