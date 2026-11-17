@@ -82,6 +82,21 @@ const CANDIDATES: Candidate[] = [
     imageKey: 'image_input',
   },
   {
+    id: 'gpt26-flare',
+    model: 'openai/gpt-image-2.6-flare',
+    // Billed per token; this is a guess for a 1K image at medium quality, not a listed price.
+    costUsd: 0.047,
+    input: { ...SQUARE, quality: 'medium' },
+    imageKey: 'input_images',
+  },
+  {
+    id: 'gpt26-sunburst',
+    model: 'openai/gpt-image-2.6-sunburst',
+    costUsd: 0.047,
+    input: { ...SQUARE, quality: 'medium' },
+    imageKey: 'input_images',
+  },
+  {
     id: 'gpt-low',
     model: 'openai/gpt-image-2',
     costUsd: 0.012,
