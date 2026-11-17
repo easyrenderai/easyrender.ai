@@ -140,4 +140,28 @@ describe('sheet', () => {
     // The marks are sparse, so most of the image is still the photo.
     expect(dark).toBeLessThan((1024 * 1024) / 4);
   });
+
+  it('stamps one large mark in the middle, not a tiled pattern', async () => {
+    const sheet = await sharp({
+      create: { width: 1024, height: 1024, channels: 3, background: '#ffffff' },
+    })
+      .png()
+      .toBuffer();
+    const { data, info } = await sharp(await watermark(new Uint8Array(sheet)))
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const red = (x: number, y: number) => data[(y * info.width + x) * info.channels] ?? 255;
+    // The mark covers the centre clearly, and the corners and edges stay clean.
+    expect(red(512, 512)).toBeLessThan(200);
+    for (const [x, y] of [
+      [20, 20],
+      [1000, 20],
+      [20, 1000],
+      [1000, 1000],
+      [512, 20],
+      [512, 1000],
+    ] as const) {
+      expect(red(x, y)).toBeGreaterThan(245);
+    }
+  });
 });
