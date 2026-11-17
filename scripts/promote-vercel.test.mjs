@@ -41,9 +41,13 @@ function transport(overrides = {}, status = 'succeeded', isQueued = false) {
           return new Response(null, { status: isQueued ? 202 : 200 });
         }
         if (target.pathname === '/v9/projects/prj_fixture')
-          return Response.json({
-            lastAliasRequest: { toDeploymentId: 'dpl_fixture', jobStatus: status },
-          });
+          return Response.json(
+            target.searchParams.get('rollbackInfo') === 'true'
+              ? {
+                  lastAliasRequest: { toDeploymentId: 'dpl_fixture', jobStatus: status },
+                }
+              : {},
+          );
         throw new Error('Unexpected API request, including user-profile lookup');
       },
     },
