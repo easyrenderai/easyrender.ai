@@ -103,14 +103,18 @@ function findCamera(
     if (!best) throw new Error('camera_unavailable');
     return best;
   };
+  const visited = new Set<string>();
   const visit = (camera: FidelityCamera) => {
     check();
-    const image = renderView(scene, camera, source.width).image;
-    const score = overlap(source, image);
+    const key = `${source.width}:${camera.azimuth}:${camera.elevation}:${camera.distance ?? 'ortho'}`;
+    if (visited.has(key)) return;
+    visited.add(key);
+    const silhouette = renderView(scene, camera, source.width, true).image;
+    const score = overlap(source, silhouette);
     candidates.push({ camera, score });
     const color =
       score > 0.5 && (!best || score >= best.score - 1e-9)
-        ? measureCorrection(source, image).meanDeltaE
+        ? measureCorrection(source, renderView(scene, camera, source.width).image).meanDeltaE
         : Infinity;
     if (
       !best ||

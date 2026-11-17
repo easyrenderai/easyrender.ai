@@ -13,6 +13,7 @@ type Surface = {
   index: number;
   hasUv: boolean;
   isDoubleSided: boolean;
+  isOpaque: boolean;
   color: Pixels | null;
   mr: Pixels | null;
   factor: number[];
@@ -69,6 +70,7 @@ export async function readRenderScene(bytes: Uint8Array, textureSize = 256): Pro
         index: material ? doc.getRoot().listMaterials().indexOf(material) : -1,
         hasUv: true,
         isDoubleSided: material?.getDoubleSided() ?? false,
+        isOpaque: (material?.getAlphaMode() ?? 'OPAQUE') === 'OPAQUE',
         color: await sample(material?.getBaseColorTexture() ?? null),
         mr: await sample(material?.getMetallicRoughnessTexture() ?? null),
         factor: material?.getBaseColorFactor() ?? [1, 1, 1, 1],
@@ -201,7 +203,12 @@ export type RenderView = {
 
 // A bounded software rasterizer. Distance is in object-width units; omitted = orthographic.
 // Captured depth and triangle IDs allow visibility-checked transfer to the original UV atlas.
-export function renderView(scene: RenderScene, camera: FidelityCamera, size = 192): RenderView {
+export function renderView(
+  scene: RenderScene,
+  camera: FidelityCamera,
+  size = 192,
+  isMaskOnly = false,
+): RenderView {
   const start = Date.now();
   const theta = (camera.azimuth * Math.PI) / 180,
     phi = (camera.elevation * Math.PI) / 180;
@@ -289,10 +296,16 @@ export function renderView(scene: RenderScene, camera: FidelityCamera, size = 19
         const z = w.reduce((sum, a, i) => sum + a * v[i][2], 0),
           p = y * size + x;
         if (z <= depth[p]) continue;
+        if (isMaskOnly && surface.isOpaque) {
+          output[p * 4 + 3] = 255;
+          depth[p] = z;
+          triangleIds[p] = t;
+          continue;
+        }
         const interpolate = (key: 'uv' | 'mrUv') =>
           [0, 1].map((c) => w.reduce((sum, a, i) => sum + a * vertices[i][key][c], 0));
         const color = texel(surface.color, interpolate('uv'), surface.colorInfo);
-        if (color[3] * surface.factor[3] < 0.5) continue;
+        if (!surface.isOpaque && color[3] * surface.factor[3] < 0.5) continue;
         const mr = texel(surface.mr, interpolate('mrUv'), surface.mrInfo);
         const rough = mr[1] * surface.roughness,
           metal = mr[2] * surface.metallic;

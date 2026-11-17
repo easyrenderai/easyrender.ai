@@ -1,11 +1,29 @@
 import { describe, expect, it } from 'vitest';
 import { fixture, imageFixture } from './fixtures.test-support';
-import { objectMask } from './images';
+import { appendTexture, readDocument, writeDocument } from './glb-document';
+import { objectMask, png } from './images';
 import { improveMaterials } from './materials';
 import { assessFidelity, reportHtml, unavailableReport } from './qa';
-import { readRenderScene, renderNeutral } from './renderer';
+import { readRenderScene, renderNeutral, renderView } from './renderer';
 
 describe('headless fidelity QA', () => {
+  it('keeps fast camera silhouettes identical to shaded opaque rendering, including texture alpha', async () => {
+    const { bytes } = await fixture('wood');
+    const doc = readDocument(bytes),
+      image = imageFixture();
+    for (let p = 0; p < image.width * image.height; p++)
+      if (p % image.width < 16) image.data[p * 4 + 3] = 0;
+    const pbr = doc.json.materials?.[0].pbrMetallicRoughness;
+    if (!pbr) throw new Error('Missing fixture material');
+    pbr.baseColorTexture = { index: appendTexture(doc, await png(image)) };
+    const scene = await readRenderScene(writeDocument(doc));
+    const camera = { azimuth: 0, elevation: 0, distance: 3 };
+    const shaded = renderView(scene, camera).image;
+    const mask = renderView(scene, camera, 192, true).image;
+    expect(mask.data.every((v, i) => i % 4 !== 3 || v === shaded.data[i])).toBe(true);
+    expect(shaded.data.filter((v, i) => i % 4 === 3 && v > 0).length).toBeGreaterThan(30_000);
+  });
+
   it('renders a real triangle mesh, chooses a camera and writes a self-contained report', async () => {
     const { bytes, photo } = await fixture('wood');
     const fixed = await improveMaterials(bytes, photo);
