@@ -15,6 +15,7 @@ export function ArticleTracking({
   path: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
+  // use-effect-audit: ignore observes the rendered article links with an IntersectionObserver and click listeners
   useEffect(() => {
     const root = ref.current?.closest('[data-editorial-root]');
     if (!root) return;

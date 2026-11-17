@@ -22,6 +22,7 @@ export function SiteMenu({
   const [isOpen, setIsOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
+  // use-effect-audit: ignore document keydown and pointerdown listeners that close the menu
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (event: KeyboardEvent) => {

@@ -38,6 +38,7 @@ export function PromptBar({ signedIn, compact = false }: { signedIn: boolean; co
   const [isDragging, setDragging] = useState(false);
   const [isBusy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // use-effect-audit: ignore releases the blob URL of the thumbnail when it is replaced or the page unmounts
   useEffect(() => () => void (thumb && URL.revokeObjectURL(thumb)), [thumb]);
 
   const pick = useCallback(
