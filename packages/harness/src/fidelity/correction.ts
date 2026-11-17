@@ -369,6 +369,10 @@ async function projectPhoto(
 // At most two local candidates; no provider calls or credits. Only the visible source view is
 // measurable. Photos contain lighting: this is a guarded appearance approximation, not inverse
 // rendering or ground truth albedo recovery. Unobserved surfaces retain their original bytes.
+// The render path runs with this budget. Callers that are not on the render path (tests on a slow
+// runner, offline scripts) may pass a larger `budgetMs`.
+const DEFAULT_BUDGET_MS = 15_000;
+
 export async function correctFidelity(
   bytes: Uint8Array,
   photo: Uint8Array,
@@ -382,7 +386,7 @@ export async function correctFidelity(
     changedTexels: 0,
     warnings: ['single_view_fidelity_only', 'unseen_surfaces_preserved'],
   };
-  const deadline = Date.now() + Math.min(15_000, Math.max(0, options.budgetMs ?? 15_000));
+  const deadline = Date.now() + Math.max(0, options.budgetMs ?? DEFAULT_BUDGET_MS);
   const check = () => {
     if (Date.now() >= deadline) throw new Error('correction_budget_exceeded');
   };
