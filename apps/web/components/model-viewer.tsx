@@ -9,6 +9,7 @@ import {
   useState,
 } from 'react';
 import { cn } from '@/lib/utils';
+import { hasWebGL } from '@/lib/webgl';
 
 declare module 'react' {
   namespace JSX {
@@ -110,6 +111,9 @@ export function ModelViewer({
     return () => element.removeEventListener('load', handle);
   }, [ready]);
 
+  // Without WebGL <model-viewer> has no AR renderer and its AR mode selection throws.
+  const canAr = ar && ready && hasWebGL();
+
   return (
     <div ref={box} className={cn('relative size-full', className)} style={style}>
       {ready && (
@@ -126,8 +130,8 @@ export function ModelViewer({
           camera-controls={interactive || undefined}
           disable-zoom={!interactive || !zoom || undefined}
           touch-action={interactive ? 'pan-y' : undefined}
-          ar={ar || undefined}
-          ar-modes={ar ? 'webxr scene-viewer quick-look' : undefined}
+          ar={canAr || undefined}
+          ar-modes={canAr ? 'webxr scene-viewer quick-look' : undefined}
           shadow-intensity="1"
           shadow-softness="1"
           exposure="1"
