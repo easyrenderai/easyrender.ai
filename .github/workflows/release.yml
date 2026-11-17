@@ -271,25 +271,62 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
-      # Optional. A staged *.vercel.app URL sits behind Vercel Authentication. `vercel curl` gets
-      # through it with the release token. If you prefer your own secret, store the project's
-      # "Protection Bypass for Automation" value as VERCEL_AUTOMATION_BYPASS_SECRET and it wins.
+      # Optional override. Otherwise fetch the project's automation bypass with VERCEL_TOKEN,
+      # generating one only if none exists, to smoke the protected staged *.vercel.app URL.
       BYPASS: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
     steps:
-      - name: Install the Vercel CLI
-        run: npm install --global vercel@65.9.0
+      - name: Get the Vercel automation bypass
+        id: bypass
+        run: |
+          set -euo pipefail
+          if [ -n "${BYPASS}" ]; then
+            echo "::add-mask::${BYPASS}"
+            echo "BYPASS=${BYPASS}" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          response="$(mktemp)"
+          trap 'rm -f "$response"' EXIT
+          request() {
+            local status
+            if ! status="$(curl -s --max-time 30 -o "$response" -w '%{http_code}' \
+              -H "Authorization: Bearer ${VERCEL_TOKEN}" "$@")"; then
+              echo "::error::Could not obtain the Vercel automation bypass: HTTP ${status:-000}."
+              exit 1
+            fi
+            if [[ ! "$status" =~ ^2[0-9][0-9]$ ]]; then
+              echo "::error::Could not obtain the Vercel automation bypass: HTTP ${status}."
+              jq -c '{code: .error.code, message: .error.message}' "$response" 2>/dev/null || true
+              exit 1
+            fi
+          }
+          read_bypass() {
+            if ! value="$(jq -r '(.protectionBypass // {}) | to_entries | map(select(.value.scope == "automation-bypass")) | .[0].key // empty' "$response" 2>/dev/null)"; then
+              echo "::error::Could not read the Vercel automation bypass response."
+              exit 1
+            fi
+            echo "::add-mask::${value}"
+          }
+
+          request "https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}?teamId=${VERCEL_ORG_ID}"
+          read_bypass
+          if [ -z "$value" ]; then
+            request -X PATCH -H 'Content-Type: application/json' \
+              --data '{"generate":{"note":"GitHub Actions release smoke"}}' \
+              "https://api.vercel.com/v1/projects/${VERCEL_PROJECT_ID}/protection-bypass?teamId=${VERCEL_ORG_ID}"
+            read_bypass
+          fi
+          if [ -z "$value" ]; then
+            echo "::error::Vercel returned no automation bypass secret; cannot smoke the staged deployment."
+            exit 1
+          fi
+          echo "BYPASS=${value}" >> "$GITHUB_ENV"
 
       - name: Check the staged deployment answers
         run: |
           set -uo pipefail
           fetch() {
-            if [ -n "${BYPASS}" ]; then
-              curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -H "x-vercel-protection-bypass: ${BYPASS}" "${STAGED_URL%/}$1"
-            else
-              # Vercel reads VERCEL_TOKEN from the job environment. An explicit
-              # --token here is forwarded to system curl by CLI 65.9.0.
-              vercel curl "$1" --deployment "${STAGED_URL}" -- -sS -o /dev/null -w '%{http_code}' --max-time 20 | tail -c 3
-            fi
+            curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -H "x-vercel-protection-bypass: ${BYPASS}" "${STAGED_URL%/}$1"
           }
           for path in / /api/openapi.json; do
             status=""
