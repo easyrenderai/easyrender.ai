@@ -17,24 +17,6 @@
   "apps/mobile/lib/library-context.tsx": {
     "use_effect": 2
   },
-  "apps/web/components/catalog-library.tsx": {
-    "use_effect": 5
-  },
-  "apps/web/components/material-panel.tsx": {
-    "use_effect": 2
-  },
-  "apps/web/components/model-viewer.tsx": {
-    "use_effect": 2
-  },
-  "apps/web/components/purchase-conversion.tsx": {
-    "use_effect": 1
-  },
-  "apps/web/components/render-view.tsx": {
-    "use_effect": 3
-  },
-  "apps/web/components/shopify-app.tsx": {
-    "use_effect": 2
-  },
   "tools/render-guides/hero.tsx": {
     "use_effect": 2
   },

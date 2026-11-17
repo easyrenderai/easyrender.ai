@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { gaEvent } from '@/lib/analytics/browser';
 export function PurchaseConversion() {
+  // use-effect-audit: ignore polls the checkout confirmation and reports the GA purchase event, external systems
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const session = params.get('session_id');
