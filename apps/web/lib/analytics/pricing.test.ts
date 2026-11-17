@@ -63,3 +63,33 @@ it('initializes one SDK when consent effects race', async () => {
   await Promise.all([api.setBrowserTools(true, false), api.setBrowserTools(true, false)]);
   expect(sdk.init).toHaveBeenCalledTimes(1);
 });
+
+it('keeps editorial CTA attribution on product events without overwriting their source or acquisition campaign', async () => {
+  vi.resetModules();
+  vi.stubEnv('NEXT_PUBLIC_POSTHOG_KEY', 'phc_localtest');
+  const location = new URL('https://easyrender.ai/es/comparativas/meshy?utm_source=directory');
+  vi.stubGlobal('location', location);
+  vi.stubGlobal('window', { location });
+  vi.stubGlobal('document', { cookie: '', referrer: '', querySelector: () => null });
+  const api = await import('./browser');
+  const cta = {
+    article_group: 'compare-meshy',
+    article_locale: 'es',
+    article_path: '/es/comparativas/meshy',
+    cta_position: 'sidebar',
+    cta_destination: '/es#try',
+  } as const;
+  api.articleMetrics.visibility(cta, true);
+  await api.setBrowserTools(true, false);
+  api.articleMetrics.click(cta);
+  location.pathname = '/es';
+  api.captureBrowser('render_preview_created', { source: 'home' });
+  expect(sdk.capture.mock.lastCall).toEqual([
+    'render_preview_created',
+    expect.objectContaining({ ...cta, source: 'home' }),
+  ]);
+  expect(api.attribution()?.utm_source).toBe('directory');
+  expect(sdk.capture.mock.calls.filter(([event]) => event === 'article_cta_viewed')).toHaveLength(
+    1,
+  );
+});

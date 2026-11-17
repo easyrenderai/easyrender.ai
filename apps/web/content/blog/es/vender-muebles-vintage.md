@@ -16,6 +16,8 @@ Las plataformas especializadas encajan con las piezas de diseño; Wallapop, Mila
 
 <!-- IMAGE PENDING: ilustración EN del aparador (mitad teca, mitad malla 3D). Pie: «Ilustración, no es un resultado de easyrender». -->
 
+> **Resuelve las dudas antes de negociar el precio.** Muestra medidas, estado y defectos, y explica la recogida o el envío. Elige la plataforma según la pieza y su comprador.
+
 ## ¿Dónde vender muebles vintage online?
 
 Ajusta la plataforma a la pieza. Un sillón firmado de mediados de siglo y una cómoda de pino de los años 70 tienen compradores distintos.

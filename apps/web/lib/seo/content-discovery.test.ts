@@ -20,7 +20,10 @@ describe('published editorial navigation', () => {
   });
   it('never promotes scheduled guides or unavailable localized integrations', () => {
     expect(resourceLinks('en', 'home', new Date('2026-11-01')).guides).toEqual([]);
-    expect(resourceLinks('de', 'article').routes.map((item) => item.href)).toEqual(['/de/preise']);
+    expect(resourceLinks('de', 'article').routes.map((item) => item.href)).toEqual([
+      '/de/vergleich',
+      '/de/preise',
+    ]);
   });
   it('links named authors to a real profile instead of the home page', () => {
     for (const locale of LOCALES) {
@@ -66,4 +69,22 @@ describe('published editorial navigation', () => {
     }
     expect(messages.Blog.post.cta).not.toEqual(english.Blog.post.cta);
   });
+});
+
+it('exposes published comparison detail pages from the home and integration landings', () => {
+  for (const locale of ['en', 'es'] as const) {
+    for (const context of ['home', 'api', 'mcp'] as const) {
+      const links = resourceLinks(locale, context);
+      expect(links.comparisons).toHaveLength(2);
+      expect(links.comparisons.map((item) => item.href)).toContain(
+        `${ROUTES.compare.paths[locale]}/meshy`,
+      );
+    }
+    expect(resourceLinks(locale, 'article').routes.map((item) => item.href)).toContain(
+      ROUTES.compare.paths[locale],
+    );
+  }
+  expect(
+    resourceLinks('de', 'home').comparisons.every((item) => item.href.startsWith('/de/vergleich/')),
+  ).toBe(true);
 });

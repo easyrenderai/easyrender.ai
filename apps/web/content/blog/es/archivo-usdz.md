@@ -14,6 +14,8 @@ Un archivo USDZ es un modelo 3D en el formato Universal Scene Description de Pix
 
 <!-- IMAGE PENDING: creativo original obligatorio (tono §5c). Propuesta: captura real de AR Quick Look en un iPhone con un USDZ de easyrender (vista Objeto y vista RA), sin cotas ni medidas superpuestas. Si aún no hay RA en producto, usar un esquema del contenido del USDZ (escena USD + texturas en un zip sin comprimir). -->
 
+> **Elige el formato según el dispositivo.** Usa USDZ para Quick Look de Apple y conserva una versión GLB para la web y Android. Prueba el archivo exportado en el teléfono de destino.
+
 ## ¿Qué hay dentro de un archivo USDZ?
 
 USD es el formato de escena que Pixar creó para la producción de cine. Un USDZ envuelve una escena USD y sus imágenes de textura en un solo archivo, guardado sin compresión para que el dispositivo pueda leerlo directamente, sin extraerlo.
@@ -29,6 +31,12 @@ Depende del dispositivo:
 - Windows y Android: no hay un visor de serie. Las versiones recientes de Blender pueden importar archivos USD, USDZ incluido.
 
 Si necesitas el mismo modelo en Android o en un navegador, usa su versión GLB. [Qué es un archivo GLB](/es/guias/archivo-glb) cubre esa parte.
+
+| Dónde se verá el modelo          | Formato de partida                | Prueba antes de publicar                     |
+| -------------------------------- | --------------------------------- | -------------------------------------------- |
+| **iPhone o iPad con Quick Look** | USDZ                              | Apertura, materiales, orientación y escala   |
+| **Web y Android**                | GLB                               | Visor compatible, texturas y tiempo de carga |
+| **Edición en un programa 3D**    | El formato que admita el programa | Importación y conservación de los materiales |
 
 ## ¿Cómo funciona AR Quick Look en una página web?
 

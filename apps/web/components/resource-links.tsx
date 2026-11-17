@@ -20,7 +20,7 @@ export async function ResourceLinks({
       <h2 className="text-2xl font-semibold tracking-tight">{t('title')}</h2>
       <p className="mt-3 text-muted-foreground">{t('description')}</p>
       <ul className="mt-6 flex flex-wrap gap-x-8 gap-y-4">
-        {resources.guides.map((item) => (
+        {[...resources.guides, ...resources.comparisons].map((item) => (
           <li key={item.href}>
             <Link className="underline underline-offset-4" href={item.href}>
               {item.title}

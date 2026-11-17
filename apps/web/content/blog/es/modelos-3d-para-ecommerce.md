@@ -4,7 +4,7 @@ group: 3d-models-for-ecommerce
 title: "Modelos 3D para ecommerce: cómo conseguirlos"
 description: Qué aporta un modelo 3D de producto, qué archivos necesita una tienda (GLB y USDZ), cuatro formas de conseguirlo y los límites que conviene saber antes.
 date: 2026-11-15
-updated: 2026-11-15
+updated: 2026-11-17
 keyword: modelo 3d para ecommerce
 author: Jorge Rodríguez
 authorType: person
@@ -16,6 +16,8 @@ Un modelo 3D para ecommerce es un archivo, normalmente GLB o USDZ, que el compra
 Las tiendas los consiguen de cuatro maneras: con un artista 3D, a partir de los archivos CAD del fabricante, escaneando el producto o con IA a partir de una sola foto.
 
 <!-- IMAGE PENDING: ilustración EN del mocasín y su caja (mitad cuero, mitad malla 3D). Pie: «Ilustración, no es un resultado de easyrender». -->
+
+> **Valida un producto antes de ampliar el catálogo.** Revisa el modelo dentro de tu tienda, en móvil y escritorio. Calcula el coste por modelo aceptado, contando descartes y correcciones.
 
 ## De una foto de mueble a la ficha de Shopify
 

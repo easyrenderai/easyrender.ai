@@ -21,10 +21,12 @@ export function ArticlePromo({
   locale,
   copy,
   href,
+  position = 'sidebar',
 }: {
   locale: Locale;
   copy: PromoCopy;
   href?: string;
+  position?: 'mobile' | 'sidebar';
 }) {
   return (
     <Card className="gap-0 overflow-hidden py-0 shadow-none" data-article-promo="">
@@ -35,7 +37,11 @@ export function ArticlePromo({
       <div className="space-y-3 p-4">
         <p className="text-sm leading-snug font-medium">{copy.solution}</p>
         <Button asChild className="h-auto min-h-9 w-full whitespace-normal text-center">
-          <Link href={href ?? `${ROUTES.home.paths[locale]}#try`} data-cta="article-sidebar">
+          <Link
+            href={href ?? `${ROUTES.home.paths[locale]}#try`}
+            data-cta="article-sidebar"
+            data-article-cta={position}
+          >
             {copy.button}
             <ArrowRight className="shrink-0" aria-hidden />
           </Link>

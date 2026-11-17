@@ -15,6 +15,7 @@ import {
   advertisingUrl,
   readAdvertisingTouch,
 } from './advertising';
+import { createEditorialMetrics } from './editorial';
 
 declare global {
   interface Window {
@@ -156,6 +157,7 @@ export async function setBrowserTools(
   allowAdvertising = false,
 ) {
   isPosthogAllowed = allowPosthog;
+  if (!allowPosthog) articleMetrics.clear();
   isGaAllowed = allowGa && Boolean(gaId);
   const wasAdvertisingAllowed = isAdvertisingAllowed;
   isAdvertisingAllowed = isGaAllowed && allowAdvertising && !hasWithdrawal;
@@ -295,6 +297,7 @@ export async function setBrowserTools(
     });
   }
   capturePricingView();
+  articleMetrics.flush();
   if (!hasLanding) {
     hasLanding = true;
     const a = attribution();
@@ -341,14 +344,24 @@ export function browserPricingVariant(): PricingVariant {
   return value === 'test' ? 'test' : 'control';
 }
 export function captureBrowser(event: string, properties: Record<string, unknown> = {}) {
-  if (!isPosthogAllowed || !posthog || isMailingTokenLocation(window.location.href)) return;
+  if (!isPosthogAllowed || !posthog || isMailingTokenLocation(window.location.href)) return false;
   posthog.capture(event, {
+    ...([
+      'photo_selected',
+      'render_preview_created',
+      'render_sheet_generation_started',
+      'render_generation_started',
+    ].includes(event)
+      ? articleMetrics.context()
+      : {}),
     pricing_subject: browserPricingSubject(),
     pricing_variant: browserPricingVariant(),
     [`$feature/${PRICING_FLAG}`]: browserPricingVariant(),
     ...properties,
   });
+  return true;
 }
+export const articleMetrics = createEditorialMetrics(captureBrowser);
 let visiblePricing: PricingVariant | null = null;
 const pricingViews = new Set<string>();
 export function observePricing(variant: PricingVariant) {

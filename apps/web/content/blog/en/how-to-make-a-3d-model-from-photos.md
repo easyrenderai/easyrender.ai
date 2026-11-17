@@ -15,6 +15,8 @@ To turn a photo into a 3D model, take one sharp, evenly lit photo of a single ob
 
 ![Illustration of a galvanised metal watering can, one half in its real metal and the other half in matte grey clay covered by a white wireframe mesh, on a dark background](/blog/illustrations/how-to-make-a-3d-model-from-photos/hero.webp "Illustration, not an easyrender result: a watering can drawn half as galvanised metal, half as a clay-and-wireframe mesh.")
 
+> **One photo or many?** Use an existing product photo for a visual model. Capture overlapping photographs when you need to record the real surface. In both cases, inspect the back, base and thin parts.
+
 ## How to make a 3D model from photos: one photo or many?
 
 The number of photos follows from one question: is the object in front of you? Photogrammetry and LiDAR scanning need it there. Image-to-3D only needs a picture, which is why it is the route for a supplier's shot of a sideboard you have never touched.

@@ -16,6 +16,8 @@ Una ventana, un cartón pluma blanco y un móvil bastan en la mayoría de las ti
 
 <!-- IMAGE PENDING: ilustración EN del hervidor (mitad acabado real, mitad malla 3D). Pie: «Ilustración, no es un resultado de easyrender: un hervidor, mitad acabado real y mitad malla 3D». -->
 
+> **Prepara la toma antes de editar.** Muestra el producto entero, estabiliza la cámara y usa luz suave y uniforme. Una foto nítida con bordes claros sirve mejor para el anuncio y para partir hacia el 3D.
+
 ## ¿Qué equipo hace falta para la fotografía de producto?
 
 El trípode importa más que la cámara. Mantiene cada producto a la misma altura y con el mismo ángulo, así que las páginas de categoría quedan alineadas, y te deja disparar con luz de ventana a velocidades lentas sin que la foto salga movida.
