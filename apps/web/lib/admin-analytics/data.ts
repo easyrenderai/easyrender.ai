@@ -1,5 +1,4 @@
 import 'server-only';
-import { createHash } from 'node:crypto';
 import {
   attributionColumns,
   buildOverviewSeries,
@@ -23,23 +22,20 @@ import {
 import { db } from '@easyrender/db';
 import { unstable_cache } from 'next/cache';
 import { requireAdmin } from './auth';
+import { analyticsConfigKey } from './cache-key';
 export const ANALYTICS_TAG = 'admin-analytics';
 function configKey() {
-  return createHash('sha256')
-    .update(
-      JSON.stringify([
-        process.env.ADMIN_EMAILS,
-        process.env.ANALYTICS_EXCLUDE_EMAILS,
-        process.env.ANALYTICS_TZ,
-        process.env.POSTHOG_API_HOST,
-        process.env.POSTHOG_PROJECT_ID,
-        process.env.POSTHOG_PERSONAL_API_KEY,
-        process.env.STRIPE_ANALYTICS_KEY,
-        process.env.STRIPE_SECRET_KEY,
-        process.env.DATABASE_URL,
-      ]),
-    )
-    .digest('hex');
+  return analyticsConfigKey([
+    process.env.ADMIN_EMAILS,
+    process.env.ANALYTICS_EXCLUDE_EMAILS,
+    process.env.ANALYTICS_TZ,
+    process.env.POSTHOG_API_HOST,
+    process.env.POSTHOG_PROJECT_ID,
+    process.env.POSTHOG_PERSONAL_API_KEY,
+    process.env.STRIPE_ANALYTICS_KEY,
+    process.env.STRIPE_SECRET_KEY,
+    process.env.DATABASE_URL,
+  ]);
 }
 const columnsCached = unstable_cache(
   async (_key: string) => attributionColumns(),

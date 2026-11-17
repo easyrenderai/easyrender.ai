@@ -13,9 +13,9 @@ for (const locale of LOCALES) {
       await expect(page.locator('html')).toHaveAttribute('lang', HTML_LANG[locale]);
       await expect(page.locator('main h1')).toBeVisible();
       for (const detail of [
-        'MRRAMOS INMUEBLES SL (sociedad limitada incorporated in Spain)',
+        'MRRAMOS INMUEBLES SL',
         'CIF/NIF: B75763383',
-        'Registered address / domicilio fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (Spain)',
+        'C/ San Miguel 13, Bajo 4, 11001 Cádiz',
         'info@easyrender.ai',
       ]) {
         await expect(page.locator('main')).toContainText(detail);
@@ -23,11 +23,15 @@ for (const locale of LOCALES) {
       await expect(page.locator('main')).not.toContainText('Smithii');
       await expect(page.locator('main')).not.toContainText(/\[[A-Z][A-Z _/-]*\]/);
       if (kind === 'privacy') {
-        for (const detail of ['LOPDGDD', 'EU GDPR', 'UK GDPR']) {
+        for (const detail of [
+          'LOPDGDD',
+          locale === 'es' ? 'RGPD de la UE' : 'EU GDPR',
+          'UK GDPR',
+        ]) {
           await expect(page.locator('main')).toContainText(detail);
         }
         await expect(page.locator('#legal-transfers + p')).toContainText(
-          'UK International Data Transfer Agreement or UK Addendum',
+          'UK International Data Transfer Agreement',
         );
         await expect(page.locator('#legal-rights + p')).toContainText(
           'Agencia Española de Protección de Datos (AEPD)',
@@ -37,12 +41,20 @@ for (const locale of LOCALES) {
         );
       } else {
         await expect(page.locator('main')).toContainText(
-          'Easy Render is a product operated by MRRAMOS INMUEBLES SL',
+          locale === 'es'
+            ? 'Easy Render es un producto operado por MRRAMOS INMUEBLES SL'
+            : 'Easy Render is a product operated by MRRAMOS INMUEBLES SL',
         );
         const law = page.locator('#legal-law + p');
-        await expect(law).toContainText('Spanish law');
-        await expect(law).toContainText('courts of Spain have jurisdiction');
-        await expect(law).toContainText('mandatory protections');
+        await expect(law).toContainText(locale === 'es' ? 'Derecho español' : 'Spanish law');
+        await expect(law).toContainText(
+          locale === 'es'
+            ? 'tribunales de España tienen competencia'
+            : 'courts of Spain have jurisdiction',
+        );
+        await expect(law).toContainText(
+          locale === 'es' ? 'protecciones imperativas' : 'mandatory protections',
+        );
         await expect(law).not.toContainText('UAE federal law');
         await expect(law).not.toContainText('Ras Al Khaimah');
       }
@@ -60,8 +72,12 @@ for (const locale of LOCALES) {
           page.locator(`footer a[href="${ROUTES[linked].paths[locale]}"]`),
         ).toBeVisible();
       }
-      await expect(page.locator('main [lang="en"]')).toContainText(
-        kind === 'privacy' ? 'PostHog' : 'public by default',
+      await expect(page.locator(`main [lang="${locale === 'es' ? 'es' : 'en'}"]`)).toContainText(
+        kind === 'privacy'
+          ? 'PostHog'
+          : locale === 'es'
+            ? 'públicos por defecto'
+            : 'public by default',
       );
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),

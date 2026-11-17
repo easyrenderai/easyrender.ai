@@ -123,12 +123,24 @@ describe('the message files', () => {
     expect(t('operator.name')).toContain('MRRAMOS INMUEBLES SL');
     expect(t('operator.taxId')).toBe('CIF/NIF: B75763383');
     expect(t('operator.address')).toBe(
-      'Registered address / domicilio fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (Spain)',
+      locale === 'es'
+        ? 'Domicilio social / fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (España)'
+        : 'Registered address / domicilio fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (Spain)',
     );
-    expect(t('operator.contact')).toBe('Contact email: info@easyrender.ai');
-    expect(t('terms.intro')).toContain('operated by MRRAMOS INMUEBLES SL');
-    expect(t('terms.sections.law.body')).toContain('governed by Spanish law');
-    expect(t('terms.sections.law.body')).toContain('courts of Spain');
+    expect(t('operator.contact')).toBe(
+      locale === 'es'
+        ? 'Correo de contacto: info@easyrender.ai'
+        : 'Contact email: info@easyrender.ai',
+    );
+    expect(t('terms.intro')).toContain(
+      locale === 'es' ? 'operado por MRRAMOS INMUEBLES SL' : 'operated by MRRAMOS INMUEBLES SL',
+    );
+    expect(t('terms.sections.law.body')).toContain(
+      locale === 'es' ? 'se rigen por el Derecho español' : 'governed by Spanish law',
+    );
+    expect(t('terms.sections.law.body')).toContain(
+      locale === 'es' ? 'tribunales de España' : 'courts of Spain',
+    );
     expect(t('privacy.sections.rights.body')).toContain(
       'Agencia Española de Protección de Datos (AEPD)',
     );

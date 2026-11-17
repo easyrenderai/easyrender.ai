@@ -3,6 +3,7 @@ import {
   canAccess,
   getBalance,
   getRender,
+  isListed,
   isModelExportEnabled,
   listEdits,
   toView,
@@ -19,6 +20,7 @@ import { RenderView } from '@/components/render-view';
 import { Button } from '@/components/ui/button';
 import { currentUser, resolveViewerActor } from '@/lib/actor';
 import { noindexMetadata } from '@/lib/seo/metadata';
+import { absoluteUrl, SITE_NAME } from '@/lib/seo/site';
 import { findShowcase } from '@/lib/showcase';
 
 export const dynamic = 'force-dynamic';
@@ -27,8 +29,43 @@ export async function generateMetadata({ params }: PageProps<'/r/[id]'>): Promis
   const { id } = await params;
   const demo = findShowcase(id);
   const t = await getTranslations();
-  const title = demo ? t(`Showcase.items.${demo.slug}.title`) : t('Render.metaTitle');
-  return noindexMetadata(`${title} · Easy Render`);
+  let name: string;
+  let image: string | undefined;
+  if (demo) {
+    name = t(`Showcase.items.${demo.slug}.title`);
+    image = absoluteUrl(demo.photo);
+  } else {
+    const actor = await resolveViewerActor();
+    const render = await getRender(id, actor).catch((error) => {
+      if (error instanceof AppError && error.status === 404) notFound();
+      throw error;
+    });
+    // Only gallery-public, finished models have social cards. Even an owner or a
+    // link-sharing recipient must not turn a private name/image into public metadata.
+    if (!isListed(render)) return noindexMetadata(`${t('Render.untitled')} · ${SITE_NAME}`);
+    name = render.name?.trim() || t('Render.untitled');
+    const previewKey = render.sheetKey || render.sourceKey;
+    if (previewKey && !previewKey.startsWith('pending:')) {
+      image = absoluteUrl(`/api/renders/${encodeURIComponent(id)}/preview`);
+    }
+  }
+  const shortName = name.length > 46 ? `${name.slice(0, 45).trimEnd()}…` : name;
+  const title = `${shortName} · ${SITE_NAME}`;
+  return {
+    ...noindexMetadata(title),
+    openGraph: {
+      title,
+      siteName: SITE_NAME,
+      type: 'website',
+      url: absoluteUrl(`/r/${encodeURIComponent(id)}`),
+      images: image ? [{ url: image, alt: name }] : [],
+    },
+    twitter: {
+      card: image ? 'summary_large_image' : 'summary',
+      title,
+      images: image ? [image] : [],
+    },
+  };
 }
 
 export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {

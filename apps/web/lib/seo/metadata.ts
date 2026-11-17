@@ -35,6 +35,7 @@ export function pageMetadata({
   publishedTime,
   modifiedTime,
 }: PageMetadataOptions): Metadata {
+  title = title.replace(/\beasyrender\b(?!\.)/gi, SITE_NAME);
   const url = absoluteUrl(path);
   const languages = alternates ? hreflangFor(alternates) : undefined;
   return {
@@ -73,7 +74,7 @@ export function pageMetadata({
  */
 export function noindexMetadata(title: string, description?: string): Metadata {
   return {
-    title,
+    title: title.replace(/\beasyrender\b(?!\.)/gi, SITE_NAME),
     ...(description ? { description } : {}),
     robots: { index: false, follow: true },
   };

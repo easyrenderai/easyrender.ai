@@ -335,7 +335,7 @@
     "makeYourOwn": "Make your own",
     "public": "Public",
     "private": "Private",
-    "untitled": "Untitled render",
+    "untitled": "3D-Modell",
     "modelAlt": "3D model: {name}",
     "meta": {
       "status": "Status",
@@ -1101,7 +1101,9 @@
     },
     "google": "Continue with Google",
     "or": "or",
-    "legalNotice": "Mit der Erstellung eines Kontos stimmst du den <terms>Nutzungsbedingungen</terms> zu. In unserer <privacy>Datenschutzerklärung</privacy> erfährst du, wie wir deine Daten verwenden."
+    "legalNotice": "Mit der Erstellung eines Kontos stimmst du den <terms>Nutzungsbedingungen</terms> zu. In unserer <privacy>Datenschutzerklärung</privacy> erfährst du, wie wir deine Daten verwenden.",
+    "metaSignIn": "Anmelden",
+    "metaSignUp": "Konto erstellen"
   },
   "OAuth": {
     "title": "Connect {client} to Easy Render?",
@@ -2009,7 +2011,7 @@
     },
     "hero": {
       "title": "Product photos to 3D. From your agent.",
-      "subtitle": "Connect easyrender through MCP. Give your agent a product photo, review the preview and build a textured GLB without switching to a modeling tool.",
+      "subtitle": "Connect Easy Render through MCP. Give your agent a product photo, review the preview and build a textured GLB without switching to a modeling tool.",
       "cta": "Connect your agent",
       "note": "Review the free preview before building the 3D model."
     },
@@ -2059,7 +2061,7 @@
     },
     "connect": {
       "title": "Give your agent a 3D tool.",
-      "description": "Use the easyrender MCP endpoint with your account. Choose your client below for its setup instructions.",
+      "description": "Use the Easy Render MCP endpoint with your account. Choose your client below for its setup instructions.",
       "accountTitle": "Start with your account",
       "accountBody": "Sign in or create an account to manage your API keys and credits. Use the same account to find your agent’s renders in your library.",
       "cta": "Open connectors",
@@ -2071,7 +2073,7 @@
       "title": "Before you connect",
       "items": {
         "account": {
-          "q": "Do I need an easyrender account?",
+          "q": "Do I need an Easy Render account?",
           "a": "Yes. MCP requests are authenticated and renders belong to your account. The connector setup offers sign-in instructions for Claude and API-key configuration for the other listed clients."
         },
         "input": {
@@ -2098,7 +2100,7 @@
     },
     "closing": {
       "title": "Bring your next product into the conversation.",
-      "cta": "Connect easyrender"
+      "cta": "Connect Easy Render"
     },
     "skill": {
       "cta": "Install agent skill",
@@ -2124,11 +2126,11 @@
   "ApiLanding": {
     "meta": {
       "title": "Image to 3D API for product photos · Easy Render",
-      "description": "Add photo-to-3D generation to your app with the easyrender REST API. Upload a product image, review the preview, start the paid build and download a textured GLB."
+      "description": "Add photo-to-3D generation to your app with the Easy Render REST API. Upload a product image, review the preview, start the paid build and download a textured GLB."
     },
     "hero": {
       "title": "Photo to 3D. Built into your app.",
-      "subtitle": "Use the easyrender REST API to turn product photos into textured GLBs. Your interface, your workflow, with a preview before the paid build.",
+      "subtitle": "Use the Easy Render REST API to turn product photos into textured GLBs. Your interface, your workflow, with a preview before the paid build.",
       "cta": "Get your API key",
       "note": "REST API · Product photo in. GLB out."
     },
@@ -2142,7 +2144,7 @@
     },
     "intro": {
       "title": "Make 3D generation part of your product.",
-      "description": "Connect your backend to easyrender and decide how people upload, review and use each model.",
+      "description": "Connect your backend to Easy Render and decide how people upload, review and use each model.",
       "catalog": {
         "title": "Catalog tools",
         "body": "Add a photo-to-model step to the tools your team uses to prepare product assets."
@@ -2327,7 +2329,7 @@
       "refund": "Failed 3D builds refund their credits. Prices shown use your current currency and pricing offer."
     },
     "apiDemo": {
-      "title": "Your application · easyrender REST API",
+      "title": "Your application · Easy Render REST API",
       "illustration": "Illustrative application flow and partial JSON response. No upload or paid request runs here.",
       "photoAlt": "Tischfoto als Beispiel für einen Upload",
       "upload": "Product photo received",
@@ -2527,7 +2529,7 @@
   },
   "EcommerceLanding": {
     "meta": {
-      "title": "3D and AR for Shopify, WooCommerce and PrestaShop · Easy Render",
+      "title": "3D und AR für E-Commerce · Easy Render",
       "description": "Add a View in your room button to your product pages. Easy Render turns your catalogue photos into 3D models that shoppers open in AR, on Shopify, WooCommerce, PrestaShop or any other store."
     },
     "breadcrumb": "E-commerce",

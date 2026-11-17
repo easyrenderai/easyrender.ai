@@ -30,6 +30,7 @@ const SECTIONS = {
 } as const;
 
 export async function LegalPage({ kind, locale }: { kind: 'privacy' | 'terms'; locale: Locale }) {
+  const isTranslated = locale === 'es';
   const t = await getTranslations({ locale, namespace: 'Legal' });
   const sections =
     kind === 'privacy'
@@ -48,10 +49,10 @@ export async function LegalPage({ kind, locale }: { kind: 'privacy' | 'terms'; l
       <header className="space-y-3">
         <h1 className="text-2xl font-semibold">{t(`${kind}.title`)}</h1>
         <p className="text-sm text-muted-foreground">{t('updated')}</p>
-        <p className="text-sm text-muted-foreground">{t('languageNotice')}</p>
+        {!isTranslated && <p className="text-sm text-muted-foreground">{t('languageNotice')}</p>}
       </header>
-      {/* English source text is intentional; localized navigation never disguises its language. */}
-      <div lang="en" className="space-y-8 text-sm leading-7">
+      {/* Untranslated locales retain the English disclosure and language attribute. */}
+      <div lang={isTranslated ? locale : 'en'} className="space-y-8 text-sm leading-7">
         <section aria-labelledby="legal-operator" className="rounded-lg border bg-muted/30 p-5">
           <h2 id="legal-operator" className="text-lg font-medium">
             {t('operator.title')}

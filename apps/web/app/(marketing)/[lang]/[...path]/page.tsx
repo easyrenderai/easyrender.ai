@@ -21,8 +21,8 @@ import { isRoutableLocale, type Locale } from '@/i18n/config';
 import { type BlogPost, getPost } from '@/lib/blog/posts';
 import { type ComparePage, getComparePage } from '@/lib/compare/pages';
 import { guideAlias } from '@/lib/guide-alias';
+import { authMetadata } from '@/lib/seo/auth';
 import { JsonLd } from '@/lib/seo/jsonld';
-import { noindexMetadata } from '@/lib/seo/metadata';
 import {
   apiGraph,
   apiMetadata,
@@ -148,7 +148,8 @@ export async function generateMetadata({
   const { lang, path } = await params;
   const match = resolve(lang, path);
   if (match.kind === 'redirect') permanentRedirect(match.path);
-  if (match.kind === 'sign-in' || match.kind === 'sign-up') return noindexMetadata('Easy Render');
+  if (match.kind === 'sign-in' || match.kind === 'sign-up')
+    return authMetadata(match.kind, match.locale);
   if (match.kind === 'author') return authorMetadata(match.locale);
   if (match.kind === 'cookies') return cookiesMetadata(match.locale);
   if (match.kind === 'privacy' || match.kind === 'terms')
