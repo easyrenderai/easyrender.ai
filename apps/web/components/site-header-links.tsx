@@ -1,6 +1,5 @@
 'use client';
 
-import { LayoutDashboard } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { SiteLink as Link } from '@/components/site-link';
@@ -46,7 +45,6 @@ export function HeaderConnect({
   suffix,
   apiLabel,
   uploadLabel,
-  dashboardLabel,
   isSignedIn,
 }: {
   locale: Locale;
@@ -54,17 +52,15 @@ export function HeaderConnect({
   suffix: string;
   apiLabel: string;
   uploadLabel: string;
-  dashboardLabel: string;
   isSignedIn: boolean;
 }) {
   const action = headerPrimaryAction(locale, usePathname(), isSignedIn);
-  const label = { api: apiLabel, upload: uploadLabel, dashboard: dashboardLabel, mcp: connect }[
-    action.kind
-  ];
+  // The session entry already links to the dashboard in both header layouts.
+  if (action.kind === 'dashboard') return null;
+  const label = { api: apiLabel, upload: uploadLabel, mcp: connect }[action.kind];
   return (
-    <Button size="sm" asChild>
+    <Button size="sm" className={isSignedIn ? 'max-sm:hidden' : undefined} asChild>
       <Link href={action.href}>
-        {action.kind === 'dashboard' ? <LayoutDashboard aria-hidden="true" /> : null}
         <span>
           {label}
           {action.kind === 'mcp' && suffix ? (
