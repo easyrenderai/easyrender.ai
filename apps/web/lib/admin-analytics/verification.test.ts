@@ -6,6 +6,7 @@ import en from '@/messages/en.json';
 import es from '@/messages/es.json';
 
 const fixture = vi.hoisted(() => ({
+  hasGoogleAccount: false,
   user: null as { email: string; emailVerified?: boolean } | null,
 }));
 vi.mock('next/headers', () => ({ headers: async () => new Headers() }));
@@ -21,12 +22,18 @@ vi.mock('next-intl/server', () => ({ getLocale: async () => 'en' }));
 vi.mock('@/lib/admin-analytics/session', () => ({
   adminSession: async () => (fixture.user ? { user: fixture.user } : null),
 }));
+vi.mock('@easyrender/db', () => ({
+  db: () => ({
+    account: { findFirst: async () => (fixture.hasGoogleAccount ? { id: 'local-google' } : null) },
+  }),
+}));
 vi.mock('@/lib/auth-client', () => ({ authClient: {} }));
 
 import AdminVerificationPage from '@/app/(app)/sign-in/admin/page';
 
 afterEach(() => {
   fixture.user = null;
+  fixture.hasGoogleAccount = false;
   vi.unstubAllEnvs();
 });
 
@@ -36,6 +43,7 @@ it.each([en, es])('explains verification and offers Google and account recovery'
       email: 'admin@example.test',
       next: '/admin/analytics?period=90d',
       locale: 'en',
+      hasGoogleAccount: false,
       isGoogleAvailable: true,
       hasOAuthError: true,
       copy: messages.AuthService.adminAccess,
@@ -55,6 +63,7 @@ it('offers account verification when Google is not configured', () => {
       email: 'admin@example.test',
       next: '/admin/analytics',
       locale: 'en',
+      hasGoogleAccount: false,
       isGoogleAvailable: false,
       hasOAuthError: false,
       copy: en.AuthService.adminAccess,
@@ -100,4 +109,16 @@ it('shows the recovery error when Google returns its own OAuth error code', asyn
     searchParams: Promise.resolve({ error: 'access_denied' }),
   });
   expect(renderToStaticMarkup(page)).toContain(en.AuthService.adminAccess.error);
+});
+
+it('offers verification sign-in after the server confirms Google is linked', async () => {
+  vi.stubEnv('ADMIN_EMAILS', 'admin@example.test');
+  vi.stubEnv('GOOGLE_CLIENT_ID', 'local-client');
+  vi.stubEnv('GOOGLE_CLIENT_SECRET', 'local-secret');
+  fixture.user = { email: 'admin@example.test', emailVerified: false };
+  fixture.hasGoogleAccount = true;
+  const page = await AdminVerificationPage({ searchParams: Promise.resolve({ locale: 'es' }) });
+  const html = renderToStaticMarkup(page);
+  expect(html).toContain(es.AuthService.adminAccess.verifyGoogle);
+  expect(html).toContain(es.AuthService.adminAccess.linkedInstructions);
 });

@@ -2891,12 +2891,14 @@
       "title": "Verify your email to access admin",
       "description": "Your account needs a verified email before you can open the admin panel.",
       "account": "Signed in as",
-      "instructions": "Continue with Google and choose this same email address. After verification, you will return to the admin page you requested.",
-      "google": "Continue with Google",
+      "instructions": "First, connect Google using the email above. Then sign in with Google to verify your email and open the admin panel.",
+      "google": "Connect my Google account",
       "connecting": "Connecting to Google…",
       "manageAccount": "Verify by email or manage your account",
       "googleUnavailable": "Google sign-in is currently unavailable. Open your account to check the email verification options.",
-      "error": "Google sign-in could not be completed. Try again, choosing the email shown above, or open your account."
+      "error": "We could not verify your Google account. Choose the same email shown above. If your session expired, sign in to easyrender again and retry.",
+      "verifyGoogle": "Verify and enter with Google",
+      "linkedInstructions": "Google is connected. Sign in with that same Google account to verify your email and return to the admin page you requested."
     }
   },
   "ServiceEmails": {

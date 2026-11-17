@@ -6,14 +6,14 @@ import { useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { adminReturnPath, adminVerificationPath } from '@/lib/admin-analytics/navigation';
-import { authClient } from '@/lib/auth-client';
+import { startAdminGoogleRecovery } from '@/lib/admin-analytics/google-recovery';
 import type en from '@/messages/en.json';
 
 export function AdminVerification({
   email,
   next,
   locale,
+  hasGoogleAccount,
   isGoogleAvailable,
   hasOAuthError,
   copy,
@@ -21,6 +21,7 @@ export function AdminVerification({
   email: string;
   next: string;
   locale: 'en' | 'es';
+  hasGoogleAccount: boolean;
   isGoogleAvailable: boolean;
   hasOAuthError: boolean;
   copy: typeof en.AuthService.adminAccess;
@@ -32,13 +33,7 @@ export function AdminVerification({
     setIsBusy(true);
     setHasError(false);
     try {
-      const target = adminReturnPath(next);
-      const result = await authClient.signIn.social({
-        provider: 'google',
-        callbackURL: target,
-        newUserCallbackURL: target,
-        errorCallbackURL: `${adminVerificationPath(target)}&locale=${locale}`,
-      });
+      const result = await startAdminGoogleRecovery(hasGoogleAccount, next, locale);
       if (result.error) {
         setHasError(true);
         setIsBusy(false);
@@ -60,7 +55,11 @@ export function AdminVerification({
           <p className="text-muted-foreground">{copy.account}</p>
           <p className="break-all font-medium">{email}</p>
         </div>
-        {isGoogleAvailable && <p className="text-sm text-muted-foreground">{copy.instructions}</p>}
+        {isGoogleAvailable && (
+          <p className="text-sm text-muted-foreground">
+            {hasGoogleAccount ? copy.linkedInstructions : copy.instructions}
+          </p>
+        )}
         {hasError && (
           <Alert variant="destructive">
             <AlertDescription>{copy.error}</AlertDescription>
@@ -69,7 +68,7 @@ export function AdminVerification({
         {isGoogleAvailable ? (
           <Button className="w-full" onClick={google} disabled={isBusy} aria-busy={isBusy}>
             {isBusy && <Loader2 className="animate-spin" aria-hidden="true" />}
-            {isBusy ? copy.connecting : copy.google}
+            {isBusy ? copy.connecting : hasGoogleAccount ? copy.verifyGoogle : copy.google}
           </Button>
         ) : (
           <p className="text-sm text-muted-foreground">{copy.googleUnavailable}</p>
