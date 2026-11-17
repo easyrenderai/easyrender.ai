@@ -324,7 +324,7 @@ export async function evalsGraph(locale: Locale) {
 // Search results cut a title at about 60 characters, so the brand is only appended when the
 // whole thing still fits. A guide title is written to fit on its own.
 export const MAX_TITLE_LENGTH = 60;
-const TITLE_SUFFIX = ' · easyrender';
+const TITLE_SUFFIX = ' · Easy Render';
 
 export const postTitle = (title: string): string =>
   title.length + TITLE_SUFFIX.length <= MAX_TITLE_LENGTH ? `${title}${TITLE_SUFFIX}` : title;

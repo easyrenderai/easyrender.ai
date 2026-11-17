@@ -65,6 +65,9 @@ function isAdditiveClause(clause) {
 
 /** @param {string} statement */
 export function isAdditiveStatement(statement) {
+  // This reviewed default-only change affects future inserts, never existing gallery rows.
+  // Keep the exception whole-statement and exact: no other default or trailing ALTER clause.
+  if (statement === 'ALTER TABLE "Render" ALTER COLUMN "isPublic" SET DEFAULT false') return true;
   if (/^CREATE TABLE\b/i.test(statement)) return true;
   if (/^CREATE TYPE\b/i.test(statement)) return true;
   if (/^CREATE (UNIQUE )?INDEX\b/i.test(statement)) return true;

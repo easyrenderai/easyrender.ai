@@ -40,7 +40,7 @@ export async function SiteHeader() {
           <Link href={home} className="flex items-center gap-2 font-semibold tracking-tight">
             <BrandMark className="size-[1.375rem]" />
             {/* Icon only on the narrowest phones so the header actions still fit. */}
-            <span className="max-[400px]:sr-only">easyrender</span>
+            <span className="max-[400px]:sr-only">Easy Render</span>
           </Link>
           <nav aria-label={t('sections')} className="hidden items-center gap-1 xl:flex">
             {nav.map((item) => (

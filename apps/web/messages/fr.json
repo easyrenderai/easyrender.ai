@@ -1,7 +1,7 @@
 {
   "Metadata": {
-    "title": "easyrender : ta photo produit en 3D",
-    "description": "easyrender transforme la photo d'un meuble, d'un objet déco ou d'une façade en modèle 3D. Aperçu gratuit sous tous les angles, puis fichiers GLB et USDZ."
+    "title": "Easy Render | De la photo à la 3D",
+    "description": "Transformez toute photo de produit en modèle 3D"
   },
   "LocaleSwitcher": {
     "switchTo": "Passer en {language}",
@@ -10,7 +10,7 @@
   "Header": {
     "nav": {
       "howItWorks": "Comment ça marche",
-      "hub": "Hub",
+      "hub": "Centre",
       "connect": "Connecter",
       "try": "Essayer",
       "pricing": "Tarifs",
@@ -27,14 +27,14 @@
     "upload": "Importer une photo"
   },
   "Footer": {
-    "tagline": "Une photo devient un modèle 3D à regarder sous tous les angles et à télécharger en GLB et USDZ.",
+    "tagline": "Transformez toute photo de produit en modèle 3D",
     "product": "Produit",
     "developers": "Développeurs",
     "account": "Compte",
     "links": {
       "howItWorks": "Comment ça marche",
       "try": "Essayer",
-      "hub": "Hub",
+      "hub": "Centre",
       "gallery": "Galerie",
       "pricing": "Tarifs",
       "faq": "FAQ",
@@ -54,17 +54,17 @@
       "comparisons": "Comparatifs",
       "ecommerce": "E-commerce plugins"
     },
-    "copyright": "© 2026 easyrender. Avec la technologie de Genfeed.",
+    "copyright": "© 2026 Easy Render. Avec la technologie de Genfeed.",
     "pricesNote": "Vérifie la devise et le total avant de payer. Les crédits n’expirent pas."
   },
   "Home": {
     "connect": {
       "title": "Ou confie le travail à ton agent",
-      "description": "easyrender parle MCP : n'importe quel agent compatible peut créer des rendus, les vérifier et générer des modèles 3D avec tes crédits.",
+      "description": "Easy Render parle MCP : n'importe quel agent compatible peut créer des rendus, les vérifier et générer des modèles 3D avec tes crédits.",
       "steps": {
         "key": {
           "title": "Récupère ta clé",
-          "body": "Crée un compte gratuit et ajoute easyrender à claude.ai avec une seule URL, ou génère une clé API pour Claude Code et les autres agents."
+          "body": "Crée un compte gratuit et ajoute Easy Render à claude.ai avec une seule URL, ou génère une clé API pour Claude Code et les autres agents."
         },
         "paste": {
           "title": "Colle-la dans ton agent",
@@ -84,13 +84,13 @@
       "description": "Dépose la photo d'un meuble, d'un objet déco ou d'un produit. L'aperçu est gratuit ; il suffit de créer un compte pour le voir."
     },
     "meta": {
-      "title": "Image en 3D : ta photo devient un modèle 3D · easyrender",
-      "description": "Transforme une image en 3D : la photo d'un meuble ou d'une façade devient un modèle 3D. Aperçu gratuit, tu ne paies que si le résultat te plaît. Export GLB et USDZ."
+      "title": "Easy Render | De la photo à la 3D",
+      "description": "Transformez toute photo de produit en modèle 3D"
     },
     "intro": {
       "eyebrow": "Image vers 3D",
-      "title": "Qu'est-ce qu'easyrender ?",
-      "body": "easyrender transforme une image en 3D : la photo d'un meuble, d'un objet de décoration ou de la façade d'un bâtiment devient un modèle 3D. L'outil dessine d'abord l'objet sous tous ses angles, sur une planche gratuite que tu vérifies avant de dépenser quoi que ce soit. Si l'aperçu te convient, un clic suffit pour obtenir le modèle 3D, à faire pivoter et à télécharger en GLB et USDZ.",
+      "title": "Qu'est-ce qu'Easy Render ?",
+      "body": "Easy Render transforme une image en 3D : la photo d'un meuble, d'un objet de décoration ou de la façade d'un bâtiment devient un modèle 3D. L'outil dessine d'abord l'objet sous tous ses angles, sur une planche gratuite que tu vérifies avant de dépenser quoi que ce soit. Si l'aperçu te convient, un clic suffit pour obtenir le modèle 3D, à faire pivoter et à télécharger en GLB et USDZ.",
       "scope": "Il modélise un objet à la fois, pas une pièce entière, et il n'invente pas de dimensions. Tu reçois le fichier, et c'est toi qui décides s'il mérite d'être gardé.",
       "primaryCta": "Importer une photo",
       "secondaryCta": "Voir la galerie"
@@ -278,9 +278,9 @@
     "sourceAlt": "Source of {title}"
   },
   "Explore": {
-    "metaTitle": "Gallery · easyrender",
+    "metaTitle": "Gallery · Easy Render",
     "eyebrow": "Gallery",
-    "title": "Made with easyrender",
+    "title": "Made with Easy Render",
     "description": "Every model here started as a single photo."
   },
   "Showcase": {
@@ -516,7 +516,11 @@
       "failedBody": "Consultez l’erreur ci-dessous avant d’essayer une autre photo.",
       "connection": "Connexion interrompue. Nous continuons à vérifier ; le traitement continue sur le serveur.",
       "buildCost": "Créer ce modèle utilise {credits} crédits. Vous décidez quand commencer."
-    }
+    },
+    "modelLoading": "Chargement du modèle 3D…",
+    "modelLoadError": "Le modèle 3D n’a pas pu être chargé. Rechargez la page pour réessayer.",
+    "sheetLoading": "Chargement de la planche de vues…",
+    "sheetLoadError": "La planche de vues n’a pas pu être chargée. Rechargez la page pour réessayer."
   },
   "PromptBar": {
     "steps": {
@@ -565,7 +569,7 @@
     "compactNote": "Aperçu sans compte ni carte. Le modèle 3D utilise des crédits."
   },
   "Library": {
-    "metaTitle": "Library · easyrender",
+    "metaTitle": "Library · Easy Render",
     "title": "Library",
     "summary": "{total, plural, one {# item} other {# items}} · {done} in 3D · {balance} credits",
     "upload": "Upload photos",
@@ -639,7 +643,7 @@
     }
   },
   "ProductViews": {
-    "metaTitle": "Product views · easyrender",
+    "metaTitle": "Product views · Easy Render",
     "title": "Product views",
     "subtitle": "One product photo in, nine clean packshots out on white. No studio, no 3D needed.",
     "choose": "Choose a product photo",
@@ -720,7 +724,7 @@
     "navLabel": "Navigation de l’app",
     "sidebar": "Barre latérale",
     "toggleSidebar": "Afficher ou masquer la barre latérale",
-    "home": "Accueil easyrender",
+    "home": "Accueil Easy Render",
     "newModel": "Nouveau modèle 3D",
     "untitled": "Sans titre",
     "status": {
@@ -789,7 +793,7 @@
     "home": "Aller à l’accueil"
   },
   "Dashboard": {
-    "metaTitle": "Dashboard · easyrender",
+    "metaTitle": "Dashboard · Easy Render",
     "title": "Dashboard",
     "description": "Everything your agents and you have generated, in one place.",
     "openLibrary": "Open library",
@@ -827,9 +831,9 @@
     }
   },
   "Connectors": {
-    "metaTitle": "Connectors · easyrender",
+    "metaTitle": "Connectors · Easy Render",
     "title": "Connectors",
-    "description": "Hook easyrender into your agents and tools. Everything they make lands in your library.",
+    "description": "Hook Easy Render into your agents and tools. Everything they make lands in your library.",
     "more": "More connectors",
     "comingSoon": "Coming soon",
     "soon": {
@@ -904,7 +908,7 @@
     }
   },
   "Account": {
-    "metaTitle": "Account · easyrender",
+    "metaTitle": "Account · Easy Render",
     "title": "Account",
     "yourAccount": "Your account",
     "balance": "<strong>{credits}</strong> credits",
@@ -1100,8 +1104,8 @@
     "legalNotice": "En créant un compte, vous acceptez les <terms>Conditions d’utilisation</terms>. Consultez notre <privacy>Politique de confidentialité</privacy> pour comprendre comment nous utilisons vos données."
   },
   "OAuth": {
-    "title": "Connect {client} to easyrender?",
-    "description": "{client} will be able to use easyrender on your behalf. You will be sent back to {host} afterwards.",
+    "title": "Connect {client} to Easy Render?",
+    "description": "{client} will be able to use Easy Render on your behalf. You will be sent back to {host} afterwards.",
     "can": {
       "create": "Upload photos and start previews",
       "read": "Read your renders and their status",
@@ -1244,7 +1248,7 @@
     "proof": {
       "title": "Le catalogue 3D qui manquait",
       "quote": "Il manque des objets 3D dotés d'une vraie physique. Les catalogues existants sont petits, et chaque format reste dans son coin.",
-      "by": "Pourquoi on crée easyrender",
+      "by": "Pourquoi on crée Easy Render",
       "byline": "Un univers d'éléments compatible avec tout",
       "stat": "1 photo",
       "statBody": "D'une photo de catalogue à un modèle texturé, à faire pivoter et à télécharger en GLB et USDZ.",
@@ -1360,7 +1364,7 @@
     }
   },
   "Hub": {
-    "metaTitle": "Hub · easyrender",
+    "metaTitle": "Hub · Easy Render",
     "metaDescription": "Furniture, lighting, decor and props in 3D, each with the mesh and the materials the engine built. Take one to your store, your render or your engine.",
     "eyebrow": "Hub · {count, plural, one {# element} other {# elements}}",
     "title": "Every element, ready to use",
@@ -1421,11 +1425,11 @@
   },
   "Blog": {
     "index": {
-      "metaTitle": "Guides : transformer une photo en modèle 3D · easyrender",
-      "metaDescription": "Comment passer de la photo au modèle 3D, quels fichiers récupérer et quelles limites connaître. Les guides de l’équipe easyrender.",
+      "metaTitle": "Guides : transformer une photo en modèle 3D · Easy Render",
+      "metaDescription": "Comment passer de la photo au modèle 3D, quels fichiers récupérer et quelles limites connaître. Les guides de l’équipe Easy Render.",
       "title": "Guides",
       "headline": "Tout ce qu'on apprend en transformant des photos en 3D",
-      "description": "Comment transformer une photo en modèle 3D, quels fichiers récupérer et ce qu’easyrender peut modéliser.",
+      "description": "Comment transformer une photo en modèle 3D, quels fichiers récupérer et ce qu’Easy Render peut modéliser.",
       "empty": "Les premiers guides sont en cours de rédaction. Aucun n’est encore publié.",
       "readMore": "Lire le guide",
       "latest": "Le dernier guide",
@@ -1466,7 +1470,7 @@
         "title": "Choisir selon votre besoin",
         "photo": {
           "need": "Une photo de produit",
-          "tools": "easyrender",
+          "tools": "Easy Render",
           "check": "Vérifiez les vues gratuites avant de payer le modèle."
         },
         "views": {
@@ -1487,8 +1491,8 @@
     }
   },
   "Models": {
-    "metaTitle": "Models: what easyrender runs on · easyrender",
-    "metaDescription": "The three models behind every easyrender render, the settings they run with and what each step costs in credits. A failed step is refunded.",
+    "metaTitle": "Models: what Easy Render runs on · Easy Render",
+    "metaDescription": "The three models behind every Easy Render render, the settings they run with and what each step costs in credits. A failed step is refunded.",
     "breadcrumb": "Models",
     "home": "Home",
     "eyebrow": "Models",
@@ -1539,8 +1543,8 @@
     "cta": "See how renders are checked"
   },
   "Evals": {
-    "metaTitle": "Evals: how renders are checked · easyrender",
-    "metaDescription": "How easyrender scores its own renders: the five criteria, the checks that run on every render, and the results of each published run.",
+    "metaTitle": "Evals: how renders are checked · Easy Render",
+    "metaDescription": "How Easy Render scores its own renders: the five criteria, the checks that run on every render, and the results of each published run.",
     "breadcrumb": "Evals",
     "home": "Home",
     "eyebrow": "Evals",
@@ -1612,8 +1616,8 @@
     "attribution": "Les campagnes normalisées et chemins référents restent en mémoire et sont enregistrés avec les aperçus ou comptes lors de leur création. Les identifiants de clic publicitaire sont exclus de ces données et de PostHog. L’attribution publicitaire facultative utilise le stockage temporaire distinct décrit ci-dessus.",
     "change": "Change ton choix",
     "withdraw": "Refuser désactive la mesure Google facultative, efface ses cookies et notre stockage de campagnes et clics, et demande l’annulation des mesures serveur en attente pour votre compte connecté. Analyse uniquement efface aussi l’attribution publicitaire et annule les contextes en attente. GPC bloque les deux finalités Google facultatives. Les événements déjà envoyés ne peuvent être retirés ici. PostHog sans cookies et les événements opérationnels restent actifs.",
-    "metaTitle": "Cookies et mesure d’audience · easyrender",
-    "metaDescription": "Comment easyrender utilise les cookies et la mesure d’audience, quelles données sont collectées et comment modifier tes choix.",
+    "metaTitle": "Cookies et mesure d’audience · Easy Render",
+    "metaDescription": "Comment Easy Render utilise les cookies et la mesure d’audience, quelles données sont collectées et comment modifier tes choix.",
     "acceptAdvertising": "Analyse + mesure publicitaire",
     "advertisingTitle": "Mesure publicitaire facultative : er_ad_touch et _gcl_*",
     "advertising": "Seul un choix publicitaire explicite autorise le stockage publicitaire Google et l’utilisation des données pour mesurer les annonces. Nous conservons les identifiants de clic Google autorisés dans er_ad_touch pendant 30 minutes maximum, les envoyons uniquement à Google et les retirons de l’adresse après capture. Google peut stocker ses propres cookies de liaison des conversions. La personnalisation et Google Signals restent désactivés. Accepter l’analyse n’active pas cette option. Google peut aussi conserver des données de liaison dans les cookies _gcl_* et le stockage local _gcl_ls ; leur durée est distincte de notre enregistrement de 30 minutes. Ces identifiants Google accessibles sont effacés au retrait de l’autorisation publicitaire."
@@ -1630,7 +1634,7 @@
     "notReady": "Ce modèle est encore en cours de création. Revenez dans quelques minutes.",
     "notReadyTitle": "Presque prêt",
     "modelAlt": "Modèle 3D de {name}",
-    "madeWith": "3D par easyrender"
+    "madeWith": "3D par Easy Render"
   },
   "ShopifyApp": {
     "title": "Des modèles 3D pour tout votre catalogue",
@@ -1638,8 +1642,8 @@
     "loading": "Chargement…",
     "notInShopify": "Ouvrez cette page depuis l'administration Shopify.",
     "error": "Une erreur est survenue : {message}",
-    "connectBody": "Connectez votre compte easyrender. Les modèles de cette boutique sont payés avec les crédits de ce compte.",
-    "connectButton": "Connecter votre compte easyrender",
+    "connectBody": "Connectez votre compte Easy Render. Les modèles de cette boutique sont payés avec les crédits de ce compte.",
+    "connectButton": "Connecter votre compte Easy Render",
     "connectWaiting": "Terminé ? Cette page se met à jour toute seule.",
     "generate": "Générer la 3D de {count} produits ({credits} crédits)",
     "starting": "Envoi des produits… {count} envoyés",
@@ -1656,8 +1660,8 @@
     "themeBody": "Ouvrez l'éditeur de thème, allez sur une fiche produit, ajoutez le bloc « Voir chez vous » et enregistrez. Les produits avec un modèle terminé affichent un bouton et un QR code."
   },
   "ShopifyConnect": {
-    "title": "Connecter {shop} à easyrender",
-    "body": "Les modèles de cette boutique seront payés avec les crédits de votre compte easyrender.",
+    "title": "Connecter {shop} à Easy Render",
+    "body": "Les modèles de cette boutique seront payés avec les crédits de votre compte Easy Render.",
     "signIn": "Connectez-vous pour continuer",
     "button": "Connecter la boutique",
     "done": "Connectée. Retournez dans Shopify et ouvrez l'application.",
@@ -1666,7 +1670,7 @@
   },
   "AdminGift": {
     "title": "Regalar créditos",
-    "eyebrow": "easyrender / administración",
+    "eyebrow": "Easy Render / administración",
     "description": "Busca una cuenta, revisa sus movimientos y añade créditos con un motivo registrado.",
     "internal": "Interno · acceso restringido",
     "findTitle": "Buscar cuenta",
@@ -1703,7 +1707,7 @@
   },
   "AdminAnalytics": {
     "title": "Admin analytics",
-    "eyebrow": "easyrender / internal intelligence",
+    "eyebrow": "Easy Render / internal intelligence",
     "description": "Acquisition, revenue and product health. Every number carries its source.",
     "internal": "Internal · restricted access",
     "labels": {
@@ -2000,7 +2004,7 @@
   },
   "McpLanding": {
     "meta": {
-      "title": "Image to 3D MCP server for AI agents · easyrender",
+      "title": "Image to 3D MCP server for AI agents · Easy Render",
       "description": "Connect Claude, Cursor or VS Code to easyrender. Turn product photos into 3D models through MCP: review the free preview and download the GLB when ready."
     },
     "hero": {
@@ -2119,7 +2123,7 @@
   },
   "ApiLanding": {
     "meta": {
-      "title": "Image to 3D API for product photos · easyrender",
+      "title": "Image to 3D API for product photos · Easy Render",
       "description": "Add photo-to-3D generation to your app with the easyrender REST API. Upload a product image, review the preview, start the paid build and download a textured GLB."
     },
     "hero": {
@@ -2353,7 +2357,7 @@
     },
     "privacy": {
       "title": "Politique de confidentialité",
-      "metaTitle": "Politique de confidentialité · easyrender",
+      "metaTitle": "Politique de confidentialité · Easy Render",
       "metaDescription": "Politique de confidentialité — easyrender.ai. Le texte juridique ci-dessous est fourni en anglais.",
       "intro": "This policy explains how easyrender.ai handles personal data when you use our website, apps, API and MCP tools to turn a photo into a 3D model. MRRAMOS INMUEBLES SL, the Spanish company identified above, is the data controller. Applicable data protection laws include the EU General Data Protection Regulation (GDPR), Spanish Organic Law 3/2018 on the Protection of Personal Data and Guarantee of Digital Rights (LOPDGDD) and, where applicable to UK users, the UK GDPR. Contact info@easyrender.ai about privacy or your rights.",
       "sections": {
@@ -2397,13 +2401,13 @@
     },
     "terms": {
       "title": "Conditions d’utilisation",
-      "metaTitle": "Conditions d’utilisation · easyrender",
+      "metaTitle": "Conditions d’utilisation · Easy Render",
       "metaDescription": "Conditions d’utilisation — easyrender.ai. Le texte juridique ci-dessous est fourni en anglais.",
       "intro": "Easy Render is a product operated by MRRAMOS INMUEBLES SL, the company identified above. These terms govern your use of easyrender.ai, its apps, API and MCP tools. By creating an account or using the service, you agree to these terms. Contact info@easyrender.ai for service, billing or legal questions. Mandatory consumer rights remain unaffected.",
       "sections": {
         "service": {
           "title": "1. The service and its limits",
-          "body": "easyrender turns one photo of a single piece of furniture, decor object or building exterior into AI-generated previews and a 3D model, with GLB and USDZ downloads where available. Free angle previews are subject to usage and abuse-prevention limits. The service does not model whole interior rooms. Outputs are estimates: dimensions, scale, geometry, materials and resemblance are not guaranteed. Verify outputs before using them in commerce or other projects. They are not surveys, engineering drawings or a basis for structural, construction or safety decisions. Features described as coming soon are not included promises of current functionality."
+          "body": "Easy Render turns one photo of a single piece of furniture, decor object or building exterior into AI-generated previews and a 3D model, with GLB and USDZ downloads where available. Free angle previews are subject to usage and abuse-prevention limits. The service does not model whole interior rooms. Outputs are estimates: dimensions, scale, geometry, materials and resemblance are not guaranteed. Verify outputs before using them in commerce or other projects. They are not surveys, engineering drawings or a basis for structural, construction or safety decisions. Features described as coming soon are not included promises of current functionality."
         },
         "accounts": {
           "title": "2. Accounts and access",
@@ -2471,11 +2475,11 @@
     "grossCap": "Le plafond compte tous les débits de cette clé. Les remboursements rétablissent le solde du compte, mais pas le plafond de la clé."
   },
   "Author": {
-    "metaTitle": "Jorge Rodríguez | Auteur chez easyrender",
-    "bio": "Jorge Rodríguez rédige les guides easyrender sur les photos de produits, les fichiers 3D et les usages e-commerce.",
+    "metaTitle": "Jorge Rodríguez | Auteur chez Easy Render",
+    "bio": "Jorge Rodríguez rédige les guides Easy Render sur les photos de produits, les fichiers 3D et les usages e-commerce.",
     "methodTitle": "Notre méthode",
     "method": "Les affirmations techniques renvoient à leurs sources. Nous distinguons les fonctions documentées des résultats de tests pratiques. Un comparatif reproductible précise l’image source, la version du modèle, les réglages, la date et les limites.",
-    "disclosure": "Ces contenus sont publiés par easyrender, qui commercialise le produit présenté. Les comparatifs ne sont pas des recommandations indépendantes. Les prix et la disponibilité peuvent changer ; consultez le fournisseur avant tout achat.",
+    "disclosure": "Ces contenus sont publiés par Easy Render, qui commercialise le produit présenté. Les comparatifs ne sont pas des recommandations indépendantes. Les prix et la disponibilité peuvent changer ; consultez le fournisseur avant tout achat.",
     "guides": "Guides de Jorge",
     "comparisons": "Comparatifs"
   },
@@ -2523,15 +2527,15 @@
   },
   "EcommerceLanding": {
     "meta": {
-      "title": "3D and AR for Shopify, WooCommerce and PrestaShop · easyrender",
-      "description": "Add a View in your room button to your product pages. easyrender turns your catalogue photos into 3D models that shoppers open in AR, on Shopify, WooCommerce, PrestaShop or any other store."
+      "title": "3D and AR for Shopify, WooCommerce and PrestaShop · Easy Render",
+      "description": "Add a View in your room button to your product pages. Easy Render turns your catalogue photos into 3D models that shoppers open in AR, on Shopify, WooCommerce, PrestaShop or any other store."
     },
     "breadcrumb": "E-commerce",
     "home": "Home",
     "hero": {
       "eyebrow": "E-commerce",
       "title": "A View in your room button on every product page.",
-      "subtitle": "easyrender turns the photos already in your catalogue into 3D models and adds an AR button and a QR code to each product page. Choose your platform to see how it is set up."
+      "subtitle": "Easy Render turns the photos already in your catalogue into 3D models and adds an AR button and a QR code to each product page. Choose your platform to see how it is set up."
     },
     "picker": {
       "label": "Choose your store platform"
@@ -2539,10 +2543,10 @@
     "platforms": {
       "shopify": {
         "name": "Shopify",
-        "title": "easyrender for Shopify",
+        "title": "Easy Render for Shopify",
         "steps": {
           "one": "Install the app",
-          "two": "Connect your easyrender account",
+          "two": "Connect your Easy Render account",
           "three": "Generate the catalogue",
           "four": "Add the block to your theme"
         },
@@ -2553,7 +2557,7 @@
       },
       "woocommerce": {
         "name": "WooCommerce",
-        "title": "easyrender for WooCommerce",
+        "title": "Easy Render for WooCommerce",
         "steps": {
           "one": "Upload the plugin",
           "two": "Paste your API key",
@@ -2567,7 +2571,7 @@
       },
       "prestashop": {
         "name": "PrestaShop",
-        "title": "easyrender for PrestaShop",
+        "title": "Easy Render for PrestaShop",
         "steps": {
           "one": "Upload the module",
           "two": "Paste your API key",
@@ -2581,7 +2585,7 @@
       },
       "tiendanube": {
         "name": "Tiendanube",
-        "title": "easyrender for Tiendanube",
+        "title": "Easy Render for Tiendanube",
         "steps": {
           "one": "Create your account",
           "two": "Turn your products into 3D",
@@ -2595,7 +2599,7 @@
       },
       "other": {
         "name": "Other platform",
-        "title": "easyrender on any other store",
+        "title": "Easy Render on any other store",
         "steps": {
           "one": "Create your account",
           "two": "Turn your products into 3D",
@@ -2623,7 +2627,7 @@
       "productName": "Oak side table",
       "productMeta": "Solid oak · In stock",
       "addToCart": "Add to cart",
-      "added": "Added by easyrender",
+      "added": "Added by Easy Render",
       "button": "View in your room",
       "qrCaption": "Scan with your phone to see it in your room",
       "qrAlt": "QR code that opens this table in AR on a phone",
@@ -2670,7 +2674,7 @@
         },
         "remove": {
           "q": "What happens if I uninstall it?",
-          "a": "The button disappears from your product pages and the store’s product list is forgotten. The models stay in your easyrender account."
+          "a": "The button disappears from your product pages and the store’s product list is forgotten. The models stay in your Easy Render account."
         }
       }
     },

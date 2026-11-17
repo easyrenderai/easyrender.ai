@@ -304,3 +304,19 @@ describe('an angle sheet that repeats one view', () => {
     );
   });
 });
+
+describe('new preview visibility', () => {
+  it.each(['web', 'api', 'mcp'] as const)('defaults %s previews to private', async (source) => {
+    const stored = fakeDatabase();
+    start.mockResolvedValue({ id: 'pred-private', status: 'starting' });
+    await createDraft({ ...input, source });
+    expect(stored().isPublic).toBe(false);
+  });
+
+  it.each([false, true])('honours explicit isPublic=%s', async (isPublic) => {
+    const stored = fakeDatabase();
+    start.mockResolvedValue({ id: 'pred-explicit', status: 'starting' });
+    await createDraft({ ...input, isPublic });
+    expect(stored().isPublic).toBe(isPublic);
+  });
+});

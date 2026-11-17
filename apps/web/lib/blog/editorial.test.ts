@@ -30,7 +30,7 @@ describe.each(LOCALES)('editorial decisions in %s', (locale) => {
       createElement(ComparisonChoices, { copy: messages.Blog.comparisons.choices }),
     );
     expect(html.match(/<li/g)).toHaveLength(3);
-    expect(html).toContain('easyrender');
+    expect(html).toContain('Easy Render');
     expect(html).toContain('Rodin');
     expect(html).toContain('Sloyd');
   });

@@ -2,7 +2,7 @@
 // preview deployment never leaks its own host into an indexable tag.
 export const SITE_URL = 'https://easyrender.ai';
 export const SITE_HOST = 'easyrender.ai';
-export const SITE_NAME = 'easyrender';
+export const SITE_NAME = 'Easy Render';
 
 // Non-canonical hosts that must 301 somewhere other than the same path. Every other host is
 // redirected to the same path on SITE_HOST (see proxy.ts).

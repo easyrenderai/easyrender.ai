@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
+import SignInPage from '@/app/(app)/sign-in/page';
+import SignUpPage from '@/app/(app)/sign-up/page';
 import { ApiView } from '@/components/api-landing/api-view';
 import { AuthorView } from '@/components/author-view';
 import { BlogIndexView } from '@/components/blog/blog-index-view';
@@ -13,10 +15,14 @@ import { LegalPage } from '@/components/legal-page';
 import { McpView } from '@/components/mcp/mcp-view';
 import { ModelsView } from '@/components/models/models-view';
 import { PricingView } from '@/components/pricing/pricing-view';
+import { StudioLens } from '@/components/studio/lens';
+import { StudioShell } from '@/components/studio/shell';
 import { isRoutableLocale, type Locale } from '@/i18n/config';
 import { type BlogPost, getPost } from '@/lib/blog/posts';
 import { type ComparePage, getComparePage } from '@/lib/compare/pages';
+import { guideAlias } from '@/lib/guide-alias';
 import { JsonLd } from '@/lib/seo/jsonld';
+import { noindexMetadata } from '@/lib/seo/metadata';
 import {
   apiGraph,
   apiMetadata,
@@ -53,6 +59,8 @@ import { isPublished, ROUTES } from '@/lib/seo/routes';
 // through to notFound, which is the safe direction.
 
 type Match =
+  | { kind: 'sign-in' | 'sign-up'; locale: Locale }
+  | { kind: 'redirect'; path: string }
   | { kind: 'author'; locale: Locale }
   | { kind: 'blogIndex'; locale: Locale }
   | { kind: 'post'; post: BlogPost }
@@ -71,6 +79,13 @@ type Match =
 function resolve(lang: string, segments: string[]): Match {
   if (!isRoutableLocale(lang) || lang === 'en') return { kind: 'none' };
   const locale: Locale = lang;
+  if (segments.length === 1 && (segments[0] === 'sign-in' || segments[0] === 'sign-up')) {
+    return { kind: segments[0], locale };
+  }
+  if (segments.length === 2 && segments[0] === 'learn') {
+    const target = guideAlias(locale, segments[1]);
+    if (target) return { kind: 'redirect', path: target };
+  }
   const path = `/${[locale, ...segments].join('/')}`;
 
   if (isPublished('author', locale) && path === ROUTES.author.paths[locale])
@@ -132,6 +147,8 @@ export async function generateMetadata({
 }: PageProps<'/[lang]/[...path]'>): Promise<Metadata> {
   const { lang, path } = await params;
   const match = resolve(lang, path);
+  if (match.kind === 'redirect') permanentRedirect(match.path);
+  if (match.kind === 'sign-in' || match.kind === 'sign-up') return noindexMetadata('Easy Render');
   if (match.kind === 'author') return authorMetadata(match.locale);
   if (match.kind === 'cookies') return cookiesMetadata(match.locale);
   if (match.kind === 'privacy' || match.kind === 'terms')
@@ -152,6 +169,19 @@ export async function generateMetadata({
 export default async function LocalePage({ params }: PageProps<'/[lang]/[...path]'>) {
   const { lang, path } = await params;
   const match = resolve(lang, path);
+  if (match.kind === 'redirect') permanentRedirect(match.path);
+  if (match.kind === 'sign-in' || match.kind === 'sign-up') {
+    return (
+      <StudioShell>
+        <div className="auth">
+          <div className="auth__form">
+            {match.kind === 'sign-in' ? <SignInPage /> : <SignUpPage />}
+          </div>
+          <StudioLens />
+        </div>
+      </StudioShell>
+    );
+  }
   if (match.kind === 'author')
     return (
       <>

@@ -63,7 +63,7 @@ export type BlogPost = {
 };
 
 /** A file that names no author still defaults to the team, as an Organization. Week 1 guides name Jorge Rodríguez as a Person (11-nov-2026). */
-export const DEFAULT_AUTHOR: BlogAuthor = { name: 'easyrender team', type: 'Organization' };
+export const DEFAULT_AUTHOR: BlogAuthor = { name: 'Easy Render team', type: 'Organization' };
 
 /** dateModified and lastmod: never earlier than the publication date. */
 export const modifiedDate = (post: Pick<BlogPost, 'date' | 'updated'>): string =>

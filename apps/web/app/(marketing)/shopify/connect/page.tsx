@@ -10,7 +10,7 @@ import { currentUser } from '@/lib/actor';
 import { noindexMetadata } from '@/lib/seo/metadata';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = noindexMetadata('easyrender 3D & AR');
+export const metadata: Metadata = noindexMetadata('Easy Render 3D & AR');
 
 // Opened in a new tab from the Shopify app: the merchant signs in to easyrender and links the shop
 // to their account, which pays for its models.

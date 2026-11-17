@@ -221,7 +221,7 @@ export async function createDraft(input: {
   const prompt = cleanNote(input.prompt) || null;
   const name = input.name?.trim().slice(0, 120) || null;
   const source = input.actor.source ?? input.source ?? 'web';
-  const isPublic = input.isPublic ?? (!input.isLinkShared && source === 'web');
+  const isPublic = input.isPublic ?? false;
   const key = input.idempotencyKey;
   if (key !== undefined && !/^[\x21-\x7e]{1,128}$/.test(key)) {
     throw new AppError(

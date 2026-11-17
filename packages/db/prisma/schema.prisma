@@ -201,7 +201,7 @@ model Render {
   credits           Int          @default(0)
   error             String?
   // Finished renders show in the public gallery unless the owner hides them.
-  isPublic          Boolean      @default(true)
+  isPublic          Boolean      @default(false)
   // A store embeds the model on its own product pages: anyone with the link can view it, but it
   // stays out of the public gallery unless isPublic is also true.
   isLinkShared      Boolean      @default(false)

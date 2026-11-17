@@ -16,7 +16,7 @@ import {
 import { currentUser } from '@/lib/actor';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Connect · easyrender', robots: { index: false } };
+export const metadata: Metadata = { title: 'Connect · Easy Render', robots: { index: false } };
 
 // Consent screen for MCP clients (claude.ai and others) that connect through OAuth.
 export default async function AuthorizePage({ searchParams }: PageProps<'/oauth/authorize'>) {

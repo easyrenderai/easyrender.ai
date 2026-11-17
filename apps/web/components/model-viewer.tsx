@@ -1,5 +1,7 @@
 'use client';
 
+import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import {
   type CSSProperties,
   type DetailedHTMLProps,
@@ -65,7 +67,12 @@ type Props = {
 // Google's <model-viewer>, loaded on the client only, and only once its box comes near the
 // viewport: the library bundles its own three.js (~370 KB), so a viewer far down a page must not
 // download it during the first paint. The box keeps its size while empty, so nothing shifts.
-export function ModelViewer({
+export function ModelViewer(props: Props) {
+  // A new URL is a new load, even when React reuses the surrounding render page.
+  return <ModelViewerInstance key={props.src} {...props} />;
+}
+
+function ModelViewerInstance({
   src,
   alt,
   className,
@@ -79,6 +86,8 @@ export function ModelViewer({
   autoRotate = true,
   onLoad,
 }: Props) {
+  const t = useTranslations('Render');
+  const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
   const box = useRef<HTMLDivElement>(null);
   const viewer = useRef<HTMLElement>(null);
   const [ready, setReady] = useState(false);
@@ -93,7 +102,13 @@ export function ModelViewer({
       (entries) => {
         if (!entries.some((entry) => entry.isIntersecting)) return;
         observer.disconnect();
-        loadModelViewer().then(() => alive && setReady(true));
+        loadModelViewer()
+          .then(() => {
+            if (alive) setReady(true);
+          })
+          .catch(() => {
+            if (alive) setStatus('error');
+          });
       },
       { rootMargin: '300px 0px' },
     );
@@ -106,16 +121,42 @@ export function ModelViewer({
   useEffect(() => {
     const element = viewer.current;
     if (!ready || !element) return;
-    const handle = () => onLoadRef.current?.(element);
-    element.addEventListener('load', handle);
-    return () => element.removeEventListener('load', handle);
+    const handleLoad = () => {
+      setStatus('loaded');
+      onLoadRef.current?.(element);
+    };
+    const handleError = () => setStatus('error');
+    element.addEventListener('load', handleLoad);
+    element.addEventListener('error', handleError);
+    // Cached models can finish before the effect attaches its listeners.
+    if ('loaded' in element && element.loaded === true) handleLoad();
+    return () => {
+      element.removeEventListener('load', handleLoad);
+      element.removeEventListener('error', handleError);
+    };
   }, [ready]);
 
   // Without WebGL <model-viewer> has no AR renderer and its AR mode selection throws.
   const canAr = ar && ready && hasWebGL();
 
   return (
-    <div ref={box} className={cn('relative size-full', className)} style={style}>
+    <div
+      ref={box}
+      className={cn('relative size-full', className)}
+      style={style}
+      aria-busy={status === 'loading'}
+    >
+      {status !== 'loaded' && (
+        <div
+          role={status === 'error' ? 'alert' : 'status'}
+          className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 p-4 text-center text-sm text-muted-foreground"
+        >
+          {status === 'loading' && (
+            <Loader2 className="size-6 animate-spin motion-reduce:animate-none" aria-hidden />
+          )}
+          <span>{t(status === 'error' ? 'modelLoadError' : 'modelLoading')}</span>
+        </div>
+      )}
       {ready && (
         <model-viewer
           ref={viewer}

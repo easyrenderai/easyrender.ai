@@ -1,9 +1,11 @@
 import { withSentryConfig } from '@sentry/nextjs/config';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
+import { ROUTABLE_LOCALES } from './i18n/config';
 import { gaMeasurementId } from './lib/analytics/config';
 import { PUBLIC_PHOTO_VERSION } from './lib/public-models';
 import { NOINDEX_HEADER_PATHS } from './lib/seo/noindex';
+import { ROUTES } from './lib/seo/routes';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
@@ -28,6 +30,24 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ['sharp', 'pg', 'draco3dgltf'],
   // Guides are content files read at request time, so they have to travel with the deployment.
   outputFileTracingIncludes: { '/**': ['./content/**/*'] },
+  async redirects() {
+    return [
+      ...['', ...ROUTABLE_LOCALES].flatMap((locale) => {
+        const prefix = locale ? `/${locale}` : '';
+        const targetPrefix = locale === 'en' ? '' : prefix;
+        return [
+          { source: `${prefix}/login`, destination: `${targetPrefix}/sign-in`, permanent: true },
+          { source: `${prefix}/signup`, destination: `${targetPrefix}/sign-up`, permanent: true },
+        ];
+      }),
+      { source: '/en/learn/:slug', destination: '/learn/:slug', permanent: true },
+      ...ROUTABLE_LOCALES.map((locale) => ({
+        source: `/${locale}/learn`,
+        destination: ROUTES.blog.paths[locale],
+        permanent: true,
+      })),
+    ];
+  },
   // noindex as a response header as well as a meta tag: the header covers a route before anyone
   // adds a generateMetadata to it, which matters most for the ad landings.
   async headers() {

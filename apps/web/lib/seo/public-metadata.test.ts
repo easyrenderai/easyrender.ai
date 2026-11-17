@@ -27,7 +27,10 @@ vi.mock('@/lib/pricing', () => ({
 vi.mock('next-intl/server', () => ({
   getLocale: async () => state.locale,
   getTranslations: async (
-    input: 'Footer' | 'Landing.pricing' | { locale: Locale; namespace: 'Models' | 'Analytics' },
+    input:
+      | 'Footer'
+      | 'Landing.pricing'
+      | { locale: Locale; namespace: 'Models' | 'Analytics' | 'Home.meta' },
   ) => {
     const locale = typeof input === 'string' ? state.locale : input.locale;
     const namespace = typeof input === 'string' ? input : input.namespace;
@@ -92,5 +95,16 @@ describe('public pricing copy', () => {
     const html = renderToStaticMarkup(await SiteFooter());
     expect(html).toContain('href="/compare"');
     expect(html).toContain('href="/authors/jorge-rodriguez"');
+  });
+});
+
+it('emits the requested English home title, description and shared social brand', async () => {
+  const metadata = await pages.homeMetadata('en');
+  expect(metadata.title).toBe('Easy Render | Photo to 3D');
+  expect(metadata.description).toBe('Turn any Product Photo into a 3D model');
+  expect(metadata.openGraph).toMatchObject({
+    title: metadata.title,
+    description: metadata.description,
+    siteName: 'Easy Render',
   });
 });

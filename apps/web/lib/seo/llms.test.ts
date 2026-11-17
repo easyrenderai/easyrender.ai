@@ -74,7 +74,7 @@ describe('llms.txt', () => {
   const text = llmsTxt();
 
   it('follows the llms.txt shape: one H1, a summary blockquote, link sections', () => {
-    expect(text.startsWith('# easyrender\n')).toBe(true);
+    expect(text.startsWith('# Easy Render\n')).toBe(true);
     expect(text.match(/^# /gm)).toHaveLength(1);
     expect(text).toMatch(/^> .+/m);
     expect(text).toContain('## Pages');

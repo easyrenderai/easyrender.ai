@@ -1,4 +1,5 @@
-import { HREFLANG, LOCALES, type Locale, ROUTABLE_LOCALES } from '@/i18n/config';
+// Also loaded by next.config.ts: its config transpiler requires relative dependencies.
+import { HREFLANG, LOCALES, type Locale, ROUTABLE_LOCALES } from '../../i18n/config';
 import { absoluteUrl } from './site';
 
 // The single source of truth for the indexable tree. One entry per page that exists in several

@@ -122,3 +122,16 @@ ADD COLUMN "spentCredits" INTEGER NOT NULL DEFAULT 0;`;
     ).toBe(false);
   });
 });
+
+it('allows only the private-by-default Render visibility change, without row updates', () => {
+  expect(
+    assessChange('ALTER TABLE "Render" ALTER COLUMN "isPublic" SET DEFAULT false;').isAdditive,
+  ).toBe(true);
+  for (const sql of [
+    'ALTER TABLE "Render" ALTER COLUMN "isPublic" SET DEFAULT true;',
+    'ALTER TABLE "Render" ALTER COLUMN "isPublic" SET DEFAULT false, DROP COLUMN "error";',
+    'UPDATE "Render" SET "isPublic" = false;',
+    'ALTER TABLE "Render" ALTER COLUMN "credits" SET DEFAULT 0;',
+  ])
+    expect(assessChange(sql).isAdditive).toBe(false);
+});

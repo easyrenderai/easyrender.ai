@@ -12,6 +12,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
+import { AngleSheet } from '@/components/angle-sheet';
 import { ModelView } from '@/components/model-view';
 import { DATE_FORMAT, RenderDetail } from '@/components/render-detail';
 import { RenderView } from '@/components/render-view';
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: PageProps<'/r/[id]'>): Promis
   const demo = findShowcase(id);
   const t = await getTranslations();
   const title = demo ? t(`Showcase.items.${demo.slug}.title`) : t('Render.metaTitle');
-  return noindexMetadata(`${title} · easyrender`);
+  return noindexMetadata(`${title} · Easy Render`);
 }
 
 export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
@@ -49,12 +50,7 @@ export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
         input={demo.photo}
         angles={
           demo.angles ? (
-            // biome-ignore lint/performance/noImgElement: static showcase image
-            <img
-              src={demo.angles}
-              alt={t('Render.everyAngle')}
-              className="w-full rounded-lg border bg-white"
-            />
+            <AngleSheet src={demo.angles} />
           ) : (
             <p className="flex aspect-[2/1] items-center justify-center rounded-lg border bg-muted/40 p-4 text-center text-sm text-muted-foreground">
               {t('Render.noAngleSheet')}

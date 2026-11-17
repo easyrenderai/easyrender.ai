@@ -71,6 +71,7 @@ export function PromptBar({ signedIn, compact = false }: { signedIn: boolean; co
       body.append('attribution', JSON.stringify(attribution()));
       body.append('image', await prepare(file, t('errors.unreadable')), 'source.jpg');
       body.append('prompt', prompt);
+      body.append('isPublic', 'false');
       requestKey.current ??= crypto.randomUUID();
       const response = await fetch('/api/renders', {
         method: 'POST',
