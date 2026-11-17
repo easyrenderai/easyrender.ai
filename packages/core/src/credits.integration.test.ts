@@ -729,7 +729,11 @@ run('credits and generation billing (real database)', () => {
         .mockResolvedValueOnce({ id: `build_${userId}` });
       await renders.startBuild(render.id, { userId });
       replicate.get.mockResolvedValue({ status: 'succeeded', output: 'https://x.test/final.png' });
-      replicate.checkSheet.mockResolvedValue({ ok: false, code: 'sheet_empty', message: 'empty' });
+      replicate.checkSheet.mockResolvedValueOnce({
+        ok: false,
+        code: 'sheet_empty',
+        message: 'empty',
+      });
       await renders.advance(render.id);
       const after = await db().render.findUniqueOrThrow({ where: { id: render.id } });
       expect(after.status).toBe('rendering');
@@ -737,6 +741,44 @@ run('credits and generation billing (real database)', () => {
       expect(after.sheetKey).toBe('fake:sheets/draft.png');
       expect(await balance(userId)).toBe(0);
       expect(after.quality).toEqual({ isDraftUsed: true, finalSheetProblem: 'sheet_empty' });
+    });
+
+    it('refunds instead of building from an inconsistent legacy draft after a failed final sheet', async () => {
+      const { renders } = await load();
+      const userId = await newUser(RENDER_CREDITS);
+      const render = await draft(userId);
+      await renders.startBuild(render.id, { userId });
+      replicate.get.mockResolvedValue({ status: 'failed', error: 'redraw failed' });
+      replicate.checkSheet.mockResolvedValue({
+        ok: false,
+        code: 'sheet_inconsistent_structure',
+        message: 'invented panels',
+      });
+      const after = await renders.advance(render.id);
+      expect(after?.status).toBe('failed');
+      expect(after?.buildPredictionId).toBeNull();
+      expect(after?.error).toContain('sheet_inconsistent_structure');
+      expect(await balance(userId)).toBe(RENDER_CREDITS);
+      await renders.advance(render.id);
+      expect(await balance(userId)).toBe(RENDER_CREDITS);
+    });
+
+    it('refunds an inconsistent previously purchased sheet before a 3D prediction starts', async () => {
+      const { renders } = await load();
+      const userId = await newUser(RENDER_CREDITS);
+      const render = await newRender(userId, { sheetKey: 'fake:legacy.png', hasFinalSheet: true });
+      replicate.checkSheet.mockResolvedValue({
+        ok: false,
+        code: 'sheet_inconsistent_structure',
+        message: 'invented panels',
+      });
+      await expect(renders.startBuild(render.id, { userId })).rejects.toMatchObject({
+        code: 'upstream',
+      });
+      const after = await db().render.findUniqueOrThrow({ where: { id: render.id } });
+      expect(after.status).toBe('failed');
+      expect(after.buildPredictionId).toBeNull();
+      expect(await balance(userId)).toBe(RENDER_CREDITS);
     });
 
     it('records that the draft was used when the final model reports a failure', async () => {

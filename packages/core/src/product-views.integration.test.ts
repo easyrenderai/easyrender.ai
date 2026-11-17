@@ -621,6 +621,15 @@ run('product views (real database, scripted models)', { timeout: 15_000 }, () =>
   it('builds 3D from the finished views for the 3D step only, without drawing the sheet again', async () => {
     const { views, renders } = await load();
     const userId = await newUser(PRODUCT_VIEWS_CREDITS + BUILD_FROM_VIEWS_CREDITS);
+    // The default upscale mock repeats one picture nine times. A reusable 3D sheet must
+    // retain distinct views, including after normalization, so script distinct outputs here.
+    const upscaled = await Promise.all(
+      VIEWS.map((_, index) =>
+        picture(2046, 900, [80 + index * 20, 40 + index * 15, 20 + index * 10]),
+      ),
+    );
+    let upscaleIndex = 0;
+    fake.makeUpscale = () => upscaled[upscaleIndex++] as Uint8Array;
     const set = await settle((await create(userId)).id, userId);
 
     const renderId = await views.createRenderFromViews(set.id, {
