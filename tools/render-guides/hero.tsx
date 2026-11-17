@@ -1,7 +1,7 @@
 import { useThree } from '@react-three/fiber';
 import { ThreeCanvas } from '@remotion/three';
 import { Box, Check, ImagePlus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import {
   AbsoluteFill,
   cancelRender,
@@ -28,12 +28,14 @@ const ease = (f: number, a: number, b: number, x = 0, y = 1) =>
   interpolate(f, [a, b], [x, y], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
 function StudioLight() {
   const { gl, scene } = useThree();
-  useEffect(() => {
+  // Install the environment before Remotion advances its first frame. Otherwise
+  // the single-frame poster can capture different lighting from the video.
+  useLayoutEffect(() => {
     const room = new RoomEnvironment();
     const generator = new PMREMGenerator(gl);
     const target = generator.fromScene(room);
     scene.environment = target.texture;
-    scene.environmentIntensity = 1.2;
+    scene.environmentIntensity = 0.35;
     room.dispose();
     generator.dispose();
     return () => {
@@ -154,15 +156,17 @@ export function HeroMotion() {
         }}
       >
         <ThreeCanvas
+          // Preserve texture hues instead of compressing bright wood through ACES.
+          flat
           width={860}
           height={600}
           camera={{ position: [0, 1.6, 4.5], fov: 32 }}
           gl={{ alpha: true, antialias: true }}
         >
           <StudioLight />
-          <ambientLight intensity={2.4} />
-          <directionalLight intensity={5.5} position={[4, 5, 6]} />
-          <directionalLight intensity={3} position={[-4, 2, -3]} />
+          <ambientLight intensity={4} />
+          <directionalLight intensity={1.4} position={[4, 5, 6]} />
+          <directionalLight intensity={0.6} position={[-4, 2, -3]} />
           <group rotation={[0, 0.4 + Math.max(0, f - 240) * 0.014, 0]}>
             <primitive object={scene} />
           </group>

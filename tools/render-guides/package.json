@@ -5,7 +5,8 @@
   "scripts": {
     "render": "node render.mjs",
     "typecheck": "tsc --noEmit",
-    "check:alignment": "node check-alignment.mjs"
+    "check:alignment": "node check-alignment.mjs",
+    "check:hero-color": "node check-hero-color.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "9.8.2",
