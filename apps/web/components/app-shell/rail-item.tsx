@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { cn } from '@/lib/utils';
 
@@ -25,19 +25,17 @@ export function RailItem({
   className?: string;
 }) {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
+  // The peek is open for the page it was opened on, so it closes on every navigation without an
+  // effect: a different pathname no longer matches.
+  const [opened, setOpened] = useState<{ pathname: string | null } | null>(null);
+  const isOpen = opened !== null && opened.pathname === pathname;
   // A click focuses the link, which would reopen the peek. Hold it shut until the pointer leaves.
   const [isDismissed, setIsDismissed] = useState(false);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: close on every navigation
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
 
   return (
     <HoverCard
       open={isOpen && !isActive && !isDismissed}
-      onOpenChange={setIsOpen}
+      onOpenChange={(next) => setOpened(next ? { pathname } : null)}
       openDelay={OPEN_DELAY_MS}
       closeDelay={CLOSE_DELAY_MS}
     >
@@ -47,7 +45,7 @@ export function RailItem({
           className={className}
           onClickCapture={() => {
             setIsDismissed(true);
-            setIsOpen(false);
+            setOpened(null);
           }}
           onPointerLeave={() => setIsDismissed(false)}
           onBlur={() => setIsDismissed(false)}

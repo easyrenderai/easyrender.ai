@@ -73,6 +73,7 @@ export function ShellPanel({
   const slot = useContext(PanelSlotContext);
   const isWide = useMediaQuery(side === 'left' ? MD_QUERY : XL_QUERY);
   const register = slot?.register;
+  // use-effect-audit: ignore reports this panel's mount and unmount to the shell, which has no event to hang it on
   useEffect(() => (register ? register(side) : undefined), [register, side]);
   const node = slot?.nodes[side];
   if (node && isWide) return createPortal(children, node);

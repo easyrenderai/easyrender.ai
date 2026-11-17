@@ -28,6 +28,7 @@ export function HomeComposer() {
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // use-effect-audit: ignore releases the blob URL of the thumbnail when it is replaced or the page unmounts
   useEffect(() => () => void (thumb && URL.revokeObjectURL(thumb)), [thumb]);
 
   const pick = useCallback(
@@ -53,6 +54,7 @@ export function HomeComposer() {
 
   // Page-wide drag and paste. A depth counter, because dragenter and dragleave fire for every
   // child the pointer crosses.
+  // use-effect-audit: ignore subscribes to window drag, drop and paste events
   useEffect(() => {
     let depth = 0;
     const hasFiles = (event: DragEvent) => event.dataTransfer?.types.includes('Files') === true;
