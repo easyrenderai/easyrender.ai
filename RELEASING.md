@@ -35,7 +35,10 @@ What the workflow does, in order. A failure before step 5 leaves production as i
 4. **Smoke**: `/` and `/api/openapi.json` on the staged URL. The staged build is a production
    build, so `apps/web/proxy.ts` would 301 it to easyrender.ai; `lib/canonical-host.ts` lets the
    deployment's own host (`VERCEL_URL`) through and still redirects www and every other alias.
-5. **Promote**: points easyrender.ai at the staged deployment (no rebuild), then smokes production.
+5. **Promote**: uses the team-scoped Vercel API after checking the staged deployment is READY,
+   production-targeted, and belongs to the configured project and pinned commit. It waits for
+   that deployment's alias operation to succeed, then smokes production. No rebuild or user-profile
+   lookup is needed.
 6. **Publish**: creates the tag and the GitHub release (generated notes plus the deployment URL).
 
 The release is not tagged unless it reached production. The crons in `vercel.json` run from the

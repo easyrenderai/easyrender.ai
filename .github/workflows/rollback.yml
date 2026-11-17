@@ -68,20 +68,35 @@ jobs:
             echo "::error::${TARGET_TAG} does not record a Vercel deployment URL."
             exit 1
           fi
-          echo "tag=${TARGET_TAG}" >> "$GITHUB_OUTPUT"
-          echo "url=${url}" >> "$GITHUB_OUTPUT"
+          sha="$(printf '%s\n' "${body}" | sed -n 's/^Commit: //p' | head -n1 | tr -d '[:space:]')"
+          if [[ ! "$sha" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "::error::The release does not record a pinned commit. Inspect it before rolling back."
+            exit 1
+          fi
+          {
+            echo "sha=${sha}"
+            echo "tag=${TARGET_TAG}"
+            echo "url=${url}"
+          } >> "$GITHUB_OUTPUT"
           {
             echo "Rolling back to ${TARGET_TAG} (${url})"
             echo "Reason: ${REASON}"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Install the Vercel CLI
-        run: npm install --global vercel@65.9.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24
+          package-manager-cache: false
 
       - name: Promote the earlier deployment
         env:
-          TARGET_URL: ${{ steps.target.outputs.url }}
-        run: vercel promote "${TARGET_URL}" --timeout 5m --yes --token "${VERCEL_TOKEN}"
+          STAGED_URL: ${{ steps.target.outputs.url }}
+          RELEASE_SHA: ${{ steps.target.outputs.sha }}
+        run: node scripts/promote-vercel.mjs
 
       - name: Smoke production
         run: |
