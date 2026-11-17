@@ -99,6 +99,24 @@ function findCamera(
 ) {
   let best: { camera: FidelityCamera; score: number; color: number } | undefined;
   const candidates: { camera: FidelityCamera; score: number }[] = [];
+  const colorMask = new Uint8Array(finalSource.width * finalSource.height);
+  for (let p = 0; p < colorMask.length; p++)
+    colorMask[p] = finalSource.data[p * 4 + 3] > 127 ? 1 : 0;
+  const colorSource = normalizeObject(finalSource, colorMask, 48);
+  const colorTieBreak = (camera: FidelityCamera) => {
+    // Pose tie-breaking needs only coarse appearance. Full-resolution CIEDE2000 belongs to
+    // candidate acceptance, not every camera proposal (especially on CPU-limited workers).
+    const image = renderView(scene, camera, 48).image;
+    let sum = 0,
+      count = 0;
+    for (let p = 0; p < 48 * 48; p++) {
+      if (image.data[p * 4 + 3] < 128 || colorSource.data[p * 4 + 3] < 128) continue;
+      for (let c = 0; c < 3; c++)
+        sum += Math.abs(image.data[p * 4 + c] - colorSource.data[p * 4 + c]);
+      count++;
+    }
+    return count ? sum / (count * 3) : Infinity;
+  };
   const chosen = () => {
     if (!best) throw new Error('camera_unavailable');
     return best;
@@ -113,9 +131,7 @@ function findCamera(
     const score = overlap(source, silhouette);
     candidates.push({ camera, score });
     const color =
-      score > 0.5 && (!best || score >= best.score - 1e-9)
-        ? measureCorrection(source, renderView(scene, camera, source.width).image).meanDeltaE
-        : Infinity;
+      score > 0.5 && (!best || score >= best.score - 1e-9) ? colorTieBreak(camera) : Infinity;
     if (
       !best ||
       score > best.score + 1e-9 ||
