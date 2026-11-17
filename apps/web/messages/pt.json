@@ -712,7 +712,8 @@
     "credits": "Credits",
     "account": "Account",
     "views": "Product views",
-    "profile": "Perfil"
+    "profile": "Perfil",
+    "admin": "Admin"
   },
   "AppShell": {
     "model": "Modelo",

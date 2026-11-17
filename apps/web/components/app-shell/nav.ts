@@ -29,3 +29,10 @@ export const isActivePath = (pathname: string, href: string) =>
     : pathname === href ||
       pathname.startsWith(`${href}/`) ||
       (href === '/library' && pathname.startsWith('/r/'));
+
+// The admin area (/admin/...) opens in the same shell as the app, as a full page with no drawers,
+// and no rail item is active on it.
+export const ADMIN_HREF = '/admin';
+
+export const isAdminPath = (pathname: string) =>
+  pathname === ADMIN_HREF || pathname.startsWith(`${ADMIN_HREF}/`);
