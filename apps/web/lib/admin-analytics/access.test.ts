@@ -65,15 +65,19 @@ describe('admin HTTP access before streaming', () => {
       '/admin/analytics/revenue',
     );
   });
-  it('returns 404 to an allowlisted address that is not verified', async () => {
+  it('routes an unverified admin to recovery without exposing the dashboard', async () => {
     vi.stubEnv('ADMIN_EMAILS', 'admin@example.test');
     session.user = { email: 'admin@example.test', emailVerified: false };
     const response = await proxy(
-      new NextRequest('http://localhost:3207/admin/analytics', {
+      new NextRequest('http://localhost:3207/admin/analytics?period=90d', {
         headers: { cookie: 'better-auth.session_token=local-fixture' },
       }),
     );
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(307);
+    const target = new URL(response.headers.get('location') as string);
+    expect(target.pathname).toBe('/sign-in/admin');
+    expect(target.searchParams.get('next')).toBe('/admin/analytics?period=90d');
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
   });
 });
 

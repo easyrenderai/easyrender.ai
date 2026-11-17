@@ -67,12 +67,11 @@ export function adminDecision(
   user: { email: string; emailVerified?: boolean } | null,
   allowlist: string,
   requiresVerification = false,
-): 'allow' | 'signin' | 'notFound' {
+): 'allow' | 'signin' | 'verify' | 'notFound' {
   if (!user) return 'signin';
-  return parseEmails(allowlist).includes(user.email.toLowerCase()) &&
-    (!requiresVerification || user.emailVerified === true)
-    ? 'allow'
-    : 'notFound';
+  if (!parseEmails(allowlist).includes(user.email.toLowerCase())) return 'notFound';
+  if (requiresVerification && user.emailVerified !== true) return 'verify';
+  return 'allow';
 }
 export function isExcluded(email: string, entries: string[]): boolean {
   const normalized = email.toLowerCase();

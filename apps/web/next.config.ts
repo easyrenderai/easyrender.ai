@@ -35,6 +35,7 @@ const nextConfig: NextConfig = {
       ...[
         '/reset-password',
         '/verify-email',
+        '/sign-in/admin',
         '/api/auth/reset-password',
         '/api/auth/verify-email',
       ].map((source) => ({

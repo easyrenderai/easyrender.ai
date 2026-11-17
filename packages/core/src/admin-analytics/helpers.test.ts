@@ -28,7 +28,7 @@ describe('admin access and exclusions', () => {
     expect(adminDecision({ email: 'x@a@example.com' }, 'a@example.com')).toBe('notFound');
     expect(
       adminDecision({ email: 'a@example.com', emailVerified: false }, 'a@example.com', true),
-    ).toBe('notFound');
+    ).toBe('verify');
   });
   it('excludes exact email and domain without matching lookalikes', () => {
     expect(isExcluded('A@TEAM.TEST', ['@team.test'])).toBe(true);

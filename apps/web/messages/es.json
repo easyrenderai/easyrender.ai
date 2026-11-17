@@ -2886,7 +2886,18 @@
     "resend": "Enviar correo de verificación",
     "verificationSent": "Correo de verificación solicitado. Revisa tu bandeja y el spam.",
     "verificationUnavailable": "Los correos de verificación no están disponibles temporalmente. Tu acceso actual sigue funcionando.",
-    "newLink": "Solicitar otro correo de recuperación"
+    "newLink": "Solicitar otro correo de recuperación",
+    "adminAccess": {
+      "title": "Verifica tu email para acceder al admin",
+      "description": "Tu cuenta necesita un email verificado para abrir el panel de administración.",
+      "account": "Has iniciado sesión como",
+      "instructions": "Continúa con Google y elige esta misma dirección de email. Tras verificarla, volverás a la página del admin que querías abrir.",
+      "google": "Continuar con Google",
+      "connecting": "Conectando con Google…",
+      "manageAccount": "Verificar por email o gestionar tu cuenta",
+      "googleUnavailable": "El acceso con Google no está disponible ahora. Abre tu cuenta para consultar las opciones de verificación por email.",
+      "error": "No se ha podido completar el acceso con Google. Inténtalo de nuevo eligiendo el email de arriba o abre tu cuenta."
+    }
   },
   "ServiceEmails": {
     "verify_email": {
