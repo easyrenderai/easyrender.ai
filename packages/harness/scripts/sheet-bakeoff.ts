@@ -145,7 +145,14 @@ const candidates = CANDIDATES.filter((c) => !wantedCandidates || wantedCandidate
 const photos = PHOTOS.filter((p) => !wantedPhotos || wantedPhotos.includes(p));
 if (candidates.length === 0 || photos.length === 0) throw new Error('Nothing selected to run.');
 
-const client: ReplicateClient = createReplicate(token);
+// The client enforces a 45 s budget for its whole lifetime (it is made for one serverless request),
+// so a run of many minutes makes a new one per call.
+const client: ReplicateClient = {
+  upload: (...args) => createReplicate(token).upload(...args),
+  start: (...args) => createReplicate(token).start(...args),
+  get: (id) => createReplicate(token).get(id),
+  cancel: (id) => createReplicate(token).cancel(id),
+};
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // The inputs a model really takes, read from its published schema, so a wrong key name is dropped
