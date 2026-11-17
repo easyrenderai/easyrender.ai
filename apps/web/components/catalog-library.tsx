@@ -96,10 +96,12 @@ export function CatalogLibrary({
   const [viewerReady, setViewerReady] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
+  // use-effect-audit: ignore reports the renders in view to analytics, an external system
   useEffect(() => {
     items.forEach(observeRender);
   }, [items]);
 
+  // use-effect-audit: ignore registers the model-viewer web component, a widget outside React
   useEffect(() => {
     const controller = new AbortController();
     import('@google/model-viewer').then(() => {
@@ -137,6 +139,7 @@ export function CatalogLibrary({
   }, []);
 
   const inFlight = items.some((item) => item.status === 'drafting' || item.status === 'rendering');
+  // use-effect-audit: ignore polls the list while a render is in flight; the refresh keeps a local-version guard against stale responses
   useEffect(() => {
     if (!inFlight && !building) return;
     const timer = setInterval(() => refresh(), POLL_MS);
@@ -230,6 +233,7 @@ export function CatalogLibrary({
   // below always call the latest closure.
   const addFilesRef = useRef(addFiles);
   addFilesRef.current = addFiles;
+  // use-effect-audit: ignore subscribes to window drag and drop events
   useEffect(() => {
     const hasFiles = (event: DragEvent) => event.dataTransfer?.types.includes('Files') ?? false;
     const enter = (event: DragEvent) => {
@@ -269,6 +273,7 @@ export function CatalogLibrary({
   // The handoff from the home composer is claimed once. Each effect run (Strict Mode runs two)
   // only reports it while it is still mounted.
   const handoff = useRef<Promise<boolean> | null>(null);
+  // use-effect-audit: ignore claims the photo the home composer handed over, once on mount
   // biome-ignore lint/correctness/useExhaustiveDependencies: runs once on mount
   useEffect(() => {
     const controller = new AbortController();

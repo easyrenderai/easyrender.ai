@@ -1,6 +1,7 @@
 'use client';
 
 import type { FirstModelOffer, RenderEditView, RenderView as View } from '@easyrender/core';
+import { useQuery } from '@tanstack/react-query';
 import { Box, Globe, Grid3x3, Loader2, Lock, RefreshCw, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -60,9 +61,6 @@ export function RenderView({
 }) {
   const t = useTranslations('Render');
   const trialText = useTranslations('FirstModel');
-  const [trialOffer, setTrialOffer] = useState<FirstModelOffer | null | undefined>(undefined);
-  const [trialRefresh, setTrialRefresh] = useState(0);
-  const [hasTrialError, setHasTrialError] = useState(false);
   const format = useFormatter();
   const router = useRouter();
   const [render, setRender] = useState(initial);
@@ -81,35 +79,34 @@ export function RenderView({
   const isCorrectionValid = correction.length > 0 && correction.length <= NOTE_MAX_LENGTH;
   // Signed-in people start a new render in the app (the dashboard composer), not on the marketing home.
   const newHref = newRenderHref(signedIn);
+  // The first-model offer is created once when the preview is ready. The POST is not repeated on
+  // reconnect or on a later mount of the same page.
+  const trial = useQuery({
+    queryKey: ['trial', initial.id],
+    enabled: owner && render.status === 'preview_ready',
+    gcTime: 0,
+    staleTime: Number.POSITIVE_INFINITY,
+    refetchOnReconnect: false,
+    queryFn: async ({ signal }) => {
+      const response = await fetch(`/api/renders/${render.id}/trial`, { method: 'POST', signal });
+      if (!response.ok) throw new Error('Offer unavailable');
+      return (await response.json()) as FirstModelOffer | null;
+    },
+  });
+  const trialOffer = trial.isSuccess && !trial.isFetching ? trial.data : undefined;
+  const hasTrialError = trial.isError && !trial.isFetching;
   const upscales = useUpscales({ renderId: initial.id }, owner && signedIn && initial.canUpscale);
 
+  // use-effect-audit: ignore polls the render through the abortable poller in lib/render-polling, which has its own tests
   useEffect(() => {
     if (!RUNNING.has(render.status)) return;
     return startRenderPolling(render.id, setRender, setHasConnectionError);
   }, [render.id, render.status]);
 
+  // use-effect-audit: ignore reports the render state to analytics, an external system
   useEffect(() => {
     if (owner) observeRender(render);
   }, [render, owner]);
-
-  useEffect(() => {
-    if (!owner || render.status !== 'preview_ready') return;
-    const controller = new AbortController();
-    setHasTrialError(false);
-    if (trialRefresh > 0) setTrialOffer(undefined);
-    fetch(`/api/renders/${render.id}/trial`, { method: 'POST', signal: controller.signal })
-      .then(async (response) => {
-        if (!response.ok) throw new Error('Offer unavailable');
-        return response.json() as Promise<FirstModelOffer | null>;
-      })
-      .then((offer) => {
-        if (!controller.signal.aborted) setTrialOffer(offer);
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) setHasTrialError(true);
-      });
-    return () => controller.abort();
-  }, [owner, render.id, render.status, trialRefresh]);
 
   async function build(isUsingFreeModel = false) {
     setStarting(true);
@@ -375,11 +372,7 @@ export function RenderView({
             <p role="alert" className="text-sm text-muted-foreground">
               {trialText('loadError')}
             </p>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => setTrialRefresh((n) => n + 1)}
-            >
+            <Button variant="outline" className="w-full" onClick={() => void trial.refetch()}>
               {trialText('retry')}
             </Button>
           </div>
@@ -389,7 +382,7 @@ export function RenderView({
             isBusy={starting}
             next={next}
             onBuild={() => build(true)}
-            onRefresh={() => setTrialRefresh((n) => n + 1)}
+            onRefresh={() => void trial.refetch()}
             fallback={
               <>
                 {render.status === 'preview_ready' && (
