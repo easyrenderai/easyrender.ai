@@ -94,6 +94,7 @@ function ModelViewerInstance({
   // Read through a ref so a new callback on every render does not re-attach the listener.
   const onLoadRef = useRef(onLoad);
   onLoadRef.current = onLoad;
+  // use-effect-audit: ignore loads the model-viewer web component when the box nears the viewport (IntersectionObserver)
   useEffect(() => {
     const element = box.current;
     if (!element) return;
@@ -118,6 +119,7 @@ function ModelViewerInstance({
       observer.disconnect();
     };
   }, []);
+  // use-effect-audit: ignore listens to events on the model-viewer element, a widget outside React
   useEffect(() => {
     const element = viewer.current;
     if (!ready || !element) return;
