@@ -72,6 +72,7 @@ export function RendersPanel({ renders, now }: { renders: ShellRender[]; now: nu
   const pathname = usePathname();
   const hasInFlight = renders.some((render) => isInFlight(render.status));
 
+  // use-effect-audit: ignore timer that refreshes the server data while a render is in flight
   useEffect(() => {
     if (!hasInFlight) return;
     const timer = setInterval(() => router.refresh(), REFRESH_MS);

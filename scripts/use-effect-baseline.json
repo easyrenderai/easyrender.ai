@@ -17,27 +17,6 @@
   "apps/mobile/lib/library-context.tsx": {
     "use_effect": 2
   },
-  "apps/web/app/global-error.tsx": {
-    "use_effect": 1
-  },
-  "apps/web/components/analytics.tsx": {
-    "use_effect": 3
-  },
-  "apps/web/components/app-shell/app-shell.tsx": {
-    "use_effect": 1
-  },
-  "apps/web/components/app-shell/home-composer.tsx": {
-    "use_effect": 2
-  },
-  "apps/web/components/app-shell/rail-item.tsx": {
-    "use_effect": 1
-  },
-  "apps/web/components/app-shell/renders-panel.tsx": {
-    "use_effect": 1
-  },
-  "apps/web/components/app-shell/shell-context.tsx": {
-    "use_effect": 1
-  },
   "apps/web/components/blog/article-tracking.tsx": {
     "use_effect": 1
   },

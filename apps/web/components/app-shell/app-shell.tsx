@@ -95,6 +95,7 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
     else handle.collapse();
   }, []);
 
+  // use-effect-audit: ignore subscribes to the window keydown event for the toggle shortcut
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'b') {
