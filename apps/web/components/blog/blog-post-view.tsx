@@ -25,7 +25,7 @@ function TocList({ entries }: { entries: TocEntry[] }) {
         <li key={entry.id}>
           <a
             href={`#${entry.id}`}
-            className="block leading-snug text-muted-foreground transition-colors hover:text-foreground"
+            className="block py-1 leading-snug text-muted-foreground transition-colors hover:text-foreground"
           >
             {entry.text}
           </a>

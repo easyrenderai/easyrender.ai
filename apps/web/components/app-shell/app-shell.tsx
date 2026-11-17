@@ -195,7 +195,11 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
               <PanelLeft />
             </Button>
           )}
-          <Link href="/dashboard" className="flex items-center gap-2 font-semibold md:hidden">
+          <Link
+            href="/dashboard"
+            aria-label={t('home')}
+            className="-ml-1 flex size-10 items-center justify-center font-semibold md:hidden"
+          >
             <BrandMark className="size-[1.375rem]" />
           </Link>
           <AppBreadcrumb />

@@ -37,7 +37,10 @@ export async function SiteHeader() {
           the language dropdown always, signed in or not. Whatever is hidden moves into the menu, so nothing is cut off at 320px. */}
       <div className="relative mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-4">
-          <Link href={home} className="flex items-center gap-2 font-semibold tracking-tight">
+          <Link
+            href={home}
+            className="-ml-2 flex min-h-10 min-w-10 shrink-0 items-center gap-2 px-2 font-semibold tracking-tight"
+          >
             <BrandMark className="size-[1.375rem]" />
             {/* Icon only on the narrowest phones so the header actions still fit. */}
             <span className="max-[400px]:sr-only">Easy Render</span>
@@ -58,7 +61,7 @@ export async function SiteHeader() {
         <div className="flex shrink-0 items-center gap-1">
           <LocaleSwitcher />
           {!user && (
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="ghost" size="sm" className="max-sm:hidden" asChild>
               <Link href="/sign-in">{t('signIn')}</Link>
             </Button>
           )}
@@ -85,6 +88,12 @@ export async function SiteHeader() {
                 </HeaderNavItem>
               ))}
             </nav>
+            {/* Phones: sign-in moves here, because translated labels push the header row past the screen. */}
+            {!user && (
+              <Button variant="outline" className="mt-2 sm:hidden" asChild>
+                <Link href="/sign-in">{t('signIn')}</Link>
+              </Button>
+            )}
           </SiteMenu>
         </div>
       </div>

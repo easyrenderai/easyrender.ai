@@ -583,7 +583,7 @@ function Segmented<T extends string>({
           aria-pressed={value === option.id}
           onClick={() => onChange(option.id)}
           className={cn(
-            'h-7 px-3 text-xs text-muted-foreground',
+            'h-7 px-3 text-xs text-muted-foreground pointer-coarse:h-9',
             value === option.id && 'bg-background text-foreground shadow-xs hover:bg-background',
           )}
         >
@@ -635,7 +635,7 @@ function Tile({
       )}
       <figcaption className="flex items-center justify-between gap-2 px-3 py-2 text-sm">
         {href ? (
-          <Link href={href} className="truncate font-medium capitalize hover:underline">
+          <Link href={href} className="truncate py-1 font-medium capitalize hover:underline">
             {title}
           </Link>
         ) : (

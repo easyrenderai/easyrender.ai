@@ -13,6 +13,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { refreshAnalytics } from '@/lib/admin-analytics/actions';
@@ -65,7 +66,7 @@ export function AdminControls({ labels, range }: { labels: Record<string, string
   }
   return (
     <div className="space-y-3 rounded-xl border bg-card p-4">
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="grid grid-cols-6 gap-1 sm:flex sm:flex-wrap sm:items-center sm:gap-2">
         {['24h', '7d', '30d', '90d', '12m', 'all'].map((period) => (
           <Button
             key={period}
@@ -76,19 +77,24 @@ export function AdminControls({ labels, range }: { labels: Record<string, string
             {labels[period] ?? period}
           </Button>
         ))}
-        <span className="mx-1 h-5 border-l" />
-        {['auto', 'day', 'week', 'month'].map((granularity) => (
-          <Button
-            key={granularity}
-            size="sm"
-            variant={(params.get('granularity') ?? 'auto') === granularity ? 'secondary' : 'ghost'}
-            onClick={() => change({ granularity })}
-          >
-            {labels[granularity]}
-          </Button>
-        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="grid min-w-0 flex-1 grid-cols-4 gap-1 sm:flex sm:flex-none sm:gap-2">
+          {['auto', 'day', 'week', 'month'].map((granularity) => (
+            <Button
+              key={granularity}
+              size="sm"
+              variant={
+                (params.get('granularity') ?? 'auto') === granularity ? 'secondary' : 'ghost'
+              }
+              onClick={() => change({ granularity })}
+            >
+              {labels[granularity]}
+            </Button>
+          ))}
+        </div>
         <Button
-          className="ml-auto"
+          className="w-full sm:ml-auto sm:w-auto"
           size="sm"
           variant="outline"
           disabled={isPending}
@@ -103,32 +109,39 @@ export function AdminControls({ labels, range }: { labels: Record<string, string
           {labels.refresh}
         </Button>
       </div>
-      <div className="flex flex-wrap items-center gap-3">
-        <Label htmlFor="admin-from">{labels.from}</Label>
-        <Input
-          id="admin-from"
-          type="date"
-          value={from}
-          className="w-40"
-          onChange={(e) => setFrom(e.target.value)}
-        />
-        <Label htmlFor="admin-to">{labels.to}</Label>
-        <Input
-          id="admin-to"
-          type="date"
-          value={to}
-          className="w-40"
-          onChange={(e) => setTo(e.target.value)}
-        />
-        <Button size="sm" variant="outline" onClick={() => change({ period: 'custom', from, to })}>
+      <div className="grid grid-cols-2 items-end gap-3 sm:flex sm:flex-wrap">
+        <div className="min-w-0 space-y-1.5">
+          <Label htmlFor="admin-from">{labels.from}</Label>
+          <Input
+            id="admin-from"
+            type="date"
+            value={from}
+            className="w-full sm:w-40"
+            onChange={(e) => setFrom(e.target.value)}
+          />
+        </div>
+        <div className="min-w-0 space-y-1.5">
+          <Label htmlFor="admin-to">{labels.to}</Label>
+          <Input
+            id="admin-to"
+            type="date"
+            value={to}
+            className="w-full sm:w-40"
+            onChange={(e) => setTo(e.target.value)}
+          />
+        </div>
+        <Button
+          className="col-span-2 sm:col-span-1"
+          size="sm"
+          variant="outline"
+          onClick={() => change({ period: 'custom', from, to })}
+        >
           {labels.apply}
         </Button>
-        <Label className="ml-auto flex items-center gap-2">
-          <Input
-            type="checkbox"
-            className="size-4"
+        <Label className="col-span-2 flex min-h-9 items-center gap-2 sm:col-span-1 sm:ml-auto">
+          <Checkbox
             checked={range.includeTeam}
-            onChange={() => change({ team: range.includeTeam ? '0' : '1' })}
+            onCheckedChange={() => change({ team: range.includeTeam ? '0' : '1' })}
           />
           {labels.includeTeam}
         </Label>
@@ -213,13 +226,8 @@ export function DashboardView({ view, labels }: { view: View; labels: Record<str
       )}
       {view.charts.length > 0 && (
         <>
-          <Label className="flex items-center gap-2 text-sm">
-            <Input
-              type="checkbox"
-              className="size-4"
-              checked={hasCompare}
-              onChange={() => setCompare(!hasCompare)}
-            />
+          <Label className="flex min-h-9 items-center gap-2 text-sm">
+            <Checkbox checked={hasCompare} onCheckedChange={() => setCompare(!hasCompare)} />
             {label('comparePrevious')}
           </Label>
           <div className="grid min-w-0 gap-4 xl:grid-cols-2">

@@ -73,7 +73,7 @@ export function AdminVerification({
         ) : (
           <p className="text-sm text-muted-foreground">{copy.googleUnavailable}</p>
         )}
-        <Link href="/account" className="text-center text-sm underline underline-offset-4">
+        <Link href="/account" className="py-2 text-center text-sm underline underline-offset-4">
           {copy.manageAccount}
         </Link>
       </CardContent>

@@ -138,6 +138,14 @@
     border-radius: 7px;
     font-size: 13px;
   }
+  /* Fingers need more than 28px: keep the toggle at 36px on touch screens. */
+  @media (pointer: coarse) {
+    .modes button,
+    .sheet__passes button {
+      height: 36px;
+      padding: 0 14px;
+    }
+  }
 
   /* ───────── grid ───────── */
   .hubgrid {

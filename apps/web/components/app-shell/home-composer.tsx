@@ -8,6 +8,7 @@ import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { attribution, attributionHeaders, observeRender } from '@/lib/analytics/browser';
 import { prepare } from '@/lib/prepare-image';
 import { cn } from '@/lib/utils';
@@ -133,14 +134,14 @@ export function HomeComposer() {
       >
         <div className="flex gap-3.5">
           {file && thumb ? (
-            <div className="relative size-24 shrink-0 overflow-hidden rounded-xl border">
+            <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border sm:size-24">
               {/* biome-ignore lint/performance/noImgElement: local object URL thumbnail */}
               <img src={thumb} alt={file.name} className="size-full object-cover" />
               <Button
                 type="button"
                 variant="outline"
                 size="icon-sm"
-                className="absolute top-1 right-1 size-6 rounded-full"
+                className="absolute top-1 right-1 size-6 rounded-full pointer-coarse:size-8"
                 onClick={clear}
                 aria-label={t('remove')}
               >
@@ -152,22 +153,29 @@ export function HomeComposer() {
               type="button"
               variant="outline"
               onClick={() => picker.current?.click()}
-              className="size-24 shrink-0 flex-col gap-1 rounded-xl border-dashed border-foreground bg-muted font-medium hover:bg-accent"
+              className="size-20 shrink-0 flex-col gap-1 rounded-xl border-dashed sm:size-24 border-foreground bg-muted font-medium hover:bg-accent"
             >
               <ImagePlus className="size-5" />
               <span className="text-xs">{t('slot')}</span>
             </Button>
           )}
           <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
-            <Input
+            <Textarea
               value={prompt}
               onChange={(event) => setPrompt(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }}
               maxLength={500}
+              rows={2}
               placeholder={t('placeholder')}
               aria-label={t('placeholder')}
-              className="h-auto border-0 bg-transparent px-1 py-1 text-base shadow-none focus-visible:ring-0 dark:bg-transparent"
+              className="min-h-0 resize-none border-0 bg-transparent px-1 py-1 text-base shadow-none focus-visible:ring-0 dark:bg-transparent"
             />
-            <p className="truncate px-1 text-xs text-muted-foreground">
+            <p className="line-clamp-2 break-words px-1 text-xs text-muted-foreground">
               {file ? file.name : t('hint')}
             </p>
           </div>
