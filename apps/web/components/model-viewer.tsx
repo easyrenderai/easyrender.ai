@@ -97,24 +97,24 @@ function ModelViewerInstance({
   useEffect(() => {
     const element = box.current;
     if (!element) return;
-    let alive = true;
+    const controller = new AbortController();
     const observer = new IntersectionObserver(
       (entries) => {
         if (!entries.some((entry) => entry.isIntersecting)) return;
         observer.disconnect();
         loadModelViewer()
           .then(() => {
-            if (alive) setReady(true);
+            if (!controller.signal.aborted) setReady(true);
           })
           .catch(() => {
-            if (alive) setStatus('error');
+            if (!controller.signal.aborted) setStatus('error');
           });
       },
       { rootMargin: '300px 0px' },
     );
     observer.observe(element);
     return () => {
-      alive = false;
+      controller.abort();
       observer.disconnect();
     };
   }, []);

@@ -6,14 +6,14 @@ export function PurchaseConversion() {
     const params = new URLSearchParams(location.search);
     const session = params.get('session_id');
     if (params.get('status') !== 'success' || !session) return;
-    let isStopped = false;
+    const controller = new AbortController();
     let attempts = 0;
     const poll = async () => {
-      if (isStopped || attempts++ >= 30) return;
+      if (controller.signal.aborted || attempts++ >= 30) return;
       try {
         const response = await fetch(
           `/api/checkout/confirmed?session_id=${encodeURIComponent(session)}`,
-          { cache: 'no-store' },
+          { cache: 'no-store', signal: controller.signal },
         );
         if (response.ok) {
           const result = await response.json();
@@ -28,11 +28,11 @@ export function PurchaseConversion() {
       } catch {
         /* Retry while the confirmed webhook arrives. */
       }
-      if (!isStopped) timer = setTimeout(poll, 2000);
+      if (!controller.signal.aborted) timer = setTimeout(poll, 2000);
     };
     let timer = setTimeout(poll, 1000);
     return () => {
-      isStopped = true;
+      controller.abort();
       clearTimeout(timer);
     };
   }, []);

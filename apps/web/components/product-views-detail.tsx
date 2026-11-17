@@ -57,11 +57,19 @@ export function ProductViewsDetail({
 
   useEffect(() => {
     if (!RUNNING.has(set.status)) return;
+    const controller = new AbortController();
     const timer = setInterval(async () => {
-      const response = await fetch(base, { cache: 'no-store' });
-      if (response.ok) setSet(await response.json());
+      try {
+        const response = await fetch(base, { cache: 'no-store', signal: controller.signal });
+        if (response.ok) setSet(await response.json());
+      } catch {
+        // Aborted on unmount or a dropped request: the next tick retries.
+      }
     }, 3000);
-    return () => clearInterval(timer);
+    return () => {
+      controller.abort();
+      clearInterval(timer);
+    };
   }, [base, set.status]);
 
   async function polish() {
