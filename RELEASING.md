@@ -1,8 +1,9 @@
 # Releasing easyrender.ai
 
 Merging to `main` deploys nothing. Production changes only when someone dispatches **Release**.
-Pull requests still get Vercel previews (skipped when a commit touches nothing the web app uses,
-see `ignoreCommand` in `apps/web/vercel.json`).
+Vercel's Git integration deploys nothing at all (`git.deploymentEnabled` is false in
+`apps/web/vercel.json`): no branch or PR previews. Every deployment comes from the Release workflow
+(one production build per run, including stage-only rehearsals) or a person running the CLI.
 
 ## Ship a release
 
