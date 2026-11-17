@@ -13,9 +13,8 @@ import { readRenderScene, renderNeutral } from './renderer';
 
 // The default 15s render budget and the 20s test timeout are wall clock, so a loaded CI runner
 // (these tests take 16-18s there) can turn an `accepted` verdict into `skipped`. Tests that assert
-// a verdict get room on both.
+// a verdict get room on both (a 60_000 literal, so biome keeps the one-line `it(...)` layout).
 const ROOMY = { budgetMs: 120_000 };
-const ROOMY_TIMEOUT = 60_000;
 
 async function sample() {
   const { bytes } = await fixture('wood');
@@ -66,7 +65,7 @@ describe('source-photo correction loop', () => {
     expect(result.report.after.detailError).toBeLessThan(result.report.before.detailError);
     expect(result.report.changedTexels).toBeGreaterThan(100);
     expect(geometryHash(result.bytes)).toBe(geometryHash(bytes));
-  }, ROOMY_TIMEOUT);
+  }, 60_000);
   it('preserves the input when the photo mask or camera is unreliable', async () => {
     const { bytes } = await sample();
     const blank = await png({ width: 64, height: 64, data: new Uint8Array(64 * 64 * 4).fill(255) });
@@ -121,7 +120,7 @@ describe('source-photo correction loop', () => {
     expect(out.json.materials?.[1].pbrMetallicRoughness?.baseColorTexture?.index).toBe(index);
     expect(textureBytes(out, index)).toEqual(textureBytes(doc, index));
     expect(geometryHash(result.bytes)).toBe(geometryHash(input));
-  }, ROOMY_TIMEOUT);
+  }, 60_000);
   it('preserves a faithful model when no meaningful improvement can be verified', async () => {
     const { bytes } = await sample();
     const photo = await png(renderNeutral(await readRenderScene(bytes, 512), 0, 0, 256));
@@ -130,7 +129,7 @@ describe('source-photo correction loop', () => {
     expect(result.report.status).toBe('rejected');
     expect(result.report.reason).toBe('no_verified_improvement');
     expect(result.report.changedTexels).toBe(0);
-  }, ROOMY_TIMEOUT);
+  }, 60_000);
   it('skips transformed UVs instead of projecting into the wrong texture coordinates', async () => {
     const { bytes, photo } = await sample();
     const doc = readDocument(bytes);
