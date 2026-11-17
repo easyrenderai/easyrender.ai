@@ -11,6 +11,7 @@
     "nav": {
       "howItWorks": "So funktioniert’s",
       "hub": "Zentrale",
+      "ecommerce": "Shops",
       "connect": "Verbinden",
       "try": "Ausprobieren",
       "pricing": "Preise",
@@ -1169,6 +1170,7 @@
         "title": "Bald im eigenen Raum ansehen",
         "body": "Augmented Reality, demnächst verfügbar: Deine Kundschaft öffnet die Kamera am iPhone oder Android-Smartphone und stellt das Produkt virtuell in die eigenen vier Wände.",
         "link": "Mit uns über AR für Shops sprechen",
+        "landingLink": "Shop-Plugins ansehen",
         "domain": "deinshop.de",
         "meta": "Grauer Bezug · GLB und USDZ",
         "button": "Im Raum ansehen",

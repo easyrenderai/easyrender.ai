@@ -11,6 +11,7 @@
     "nav": {
       "howItWorks": "Como funciona",
       "hub": "Peças",
+      "ecommerce": "Lojas",
       "connect": "Ligar agente",
       "try": "Experimentar",
       "pricing": "Preços",
@@ -1169,6 +1170,7 @@
         "title": "Em breve: ver a peça em casa",
         "body": "Realidade aumentada, muito em breve: o cliente abre a câmara do iPhone ou do telemóvel Android e coloca o produto na sala.",
         "link": "Fala connosco sobre RA para lojas",
+        "landingLink": "Ver os plugins para a tua loja",
         "domain": "atualoja.pt",
         "meta": "Estofo cinzento · GLB e USDZ",
         "button": "Ver no teu espaço",

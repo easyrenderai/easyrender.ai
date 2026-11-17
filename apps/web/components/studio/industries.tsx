@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import type { CSSProperties } from 'react';
 import { SiteLink as Link } from '@/components/site-link';
+import type { Locale } from '@/i18n/config';
+import { isPublished, ROUTES } from '@/lib/seo/routes';
 import { type ItemId, itemOf, photoUrl } from '@/lib/studio/catalog';
 import { createFormat } from '@/lib/studio/format';
 import { DemoCursor } from './icons';
@@ -104,9 +106,15 @@ export function StudioIndustries({ salesHref }: { salesHref: string }) {
             <p className="eyebrow">{t('store.eyebrow')}</p>
             <h3>{t('store.title')}</h3>
             <p>{t('store.body')}</p>
-            <a className="link" href={salesHref} target="_blank" rel="noopener noreferrer">
-              {t('store.link')} <ArrowRight />
-            </a>
+            {isPublished('ecommerce', locale as Locale) ? (
+              <Link className="link" href={ROUTES.ecommerce.paths[locale as Locale]}>
+                {t('store.landingLink')} <ArrowRight />
+              </Link>
+            ) : (
+              <a className="link" href={salesHref} target="_blank" rel="noopener noreferrer">
+                {t('store.link')} <ArrowRight />
+              </a>
+            )}
           </div>
         </article>
 

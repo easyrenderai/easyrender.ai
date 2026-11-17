@@ -11,6 +11,7 @@
     "nav": {
       "howItWorks": "Come funziona",
       "hub": "Centro",
+      "ecommerce": "Negozi",
       "connect": "Agenti",
       "try": "Prova",
       "pricing": "Prezzi",
@@ -1169,6 +1170,7 @@
         "title": "Presto a casa dei tuoi clienti",
         "body": "Realtà aumentata in arrivo: il cliente aprirà la fotocamera dell'iPhone o di un telefono Android e metterà il prodotto nella stanza.",
         "link": "Parliamo di realtà aumentata per il tuo negozio",
+        "landingLink": "Vedi i plugin per il tuo negozio",
         "domain": "iltuonegozio.it",
         "meta": "Tessuto grigio · GLB e USDZ",
         "button": "Visualizza nel tuo spazio",

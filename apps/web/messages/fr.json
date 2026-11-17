@@ -11,6 +11,7 @@
     "nav": {
       "howItWorks": "Comment ça marche",
       "hub": "Centre",
+      "ecommerce": "Boutiques",
       "connect": "Connecter",
       "try": "Essayer",
       "pricing": "Tarifs",
@@ -1169,6 +1170,7 @@
         "title": "Bientôt chez tes clients",
         "body": "Réalité augmentée, bientôt disponible : le client ouvrira l'appareil photo de son iPhone ou de son téléphone Android et placera le produit dans sa pièce.",
         "link": "Parlons de la RA pour ta boutique",
+        "landingLink": "Voir les plugins pour ta boutique",
         "domain": "taboutique.fr",
         "meta": "Tissu gris · GLB et USDZ",
         "button": "Voir chez moi",

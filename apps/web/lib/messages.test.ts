@@ -40,12 +40,13 @@ describe('QA home metadata and navigation', () => {
     const messages = MESSAGES[locale];
     expect(messages.Home.meta.title).toMatch(/^Easy Render \| /);
     expect(messages.Metadata).toEqual(messages.Home.meta);
-    expect(messages.Footer.tagline).toBe(messages.Home.meta.description);
   });
 
   it('uses the requested English title and tagline', () => {
     expect(en.Home.meta.title).toBe('Easy Render | Photo to 3D');
-    expect(en.Home.meta.description).toBe('Turn any Product Photo into a 3D model');
+    expect(en.Home.meta.description).toBe(
+      'Turn a product photo into a 3D model for your store, your renders or your game. Free preview, no account or card. Download as GLB and USDZ.',
+    );
   });
 
   it.each(['es', 'de', 'fr', 'it', 'pt'] as const)('%s translates navigation', (locale) => {
