@@ -81,7 +81,7 @@ jobs:
       - name: Promote the earlier deployment
         env:
           TARGET_URL: ${{ steps.target.outputs.url }}
-        run: vercel promote "${TARGET_URL}" --timeout 5m --yes --token "${VERCEL_TOKEN}"
+        run: vercel promote "${TARGET_URL}" --scope "${VERCEL_ORG_ID}" --timeout 5m --yes --token "${VERCEL_TOKEN}"
 
       - name: Smoke production
         run: |

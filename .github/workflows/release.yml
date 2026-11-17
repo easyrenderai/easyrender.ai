@@ -363,7 +363,7 @@ jobs:
 
       # Re-aliases the deployment that was already built and smoked. No rebuild.
       - name: Promote
-        run: vercel promote "${STAGED_URL}" --timeout 5m --yes --token "${VERCEL_TOKEN}"
+        run: vercel promote "${STAGED_URL}" --scope "${VERCEL_ORG_ID}" --timeout 5m --yes --token "${VERCEL_TOKEN}"
 
       - name: Smoke production
         run: |
