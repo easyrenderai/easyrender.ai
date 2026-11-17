@@ -1,6 +1,7 @@
 import { adminDecision } from '@easyrender/core/admin-analytics/helpers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { isRoutableLocale, LOCALE_HEADER, PATH_HEADER } from './i18n/config';
+import { adminVerificationPath } from './lib/admin-analytics/navigation';
 import { canonicalHostTarget } from './lib/canonical-host';
 import {
   COUNTRY_HEADER,
@@ -121,6 +122,13 @@ async function adminResponse(request: NextRequest) {
     const target = new URL('/sign-in', request.url);
     target.searchParams.set('next', request.nextUrl.pathname + request.nextUrl.search);
     response = NextResponse.redirect(target);
+  } else if (decision === 'verify') {
+    response = NextResponse.redirect(
+      new URL(
+        adminVerificationPath(request.nextUrl.pathname + request.nextUrl.search),
+        request.url,
+      ),
+    );
   } else if (decision === 'notFound') response = new NextResponse(null, { status: 404 });
   else response = NextResponse.next({ request: { headers } });
   response.headers.set('X-Robots-Tag', 'noindex, nofollow');

@@ -18,7 +18,11 @@ to `/sign-in?next=...` with an admin return path; a signed-in user outside the l
 404. Email/password sign-up does not verify addresses, so the guard also requires
 `emailVerified = true`: otherwise anyone could register an allowlisted address that has no
 account yet. In practice admins sign in with Google, which marks the email verified; an
-unverified allowlisted account receives 404.
+unverified allowlisted account is redirected to `/sign-in/admin`, which explains verification and
+offers Google sign-in using the same address or a link to Account. This page independently checks
+the session and allowlist. Google success returns to the original admin path and report filters;
+OAuth failure offers a retry. Admin data, actions and APIs still require a verified email, and
+non-admin sessions still receive 404 on pages. Google sign-in is only offered when configured.
 
 `/admin` bypasses locale rewriting. Its layout declares `noindex,nofollow`; the proxy supplies
 `X-Robots-Tag: noindex, nofollow` and `Cache-Control: private, no-store`. Robots disallows the
