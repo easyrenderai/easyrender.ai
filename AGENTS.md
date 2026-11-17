@@ -49,7 +49,7 @@ places before writing something new.
   `refactor:`, `chore:`, `docs:`).
 - Merging to `main` deploys nothing. Prod ships through the **Release** workflow (bump the root
   `package.json` version, merge, dispatch with the matching `vX.Y.Z` tag): see `RELEASING.md`.
-  Previews still build per PR through the Vercel Git integration and skip the database sync.
+  Vercel's Git integration is off: no PR or branch previews, every deployment comes from Release.
 - Merge a green PR yourself. Do not wait for a go-ahead on a change that passed CI.
 - `bun.lock` conflicts: `rm bun.lock && bun install`. `apps/mobile/bun.lock` is separate.
 - Open the PR with the template in `.github/pull_request_template.md`.

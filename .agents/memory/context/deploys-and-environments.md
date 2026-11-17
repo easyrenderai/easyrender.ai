@@ -1,10 +1,10 @@
 # Deploys and environments
 
-- Release based. Merging to `main` deploys nothing (`git.deploymentEnabled.main` is false in
-  `apps/web/vercel.json`). `.github/workflows/release.yml` verifies, applies `infra/aws` when it
+- Release based. Merging to `main` deploys nothing (`git.deploymentEnabled` is false in
+  `apps/web/vercel.json`, so no branch or PR previews either). `.github/workflows/release.yml` verifies, applies `infra/aws` when it
   changed, stages a production build with `--skip-domain`, smokes it, promotes it, then tags the
   release. `rollback.yml` promotes an earlier release's deployment. Steps, secrets and variables:
-  `RELEASING.md`. PR previews still build through the Vercel Git integration.
+  `RELEASING.md`. No PR previews: check UI work locally.
   Project root is `apps/web`; the build command is `bun run vercel-build`, which syncs the
   schema (production builds only, so at stage time) and runs `next build`.
 - CI (`.github/workflows/ci.yml`) runs Biome, the UI guard, typecheck and tests on every PR. It
