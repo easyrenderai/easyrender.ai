@@ -75,13 +75,14 @@ jobs:
             echo "Reason: ${REASON}"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Install the Vercel CLI
-        run: npm install --global vercel@65.9.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Promote the earlier deployment
         env:
           TARGET_URL: ${{ steps.target.outputs.url }}
-        run: vercel promote "${TARGET_URL}" --scope "${VERCEL_ORG_ID}" --timeout 5m --yes --token "${VERCEL_TOKEN}"
+        run: .github/scripts/vercel-promote.sh "${TARGET_URL}"
 
       - name: Smoke production
         run: |

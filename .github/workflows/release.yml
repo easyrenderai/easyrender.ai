@@ -358,12 +358,15 @@ jobs:
       STAGED_URL: ${{ needs.stage.outputs.url }}
       PRODUCTION_URL: ${{ vars.PRODUCTION_URL || 'https://easyrender.ai' }}
     steps:
-      - name: Install the Vercel CLI
-        run: npm install --global vercel@65.9.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.validate.outputs.sha }}
+          persist-credentials: false
 
-      # Re-aliases the deployment that was already built and smoked. No rebuild.
+      # Re-aliases the deployment that was already built and smoked. No rebuild. REST, not
+      # `vercel promote`: the CLI looks up a user, which a team token does not have (404).
       - name: Promote
-        run: vercel promote "${STAGED_URL}" --scope "${VERCEL_ORG_ID}" --timeout 5m --yes --token "${VERCEL_TOKEN}"
+        run: .github/scripts/vercel-promote.sh "${STAGED_URL}"
 
       - name: Smoke production
         run: |
