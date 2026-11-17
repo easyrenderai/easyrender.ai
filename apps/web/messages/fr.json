@@ -24,7 +24,8 @@
     "sections": "Rubriques",
     "menuOpen": "Ouvrir le menu",
     "menuClose": "Fermer le menu",
-    "upload": "Importer une photo"
+    "upload": "Importer une photo",
+    "account": "Mon compte"
   },
   "Footer": {
     "tagline": "Transformez toute photo de produit en modèle 3D",
@@ -520,7 +521,9 @@
     "modelLoading": "Chargement du modèle 3D…",
     "modelLoadError": "Le modèle 3D n’a pas pu être chargé. Rechargez la page pour réessayer.",
     "sheetLoading": "Chargement de la planche de vues…",
-    "sheetLoadError": "La planche de vues n’a pas pu être chargée. Rechargez la page pour réessayer."
+    "sheetLoadError": "La planche de vues n’a pas pu être chargée. Rechargez la page pour réessayer.",
+    "repeatedViewsFailure": "Nous n’avons pas pu générer des angles distincts. Essayez une autre photo. Les crédits débités ont été remboursés.",
+    "inconsistentStructureFailure": "Les angles générés ont modifié la forme de votre objet. Essayez une autre photo. Les crédits débités ont été remboursés."
   },
   "PromptBar": {
     "steps": {

@@ -18,6 +18,7 @@
       "pricing": "Precios"
     },
     "dashboard": "Panel",
+    "account": "Mi cuenta",
     "signIn": "Iniciar sesión",
     "connect": "Conecta",
     "connectSuffix": "tu agente",
@@ -520,7 +521,9 @@
     "modelLoading": "Cargando modelo 3D…",
     "modelLoadError": "No se pudo cargar el modelo 3D. Recarga la página para volver a intentarlo.",
     "sheetLoading": "Cargando hoja de ángulos…",
-    "sheetLoadError": "No se pudo cargar la hoja de ángulos. Recarga la página para volver a intentarlo."
+    "sheetLoadError": "No se pudo cargar la hoja de ángulos. Recarga la página para volver a intentarlo.",
+    "repeatedViewsFailure": "No hemos podido generar ángulos distintos. Prueba con otra foto. Los créditos cobrados se han devuelto.",
+    "inconsistentStructureFailure": "Los ángulos generados cambiaron la forma de tu objeto. Prueba con otra foto. Los créditos cobrados se han devuelto."
   },
   "PromptBar": {
     "steps": {
@@ -1717,13 +1720,13 @@
       "uniqueVisitors": "Estimación de únicos diarios",
       "pageviews": "Páginas vistas",
       "signups": "Registros",
-      "activatedSheet": "Registros con hoja",
-      "activatedModel": "Registros con modelo",
+      "activatedSheet": "Registros con preview completada",
+      "activatedModel": "Registros con modelo 3D completado",
       "anonymous": "Previsualizaciones anónimas sin reclamar",
       "paying": "Cuentas de pago",
       "newPaying": "Nuevas cuentas de pago",
       "totalPayers": "Total de cuentas de pago",
-      "sheetActivation": "Activación de hojas",
+      "sheetActivation": "Activación de previews",
       "modelActivation": "Activación de modelos",
       "sold": "Créditos de pago concedidos",
       "consumed": "Créditos consumidos (bruto)",
