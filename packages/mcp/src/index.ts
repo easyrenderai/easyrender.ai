@@ -29,7 +29,24 @@ export { MAX_INLINE_IMAGE_BYTES } from './images';
 export function createMcpServer(actor: Actor) {
   actor = { ...actor, source: 'mcp' };
   const server = new McpServer(
-    { name: 'easyrender', version: '0.2.0' },
+    {
+      name: 'easyrender',
+      version: '0.2.0',
+      title: 'Easy Render | Photo to 3D',
+      websiteUrl: 'https://easyrender.ai/mcp',
+      icons: [
+        {
+          src: 'https://easyrender.ai/apple-icon.png',
+          mimeType: 'image/png',
+          sizes: ['180x180'],
+        },
+        {
+          src: 'https://easyrender.ai/icon.svg',
+          mimeType: 'image/svg+xml',
+          sizes: ['any'],
+        },
+      ],
+    },
     { maxToolInputElements: 1000 },
   );
   server.registerTool(
