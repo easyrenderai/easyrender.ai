@@ -2,7 +2,8 @@
 
 import { Rotate3d } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useMediaQuery } from '@/components/app-shell/shell-context';
 import { ModelViewer } from '@/components/model-viewer';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -21,14 +22,7 @@ type Props = {
 // never moves. Zoom stays off, so scrolling past on a phone never gets caught by the model.
 export function BlogModel({ src, alt, poster, orbit, hint }: Props) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isStill, setIsStill] = useState(false);
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setIsStill(query.matches);
-    const update = () => setIsStill(query.matches);
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  }, []);
+  const isStill = useMediaQuery('(prefers-reduced-motion: reduce)');
 
   return (
     <div className="relative aspect-square w-full overflow-hidden rounded-lg border bg-muted">

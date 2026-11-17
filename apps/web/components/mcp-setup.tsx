@@ -2,7 +2,7 @@
 
 import { Check, Copy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { captureBrowser } from '@/lib/analytics/browser';
@@ -72,7 +72,6 @@ function CopyButton({ text, client }: { text: string; client: string }) {
   const t = useTranslations('McpSetup');
   const [copied, setCopied] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  useEffect(() => () => clearTimeout(timer.current), []);
   return (
     <Button
       type="button"

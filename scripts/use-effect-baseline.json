@@ -17,49 +17,19 @@
   "apps/mobile/lib/library-context.tsx": {
     "use_effect": 2
   },
-  "apps/web/components/blog/article-tracking.tsx": {
-    "use_effect": 1
-  },
-  "apps/web/components/blog/blog-model.tsx": {
-    "use_effect": 1
-  },
-  "apps/web/components/blog/promo-video.tsx": {
-    "use_effect": 1
-  },
   "apps/web/components/catalog-library.tsx": {
     "use_effect": 5
-  },
-  "apps/web/components/code-snippet.tsx": {
-    "use_effect": 1
-  },
-  "apps/web/components/ecommerce/platform-picker.tsx": {
-    "use_effect": 1
-  },
-  "apps/web/components/locale-menu.tsx": {
-    "use_effect": 1
   },
   "apps/web/components/material-panel.tsx": {
     "use_effect": 2
   },
-  "apps/web/components/mcp-setup.tsx": {
-    "use_effect": 1
-  },
   "apps/web/components/model-viewer.tsx": {
     "use_effect": 2
-  },
-  "apps/web/components/pricing-exposure.tsx": {
-    "use_effect": 1
   },
   "apps/web/components/product-views-detail.tsx": {
     "use_effect": 1
   },
-  "apps/web/components/prompt-bar.tsx": {
-    "use_effect": 1
-  },
   "apps/web/components/purchase-conversion.tsx": {
-    "use_effect": 1
-  },
-  "apps/web/components/render-journey-video.tsx": {
     "use_effect": 1
   },
   "apps/web/components/render-view.tsx": {
@@ -67,9 +37,6 @@
   },
   "apps/web/components/shopify-app.tsx": {
     "use_effect": 2
-  },
-  "apps/web/components/site-menu.tsx": {
-    "use_effect": 1
   },
   "apps/web/components/studio/hub.tsx": {
     "use_effect": 6

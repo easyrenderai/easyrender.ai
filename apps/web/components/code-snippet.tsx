@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, Copy } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 export function CodeSnippet({
@@ -19,7 +19,6 @@ export function CodeSnippet({
 }) {
   const [status, setStatus] = useState<'idle' | 'copied' | 'error'>('idle');
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  useEffect(() => () => clearTimeout(timer.current), []);
 
   return (
     <div className="min-w-0 overflow-hidden rounded-xl border bg-card">
