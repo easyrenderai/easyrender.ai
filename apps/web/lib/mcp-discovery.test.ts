@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { unstable_doesMiddlewareMatch } from 'next/experimental/testing/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 
@@ -63,7 +64,25 @@ it('allows an anonymous discovery handshake and lists the real tool schemas', as
     ),
   );
   expect(initialize.status).toBe(200);
-  expect(await initialize.json()).toMatchObject({ result: { serverInfo: { name: 'easyrender' } } });
+  const { result: handshake } = await initialize.json();
+  expect(handshake.serverInfo).toEqual({
+    name: 'easyrender',
+    version: '0.2.0',
+    title: 'Easy Render | Photo to 3D',
+    websiteUrl: 'https://easyrender.ai/mcp',
+    icons: [
+      {
+        src: 'https://easyrender.ai/apple-icon.png',
+        mimeType: 'image/png',
+        sizes: ['180x180'],
+      },
+      {
+        src: 'https://easyrender.ai/icon.svg',
+        mimeType: 'image/svg+xml',
+        sizes: ['any'],
+      },
+    ],
+  });
   const initialized = await POST(request({ jsonrpc: '2.0', method: 'notifications/initialized' }));
   expect(initialized.status).toBe(202);
   const ping = await POST(request(rpc('ping')));
@@ -77,6 +96,34 @@ it('allows an anonymous discovery handshake and lists the real tool schemas', as
   );
   expect(mocks.renders).not.toHaveBeenCalled();
   expect(mocks.limit).toHaveBeenCalledWith(expect.stringMatching(/^mcp:anonymous:/), 120);
+});
+
+it('publishes a static server card matching the initialize metadata outside the proxy', async () => {
+  const card = JSON.parse(
+    await readFile(new URL('../public/.well-known/mcp/server-card.json', import.meta.url), 'utf8'),
+  );
+  const response = await POST(
+    request(
+      rpc('initialize', {
+        protocolVersion: '2025-11-25',
+        capabilities: {},
+        clientInfo: { name: 'directory', version: '1' },
+      }),
+    ),
+  );
+  const { result } = await response.json();
+  expect(card).toEqual({
+    ...result.serverInfo,
+    description: 'Turn any Product Photo into a 3D model',
+    remotes: [{ type: 'streamable-http', url: 'https://easyrender.ai/api/mcp' }],
+  });
+  expect(
+    unstable_doesMiddlewareMatch({
+      config,
+      nextConfig: {},
+      url: '/.well-known/mcp/server-card.json',
+    }),
+  ).toBe(false);
 });
 
 it.each([undefined, 'Bearer er_invalid', 'Basic ignored'])(

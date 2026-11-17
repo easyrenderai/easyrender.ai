@@ -1,0 +1,20 @@
+{
+  "name": "easyrender",
+  "title": "Easy Render | Photo to 3D",
+  "description": "Turn any Product Photo into a 3D model",
+  "version": "0.2.0",
+  "websiteUrl": "https://easyrender.ai/mcp",
+  "icons": [
+    {
+      "src": "https://easyrender.ai/apple-icon.png",
+      "mimeType": "image/png",
+      "sizes": ["180x180"]
+    },
+    {
+      "src": "https://easyrender.ai/icon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": ["any"]
+    }
+  ],
+  "remotes": [{ "type": "streamable-http", "url": "https://easyrender.ai/api/mcp" }]
+}
