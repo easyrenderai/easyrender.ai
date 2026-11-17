@@ -19,6 +19,7 @@
     "preflight": "bun scripts/preflight.ts",
     "check:ui-guards": "bun scripts/check-ui-guards.ts",
     "check:secrets": "bun scripts/check-secrets.ts",
+    "check:use-effects": "bun scripts/check-use-effect.ts",
     "evals:sync": "bun scripts/sync-evals.ts",
     "prepare": "husky || true"
   },

@@ -45,6 +45,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # Full history so the effect baseline can be compared with the base branch.
+          fetch-depth: 0
           persist-credentials: false
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
@@ -56,6 +58,15 @@ jobs:
         run: bun run check:ui-guards
       - name: Secrets
         run: bun run check:secrets
+      - name: useEffect ratchet
+        run: |
+          bun test scripts/use-effect-audit.test.ts
+          bun run check:use-effects
+      - name: useEffect baseline may not grow
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: bun run check:use-effects --against "origin/$BASE_REF"
       - name: Typecheck
         run: bun run typecheck
       - name: Tests
