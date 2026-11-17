@@ -30,6 +30,13 @@ const LAYOUT_KEY = 'er-shell';
 const LEFT = { initial: 288, min: 220, max: 480 };
 const RIGHT = { initial: 360, min: 280, max: 560 };
 const MAIN_MIN = 360;
+// Opening or closing a drawer slides it over 250ms with the studio easing. Only motion-safe users
+// get the transition; with reduced motion the drawers snap as before.
+const PANEL_TRANSITION =
+  'motion-safe:data-[toggling]:[&>[data-panel]]:transition-[flex-grow] motion-safe:data-[toggling]:[&>[data-panel]]:duration-250 motion-safe:data-[toggling]:[&>[data-panel]]:ease-[cubic-bezier(0.2,0.7,0.2,1)]';
+// While a drawer narrows, its content is clipped at the drawer's minimum width instead of
+// re-wrapping on every frame. The panel's own scroll container is hidden so no scrollbar flashes.
+const CLIP = { overflow: 'hidden' } as const;
 
 // Drawer widths are remembered per browser. Storage can be missing (server render) or blocked
 // (private windows), and then the drawers simply start at their default width.
@@ -88,9 +95,14 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
     storage: layoutStorage,
   });
 
+  // The drawers only animate when a toggle opens or closes them. Dragging the handle stays 1:1 with
+  // the pointer, so the flag is cleared when the animation ends or a drag starts.
+  const [isToggling, setIsToggling] = useState(false);
+
   const toggle = useCallback((panel: typeof leftRef) => {
     const handle = panel.current;
     if (!handle) return;
+    setIsToggling(true);
     if (handle.isCollapsed()) handle.expand();
     else handle.collapse();
   }, []);
@@ -230,6 +242,12 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
                 id={LAYOUT_KEY}
                 defaultLayout={defaultLayout}
                 onLayoutChanged={onLayoutChanged}
+                data-toggling={isToggling || undefined}
+                className={PANEL_TRANSITION}
+                onPointerDownCapture={() => setIsToggling(false)}
+                onTransitionEnd={(event) => {
+                  if (event.propertyName === 'flex-grow') setIsToggling(false);
+                }}
               >
                 <ResizablePanel
                   id="left"
@@ -240,12 +258,13 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
                   collapsible
                   collapsedSize={0}
                   groupResizeBehavior="preserve-pixel-size"
+                  style={CLIP}
                   onResize={(size) => setIsLeftOpen(size.inPixels > 0)}
                 >
                   <aside
                     aria-label={t('panel.title')}
                     inert={!isLeftOpen}
-                    className="h-full overflow-hidden"
+                    className="h-full min-w-55 overflow-hidden"
                   >
                     {hasLeftContext ? (
                       <Tabs value={leftTab} onValueChange={setLeftTab} className="h-full gap-0">
@@ -286,13 +305,14 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
                       collapsible
                       collapsedSize={0}
                       groupResizeBehavior="preserve-pixel-size"
+                      style={CLIP}
                       onResize={(size) => setIsRightOpen(size.inPixels > 0)}
                     >
                       <aside
                         aria-label={t('context.title')}
                         inert={!isRightOpen}
                         ref={setRightNode}
-                        className="h-full overflow-y-auto"
+                        className="h-full min-w-70 overflow-y-auto"
                       />
                     </ResizablePanel>
                   </>
