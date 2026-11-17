@@ -26,9 +26,6 @@
   "apps/web/components/model-viewer.tsx": {
     "use_effect": 2
   },
-  "apps/web/components/product-views-detail.tsx": {
-    "use_effect": 1
-  },
   "apps/web/components/purchase-conversion.tsx": {
     "use_effect": 1
   },

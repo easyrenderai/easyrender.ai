@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { Analytics } from '@/components/analytics';
+import { QueryProvider } from '@/components/query-provider';
 import { HTML_LANG, type Locale, PATH_HEADER } from '@/i18n/config';
 import { pickClientMessages } from '@/lib/client-messages';
 import { geistMono, geistSans } from '@/lib/fonts';
@@ -57,7 +58,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       </head>
       <body className="flex min-h-dvh flex-col font-sans antialiased">
         <NextIntlClientProvider locale={locale} messages={pickClientMessages(messages)}>
-          {children}
+          <QueryProvider>{children}</QueryProvider>
           {!isEmailTokenPage && <Analytics />}
         </NextIntlClientProvider>
       </body>

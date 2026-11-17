@@ -1,6 +1,7 @@
 'use client';
 
 import type { ViewSetView } from '@easyrender/core';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Box,
   Download,
@@ -13,7 +14,7 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useFormatter, useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -46,31 +47,28 @@ export function ProductViewsDetail({
   const t = useTranslations('ProductViews');
   const format = useFormatter();
   const router = useRouter();
-  const [set, setSet] = useState(initial);
+  const client = useQueryClient();
   const [polishing, setPolishing] = useState<ViewSetView['views'][number]['view'] | null>(null);
   const [note, setNote] = useState('');
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dialogError, setDialogError] = useState<string | null>(null);
-  const base = `/api/product-views/${set.id}`;
+  const base = `/api/product-views/${initial.id}`;
+  const queryKey = ['view-set', initial.id];
+  // The server renders the first value. While the set is drafting or processing it is polled.
+  const { data: set = initial } = useQuery({
+    queryKey,
+    initialData: initial,
+    staleTime: Number.POSITIVE_INFINITY,
+    queryFn: async ({ signal }) => {
+      const response = await fetch(base, { cache: 'no-store', signal });
+      if (!response.ok) throw new Error(String(response.status));
+      return (await response.json()) as ViewSetView;
+    },
+    refetchInterval: (current) =>
+      current.state.data && RUNNING.has(current.state.data.status) ? 3000 : false,
+  });
   const upscales = useUpscales({ viewSetId: set.id }, set.status === 'ready');
-
-  useEffect(() => {
-    if (!RUNNING.has(set.status)) return;
-    const controller = new AbortController();
-    const timer = setInterval(async () => {
-      try {
-        const response = await fetch(base, { cache: 'no-store', signal: controller.signal });
-        if (response.ok) setSet(await response.json());
-      } catch {
-        // Aborted on unmount or a dropped request: the next tick retries.
-      }
-    }, 3000);
-    return () => {
-      controller.abort();
-      clearInterval(timer);
-    };
-  }, [base, set.status]);
 
   async function polish() {
     if (!polishing) return;
@@ -83,7 +81,7 @@ export function ProductViewsDetail({
     });
     const data = await response.json().catch(() => ({}));
     if (response.ok) {
-      setSet(data);
+      client.setQueryData(queryKey, data as ViewSetView);
       setPolishing(null);
       setNote('');
     } else setDialogError(data.error ?? t('errors.polish'));
