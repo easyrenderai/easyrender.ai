@@ -286,7 +286,9 @@ jobs:
             if [ -n "${BYPASS}" ]; then
               curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -H "x-vercel-protection-bypass: ${BYPASS}" "${STAGED_URL%/}$1"
             else
-              vercel curl "$1" --deployment "${STAGED_URL}" --token "${VERCEL_TOKEN}" -- -sS -o /dev/null -w '%{http_code}' --max-time 20 | tail -c 3
+              # Vercel reads VERCEL_TOKEN from the job environment. An explicit
+              # --token here is forwarded to system curl by CLI 65.9.0.
+              vercel curl "$1" --deployment "${STAGED_URL}" -- -sS -o /dev/null -w '%{http_code}' --max-time 20 | tail -c 3
             fi
           }
           for path in / /api/openapi.json; do
