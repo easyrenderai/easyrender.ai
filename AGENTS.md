@@ -101,7 +101,7 @@ Postgres in `TEST_DATABASE_URL` and skips without it.
   the value in render, do the work in the event handler that caused it, reset state with a `key`,
   or use the existing data hook. Keep an effect only to subscribe to a system outside React
   (DOM and browser APIs, timers, sockets, a third-party widget) and mark it with
-  `// use-effect-audit: ignore <reason>` on the line above (the reason is required).
+  `// use-effect-audit: ignore <reason>` in the comment lines directly above it (the reason is required).
 - An async effect (it awaits, uses `.then` or `fetch`) must create an `AbortController` and pass
   its `signal`, and abort in the cleanup. One that never mentions `AbortController`,
   `AbortSignal` or `signal` is counted as `async_effect_without_abort`.

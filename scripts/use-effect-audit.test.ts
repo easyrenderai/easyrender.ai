@@ -80,6 +80,18 @@ describe('auditSource', () => {
     ]);
   });
 
+  test('an ignore comment can sit above another comment line, such as a biome-ignore', () => {
+    const source = [
+      'function A() {',
+      '  // use-effect-audit: ignore subscribes to the window',
+      '  // biome-ignore lint/correctness/useExhaustiveDependencies: runs once',
+      '  useEffect(() => { window.addEventListener("resize", update); }, []);',
+      '  return null;',
+      '}',
+    ].join('\n');
+    expect(counts(source)).toEqual({ use_effect: 0, async_effect_without_abort: 0 });
+  });
+
   test('an ignore comment without a reason does not skip the effect and is reported', () => {
     const source = [
       'function A() {',
@@ -93,7 +105,7 @@ describe('auditSource', () => {
     expect(audit.reasonlessIgnores).toEqual([2]);
   });
 
-  test('an ignore comment two lines above does not apply', () => {
+  test('an ignore comment separated by a code line does not apply', () => {
     const source = ['// use-effect-audit: ignore reason', '', 'useEffect(() => {}, []);'].join(
       '\n',
     );

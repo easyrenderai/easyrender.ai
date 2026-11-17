@@ -15,6 +15,6 @@ Most of them are not needed.
 
 **How to apply:** in order, derive in render, do it in the event handler that caused it, reset with
 a `key`, or use the existing data hook. Keep an effect only to subscribe to a system outside React
-and put `// use-effect-audit: ignore <reason>` on the line above (reason required). An async effect
+and put `// use-effect-audit: ignore <reason>` in the comment lines directly above the call (reason required). An async effect
 needs an `AbortController` and passes its `signal`. After removing effects run
 `bun run check:use-effects --prune` and commit the smaller baseline. Never raise a count.
