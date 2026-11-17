@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-easyrender",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Turn any Product Photo into a 3D model",
   "license": "MIT",
   "homepage": "https://easyrender.ai",
@@ -23,7 +23,8 @@
     "test": "npm run build && node --test test/*.test.cjs"
   },
   "files": [
-    "dist"
+    "dist",
+    "examples"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,

@@ -7,6 +7,7 @@ import type {
   JsonObject,
 } from 'n8n-workflow';
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
+import { renderOutput } from './output';
 import { apiRequest, renderIdPath } from './transport';
 
 export class Easyrender implements INodeType {
@@ -17,7 +18,7 @@ export class Easyrender implements INodeType {
     group: ['transform'],
     version: 1,
     subtitle: '={{$parameter["operation"]}}',
-    description: 'Turn any Product Photo into a 3D model',
+    description: 'Create a product preview, inspect images, and get links to your 3D model',
     usableAsTool: true,
     defaults: { name: 'Easy Render | Photo to 3D' },
     inputs: [NodeConnectionTypes.Main],
@@ -34,19 +35,20 @@ export class Easyrender implements INodeType {
           {
             name: 'Create Render',
             value: 'create',
-            description: 'Create a private free preview from an image URL',
+            description:
+              'Start a private preview; use Get Render to inspect it, then build 3D in easyrender',
             action: 'Create a render',
           },
           {
             name: 'Get Credits',
             value: 'credits',
-            description: 'Get the live account balance and quote',
+            description: 'Read current account usage information',
             action: 'Get credits',
           },
           {
             name: 'Get Render',
             value: 'get',
-            description: 'Get a render and its current status',
+            description: 'Check progress, view preview and angle sheet images, and get model links',
             action: 'Get a render',
           },
           {
@@ -65,7 +67,7 @@ export class Easyrender implements INodeType {
         required: true,
         displayOptions: { show: { operation: ['create'] } },
         description:
-          'Public HTTPS JPEG, PNG or WebP URL. Creation starts a preview, not a paid 3D build.',
+          'Public HTTPS JPEG, PNG or WebP photo URL. Use Get Render with the returned ID to inspect the preview. Start the 3D build separately in easyrender.',
       },
       {
         displayName: 'Idempotency Key',
@@ -108,6 +110,18 @@ export class Easyrender implements INodeType {
         default: '',
         required: true,
         displayOptions: { show: { operation: ['get'] } },
+        description: 'ID returned by Create Render or shown in the easyrender viewer URL',
+        hint: 'Run Get Render again after a Wait step while the preview or model is processing.',
+      },
+      {
+        displayName: 'Download Images',
+        name: 'downloadImages',
+        type: 'boolean',
+        default: true,
+        displayOptions: { show: { operation: ['get'] } },
+        description:
+          'Whether to download available preview and angle sheet images into the output Binary tab using your API key',
+        hint: 'Open preview or sheet in Binary. Use viewerUrl to review the sheet and build 3D; glbUrl appears when ready. Export USDZ from the viewer.',
       },
       {
         displayName: 'Limit',
@@ -201,7 +215,15 @@ export class Easyrender implements INodeType {
         } else {
           throw new NodeOperationError(this.getNode(), 'Unknown operation', { itemIndex: i });
         }
-        output.push({ json: result, pairedItem: { item: i } });
+        const item =
+          operation === 'get'
+            ? await renderOutput.call(
+                this,
+                result,
+                this.getNodeParameter('downloadImages', i, true) as boolean,
+              )
+            : { json: result, pairedItem: { item: i } };
+        output.push({ ...item, pairedItem: { item: i } });
       } catch (error) {
         if (!this.continueOnFail()) {
           if (error instanceof NodeOperationError)
