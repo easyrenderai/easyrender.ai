@@ -109,8 +109,10 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
   const inFlight = data.renders.filter((render) => isInFlight(render.status)).length;
   const account = ACCOUNT_NAV;
 
+  // `w-full`: settings, admin and phone pages sit in a plain flex row, not a resizable panel. Without
+  // it the scroll container shrinks to the content column and its scrollbar floats mid-page.
   const page = (
-    <main className="h-full min-w-0 overflow-y-auto">
+    <main className="h-full w-full min-w-0 overflow-y-auto">
       <div
         className={cn(
           'mx-auto flex min-h-full flex-col px-4 py-6 sm:px-6 lg:py-8',
