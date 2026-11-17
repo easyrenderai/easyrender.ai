@@ -1,9 +1,11 @@
+import { NextIntlClientProvider } from 'next-intl';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { LOCALES } from '@/i18n/config';
 import { faqPage } from '@/lib/seo/jsonld';
 import { postMetadata } from '@/lib/seo/pages';
+import en from '@/messages/en.json';
 import {
   BLOG_IMAGES,
   ILLUSTRATION_DIR,
@@ -91,7 +93,14 @@ describe.each(guides.map((post) => [`${post.locale}/${post.slug}`, post] as cons
       const faq = sections(blocks).filter((section) => section.kind === 'faq');
       expect(faq).toHaveLength(1);
 
-      const html = renderToStaticMarkup(createElement(Markdown, { source: post.body }));
+      const html = renderToStaticMarkup(
+        createElement(NextIntlClientProvider, {
+          locale: 'en',
+          messages: en,
+          // biome-ignore lint/correctness/noChildrenProp: next-intl requires children in the typed provider props
+          children: createElement(Markdown, { source: post.body }),
+        }),
+      );
       const items = html.match(/data-slot="accordion-item"/g) ?? [];
       const jsonLd = faqPage(post.faq).mainEntity as unknown[];
       expect(items.length).toBeGreaterThanOrEqual(3);

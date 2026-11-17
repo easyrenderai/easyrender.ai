@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { AuthFields, type AuthMode } from '@/components/auth-fields';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +16,8 @@ export function AuthForm({
   recovery?: { label: string; locale: string };
 }) {
   const t = useTranslations('Auth');
+  const locale = useLocale();
+  const prefix = locale === 'en' ? '' : `/${locale}`;
   const router = useRouter();
   const params = useSearchParams();
   const raw = params.get('next');
@@ -59,7 +61,7 @@ export function AuthForm({
         <p className="text-center text-sm text-muted-foreground">
           {mode === 'sign-up' ? t('haveAccount') : t('newHere')}{' '}
           <Link
-            href={`/${other}?next=${encodeURIComponent(next)}`}
+            href={`${prefix}/${other}?next=${encodeURIComponent(next)}`}
             className="text-foreground underline underline-offset-4"
           >
             {mode === 'sign-up' ? t('signIn') : t('createAnAccount')}

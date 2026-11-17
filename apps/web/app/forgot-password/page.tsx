@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const { locale } = await searchParams;
   return {
-    title: (locale === 'es' ? es : en).AuthService.forgotTitle,
+    title: `${(locale === 'es' ? es : en).AuthService.forgotTitle} · Easy Render`,
     robots: { index: false, follow: false },
     referrer: 'no-referrer',
   };

@@ -143,7 +143,7 @@ export function article(post: {
 }): Thing {
   const url = absoluteUrl(post.path);
   const image = post.image ?? { src: OG_IMAGE, ...OG_IMAGE_SIZE };
-  const author = post.author ?? { name: 'easyrender team', type: 'Organization' as const };
+  const author = post.author ?? { name: 'Easy Render team', type: 'Organization' as const };
   const modified = post.updated && post.updated > post.date ? post.updated : post.date;
   return {
     '@type': 'BlogPosting',

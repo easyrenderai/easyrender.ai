@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useFormatter, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
+import { AngleSheet } from '@/components/angle-sheet';
 import { ShellPanel } from '@/components/app-shell/shell-context';
 import { ModelView } from '@/components/model-view';
 import { DATE_FORMAT, RenderDetail } from '@/components/render-detail';
@@ -224,12 +225,7 @@ export function RenderView({
 
   const isFixable = owner && signedIn && render.status === 'preview_ready' && render.hasSheet;
   const sheet = render.hasPreview ? (
-    // biome-ignore lint/performance/noImgElement: watermarked preview served by our own API
-    <img
-      src={`${base}/preview?v=${render.modelVersion}`}
-      alt={t('previewAlt')}
-      className="w-full rounded-lg border bg-white"
-    />
+    <AngleSheet src={`${base}/preview?v=${render.modelVersion}`} />
   ) : (
     <div className="flex aspect-square w-full items-center justify-center rounded-lg border bg-muted/40 text-muted-foreground">
       {render.status === 'failed' ? (

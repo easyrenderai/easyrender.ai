@@ -31,7 +31,7 @@ export const renderSchema = {
   createdAt: z.string(),
   pending_credits: z.number().nonnegative(),
   links: z.object({
-    page: z.string().url(),
+    page: z.string().url().optional(),
     preview: z.string().url(),
     model_glb: z.string().url(),
   }),
@@ -106,7 +106,7 @@ export function result(render: Parameters<typeof toView>[0]) {
     pending_credits:
       view.status === 'preview_ready' ? Math.max(0, view.renderCredits - view.credits) : 0,
     links: {
-      page: `${base}/r/${view.id}`,
+      ...(view.isPublic ? { page: `${base}/r/${view.id}` } : {}),
       preview: `${base}/api/renders/${view.id}/preview`,
       model_glb: `${base}/api/renders/${view.id}/model`,
     },

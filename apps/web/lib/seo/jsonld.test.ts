@@ -54,9 +54,9 @@ describe('home structured data', () => {
   });
 
   it('gives Organization, WebSite and WebPage their required properties', () => {
-    expect(byType('Organization')).toMatchObject({ name: 'easyrender', url: SITE_URL });
+    expect(byType('Organization')).toMatchObject({ name: 'Easy Render', url: SITE_URL });
     expect(byType('WebSite')).toMatchObject({
-      name: 'easyrender',
+      name: 'Easy Render',
       url: SITE_URL,
       inLanguage: 'en',
     });
@@ -136,7 +136,7 @@ describe('guide structured data', () => {
     });
     expect(node.author).toEqual({
       '@type': 'Organization',
-      name: 'easyrender team',
+      name: 'Easy Render team',
       url: SITE_URL,
       parentOrganization: { '@id': `${SITE_URL}/#organization` },
     });

@@ -1,6 +1,7 @@
 import { getLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 import { AuthForm } from '@/components/auth-form';
+import { authMetadata } from '@/lib/seo/auth';
 import en from '@/messages/en.json';
 import es from '@/messages/es.json';
 export default async function SignInPage() {
@@ -13,4 +14,8 @@ export default async function SignInPage() {
       />
     </Suspense>
   );
+}
+
+export async function generateMetadata() {
+  return authMetadata('sign-in', 'en');
 }

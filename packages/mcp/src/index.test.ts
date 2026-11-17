@@ -498,3 +498,26 @@ describe('MCP protocol contract', () => {
     expect(core.createDraft).not.toHaveBeenCalled();
   });
 });
+
+it.each([false, true])(
+  'only offers a public page link for public renders (%s)',
+  async (isPublic) => {
+    core.getRender.mockResolvedValue({ ...render, isPublic });
+    const response = await (await connect()).callTool({
+      name: 'get_render',
+      arguments: { id: 'r1' },
+    });
+    expect(response.isError).not.toBe(true);
+    const value = response.structuredContent as { links: { page?: string } };
+    expect(value.links.page).toBe(isPublic ? 'https://easyrender.ai/r/r1' : undefined);
+  },
+);
+
+it('marks only operations without job or export mutations read-only', async () => {
+  const tools = (await (await connect()).listTools()).tools;
+  for (const tool of tools) {
+    expect(tool.annotations?.readOnlyHint).toBe(
+      ['get_credits', 'list_renders'].includes(tool.name),
+    );
+  }
+});

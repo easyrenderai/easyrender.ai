@@ -35,6 +35,28 @@ function flatten(tree: Tree, prefix = ''): Map<string, string> {
 
 const argumentsOf = (value: string) => [...value.matchAll(/\{(\w+)/g)].map((m) => m[1]).sort();
 
+describe('QA home metadata and navigation', () => {
+  it.each(LOCALES)('%s uses the brand consistently on the home', (locale) => {
+    const messages = MESSAGES[locale];
+    expect(messages.Home.meta.title).toMatch(/^Easy Render \| /);
+    expect(messages.Metadata).toEqual(messages.Home.meta);
+    expect(messages.Footer.tagline).toBe(messages.Home.meta.description);
+  });
+
+  it('uses the requested English title and tagline', () => {
+    expect(en.Home.meta.title).toBe('Easy Render | Photo to 3D');
+    expect(en.Home.meta.description).toBe('Turn any Product Photo into a 3D model');
+  });
+
+  it.each(['es', 'de', 'fr', 'it', 'pt'] as const)('%s translates navigation', (locale) => {
+    const messages = MESSAGES[locale];
+    expect(messages.Header.nav.hub).not.toBe(en.Header.nav.hub);
+    expect(messages.Footer.links.hub).toBe(messages.Header.nav.hub);
+    expect(messages.Footer.links.gallery).not.toBe(en.Footer.links.gallery);
+    expect(messages.Footer.links.apiKeys).not.toBe(en.Footer.links.apiKeys);
+  });
+});
+
 describe('the message files', () => {
   const reference = flatten(en);
 
@@ -101,12 +123,24 @@ describe('the message files', () => {
     expect(t('operator.name')).toContain('MRRAMOS INMUEBLES SL');
     expect(t('operator.taxId')).toBe('CIF/NIF: B75763383');
     expect(t('operator.address')).toBe(
-      'Registered address / domicilio fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (Spain)',
+      locale === 'es'
+        ? 'Domicilio social / fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (España)'
+        : 'Registered address / domicilio fiscal: C/ San Miguel 13, Bajo 4, 11001 Cádiz (Spain)',
     );
-    expect(t('operator.contact')).toBe('Contact email: info@easyrender.ai');
-    expect(t('terms.intro')).toContain('operated by MRRAMOS INMUEBLES SL');
-    expect(t('terms.sections.law.body')).toContain('governed by Spanish law');
-    expect(t('terms.sections.law.body')).toContain('courts of Spain');
+    expect(t('operator.contact')).toBe(
+      locale === 'es'
+        ? 'Correo de contacto: info@easyrender.ai'
+        : 'Contact email: info@easyrender.ai',
+    );
+    expect(t('terms.intro')).toContain(
+      locale === 'es' ? 'operado por MRRAMOS INMUEBLES SL' : 'operated by MRRAMOS INMUEBLES SL',
+    );
+    expect(t('terms.sections.law.body')).toContain(
+      locale === 'es' ? 'se rigen por el Derecho español' : 'governed by Spanish law',
+    );
+    expect(t('terms.sections.law.body')).toContain(
+      locale === 'es' ? 'tribunales de España' : 'courts of Spain',
+    );
     expect(t('privacy.sections.rights.body')).toContain(
       'Agencia Española de Protección de Datos (AEPD)',
     );

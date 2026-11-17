@@ -66,7 +66,7 @@ export async function SiteFooter() {
         <div className="space-y-3">
           <Link href={home} className="flex items-center gap-2 font-semibold tracking-tight">
             <BrandMark className="size-[1.375rem]" />
-            easyrender
+            Easy Render
           </Link>
           <p className="max-w-xs text-sm text-muted-foreground">{t('tagline')}</p>
         </div>

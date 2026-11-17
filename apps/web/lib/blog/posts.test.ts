@@ -96,7 +96,7 @@ describe('what a post carries besides its text', () => {
   };
 
   it('is signed by the easyrender team, as an Organization, unless it names an author', () => {
-    expect(parsed({}).author).toEqual({ name: 'easyrender team', type: 'Organization' });
+    expect(parsed({}).author).toEqual({ name: 'Easy Render team', type: 'Organization' });
     expect(
       parsed({ author: 'A Writer', authorType: 'person', authorUrl: '/about' }).author,
     ).toEqual({

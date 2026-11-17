@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Ar');
-  return noindexMetadata(`${t('metaTitle')} · easyrender`);
+  return noindexMetadata(`${t('metaTitle')} · Easy Render`);
 }
 
 // The phone page behind a product's QR code. Opens for a store's link-shared models, for the

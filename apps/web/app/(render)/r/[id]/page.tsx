@@ -3,6 +3,7 @@ import {
   canAccess,
   getBalance,
   getRender,
+  isListed,
   isModelExportEnabled,
   listEdits,
   toView,
@@ -12,12 +13,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
+import { AngleSheet } from '@/components/angle-sheet';
 import { ModelView } from '@/components/model-view';
 import { DATE_FORMAT, RenderDetail } from '@/components/render-detail';
 import { RenderView } from '@/components/render-view';
 import { Button } from '@/components/ui/button';
 import { currentUser, resolveViewerActor } from '@/lib/actor';
 import { noindexMetadata } from '@/lib/seo/metadata';
+import { absoluteUrl, SITE_NAME } from '@/lib/seo/site';
 import { findShowcase } from '@/lib/showcase';
 
 export const dynamic = 'force-dynamic';
@@ -26,8 +29,43 @@ export async function generateMetadata({ params }: PageProps<'/r/[id]'>): Promis
   const { id } = await params;
   const demo = findShowcase(id);
   const t = await getTranslations();
-  const title = demo ? t(`Showcase.items.${demo.slug}.title`) : t('Render.metaTitle');
-  return noindexMetadata(`${title} · easyrender`);
+  let name: string;
+  let image: string | undefined;
+  if (demo) {
+    name = t(`Showcase.items.${demo.slug}.title`);
+    image = absoluteUrl(demo.photo);
+  } else {
+    const actor = await resolveViewerActor();
+    const render = await getRender(id, actor).catch((error) => {
+      if (error instanceof AppError && error.status === 404) notFound();
+      throw error;
+    });
+    // Only gallery-public, finished models have social cards. Even an owner or a
+    // link-sharing recipient must not turn a private name/image into public metadata.
+    if (!isListed(render)) return noindexMetadata(`${t('Render.untitled')} · ${SITE_NAME}`);
+    name = render.name?.trim() || t('Render.untitled');
+    const previewKey = render.sheetKey || render.sourceKey;
+    if (previewKey && !previewKey.startsWith('pending:')) {
+      image = absoluteUrl(`/api/renders/${encodeURIComponent(id)}/preview`);
+    }
+  }
+  const shortName = name.length > 46 ? `${name.slice(0, 45).trimEnd()}…` : name;
+  const title = `${shortName} · ${SITE_NAME}`;
+  return {
+    ...noindexMetadata(title),
+    openGraph: {
+      title,
+      siteName: SITE_NAME,
+      type: 'website',
+      url: absoluteUrl(`/r/${encodeURIComponent(id)}`),
+      images: image ? [{ url: image, alt: name }] : [],
+    },
+    twitter: {
+      card: image ? 'summary_large_image' : 'summary',
+      title,
+      images: image ? [image] : [],
+    },
+  };
 }
 
 export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
@@ -49,12 +87,7 @@ export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
         input={demo.photo}
         angles={
           demo.angles ? (
-            // biome-ignore lint/performance/noImgElement: static showcase image
-            <img
-              src={demo.angles}
-              alt={t('Render.everyAngle')}
-              className="w-full rounded-lg border bg-white"
-            />
+            <AngleSheet src={demo.angles} />
           ) : (
             <p className="flex aspect-[2/1] items-center justify-center rounded-lg border bg-muted/40 p-4 text-center text-sm text-muted-foreground">
               {t('Render.noAngleSheet')}

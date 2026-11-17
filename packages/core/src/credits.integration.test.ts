@@ -1109,7 +1109,7 @@ run('credits and generation billing (real database)', () => {
       );
     };
 
-    it('keeps API and MCP generations private while preserving the web default', async () => {
+    it('keeps API, MCP and web generations private by default', async () => {
       const { renders } = await load();
       const bytes = photo();
       for (const source of ['api', 'mcp', 'web'] as const) {
@@ -1120,7 +1120,7 @@ run('credits and generation billing (real database)', () => {
           contentType: 'image/png',
           source,
         });
-        expect(render.isPublic).toBe(source === 'web');
+        expect(render.isPublic).toBe(false);
       }
     });
 

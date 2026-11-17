@@ -18,5 +18,12 @@
   "devDependencies": {
     "zapier-platform-cli": "19.3.0",
     "nock": "15.0.6"
+  },
+  "overrides": {
+    "zapier-platform-cli": {
+      "tmp": "0.2.7",
+      "simple-git": "4.1.0",
+      "tar": "7.5.23"
+    }
   }
 }
