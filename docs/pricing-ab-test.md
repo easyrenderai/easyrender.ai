@@ -77,20 +77,19 @@ and plan mappings. The previously requested billing-portal review still applies 
 
 ## Price catalogue
 
-`packages/harness/src/pricing.ts` owns both catalogues. Render deductions remain **64 credits**; free previews and their daily limits are unchanged. Previously purchased credits still buy exactly the same renders. No balance conversion, credit expiry, or Prisma schema change is involved.
+`packages/harness/src/pricing.ts` owns both catalogues. Render deductions are whatever `RENDER_CREDITS` says in `pricing.ts`; free previews and their daily limits are unchanged. Previously purchased credits still buy exactly the same renders. No balance conversion, credit expiry, or Prisma schema change is involved.
 
-| Offer              | Control                  | Test                     |
-| ------------------ | ------------------------ | ------------------------ |
-| New PAYG credit    | $0.01                    | $0.02                    |
-| Model at PAYG rate | $0.64                    | $1.28                    |
-| Minimum purchase   | 500 credits / $5         | 500 credits / $10        |
-| Maximum purchase   | 100,000 credits / $1,000 | 100,000 credits / $2,000 |
-| Creator (legacy)   | $19 / 2,000 credits      | $29 / 1,600 credits      |
-| Pro / month        | $49 / 5,500 credits      | $79 / 4,500 credits      |
-| Scale (legacy)     | $149 / 18,000 credits    | $199 / 12,000 credits    |
-| Enterprise         | Book a call              | Book a call              |
+| Offer            | Control                  | Test                     |
+| ---------------- | ------------------------ | ------------------------ |
+| New PAYG credit  | $0.01                    | $0.02                    |
+| Minimum purchase | 500 credits / $5         | 500 credits / $10        |
+| Maximum purchase | 100,000 credits / $1,000 | 100,000 credits / $2,000 |
+| Creator (legacy) | $19 / 2,000 credits      | $29 / 1,600 credits      |
+| Pro / month      | $49 / 5,500 credits      | $79 / 4,500 credits      |
+| Scale (legacy)   | $149 / 18,000 credits    | $199 / 12,000 credits    |
+| Enterprise       | Book a call              | Book a call              |
 
-The target was approximately $1.20/model. Two whole cents per credit yields $1.28, keeps Stripe quantities and the $10 minimum exact, and preserves all existing credits' purchasing power. Raising render deductions would devalue existing balances. Test plan effective model rates are $1.16, approximately $1.124, and $1.061; their monthly allocations buy 25, 70, and 187 whole models respectively, with leftovers rolling over. The control cost-plus-70%-margin calculation still determines render credits. The test deliberately experiments with the selling price of new credits, rather than provider costs.
+Two whole cents per credit keeps Stripe quantities and the $10 minimum exact, and preserves all existing credits' purchasing power. Raising render deductions would devalue existing balances. The control cost-plus-70%-margin calculation still determines render credits, and what a model costs in each variant follows from `pricing.ts`. The test deliberately experiments with the selling price of new credits, rather than provider costs.
 
 ## Assignment and consent
 

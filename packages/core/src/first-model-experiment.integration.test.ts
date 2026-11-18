@@ -20,6 +20,8 @@ vi.mock('./storage', () => ({
 }));
 vi.mock('@easyrender/harness', async (original) => ({
   ...(await original<typeof import('@easyrender/harness')>()),
+  checkSheet: async () => ({ ok: true, warnings: [], measures: {} }),
+  cutCells: async () => [new Uint8Array([1])],
   createReplicate: () => ({
     upload: async () => {
       if (provider.hasFailed) throw new Error('provider down');

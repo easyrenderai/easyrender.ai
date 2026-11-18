@@ -61,11 +61,40 @@ const CANDIDATES: Candidate[] = [
     imageKey: 'image_input',
   },
   {
+    id: 'nb21-2k',
+    model: 'google/nano-banana-2.1',
+    costUsd: 0.0504,
+    input: { ...SQUARE, resolution: '2K' },
+    imageKey: 'image_input',
+  },
+  {
+    id: 'nb21-1k',
+    model: 'google/nano-banana-2.1',
+    costUsd: 0.0336,
+    input: { ...SQUARE, resolution: '1K' },
+    imageKey: 'image_input',
+  },
+  {
     id: 'lite-1k',
     model: 'google/nano-banana-2-lite',
     costUsd: 0.034,
     input: { ...SQUARE },
     imageKey: 'image_input',
+  },
+  {
+    id: 'gpt26-flare',
+    model: 'openai/gpt-image-2.6-flare',
+    // Billed per token; this is a guess for a 1K image at medium quality, not a listed price.
+    costUsd: 0.047,
+    input: { ...SQUARE, quality: 'medium' },
+    imageKey: 'input_images',
+  },
+  {
+    id: 'gpt26-sunburst',
+    model: 'openai/gpt-image-2.6-sunburst',
+    costUsd: 0.047,
+    input: { ...SQUARE, quality: 'medium' },
+    imageKey: 'input_images',
   },
   {
     id: 'gpt-low',
@@ -116,7 +145,14 @@ const candidates = CANDIDATES.filter((c) => !wantedCandidates || wantedCandidate
 const photos = PHOTOS.filter((p) => !wantedPhotos || wantedPhotos.includes(p));
 if (candidates.length === 0 || photos.length === 0) throw new Error('Nothing selected to run.');
 
-const client: ReplicateClient = createReplicate(token);
+// The client enforces a 45 s budget for its whole lifetime (it is made for one serverless request),
+// so a run of many minutes makes a new one per call.
+const client: ReplicateClient = {
+  upload: (...args) => createReplicate(token).upload(...args),
+  start: (...args) => createReplicate(token).start(...args),
+  get: (id) => createReplicate(token).get(id),
+  cancel: (id) => createReplicate(token).cancel(id),
+};
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // The inputs a model really takes, read from its published schema, so a wrong key name is dropped

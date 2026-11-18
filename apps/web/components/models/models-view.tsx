@@ -1,4 +1,4 @@
-import { BUILD_MODEL, FINAL_SHEET_MODEL, RENDER_CREDITS, SHEET_MODEL } from '@easyrender/harness';
+import { BUILD_MODEL, RENDER_CREDITS, SHEET_MODEL } from '@easyrender/harness';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
@@ -49,12 +49,6 @@ export async function ModelsView({ locale }: { locale: Locale }) {
       settings: [t('sheet.settings.output'), t('sheet.settings.prompt')],
     },
     {
-      key: 'final',
-      name: FINAL_SHEET_MODEL.name,
-      id: modelId(FINAL_SHEET_MODEL.path),
-      settings: [t('final.settings.output'), t('final.settings.prompt')],
-    },
-    {
       key: 'build',
       name: 'TRELLIS',
       id: BUILD_MODEL.name,
@@ -76,7 +70,7 @@ export async function ModelsView({ locale }: { locale: Locale }) {
       </header>
       <QualityEvidence locale={locale} copy={qualityCopy} showEvals />
 
-      <div className="mt-10 grid gap-4 md:grid-cols-3">
+      <div className="mt-10 grid gap-4 md:grid-cols-2">
         {steps.map((step, index) => (
           <Card key={step.key}>
             <CardHeader>

@@ -1,0 +1,10 @@
+[
+  {
+    "photo": "armchair",
+    "candidate": "hunyuan31",
+    "ok": false,
+    "note": "Prediction failed: Async prediction failed: Exception: API Error (ResourceInsufficient): Resources are insufficient.",
+    "seconds": 167.702501872,
+    "costUsd": 0.5
+  }
+]

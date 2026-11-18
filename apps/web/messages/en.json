@@ -1603,14 +1603,6 @@
         "prompt": "Prompt: a fixed turnaround brief, plus guidance for the product category and its material"
       }
     },
-    "final": {
-      "title": "Final views",
-      "role": "When you build the 3D model, the sheet is drawn again at full size with the same brief, so the 3D build starts from sharper views.",
-      "settings": {
-        "output": "Output: one 2K image (PNG)",
-        "prompt": "Prompt: the same turnaround brief as the draft"
-      }
-    },
     "build": {
       "title": "3D generation",
       "role": "Rebuilds a textured 3D model from your photo and the nine sheet views. The result downloads as GLB and USDZ.",
@@ -1626,9 +1618,9 @@
       "credits": "Credits",
       "price": "Price",
       "sheet": "Initial preview (within your allowance)",
-      "build": "Final angle sheet and textured 3D model",
+      "build": "Textured 3D model from the preview sheet",
       "total": "Full photo-to-3D workflow",
-      "note": "The initial preview spends no credits within your allowance. The paid build includes the final angle sheet and 3D model. Editing or reusing an existing final sheet can have a different cost: check the action’s credit quote. A credit costs {unit}. Failed builds refund their credits."
+      "note": "The initial preview spends no credits within your allowance. The paid build turns that same sheet into the 3D model, so nothing is drawn twice. Redrawing the sheet or building from a product views set can have a different cost: check the action’s credit quote. A credit costs {unit}. Failed builds refund their credits."
     },
     "change": {
       "title": "What can change",
@@ -2418,7 +2410,7 @@
       },
       "build": {
         "label": "Per full 3D build · pay as you go",
-        "body": "{credits} credits for the final angle sheet and textured GLB. This is the full photo-to-3D workflow."
+        "body": "{credits} credits for the textured GLB, built from your preview sheet. This is the full photo-to-3D workflow."
       },
       "access": {
         "label": "API & MCP access",

@@ -69,7 +69,7 @@ describe('parseHarness', () => {
       sheet: { path: '/models/google/nano-banana-pro/predictions', input: { resolution: '2K' } },
     });
     expect(parsed?.sheet).toEqual(DEFAULT_SHEET_SETTINGS);
-    expect(parsed?.sheet.path).toContain('nano-banana-2-lite');
+    expect(parsed?.sheet.path).toContain('nano-banana-2.1');
   });
 
   it('applies valid overrides and refuses a prompt that is not a 3x3 sheet', () => {

@@ -20,6 +20,7 @@ vi.mock('@easyrender/harness', async (importOriginal) => ({
     warnings: [],
     measures: { width: 1200, height: 900, spread: 40, sharpness: 120 },
   }),
+  checkSheet: async () => ({ ok: true, warnings: [], measures: {} }),
   cutCells: async () => Array.from({ length: 9 }, () => new Uint8Array([1])),
   createReplicate: () => ({
     upload: fake.upload,

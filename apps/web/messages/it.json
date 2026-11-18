@@ -1603,14 +1603,6 @@
         "prompt": "Prompt: a fixed turnaround brief, plus guidance for the product category and its material"
       }
     },
-    "final": {
-      "title": "Final sheet",
-      "role": "When you build the 3D model, the sheet is drawn again at full size with the same brief, so the 3D build starts from sharper views.",
-      "settings": {
-        "output": "Output: one 2K image (PNG)",
-        "prompt": "Prompt: the same turnaround brief as the draft"
-      }
-    },
     "build": {
       "title": "3D build",
       "role": "Rebuilds a textured 3D model from your photo and the nine sheet views. The result downloads as GLB and USDZ.",
@@ -1626,7 +1618,7 @@
       "credits": "Credits",
       "price": "Price",
       "sheet": "Draft sheet",
-      "build": "Final sheet and 3D build, once the draft exists",
+      "build": "3D build from the draft sheet",
       "total": "Full 3D render, draft included",
       "note": "The draft is free as a daily preview. A credit costs {unit} and never expires. If a step fails, its credits are refunded."
     },
@@ -2418,7 +2410,7 @@
       },
       "build": {
         "label": "Per full 3D build · pay as you go",
-        "body": "{credits} credits for the final angle sheet and textured GLB. This is the full photo-to-3D workflow."
+        "body": "{credits} credits for the textured GLB, built from your preview sheet. This is the full photo-to-3D workflow."
       },
       "access": {
         "label": "API & MCP access",

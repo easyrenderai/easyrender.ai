@@ -1603,14 +1603,6 @@
         "prompt": "Instrucción: una guía fija de vista giratoria, más pautas según la categoría del producto y su material"
       }
     },
-    "final": {
-      "title": "Vistas finales",
-      "role": "Al generar el modelo 3D, volvemos a crear las vistas en 2K con las mismas instrucciones para partir de imágenes más nítidas.",
-      "settings": {
-        "output": "Salida: una imagen 2K (PNG)",
-        "prompt": "Instrucción: la misma guía de vista giratoria que el borrador"
-      }
-    },
     "build": {
       "title": "Generación del modelo 3D",
       "role": "Genera un modelo 3D con texturas a partir de tu foto y las nueve vistas. Puedes descargarlo en GLB o USDZ.",
@@ -1626,9 +1618,9 @@
       "credits": "Créditos",
       "price": "Precio",
       "sheet": "Vista previa inicial (dentro de tu cupo)",
-      "build": "Hoja de ángulos final y modelo 3D con textura",
+      "build": "Modelo 3D con textura a partir de la vista previa",
       "total": "Proceso completo de foto a 3D",
-      "note": "La vista previa inicial no gasta créditos dentro de tu cupo. La generación de pago incluye la hoja final y el modelo 3D. Editar o reutilizar una hoja final puede tener otro coste: consulta los créditos de cada acción. Un crédito cuesta {unit}. Las generaciones fallidas devuelven los créditos."
+      "note": "La vista previa inicial no gasta créditos dentro de tu cupo. La generación de pago convierte esa misma hoja en el modelo 3D, así que no se dibuja dos veces. Volver a dibujar la hoja o generar desde un conjunto de vistas de producto puede tener otro coste: consulta los créditos de cada acción. Un crédito cuesta {unit}. Las generaciones fallidas devuelven sus créditos."
     },
     "change": {
       "title": "Qué puede cambiar",
@@ -2418,7 +2410,7 @@
       },
       "build": {
         "label": "Por generación 3D completa · pago por uso",
-        "body": "{credits} créditos por la hoja final de vistas y el GLB con textura. Incluye el flujo completo de foto a 3D."
+        "body": "{credits} créditos por el GLB con textura, creado a partir de tu vista previa. Incluye el flujo completo de foto a 3D."
       },
       "access": {
         "label": "Acceso por API y MCP",

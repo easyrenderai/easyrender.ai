@@ -80,9 +80,9 @@ describe('public pricing copy', () => {
   it('does not charge for the free draft or deduct its cost from a full build', async () => {
     const html = renderToStaticMarkup(await ModelsView({ locale: 'en' }));
     expect(html).not.toContain('€0.12');
-    expect(html).not.toContain('€0.52');
+    expect(html).not.toContain('€0.20');
     expect(html).toContain('€0.00');
-    expect(html).toContain('€0.64');
+    expect(html).toContain('€0.32');
   });
 
   it('the footer does not contradict EUR checkout prices', async () => {
