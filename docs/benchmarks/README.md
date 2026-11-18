@@ -14,7 +14,7 @@ the date, the script, the workflow run, cost, timing and what passed.
 - `images/`: strips of the sheets and renders of the GLBs, as JPEG.
 - The GLBs are too large for git. Each page links the workflow run whose artifact `sheet-bakeoff`
   holds them (GitHub keeps artifacts 90 days), and a copy is kept in the project files under
-  `benchmarks/`.
+  `benchmarks/` (`sheets-2026-11-17/`, `image-to-3d-2026-11-18/`).
 
 ## How to run one
 

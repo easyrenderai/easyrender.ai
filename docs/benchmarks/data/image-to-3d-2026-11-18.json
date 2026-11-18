@@ -1,0 +1,80 @@
+[
+  {
+    "photo": "armchair",
+    "candidate": "hunyuan31",
+    "ok": false,
+    "note": "Prediction failed: Async prediction failed: Exception: API Error (ResourceInsufficient): Resources are insufficient.",
+    "seconds": 143.994251348,
+    "costUsd": 0.5
+  },
+  {
+    "photo": "armchair",
+    "candidate": "trellis1",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 36.531981688,
+    "costUsd": 0.0511447743632,
+    "bytes": 4968364
+  },
+  {
+    "photo": "armchair",
+    "candidate": "trellis2",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 159.550301198,
+    "costUsd": 0.2233704216772,
+    "bytes": 36225200
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "hunyuan31",
+    "ok": false,
+    "note": "Prediction failed: Async prediction failed: Exception: API Error (ResourceInsufficient): Resources are insufficient.",
+    "seconds": 145.38451451,
+    "costUsd": 0.5
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "trellis1",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 33.356796585,
+    "costUsd": 0.046699515218999996,
+    "bytes": 4586280
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "trellis2",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 457.113748842,
+    "costUsd": 0.6399592483788,
+    "bytes": 31238088
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "hunyuan31",
+    "ok": false,
+    "note": "Prediction failed: Async prediction failed: Exception: API Error (ResourceInsufficient): Resources are insufficient.",
+    "seconds": 164.010747029,
+    "costUsd": 0.5
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "trellis1",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 43.331772138,
+    "costUsd": 0.060664480993199994,
+    "bytes": 5883888
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "trellis2",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 603.725931542,
+    "costUsd": 0.8452163041588,
+    "bytes": 35523096
+  }
+]
