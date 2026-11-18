@@ -63,7 +63,7 @@ test.describe(`PrestaShop module on a real shop (${VERSION})`, () => {
     const [, count, credits] = label.match(/for (\d+) products \((\d+) credits\)/) ?? [];
     const products = Number(count);
     expect(products).toBeGreaterThan(0);
-    expect(Number(credits)).toBe(products * 64);
+    expect(Number(credits)).toBe(products * 32);
     await shot(page, `prestashop-${VERSION}-2-price-before-click`);
 
     // Saving the form again without touching the key must keep the key.
@@ -90,7 +90,7 @@ test.describe(`PrestaShop module on a real shop (${VERSION})`, () => {
     );
     expect(sent).toHaveLength(products);
     for (const item of sent) expect(item.imageUrl).toMatch(/^https:\/\/localhost:8080\//);
-    expect(posts.reduce((sum, post) => sum + (post.maxCredits ?? 0), 0)).toBe(products * 64);
+    expect(posts.reduce((sum, post) => sum + (post.maxCredits ?? 0), 0)).toBe(products * 32);
 
     // The background-sync URL answers with the right token and refuses a wrong one.
     const cron = ((await page.locator('code').first().textContent()) ?? '').trim();

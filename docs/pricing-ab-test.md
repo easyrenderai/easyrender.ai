@@ -77,12 +77,12 @@ and plan mappings. The previously requested billing-portal review still applies 
 
 ## Price catalogue
 
-`packages/harness/src/pricing.ts` owns both catalogues. Render deductions remain **64 credits**; free previews and their daily limits are unchanged. Previously purchased credits still buy exactly the same renders. No balance conversion, credit expiry, or Prisma schema change is involved.
+`packages/harness/src/pricing.ts` owns both catalogues. Render deductions are **32 credits** (they were 64 until a paid build stopped redrawing a 2K sheet in November 2026); free previews and their daily limits are unchanged. Previously purchased credits still buy exactly the same renders. No balance conversion, credit expiry, or Prisma schema change is involved.
 
 | Offer              | Control                  | Test                     |
 | ------------------ | ------------------------ | ------------------------ |
 | New PAYG credit    | $0.01                    | $0.02                    |
-| Model at PAYG rate | $0.64                    | $1.28                    |
+| Model at PAYG rate | $0.32                    | $0.64                    |
 | Minimum purchase   | 500 credits / $5         | 500 credits / $10        |
 | Maximum purchase   | 100,000 credits / $1,000 | 100,000 credits / $2,000 |
 | Creator (legacy)   | $19 / 2,000 credits      | $29 / 1,600 credits      |
@@ -90,7 +90,7 @@ and plan mappings. The previously requested billing-portal review still applies 
 | Scale (legacy)     | $149 / 18,000 credits    | $199 / 12,000 credits    |
 | Enterprise         | Book a call              | Book a call              |
 
-The target was approximately $1.20/model. Two whole cents per credit yields $1.28, keeps Stripe quantities and the $10 minimum exact, and preserves all existing credits' purchasing power. Raising render deductions would devalue existing balances. Test plan effective model rates are $1.16, approximately $1.124, and $1.061; their monthly allocations buy 25, 70, and 187 whole models respectively, with leftovers rolling over. The control cost-plus-70%-margin calculation still determines render credits. The test deliberately experiments with the selling price of new credits, rather than provider costs.
+The target was approximately $1.20/model when a model cost 64 credits; at 32 credits that is about $0.60. Two whole cents per credit yields $0.64, keeps Stripe quantities and the $10 minimum exact, and preserves all existing credits' purchasing power. Raising render deductions would devalue existing balances. Test plan effective model rates are $0.58, approximately $0.562, and $0.531; their monthly allocations buy 50, 140, and 375 whole models respectively, with leftovers rolling over. The control cost-plus-70%-margin calculation still determines render credits. The test deliberately experiments with the selling price of new credits, rather than provider costs.
 
 ## Assignment and consent
 
