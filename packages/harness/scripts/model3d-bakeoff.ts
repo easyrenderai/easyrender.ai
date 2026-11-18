@@ -4,7 +4,7 @@
 // with the single-image candidates. Shape and texture are judged by a person looking at the GLBs.
 //
 // Usage: REPLICATE_API_TOKEN=... bun packages/harness/scripts/model3d-bakeoff.ts --spend
-//          [--candidates=trellis1,hunyuan31,trellis2,t2-low,t2-mid,t2-high] [--photos=armchair,swivel-chair] [--out=model3d-out]
+//          [--candidates=trellis1,hunyuan31,trellis2,t2-low,t2-mid,t2-high,v1-simplify,v1-steps,v1-both] [--photos=armchair,swivel-chair] [--out=model3d-out]
 //
 // It spends money on Replicate, so it refuses to run without --spend.
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -86,6 +86,25 @@ CANDIDATES.push(
   { ...trellis2Settings('512', 100_000, 1024), id: 't2-low' },
   { ...trellis2Settings('1024_cascade', 200_000, 2048), id: 't2-mid' },
   { ...trellis2Settings('1536_cascade', 500_000, 4096), id: 't2-high' },
+);
+
+// TRELLIS v1 settings (production model). The ids start with v1- so they get the list-of-images input.
+// mesh_simplify is the share of triangles removed, so a lower value keeps more geometry. The step
+// counts are the sampler steps of the two stages (the model page shows 12 for both).
+const trellis1Settings = (settings: Record<string, unknown>): Candidate => ({
+  id: '',
+  version: BUILD_MODEL.version,
+  listedUsd: null,
+  usdPerSecond: A100_USD_PER_SECOND,
+  input: { ...BUILD_MODEL.input, ...settings },
+});
+CANDIDATES.push(
+  { ...trellis1Settings({ mesh_simplify: 0.9 }), id: 'v1-simplify' },
+  { ...trellis1Settings({ ss_sampling_steps: 25, slat_sampling_steps: 25 }), id: 'v1-steps' },
+  {
+    ...trellis1Settings({ mesh_simplify: 0.9, ss_sampling_steps: 25, slat_sampling_steps: 25 }),
+    id: 'v1-both',
+  },
 );
 
 const PHOTOS = [
@@ -170,7 +189,9 @@ async function runOne(photo: string, candidate: Candidate): Promise<Row> {
     // TRELLIS v1 takes a list of images; the others take one.
     const input = {
       ...candidate.input,
-      ...(candidate.id === 'trellis1' ? { images: [image] } : { image }),
+      ...(candidate.id === 'trellis1' || candidate.id.startsWith('v1-')
+        ? { images: [image] }
+        : { image }),
     };
     const started = candidate.version
       ? await client.start('/predictions', { version: candidate.version, input })

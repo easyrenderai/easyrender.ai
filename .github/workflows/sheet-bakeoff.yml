@@ -21,7 +21,7 @@ on:
           - sheets
           - models3d
       candidates:
-        description: "Comma-separated ids (sheets: pro-2k, nb2-2k, nb2-1k, nb21-2k, nb21-1k, lite-1k, gpt26-flare, gpt26-sunburst, gpt-low, gpt-medium, gpt-high; models3d: trellis1, hunyuan31, trellis2, t2-low, t2-mid, t2-high)"
+        description: "Comma-separated ids (sheets: pro-2k, nb2-2k, nb2-1k, nb21-2k, nb21-1k, lite-1k, gpt26-flare, gpt26-sunburst, gpt-low, gpt-medium, gpt-high; models3d: trellis1, hunyuan31, trellis2, t2-low, t2-mid, t2-high, v1-simplify, v1-steps, v1-both)"
         required: true
         default: "pro-2k,nb2-2k,nb2-1k,lite-1k,gpt-low,gpt-medium,gpt-high"
         type: string
