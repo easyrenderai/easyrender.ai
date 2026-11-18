@@ -619,8 +619,9 @@
     "views": {
       "photo": "Foto",
       "3d": "3D",
-      "both": "Nebeneinander"
+      "compare": "Vergleichen"
     },
+    "compareLabel": "Foto und 3D vergleichen",
     "status": {
       "drafting": "Vorschau in Arbeit",
       "preview_ready": "Bereit für 3D",

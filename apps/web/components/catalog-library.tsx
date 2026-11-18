@@ -16,6 +16,7 @@ import Link from 'next/link';
 import { useFormatter, useTranslations } from 'next-intl';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
 import { useActivationError } from '@/lib/activation-errors';
 import {
   attribution,
@@ -39,7 +40,7 @@ type QueuedUpload = {
   prompt?: string;
   error: string | null;
 };
-type View = 'photo' | '3d' | 'both';
+type View = 'photo' | '3d' | 'compare';
 type Filter = 'all' | 'needs' | 'working' | 'done' | 'failed';
 
 const FILTERS: { id: Filter; match: (item: RenderView) => boolean }[] = [
@@ -53,7 +54,7 @@ const FILTERS: { id: Filter; match: (item: RenderView) => boolean }[] = [
   { id: 'failed', match: (item) => item.status === 'failed' },
 ];
 
-const VIEWS: View[] = ['photo', '3d', 'both'];
+const VIEWS: View[] = ['photo', '3d', 'compare'];
 
 const baseName = (file: File) => file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
 
@@ -89,7 +90,7 @@ export function CatalogLibrary({
   const [items, setItems] = useState(initial);
   const [balance, setBalance] = useState(initialBalance);
   const [uploads, setUploads] = useState<QueuedUpload[]>([]);
-  const [view, setView] = useState<View>('both');
+  const [view, setView] = useState<View>('compare');
   const [filter, setFilter] = useState<Filter>('all');
   const [building, setBuilding] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -509,8 +510,8 @@ export function CatalogLibrary({
           <div
             className={cn(
               'gap-4',
-              view === 'both'
-                ? 'columns-1 md:columns-2 xl:columns-3'
+              view === 'compare'
+                ? 'columns-2 md:columns-3 xl:columns-4'
                 : 'columns-2 md:columns-3 xl:columns-4',
             )}
           >
@@ -638,13 +639,16 @@ function Tile({
   href?: string;
   alwaysPane?: boolean;
 }) {
+  const t = useTranslations('Library');
+  // How much of the photo shows, in percent. The 3D pane covers the rest, from the right.
+  const [split, setSplit] = useState(50);
   const image = (
     // biome-ignore lint/performance/noImgElement: authenticated API image, not optimizable
     <img src={photo} alt={title} loading="lazy" className="block h-auto w-full" />
   );
   return (
     <figure className="mb-4 break-inside-avoid overflow-hidden rounded-lg border bg-card shadow-xs">
-      {view === 'both' || alwaysPane ? (
+      {alwaysPane ? (
         <div className="grid grid-cols-2 gap-px bg-border">
           <div className="bg-muted/40">{image}</div>
           <div className="relative bg-muted/40">{pane}</div>
@@ -656,6 +660,35 @@ function Tile({
           {view === '3d' && (
             <div className="absolute inset-0 bg-muted/85 backdrop-blur-sm">{pane}</div>
           )}
+          {view === 'compare' && (
+            <>
+              <div
+                className="absolute inset-0 bg-muted"
+                style={{ clipPath: `inset(0 0 0 ${split}%)` }}
+              >
+                {pane}
+              </div>
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 w-px bg-foreground/60"
+                style={{ left: `${split}%` }}
+              />
+            </>
+          )}
+        </div>
+      )}
+      {view === 'compare' && !alwaysPane && (
+        <div className="flex items-center gap-2 border-t px-3 py-2 text-xs text-muted-foreground">
+          <span>{t('views.photo')}</span>
+          <Slider
+            value={[split]}
+            onValueChange={(next) => setSplit(next[0] ?? 50)}
+            min={0}
+            max={100}
+            step={1}
+            aria-label={t('compareLabel')}
+          />
+          <span>{t('views.3d')}</span>
         </div>
       )}
       <figcaption className="flex items-center justify-between gap-2 px-3 py-2 text-sm">
