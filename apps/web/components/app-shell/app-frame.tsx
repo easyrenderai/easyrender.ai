@@ -1,7 +1,9 @@
 import { getDashboardStats, listRenders } from '@easyrender/core';
 import type { ReactNode } from 'react';
+import { AccountMenu } from '@/components/account-menu';
 import { SiteChrome } from '@/components/site-chrome';
 import { currentUser } from '@/lib/actor';
+import { loadHeaderAccount } from '@/lib/header-account';
 import { AppShell } from './app-shell';
 import type { ShellData } from './types';
 
@@ -30,9 +32,10 @@ export async function AppFrame({
     );
   }
   // Each read falls back on its own, so one slow or failing query never blanks the whole shell.
-  const [stats, renders] = await Promise.all([
+  const [stats, renders, account] = await Promise.all([
     getDashboardStats(user.id).catch(() => ({ total: 0, ready: 0, inFlight: 0, byAgent: 0 })),
     listRenders(user.id, LATEST).catch(() => []),
+    loadHeaderAccount(user.id),
   ]);
   const data: ShellData = {
     email: user.email,
@@ -47,5 +50,9 @@ export async function AppFrame({
     })),
     now: Date.now(),
   };
-  return <AppShell data={data}>{children}</AppShell>;
+  return (
+    <AppShell data={data} account={<AccountMenu placement="app" copy={account} />}>
+      {children}
+    </AppShell>
+  );
 }

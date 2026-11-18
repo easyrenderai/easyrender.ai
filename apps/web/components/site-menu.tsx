@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 /**
- * The header menu below the `xl` breakpoint, where the section links and (on phones) sign-in or the balance no
- * longer fit in one row. The languages live in their own dropdown (components/locale-menu). The panel is always in the HTML, only hidden, so its
+ * The header menu below the `xl` breakpoint, where the section links and (on phones) sign-in no
+ * longer fit in one row. Signed in, the credit balance is a row in this menu below `sm`. The languages live in their own dropdown (components/locale-menu). The panel is always in the HTML, only hidden, so its
  * links stay crawlable. It closes on a link click, Escape or a click outside.
  */
 export function SiteMenu({

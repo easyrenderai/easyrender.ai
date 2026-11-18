@@ -25,7 +25,10 @@
     "menuOpen": "Menü öffnen",
     "menuClose": "Menü schließen",
     "upload": "Foto hochladen",
-    "account": "Mein Konto"
+    "account": "Mein Konto",
+    "accountMenu": "Kontomenü",
+    "creditsLink": "Credits",
+    "creditsBalance": "{count, plural, one {# Credit} other {# Credits}}"
   },
   "Footer": {
     "tagline": "Verwandle jedes Produktfoto in ein 3D-Modell",

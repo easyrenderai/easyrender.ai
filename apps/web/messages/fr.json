@@ -25,7 +25,10 @@
     "menuOpen": "Ouvrir le menu",
     "menuClose": "Fermer le menu",
     "upload": "Importer une photo",
-    "account": "Mon compte"
+    "account": "Mon compte",
+    "accountMenu": "Menu du compte",
+    "creditsLink": "Crédits",
+    "creditsBalance": "{count, plural, =0 {# crédits} one {# crédit} other {# crédits}}"
   },
   "Footer": {
     "tagline": "Transformez toute photo de produit en modèle 3D",

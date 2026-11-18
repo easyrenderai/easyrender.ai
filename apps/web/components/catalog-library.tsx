@@ -14,6 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useFormatter, useTranslations } from 'next-intl';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ShellPanel } from '@/components/app-shell/shell-context';
@@ -97,6 +98,7 @@ export function CatalogLibrary({
   const t = useTranslations('Library');
   const localizedError = useActivationError();
   const format = useFormatter();
+  const router = useRouter();
   const [items, setItems] = useState(initial);
   const [folders, setFolders] = useState(initialFolders);
   const [scope, setScope] = useState<FolderScope>('all');
@@ -377,6 +379,9 @@ export function CatalogLibrary({
       await refresh(true);
     } finally {
       setBuilding(false);
+      // The header balance is a server read. Refresh it after a build, including on phones where
+      // the renders drawer (and its poll) is not mounted.
+      router.refresh();
     }
   }
 
@@ -392,13 +397,14 @@ export function CatalogLibrary({
           credits: sheetCredits,
         });
         setBalance((current) => Math.max(0, current - sheetCredits));
-        return;
+      } else {
+        setNotice(
+          data.code === 'insufficient_credits'
+            ? t('errors.sheetOutOfCredits')
+            : localizedError(data, t('errors.someFailed')),
+        );
       }
-      setNotice(
-        data.code === 'insufficient_credits'
-          ? t('errors.sheetOutOfCredits')
-          : localizedError(data, t('errors.someFailed')),
-      );
+      router.refresh();
     } catch {
       setNotice(t('errors.connection'));
     }

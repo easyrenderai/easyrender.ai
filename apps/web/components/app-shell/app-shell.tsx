@@ -70,7 +70,16 @@ const RAIL_KINDS: Record<string, RailKind> = {
 // context (a render's parts). Both drawers resize by dragging, remember their width, and collapse.
 // Settings pages (Account, Credits, Connectors) are full pages with no drawers. Below `md` the
 // rail becomes a bottom bar and the drawers are hidden.
-export function AppShell({ data, children }: { data: ShellData; children: ReactNode }) {
+export function AppShell({
+  data,
+  account = null,
+  children,
+}: {
+  data: ShellData;
+  // The signed-in account control, rendered by the server frame so the balance stays a server read.
+  account?: ReactNode;
+  children: ReactNode;
+}) {
   const t = useTranslations('AppShell');
   const nav = useTranslations('DashboardNav');
   const pathname = usePathname();
@@ -122,7 +131,7 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
   }, [toggle, leftRef]);
 
   const inFlight = data.renders.filter((render) => isInFlight(render.status)).length;
-  const account = ACCOUNT_NAV;
+  const accountNav = ACCOUNT_NAV;
 
   // `w-full`: settings, admin and phone pages sit in a plain flex row, not a resizable panel. Without
   // it the scroll container shrinks to the content column and its scrollbar floats mid-page.
@@ -152,9 +161,9 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
             <BrandMark className="size-[1.375rem]" />
           </Link>
         </Button>
-        {[...APP_NAV, account].map((item) => {
+        {[...APP_NAV, accountNav].map((item) => {
           const isActive = isActivePath(pathname, item.href);
-          const isBottom = item.href === account.href;
+          const isBottom = item.href === accountNav.href;
           return (
             <RailItem
               key={item.href}
@@ -219,16 +228,19 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
           >
             <BrandMark className="size-[1.375rem]" />
           </Link>
-          <AppBreadcrumb />
-          {!isAdmin && (
-            <div className="relative ml-auto shrink-0">
-              <Suspense>
-                <AppLocalePicker />
-              </Suspense>
-            </div>
-          )}
-          {hasRight && (
-            <div className="flex shrink-0 items-center gap-1">
+          <div className="min-w-0 flex-1">
+            <AppBreadcrumb />
+          </div>
+          <div className="flex shrink-0 items-center gap-1">
+            {account}
+            {!isAdmin && (
+              <div className="relative">
+                <Suspense>
+                  <AppLocalePicker />
+                </Suspense>
+              </div>
+            )}
+            {hasRight && (
               <Button
                 variant="ghost"
                 size="icon-sm"
@@ -239,8 +251,8 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
               >
                 <PanelRight />
               </Button>
-            </div>
-          )}
+            )}
+          </div>
         </header>
 
         <div className="flex min-h-0 flex-1 overflow-hidden border-t bg-background md:mr-2 md:mb-2 md:rounded-lg md:border">
@@ -342,7 +354,7 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
         aria-label={t('navLabel')}
         className="flex shrink-0 justify-around border-t bg-muted/40 px-2 pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] md:hidden"
       >
-        {[...APP_NAV, account].map((item) => (
+        {[...APP_NAV, accountNav].map((item) => (
           <Link
             key={item.href}
             href={item.href}
