@@ -20,6 +20,7 @@ const COLUMNS = [
       { route: 'ecommerce', key: 'ecommerce' },
       { href: '/hub', key: 'hub' },
       { href: '/explore', key: 'gallery' },
+      { route: 'viewer', key: 'viewer' },
       { route: 'pricing', key: 'pricing' },
       { hash: '#faq', key: 'faq' },
     ],

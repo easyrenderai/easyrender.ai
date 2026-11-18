@@ -17,6 +17,7 @@ import { ModelsView } from '@/components/models/models-view';
 import { PricingView } from '@/components/pricing/pricing-view';
 import { StudioLens } from '@/components/studio/lens';
 import { StudioShell } from '@/components/studio/shell';
+import { ViewerView } from '@/components/viewer/viewer-view';
 import { isRoutableLocale, type Locale } from '@/i18n/config';
 import { type BlogPost, getPost } from '@/lib/blog/posts';
 import { type ComparePage, getComparePage } from '@/lib/compare/pages';
@@ -48,6 +49,8 @@ import {
   postMetadata,
   pricingGraph,
   pricingMetadata,
+  viewerGraph,
+  viewerMetadata,
 } from '@/lib/seo/pages';
 import { isPublished, ROUTES } from '@/lib/seo/routes';
 
@@ -71,6 +74,7 @@ type Match =
   | { kind: 'mcp'; locale: Locale }
   | { kind: 'ecommerce'; locale: Locale }
   | { kind: 'models'; locale: Locale }
+  | { kind: 'viewer'; locale: Locale }
   | { kind: 'evals'; locale: Locale }
   | { kind: 'privacy' | 'terms'; locale: Locale }
   | { kind: 'cookies'; locale: Locale }
@@ -114,6 +118,9 @@ function resolve(lang: string, segments: string[]): Match {
   }
   if (isPublished('models', locale) && path === ROUTES.models.paths[locale]) {
     return { kind: 'models', locale };
+  }
+  if (isPublished('viewer', locale) && path === ROUTES.viewer.paths[locale]) {
+    return { kind: 'viewer', locale };
   }
   if (isPublished('evals', locale) && path === ROUTES.evals.paths[locale]) {
     return { kind: 'evals', locale };
@@ -163,6 +170,7 @@ export async function generateMetadata({
   if (match.kind === 'mcp') return mcpMetadata(match.locale);
   if (match.kind === 'ecommerce') return ecommerceMetadata(match.locale);
   if (match.kind === 'models') return modelsMetadata(match.locale);
+  if (match.kind === 'viewer') return viewerMetadata(match.locale);
   if (match.kind === 'evals') return evalsMetadata(match.locale);
   return {};
 }
@@ -265,6 +273,14 @@ export default async function LocalePage({ params }: PageProps<'/[lang]/[...path
       <>
         <JsonLd graph={await modelsGraph(match.locale)} />
         <ModelsView locale={match.locale} />
+      </>
+    );
+  }
+  if (match.kind === 'viewer') {
+    return (
+      <>
+        <JsonLd graph={await viewerGraph(match.locale)} />
+        <ViewerView locale={match.locale} />
       </>
     );
   }

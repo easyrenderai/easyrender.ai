@@ -53,7 +53,8 @@
       "terms": "Termini di servizio",
       "editorial": "Redazione",
       "comparisons": "Confronti",
-      "ecommerce": "E-commerce plugins"
+      "ecommerce": "E-commerce plugins",
+      "viewer": "Visualizzatore 3D"
     },
     "copyright": "© 2026 Easy Render. Tecnologia Genfeed.",
     "pricesNote": "Controlla valuta e totale prima di pagare. I crediti non scadono."
@@ -2960,5 +2961,123 @@
     "offerUnavailable": "L’offerta del modello gratuito non è più disponibile per questa anteprima. Controlla le opzioni qui sotto.",
     "staleState": "Il progetto è cambiato. Ricarica la pagina e riprova.",
     "rateLimit": "Troppe richieste. Aspetta un minuto e riprova."
+  },
+  "Viewer": {
+    "metaTitle": "Visualizzatore 3D online: apri file GLB, OBJ, FBX e STL · Easy Render",
+    "metaDescription": "Visualizzatore di modelli 3D online e gratuito. Trascina un file GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ o 3DS per ruotarlo, ingrandirlo ed esaminarlo nel browser. Nessun caricamento, nessun account.",
+    "breadcrumb": "Visualizzatore 3D",
+    "home": "Home",
+    "eyebrow": "Strumento gratuito",
+    "title": "Visualizzatore 3D online",
+    "description": "Trascina un file 3D e guardalo da ogni lato. Questo visualizzatore di modelli 3D apre GLB, GLTF, OBJ, FBX, STL e altri cinque formati nel browser, senza installare nulla.",
+    "formats": {
+      "title": "Un visualizzatore GLB che apre anche altri nove formati",
+      "description": "È il tuo browser a leggere il file, quindi si apre in pochi secondi, su computer o su telefono.",
+      "items": {
+        "glb": "glTF binario: forma, materiali, texture e animazione in un solo file. Il formato che si aspettano i visualizzatori web e AR.",
+        "gltf": "glTF in JSON. Trascinalo insieme al suo file .bin e alle sue texture.",
+        "obj": "Wavefront OBJ. Trascina anche il file .mtl e le texture per vedere i materiali.",
+        "fbx": "Autodesk FBX, comune nei motori di gioco e negli strumenti di animazione. Le animazioni vengono riprodotte.",
+        "stl": "Il formato della stampa 3D. Solo la forma, mostrata con un materiale neutro.",
+        "ply": "Scansioni e nuvole di punti, con i colori per vertice quando il file li contiene.",
+        "threeMf": "3D Manufacturing Format, il formato di stampa 3D più recente, con colori e materiali.",
+        "dae": "Collada, un formato di scambio più datato che SketchUp e Blender esportano ancora.",
+        "usdz": "Il formato di Apple per AR Quick Look su iPhone e iPad.",
+        "threeDs": "Lo storico formato di 3D Studio, ancora presente nelle librerie di modelli meno recenti."
+      }
+    },
+    "steps": {
+      "title": "Come funziona",
+      "drop": {
+        "title": "Trascina il file",
+        "body": "Rilascialo sul visualizzatore o sceglilo dal tuo dispositivo. Puoi rilasciare più file insieme se il modello ha le texture separate."
+      },
+      "inspect": {
+        "title": "Guardalo da ogni lato",
+        "body": "Trascina per ruotare, usa la rotellina per ingrandire e il clic destro per spostare. Attiva il wireframe, la griglia o uno sfondo chiaro."
+      },
+      "share": {
+        "title": "Controlla che cosa contiene",
+        "body": "Triangoli, vertici, materiali, texture e dimensioni sono elencati sotto il modello. Salva un PNG di qualsiasi vista."
+      }
+    },
+    "cta": {
+      "title": "Non hai ancora un file 3D?",
+      "body": "Easy Render trasforma una foto di prodotto in un modello 3D da scaricare in GLB e USDZ. L'anteprima è gratuita.",
+      "action": "Crea un modello 3D da una foto"
+    },
+    "faq": {
+      "title": "Domande sul visualizzatore 3D",
+      "items": {
+        "formats": {
+          "q": "Quali file 3D posso aprire?",
+          "a": "GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ e 3DS. Si aprono anche i file GLB compressi (Draco, Meshopt e texture KTX2)."
+        },
+        "privacy": {
+          "q": "I miei file vengono caricati su un server?",
+          "a": "No. Il tuo browser legge e disegna il file sul tuo dispositivo. Non viene inviato ai nostri server e scompare quando chiudi la scheda."
+        },
+        "textures": {
+          "q": "Perché il mio modello appare grigio o senza texture?",
+          "a": "I file OBJ e GLTF tengono materiali e texture in file separati. Trascina il modello insieme al file .mtl o .bin e alle immagini; il visualizzatore indica quelli mancanti. I file STL non contengono colore."
+        },
+        "glb": {
+          "q": "Che cos'è un file GLB?",
+          "a": "GLB è la versione binaria di glTF, uno standard aperto per i modelli 3D. Un solo file contiene forma, materiali, texture e animazioni; per questo lo usano negozi online, visualizzatori AR e motori di gioco."
+        },
+        "free": {
+          "q": "Il visualizzatore 3D è gratuito?",
+          "a": "Sì. Nessun account, nessuna filigrana e nessun limite al numero di file. Si aprono file fino a 300 MB, in base alla memoria del tuo dispositivo."
+        }
+      }
+    },
+    "app": {
+      "label": "Visualizzatore di file 3D",
+      "dropTitle": "Trascina qui un file 3D",
+      "dropActive": "Rilascia per aprire",
+      "browse": "Scegli un file",
+      "sample": "Prova con un modello di esempio",
+      "privacy": "Il tuo file resta sul tuo dispositivo. Non viene caricato nulla.",
+      "loading": "Apertura di {name}",
+      "openAnother": "Apri un altro",
+      "canvasAlt": "Vista 3D di {name}",
+      "controls": "Trascina per ruotare · Rotellina o pizzico per ingrandire · Clic destro o due dita per spostare",
+      "missing": "Non trovati tra i file rilasciati: {files}. Rilasciali insieme al modello per vederlo completo.",
+      "toolbar": {
+        "label": "Opzioni di visualizzazione",
+        "reset": "Ripristina la vista",
+        "rotate": "Rotazione automatica",
+        "wireframe": "Wireframe",
+        "grid": "Griglia",
+        "background": "Sfondo chiaro",
+        "flip": "Cambia l'asse verticale (Y / Z)",
+        "play": "Riproduci l'animazione",
+        "pause": "Metti in pausa l'animazione",
+        "screenshot": "Salva immagine (PNG)",
+        "fullscreen": "Schermo intero"
+      },
+      "stats": {
+        "format": "Formato",
+        "fileSize": "Dimensione del file",
+        "megabytes": "{size} MB",
+        "triangles": "Triangoli",
+        "vertices": "Vertici",
+        "meshes": "Mesh",
+        "materials": "Materiali",
+        "textures": "Texture",
+        "animations": "Animazioni",
+        "dimensions": "Misure (L × A × P)",
+        "metres": "{size} m",
+        "kilobytes": "{size} KB"
+      },
+      "errors": {
+        "unsupported": "Non possiamo aprire i file .{extension}. Prova con GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ o 3DS.",
+        "tooLarge": "Quel file supera {megabytes} MB, troppo grande per aprirlo in un browser.",
+        "webgl": "La grafica 3D (WebGL) è disattivata in questo browser, quindi il visualizzatore non può disegnare. Prova un altro browser o dispositivo.",
+        "failed": "Non siamo riusciti a leggere quel file. Potrebbe essere danneggiato o usare una funzione che questo visualizzatore non supporta.",
+        "sample": "Non è stato possibile caricare il modello di esempio. Controlla la connessione e riprova.",
+        "incomplete": "Questo modello ha bisogno di file che non sono stati rilasciati insieme: {files}. Rilasciali tutti insieme."
+      }
+    }
   }
 }

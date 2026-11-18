@@ -31,6 +31,7 @@ export const CLIENT_NAMESPACES = [
   'Pricing.calculator',
   'ProductViews',
   'Upscale',
+  'Viewer.app',
   'PromptBar',
   'Render',
   'FirstModel',

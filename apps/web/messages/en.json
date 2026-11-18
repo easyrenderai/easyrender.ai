@@ -53,7 +53,8 @@
       "terms": "Terms of Service",
       "editorial": "Editorial team",
       "comparisons": "Comparisons",
-      "ecommerce": "E-commerce plugins"
+      "ecommerce": "E-commerce plugins",
+      "viewer": "3D viewer"
     },
     "copyright": "© 2026 Easy Render. Powered by Genfeed.",
     "pricesNote": "Check the currency and total at checkout. Credits never expire."
@@ -3337,5 +3338,123 @@
     "offerUnavailable": "The free model offer is no longer available for this preview. Check the options below.",
     "staleState": "This project changed. Refresh the page and try again.",
     "rateLimit": "Too many requests. Wait a minute and try again."
+  },
+  "Viewer": {
+    "metaTitle": "3D Viewer Online: open GLB, OBJ, FBX and STL files · Easy Render",
+    "metaDescription": "Free online 3D model viewer. Drop a GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ or 3DS file to rotate, zoom and inspect it in your browser. No upload, no account.",
+    "breadcrumb": "3D viewer",
+    "home": "Home",
+    "eyebrow": "Free tool",
+    "title": "Online 3D viewer",
+    "description": "Drop a 3D file and look at it from every side. This 3D model viewer opens GLB, GLTF, OBJ, FBX, STL and five more formats in your browser, with nothing to install.",
+    "formats": {
+      "title": "A GLB viewer that also opens nine other formats",
+      "description": "Your browser reads the file itself, so it opens in seconds, on a computer or a phone.",
+      "items": {
+        "glb": "Binary glTF: shape, materials, textures and animation in one file. The format web and AR viewers expect.",
+        "gltf": "glTF as JSON. Drop it together with its .bin file and its textures.",
+        "obj": "Wavefront OBJ. Drop the .mtl file and the textures with it to see its materials.",
+        "fbx": "Autodesk FBX, common in game engines and animation tools. Animations play.",
+        "stl": "The 3D printing format. Shape only, shown in a neutral material.",
+        "ply": "Scans and point clouds, with vertex colours when the file has them.",
+        "threeMf": "3D Manufacturing Format, the newer 3D printing format, with colours and materials.",
+        "dae": "Collada, an older exchange format that SketchUp and Blender still export.",
+        "usdz": "Apple's format for AR Quick Look on iPhone and iPad.",
+        "threeDs": "The legacy 3D Studio format, still found in older model libraries."
+      }
+    },
+    "steps": {
+      "title": "How it works",
+      "drop": {
+        "title": "Drop the file",
+        "body": "Drag it onto the viewer or choose it from your device. You can drop several files at once for a model with separate textures."
+      },
+      "inspect": {
+        "title": "Look at it from every side",
+        "body": "Drag to rotate, scroll to zoom, right-click to move. Turn on the wireframe, the grid or a light background."
+      },
+      "share": {
+        "title": "Check what is inside",
+        "body": "Triangles, vertices, materials, textures and size are listed under the model. Save a PNG of any view."
+      }
+    },
+    "cta": {
+      "title": "No 3D file yet?",
+      "body": "Easy Render turns one product photo into a 3D model you can download as GLB and USDZ. The preview is free.",
+      "action": "Create a 3D model from a photo"
+    },
+    "faq": {
+      "title": "Questions about the 3D viewer",
+      "items": {
+        "formats": {
+          "q": "Which 3D files can I open?",
+          "a": "GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ and 3DS. Compressed GLB files (Draco, Meshopt and KTX2 textures) open too."
+        },
+        "privacy": {
+          "q": "Are my files uploaded?",
+          "a": "No. Your browser reads and draws the file on your device. It is not sent to our servers, and it is gone when you close the tab."
+        },
+        "textures": {
+          "q": "Why does my model look grey or have no textures?",
+          "a": "OBJ and GLTF files keep their materials and textures in separate files. Drop the model together with its .mtl or .bin file and its images; the viewer tells you which ones are missing. STL files carry no colour at all."
+        },
+        "glb": {
+          "q": "What is a GLB file?",
+          "a": "GLB is the binary version of glTF, an open standard for 3D models. One file holds the shape, the materials, the textures and any animation, which is why online stores, AR viewers and game engines use it."
+        },
+        "free": {
+          "q": "Is the 3D viewer free?",
+          "a": "Yes. There is no account, no watermark and no limit on how many files you open. Files up to 300 MB open, depending on the memory of your device."
+        }
+      }
+    },
+    "app": {
+      "label": "3D file viewer",
+      "dropTitle": "Drag a 3D file here",
+      "dropActive": "Drop to open",
+      "browse": "Choose a file",
+      "sample": "Try a sample model",
+      "privacy": "Your file stays on your device. Nothing is uploaded.",
+      "loading": "Opening {name}",
+      "openAnother": "Open another",
+      "canvasAlt": "3D view of {name}",
+      "controls": "Drag to rotate · Scroll or pinch to zoom · Right-click or two fingers to move",
+      "missing": "Not found among the files you dropped: {files}. Drop them together with the model to see it complete.",
+      "toolbar": {
+        "label": "View options",
+        "reset": "Reset view",
+        "rotate": "Auto-rotate",
+        "wireframe": "Wireframe",
+        "grid": "Grid",
+        "background": "Light background",
+        "flip": "Swap the up axis (Y / Z)",
+        "play": "Play animation",
+        "pause": "Pause animation",
+        "screenshot": "Save image (PNG)",
+        "fullscreen": "Full screen"
+      },
+      "stats": {
+        "format": "Format",
+        "fileSize": "File size",
+        "megabytes": "{size} MB",
+        "triangles": "Triangles",
+        "vertices": "Vertices",
+        "meshes": "Meshes",
+        "materials": "Materials",
+        "textures": "Textures",
+        "animations": "Animations",
+        "dimensions": "Size (W × H × D)",
+        "metres": "{size} m",
+        "kilobytes": "{size} KB"
+      },
+      "errors": {
+        "unsupported": "We can't open .{extension} files. Try GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ or 3DS.",
+        "tooLarge": "That file is over {megabytes} MB, too large to open in a browser.",
+        "webgl": "3D graphics (WebGL) are turned off in this browser, so the viewer can't draw. Try another browser or device.",
+        "failed": "We couldn't read that file. It may be damaged, or use a feature this viewer doesn't support.",
+        "sample": "The sample model couldn't be loaded. Check your connection and try again.",
+        "incomplete": "This model needs files that were not dropped with it: {files}. Drop them all together."
+      }
+    }
   }
 }
