@@ -31,6 +31,22 @@ For a ceramic desk lamp, the output is a reviewable package: accurate copy, sele
 
 The [n8n image-to-Shopify template](https://n8n.io/workflows/11695-generate-product-descriptions-from-images-and-publish-to-shopify-using-ai/) illustrates the copy portion. Adding 3D requires its own job state, review and file delivery. The recipe here describes that architecture; it is not a report of an executed store deployment.
 
+## What should the listing package look like?
+
+Start with a familiar object so you can verify the kind of file each stage should deliver. This vase from the easyrender gallery shows the original image, generated angle sheet and the exported model. Use these files as a reference when setting up the workflow.
+
+![Original product photo, generated angle sheet and a view of the same vase model](../evidence/n8n-ficha-foto-vistas-modelo.jpg "Existing easyrender sample assets. The center shows generated views and the right shows a still of the model.")
+
+| Field to review       | Sample entry                                                |
+| --------------------- | ----------------------------------------------------------- |
+| Sample identifier     | `VASE-DEMO-01`                                              |
+| Reference image       | [Open the source photo](/showcase/vase.jpg)                 |
+| Views for review      | [Open the generated angle sheet](/showcase/vase-angles.jpg) |
+| Model for the gallery | [Open the sample GLB](/showcase/vase.glb)                   |
+| Listing status        | Example draft                                               |
+
+**Check that all three assets are assigned to the same SKU.** Open the model separately and keep the source photo available when checking shape and finish. This example uses existing assets to show what a reviewer should receive.
+
 ## Which information must come from your catalog?
 
 Create an input record with `sku`, `source_version`, `name`, `material`, `dimensions`, `image_url` and `locale`. Keep unknown facts empty. Add separate approval fields for images, 3D spending and publication; a single `approved` flag is too vague once several actions can run.
