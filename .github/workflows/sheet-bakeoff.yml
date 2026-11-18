@@ -12,8 +12,16 @@ on:
         description: 'Type "spend" to confirm this spends Replicate credit'
         required: true
         type: string
+      kind:
+        description: "sheets: the angle sheet models. models3d: the image-to-3D models (trellis1, hunyuan31, trellis2; about $0.50 to $0.73 a run for the last two)"
+        required: true
+        default: sheets
+        type: choice
+        options:
+          - sheets
+          - models3d
       candidates:
-        description: "Comma-separated ids: pro-2k, nb2-2k, nb2-1k, nb21-2k, nb21-1k, lite-1k, gpt26-flare, gpt26-sunburst, gpt-low, gpt-medium, gpt-high"
+        description: "Comma-separated ids (sheets: pro-2k, nb2-2k, nb2-1k, nb21-2k, nb21-1k, lite-1k, gpt26-flare, gpt26-sunburst, gpt-low, gpt-medium, gpt-high; models3d: trellis1, hunyuan31, trellis2)"
         required: true
         default: "pro-2k,nb2-2k,nb2-1k,lite-1k,gpt-low,gpt-medium,gpt-high"
         type: string
@@ -48,16 +56,23 @@ jobs:
       - name: Run the bake-off
         env:
           REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
+          KIND: ${{ inputs.kind }}
           CANDIDATES: ${{ inputs.candidates }}
           PHOTOS: ${{ inputs.photos }}
           BUILD: ${{ inputs.build }}
         run: |
           flags="--spend --candidates=$CANDIDATES --photos=$PHOTOS"
-          if [ "$BUILD" = "true" ]; then flags="$flags --build"; fi
-          bun packages/harness/scripts/sheet-bakeoff.ts $flags
+          if [ "$KIND" = "models3d" ]; then
+            bun packages/harness/scripts/model3d-bakeoff.ts $flags
+          else
+            if [ "$BUILD" = "true" ]; then flags="$flags --build"; fi
+            bun packages/harness/scripts/sheet-bakeoff.ts $flags
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: sheet-bakeoff
-          path: bakeoff-out
+          path: |
+            bakeoff-out
+            model3d-out
           if-no-files-found: ignore
