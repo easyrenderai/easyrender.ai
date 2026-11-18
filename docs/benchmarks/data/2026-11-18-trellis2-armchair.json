@@ -1,0 +1,20 @@
+[
+  {
+    "photo": "armchair",
+    "candidate": "t2-high",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 228.859534097,
+    "costUsd": 0.3204033477358,
+    "bytes": 21844116
+  },
+  {
+    "photo": "armchair",
+    "candidate": "t2-mid",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 216.675948943,
+    "costUsd": 0.3033463285202,
+    "bytes": 8200220
+  }
+]

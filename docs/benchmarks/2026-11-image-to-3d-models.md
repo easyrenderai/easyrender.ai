@@ -97,6 +97,14 @@ the input, as in the other runs. Results: [data](data/2026-11-18-trellis1-settin
   corrected them. `matchColorToPhoto` scales the base-colour texture towards the photo's object colour
   when that pass does not run ([armchair before and after](images/2026-11-18-trellis1-settings/armchair-color-match.png),
   top row before). It is closer to the photo but not an exact match.
+- **TRELLIS.2 re-run (armchair, 1024 and 1536 cascade, 200k and 500k faces):** both builds finished
+  this time (about 220 s of GPU each, 8 MB and 22 MB GLBs), with two runs at once instead of five.
+  The colour is much closer to the photo than TRELLIS v1 and the shape is cleaner. The 1024 cascade
+  keeps the fabric grain; the 1536 cascade is smoother, so it did not add visible texture here
+  ([close-up](images/2026-11-18-trellis1-settings/armchair-trellis2-close.png),
+  [whole chair](images/2026-11-18-trellis1-settings/armchair-trellis2-whole.png),
+  [data](data/2026-11-18-trellis2-armchair.json)). One photo and one run each, so reliability and
+  the other products are still not measured.
 - **Detail needs another model:** TRELLIS.2 is the only candidate that could add texture detail, and
   it needs a host that finishes (see above).
 
