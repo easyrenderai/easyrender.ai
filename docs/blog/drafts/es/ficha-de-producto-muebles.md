@@ -1,6 +1,6 @@
 ---
 
-group: furniture-product-page-best-practices
+group: "furniture-product-page-best-practices"
 title: "Qué incluir en una ficha de producto de muebles"
 description: "Organiza las medidas verificadas, variantes, entrega y contenido visual de una ficha de mobiliario."
 date: 2026-12-05
@@ -11,7 +11,7 @@ cta: "Prueba la vista previa de ángulos con una foto de producto."
 
 Reúne los datos que necesita alguien para elegir un mueble y recibirlo. Coloca variante, precio, dimensiones y entrega cerca del botón de compra. Aprovecha la galería para mostrar material y construcción. Añade una vista 3D cuando ayude a entender una parte difícil de ver en las fotos.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/furniture-product-page-best-practices/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de estantería, mitad sólida y mitad en malla](../covers/furniture-product-page-best-practices.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Qué debe quedar claro antes de añadir al carrito?
 
@@ -35,16 +35,18 @@ Selecciona el acabado en móvil y verifica que la foto, el precio, la disponibil
 
 [Guía relacionada](/es/guias/modelos-3d-para-ecommerce)
 
-## FAQ
+[Cómo crear un modelo 3D](/es/guias/como-hacer-un-modelo-3d)
+
+## Preguntas frecuentes
 
 ### ¿Necesitan 3D todos los muebles?
 
-Empieza por las piezas que ganan al girarlas, por ejemplo, si el reverso o la construcción importan. Conserva fotos y datos aunque el visor no cargue.
+Empieza por las piezas que ganan al girarlas, por ejemplo, si el reverso o la construcción importan. Conserva fotos y datos aunque el visor no cargue. Asegúrate de que las dimensiones del bulto estén en centímetros y sean precisas para que el vendedor pueda transportarlo sin problemas.
 
 ### ¿Incluyo medidas de los bultos?
 
-Inclúyelas cuando afecten al acceso, transporte o montaje. Diferencia las medidas de embalaje de las del mueble montado.
+Sí, incluye las medidas de los bultos si afectan el acceso, transporte o montaje. Diferencia claramente las dimensiones del bulto de las del mueble montado y asegúrate de que estén en centímetros y sean precisas. Verifica que el vendedor pueda transportar el bulto sin problemas.
 
 ### ¿Con qué ficha empiezo las pruebas?
 
-Escoge una pieza con varios acabados y una excepción de entrega. Así detectarás desajustes que una ficha de variante única no suele mostrar.
+Empieza las pruebas con una pieza que tenga varios acabados y una excepción de entrega para detectar desajustes que una ficha de variante única no muestra. Revisa siempre los detalles de entrega y acabados en el catálogo. Asegúrate de verificar el código de producto y el plazo de entrega antes de proceder.

@@ -1,17 +1,17 @@
 ---
 
-group: n8n-batch-3d-catalog
+group: "n8n-batch-3d-catalog"
 title: "Automatiza tu catálogo 3D con n8n sin duplicar trabajos"
 description: "Convierte filas de catálogo en modelos 3D con n8n. Guarda versiones e identificadores, recupera trabajos y controla el gasto antes de entregar archivos."
 date: 2026-12-09
 updated: 2026-12-09
-keyword: automatizar catalogo 3d n8n
-cta: Valida una foto del catálogo con la previsualización gratis antes de autorizar los productos que quieres construir en 3D.
+keyword: "automatizar catalogo 3d n8n"
+cta: "Valida una foto del catálogo con la previsualización gratis antes de autorizar los productos que quieres construir en 3D."
 ---
 
 Para automatizar un catálogo 3D con n8n, procesa cada producto mediante estados guardados en vez de generar siempre que una celda esté vacía. Registra SKU, revisión de la foto, clave de creación, ID del render y aprobación. Recupera los trabajos pendientes, limita la concurrencia y entrega únicamente modelos revisados al producto que corresponde.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/n8n-batch-3d-catalog/hero.webp; prompt en el brief de investigación. -->
+![Ilustración de cajas apiladas, mitad sólida y mitad en malla](../covers/n8n-batch-3d-catalog.webp "Ilustración editorial hecha en Blender.")
 
 > **Un resultado vacío no significa que el trabajo no haya empezado.** Puede estar procesándose, esperando revisión o pendiente de una respuesta perdida. Recupera ese estado antes de lanzar otra petición de pago.
 
@@ -48,11 +48,11 @@ Estos campos de cola pertenecen a tu sistema. No son campos adicionales que deba
 
 ## ¿Cómo procesas filas sin duplicar trabajos?
 
-1. Selecciona registros aptos y reserva un SKU con su revisión antes de crear trabajo. Si hay varios procesos simultáneos, utiliza una restricción de unicidad en base de datos; una celda de estado en una hoja no es un bloqueo atómico.
+1. Selecciona registros aptos y reserva un SKU con su revisión antes de crear trabajo. Si hay varios procesos simultáneos, utiliza una restricción de unicidad en base de datos. Una celda de estado en una hoja no es un bloqueo atómico.
 2. Si existe `render_id`, consulta ese render y continúa según su estado. No lo vuelvas a crear porque `destination_media_id` esté vacío.
 3. Si falta el ID pero ya se intentó crear, repite la previsualización con el mismo `Idempotency-Key` guardado y la misma entrada. Guarda el identificador devuelto antes de avanzar.
 4. Espera a la previsualización y registra la revisión. Solo la rama aprobada puede iniciar la construcción de pago con el `maxCredits` autorizado.
-5. Consulta el mismo trabajo hasta que termine, falle o se alcance el plazo del flujo. El vencimiento conserva el registro para comprobarlo después; no crea automáticamente otro intento.
+5. Consulta el mismo trabajo hasta que termine, falle o se alcance el plazo del flujo. El vencimiento conserva el registro para comprobarlo después. No crea automáticamente otro intento.
 6. Descarga y entrega el modelo. Guarda el identificador multimedia de destino antes de marcar la fila como entregada.
 
 Empieza con un único proceso y un elemento cada vez. [Loop Over Items de n8n](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/) permite controlar los lotes. Evita programaciones solapadas y aumenta la concurrencia solo cuando hayas medido los límites del servicio y probado la recuperación.
@@ -114,7 +114,7 @@ El GLB entregado debe abrirse en un visor compatible; [Khronos describe el forma
 
 Utiliza una muestra pequeña: un producto válido, una imagen deliberadamente inválida y un registro con un render existente. Comprueba que la fila inválida se detiene, el trabajo anterior se recupera y el producto válido llega a revisión. Así pruebas el comportamiento de la cola antes de aprobar un lote de pago.
 
-Después simula una respuesta de creación perdida y una interrupción de entrega. Haz una ejecución completa autorizada antes de activar la programación sin supervisión. Para esta guía se revisaron el esquema público y el contrato del repositorio; no se afirma un resultado de lote real ni un ahorro medido.
+Después simula una respuesta de creación perdida y una interrupción de entrega. Haz una ejecución completa autorizada antes de activar la programación sin supervisión. Para esta guía se revisaron el esquema público y el contrato del repositorio. No se afirma un resultado de lote real ni un ahorro medido.
 
 Mide modelos revisados y entregados por SKU y revisión únicos, intervenciones manuales, trabajos sin resolver y créditos netos por modelo aceptado. Para el proceso visual, consulta [cómo hacer un modelo 3D](/es/guias/como-hacer-un-modelo-3d) y la [guía de fichas con imágenes, texto y 3D](/es/guias/fichas-producto-n8n-imagenes-3d).
 
@@ -122,7 +122,7 @@ Mide modelos revisados y entregados por SKU y revisión únicos, intervenciones 
 
 ### ¿Basta una celda vacía para seleccionar trabajo nuevo?
 
-No. El modelo puede seguir procesándose, esperar una revisión o tener pendiente la entrega después de generarse. Guarda el ID y el estado del flujo antes de iniciar más trabajo. Solo un registro sin intentos existentes ni inciertos debe entrar en una creación nueva, con su revisión y clave estables.
+No, una celda vacía no basta para seleccionar trabajo nuevo. Asegúrate de que el ID y estado del flujo estén guardados antes de iniciar nuevo trabajo. Solo un registro sin intentos ni incertidumbres debe generarse con revisión y clave estables.
 
 ### ¿Puedo procesar todo el catálogo en paralelo?
 

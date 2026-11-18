@@ -1,6 +1,6 @@
 ---
 
-group: jewelry-photography
+group: "jewelry-photography"
 title: "Jewelry photography: how to control reflections"
 description: "Photograph jewelry with readable edges, controlled metal reflections and a repeatable detail shot."
 date: 2026-12-07
@@ -11,7 +11,7 @@ cta: "Try an angle preview from a product photo."
 
 When photographing polished jewelry, shape what the metal reflects. Put diffusion between the light and the piece for a broad highlight, and use a small dark card to define the edge. Review stones, prongs and engraving at full size before moving to the next piece.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/jewelry-photography/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: ring with a stone, half solid and half wireframe](../covers/jewelry-photography.webp "Editorial illustration made in Blender.")
 
 ## How do you get an even reflection?
 
@@ -37,16 +37,18 @@ Keep a main view, a view of the fastening and a close-up of the setting or marki
 
 [Related guide](/learn/product-photography-for-ecommerce)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### Should I use a light tent?
 
-It can simplify reflections. Add a dark card or move part of the diffusion when the tent leaves the piece without a readable edge.
+It can simplify reflections. Add a dark card or move part of the diffusion when the tent leaves the piece without a readable edge. Place a small dark card between two polished edges to reduce unwanted reflections during jewelry photography.
 
 ### How should I check gemstone colour?
 
-Keep the light and white balance stable and compare with the real item. Different displays can still show variations.
+Keep the light and white balance stable and compare with the real item. Different displays can still show variations. Place a small dark card beside the gemstone and adjust the diffusion until the polished edges create a clear, readable edge for accurate color assessment.
 
 ### What is the best hero angle?
 
-Choose the view that shows the shape and the stone or main feature. Add a second photo for the clasp or back.
+Choose the view that shows the shape and the stone or main feature. Add a second photo for the clasp or back. Place a small dark card beside the jewelry to absorb stray light and reduce unwanted reflections in the main shot.

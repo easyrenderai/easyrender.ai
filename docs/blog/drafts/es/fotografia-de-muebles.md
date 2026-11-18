@@ -1,6 +1,6 @@
 ---
 
-group: furniture-photography
+group: "furniture-photography"
 title: "Cómo fotografiar muebles para venderlos online"
 description: "Organiza la luz y las vistas de un mueble para que se entiendan su forma, acabado y construcción."
 date: 2026-11-19
@@ -11,7 +11,7 @@ cta: "Prueba la vista previa de ángulos con una foto de producto."
 
 Empieza con una foto en tres cuartos que enseñe el frente y la profundidad del mueble. Completa la galería con una vista frontal, un lateral o la trasera y detalles del acabado. Repite el encuadre en las variantes para que el comprador pueda comparar la madera, la tapicería o las patas.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/furniture-photography/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de aparador, mitad sólida y mitad en malla](../covers/furniture-photography.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Cómo iluminas un mueble grande?
 
@@ -39,16 +39,18 @@ Haz los primeros planos al terminar las vistas generales. Enseña una unión o c
 
 [Guía relacionada](/es/guias/fotografia-de-producto-para-ecommerce)
 
-## FAQ
+[Cómo crear un modelo 3D](/es/guias/como-hacer-un-modelo-3d)
+
+## Preguntas frecuentes
 
 ### ¿Puedo hacer las fotos con el móvil?
 
-Sí. Usa el objetivo principal con buena luz y apoya el móvil para repetir el encuadre. Aléjate antes de cambiar al ultra gran angular. Amplía la primera foto y comprueba las esquinas y el detalle de la superficie.
+Sí, usa el objetivo principal con buena luz y apoya el móvil para repetir el encuadre. Alejate antes de cambiar al ultra gran angular, amplía la primera foto y revisa esquinas y detalle. Checa que la iluminación no cause sombras excesivas.
 
 ### ¿Conviene enseñar la habitación?
 
-La toma de ambiente ayuda a imaginar un contexto. Añade una foto independiente donde se vean contorno, base y acabado. Las medidas van en las especificaciones.
+Sí, enseña la habitación para dar contexto, pero añade una foto separada con el mueble completo, destacando contorno, base y acabado. Asegúrate de incluir las medidas en las especificaciones. Verifica que la iluminación sea natural y que el fondo no distraiga.
 
 ### ¿Cada variante necesita su galería?
 
-Repite la foto principal si cambia el acabado o la construcción. Reutiliza un detalle solo cuando la pieza de la foto sea idéntica. Indica qué variante se muestra.
+Cada variante necesita su galería si cambia el acabado o la construcción. Reutiliza un detalle solo cuando la pieza sea idéntica y indica claramente qué variante se muestra. Revisa que todas las imágenes tengan el mismo fondo y escala para evitar confusiones.

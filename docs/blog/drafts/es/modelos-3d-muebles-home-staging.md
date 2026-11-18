@@ -1,6 +1,6 @@
 ---
 
-group: 3d-furniture-models-home-staging
+group: "3d-furniture-models-home-staging"
 title: "Cómo usar modelos 3D de muebles en home staging"
 description: "Coloca un mueble 3D en una escena existente y revisa proporción visual, apoyo e iluminación."
 date: 2026-12-08
@@ -9,13 +9,15 @@ keyword: "modelos 3d de muebles para home staging"
 cta: "Prueba la vista previa de ángulos con una foto de producto."
 ---
 
-Incorpora un mueble 3D a una escena que ya tengas. Comprueba la orientación y el punto de giro antes de colocarlo. Ajusta el objeto con medidas verificadas cuando el proyecto las requiera. Iguala la iluminación y revisa la colocación desde la cámara final y otra vista.
+Coloca el mueble 3D con la base hacia abajo y sombra de contacto activa. Asegúrate de que el origen del objeto esté alineado con el eje X del proyecto. El error más común es que el mueble flote porque no se ha verificado la base ni la sombra de contacto.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/3d-furniture-models-home-staging/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de consola estrecha, mitad sólida y mitad en malla](../covers/3d-furniture-models-home-staging.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Cómo preparas el objeto?
 
 Abre una copia en el editor. Comprueba qué lado mira al frente y si el origen facilita colocarlo. Ajusta las unidades del proyecto y usa especificaciones de producto verificadas cuando hagan falta medidas precisas.
+
+![Escena de interior con una mesa de centro y una silla](../evidence/staging-scene-example.jpg "Ejemplo editorial de una estancia. Fíjate en el apoyo del mueble y en cómo las sombras siguen la luz de la ventana.")
 
 ## ¿Cómo revisas la colocación?
 
@@ -35,16 +37,18 @@ Añade una referencia visual neutra para valorar la proporción. Iguala la direc
 
 [Guía relacionada](/es/modelos)
 
-## FAQ
+[Cómo crear un modelo 3D](/es/guias/como-hacer-un-modelo-3d)
+
+## Preguntas frecuentes
 
 ### ¿Puedo usar un modelo de biblioteca?
 
-Sí, si el formato y los permisos lo permiten. Revisa el modelo concreto para la distancia de la cámara, la orientación y el detalle que necesitas.
+Sí, puedes usar un modelo de biblioteca si el formato y los permisos lo permiten. Revisa el modelo concreto para la distancia de la cámara, la orientación y el detalle que necesitas. Añade un modelo de biblioteca en la escena y verifica que esté alineado con la iluminación y el espacio real.
 
 ### ¿Necesito medidas del objeto real?
 
-Usa medidas verificadas cuando la decisión dependa de dimensiones. Una escena ilustrativa sirve como referencia de apariencia.
+No necesitas medidas del objeto real si solo buscas referencia visual. Usa modelos 3D con dimensiones verificadas para garantizar exactitud en el diseño. Revisa que el modelo coincida con el espacio real antes de integrarlo y comprueba que la escala sea coherente con el ambiente.
 
 ### ¿Cómo enseño opciones al cliente?
 
-Conserva cámara e iluminación entre propuestas. Cambia solo la pieza o la distribución que se quiere comparar.
+Muestra las propuestas con la misma cámara e iluminación para que el cliente compare fácilmente las opciones. Cambia solo el mueble o la distribución deseada y revisa siempre que los modelos 3D estén alineados con el espacio real. Asegúrate de que la escala y la orientación sean idénticas al entorno físico.

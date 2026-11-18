@@ -1,6 +1,6 @@
 ---
 
-group: product-photography-angles
+group: "product-photography-angles"
 title: "Product photography angles for a useful gallery"
 description: "Choose a main view and secondary views that answer questions about fit, construction and use."
 date: 2026-11-21
@@ -11,7 +11,7 @@ cta: "Try an angle preview from a product photo."
 
 Choose each product photo to answer a question. Start with a view that explains the shape, then add the angles that show how the product fits together or works. A rear view, a close-up or a shot with the product open often answers more than another nearly identical front angle.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/product-photography-angles/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: backpack, half solid and half wireframe](../covers/product-photography-angles.webp "Editorial illustration made in Blender.")
 
 ## Which angle should come first?
 
@@ -40,16 +40,18 @@ Place the answers in order of importance. A close-up is more useful when a wider
 
 [Related guide](/learn/product-photography-for-ecommerce)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### How many photos should I use?
 
-Start with a lead view plus every useful answer the gallery still needs. Remove near duplicates. Check the requirements of the destinations where you publish the same item.
+Start with a lead view plus every useful answer the gallery still needs. Remove near duplicates. Check the requirements of the destinations where you publish the same item. For a chair, add the side, back and one detail only if each shows something the lead view leaves unanswered.
 
 ### When is a straight front view better?
 
-Use a straight view when it helps compare outlines, faces or colourways. A shallow box with a readable label may benefit more from a clear front than a dramatic angle.
+Use a straight front view when the item’s face, shape, or printed details identify it most quickly. Take a front shot with clear label and consistent background for easy recognition. Check the thumbnail crop to ensure the product’s key features are visible and not cut off.
 
 ### Can a 3D model replace the back photo?
 
-Keep a real photo when the rear contains a feature the buyer needs to verify. A model can add exploration and context. Use both when the two assets perform different jobs.
+A 3D model cannot replace the back photo if it contains features the buyer needs to verify. Use both when the real photo confirms details and the model offers context. Check that the back photo shows all key features clearly and is taken under consistent lighting.

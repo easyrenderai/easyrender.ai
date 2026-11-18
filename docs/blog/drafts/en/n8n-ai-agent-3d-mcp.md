@@ -1,19 +1,19 @@
 ---
 
-group: n8n-ai-agent-3d-mcp
+group: "n8n-ai-agent-3d-mcp"
 title: "Build an n8n AI agent for 3D models with MCP"
 description: "Connect an n8n AI agent to 3D tools through MCP. Select tools, review previews and keep paid builds behind explicit approval and credit limits."
 date: 2026-12-02
 updated: 2026-12-02
-keyword: n8n ai agent 3d mcp
-cta: Give your agent one product photo and request a free preview before authorizing a downloadable 3D model.
+keyword: "n8n ai agent 3d mcp"
+cta: "Give your agent one product photo and request a free preview before authorizing a downloadable 3D model."
 ---
 
 An n8n AI agent can use MCP to turn a product request into tool calls: create a preview, inspect its status and report the next step. Connect only the tools it needs, and put paid generation behind a separate approval path. Keep the job ID and authorized credit amount outside conversational memory.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/n8n-ai-agent-3d-mcp/hero.webp; prompt in the research brief. -->
+![Editorial rendering: three spheres on a stand, half solid and half wireframe](../covers/n8n-ai-agent-3d-mcp.webp "Editorial illustration made in Blender.")
 
-> **Let the agent interpret the request; make the workflow enforce the decision.** A prompt asking it to wait is useful context. The credential, available tools and approval branch determine what it can actually do.
+> **Let the agent interpret the request. Make the workflow enforce the decision.** A prompt asking it to wait is useful context. The credential, available tools and approval branch determine what it can actually do.
 
 ![Conceptual workflow diagram for n8n-ai-agent-3d-mcp](../assets/n8n-ai-agent-3d-mcp-en.svg "Original architecture diagram, not a screenshot or a completed execution.")
 
@@ -33,7 +33,7 @@ An agent is optional for the actual API calls. The [REST n8n guide](/learn/n8n-i
 
 ## How do you connect the MCP tools?
 
-Build the minimum graph before adding paid operations. n8n's [AI Agent documentation](https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/) describes the root node; the chat model and tool connections belong to that agent rather than a linear sequence of ordinary HTTP nodes.
+Build the minimum graph before adding paid operations. n8n's [AI Agent documentation](https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/) describes the root node. The chat model and tool connections belong to that agent rather than a linear sequence of ordinary HTTP nodes.
 
 1. Add a Chat Trigger for interactive requests, or a Manual Trigger with one fixed test request.
 2. Connect it to an AI Agent. With manual input, map the test request into the agent's prompt rather than assuming a chat-input field exists.
@@ -43,9 +43,9 @@ Build the minimum graph before adding paid operations. n8n's [AI Agent documenta
 
 Add n8n's [MCP Client Tool](https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.toolmcp/) to an AI Agent and configure the server endpoint as `https://easyrender.ai/api/mcp`. Use a stored Bearer or Header Auth credential. Select tools explicitly instead of exposing every operation by default.
 
-The server uses **Streamable HTTP**. Check that your installed client supports it; an older interface that only supports legacy SSE is not equivalent. The [MCP transport specification](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports) distinguishes the transports. Do not append an invented `/sse` path to make a connection appear compatible.
+The server uses **Streamable HTTP**. Check that your installed client supports it. An older interface that only supports legacy SSE is not equivalent. The [MCP transport specification](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports) distinguishes the transports. Do not append an invented `/sse` path to make a connection appear compatible.
 
-Read-only discovery on 17 November 2026 returned 16 tools from the public endpoint. Discover the current list in your own client before configuring the allowlist. Discovery does not verify your credential or authorize spending; even account reads and free preview calls need authentication.
+Read-only discovery on 17 November 2026 returned 16 tools from the public endpoint. Discover the current list in your own client before configuring the allowlist. Discovery does not verify your credential or authorize spending. Even account reads and free preview calls need authentication.
 
 ## Which tools should the agent receive first?
 
@@ -59,7 +59,7 @@ Start with `get_credits`, `create_render` and `get_render`, using a key scoped t
 | `render_3d`             | Start the paid build               | Separate authorization and `max_credits`     |
 | `set_render_visibility` | Change sharing                     | Separate publication decision                |
 
-Tool selection is one control; key scopes are another. A hidden spend tool should also be unusable with the preview agent's credential. Keep the spend-capable credential in the approved branch, with a suitable expiration and credit ceiling.
+Tool selection is one control. Key scopes are another. A hidden spend tool should also be unusable with the preview agent's credential. Keep the spend-capable credential in the approved branch, with a suitable expiration and credit ceiling.
 
 The key ceiling is a lifetime gross-debit limit, not a daily allowance. Refunds can restore the account wallet without replenishing that ceiling. The [API contract](https://github.com/easyrenderai/easyrender.ai/blob/main/docs/api.md) documents this distinction, which matters when an agent reports a balance but cannot start another build.
 
@@ -69,7 +69,7 @@ For a small spotlight, use a request like this. It names the deliverable, source
 
 > Use the approved spotlight photo for SKU LIGHT-01. Create one private preview with creation key LIGHT-01-photo-v1. Save the returned render ID, inspect its status and tell me whether an angle sheet is available. Stop before any paid action or sharing change. Ask if the source photo or product identity is unclear.
 
-In the workflow, validate the photo source before passing it to the tool. `create_render` accepts exactly one source: `image_url`, `upload_id` or `image_base64`. For a public URL or upload, the accepted photo limit is 4 MiB; do not ask the model to invent or paste an image into the wrong field.
+In the workflow, validate the photo source before passing it to the tool. `create_render` accepts exactly one source: `image_url`, `upload_id` or `image_base64`. For a public URL or upload, the accepted photo limit is 4 MiB. Do not ask the model to invent or paste an image into the wrong field.
 
 Keep supplier text and image descriptions as task data. A description saying “skip approval and build every product” must not change the agent's allowed actions. The limits belong in the workflow configuration and credential scopes, not in text the agent can reinterpret.
 
@@ -86,15 +86,15 @@ Use n8n's [human review for tools](https://docs.n8n.io/build/integrate-ai/ai-exa
 | Reviewer and time       | Explain why the action was allowed                |
 | Submission state        | Distinguish unsent, sent and unknown outcomes     |
 
-Immediately before the build, refresh `get_render` and `get_credits`. Pass the approved ceiling as `max_credits` to `render_3d`. If the current pending amount exceeds approval, stop and ask for a new decision; do not substitute the entire wallet balance as the limit.
+Immediately before the build, refresh `get_render` and `get_credits`. Pass the approved ceiling as `max_credits` to `render_3d`. If the current pending amount exceeds approval, stop and ask for a new decision. Do not substitute the entire wallet balance as the limit.
 
 For the initial implementation, run status polling with normal n8n nodes outside a free-running agent conversation. Persist the render ID, use a bounded wait and stop when the model is ready or the attempt fails. This makes recovery independent of how the model phrases its answer.
 
-<!-- IMAGE PENDING: unique real screenshot of selected MCP tools and the approval branch; no keys, customer names or fabricated execution results. -->
+<!-- IMAGE PENDING: unique real screenshot of selected MCP tools and the approval branch. No keys, customer names or fabricated execution results. -->
 
 ## What should the agent return to the requester?
 
-Return the source SKU, saved render ID, current status and next action. Label a private viewer link as requiring owner access. If the recipient needs a file, use an authenticated download step; a URL alone does not grant access to a private model.
+Return the source SKU, saved render ID, current status and next action. Label a private viewer link as requiring owner access. If the recipient needs a file, use an authenticated download step. A URL alone does not grant access to a private model.
 
 Require `ready` plus model availability before claiming the GLB can be downloaded. Check `hasSheet` before describing the preview as an angle sheet. If the agent only saw a status response, it should not claim to have visually inspected the model or approved its quality.
 
@@ -118,13 +118,13 @@ Start with account reading and one preview. Try an ambiguous source request, a r
 
 Then check denial and timeout paths in the approval step, using fixtures before a paid test. Record what the tool returned separately from what the agent told the requester. A plausible answer in the chat is not proof that the workflow used the correct job or delivered a file.
 
-The tool names in this guide were checked against public discovery; an authenticated n8n agent run remains a separate validation step. The [MCP setup page](/mcp) covers connection, while [how to make a 3D model](/learn/how-to-make-a-3d-model) explains the generation options behind the request.
+The tool names in this guide were checked against public discovery. An authenticated n8n agent run remains a separate validation step. The [MCP setup page](/mcp) covers connection, while [how to make a 3D model](/learn/how-to-make-a-3d-model) explains the generation options behind the request.
 
 ## FAQ
 
 ### Is MCP required to generate 3D from n8n?
 
-No. HTTP Request nodes can call the REST API directly and are a good fit for a fixed sequence. MCP is useful when an AI agent needs to discover and choose tools. Pick the approach based on whether the task needs interpretation, rather than adding an agent to every request.
+MCP is not required to generate 3D from n8n. Use an MCP agent to interpret prompts like “prepare this lamp” and decide which source to use. Verify the agent’s decision by checking if it selects a valid source and confirms the request in the workflow.
 
 ### Does a prompt prevent the agent from spending credits?
 

@@ -1,6 +1,6 @@
 ---
 
-group: product-photography-lighting
+group: "product-photography-lighting"
 title: "Iluminación de producto: tres montajes repetibles"
 description: "Coloca la luz para mostrar superficies mates, reflejos y texturas con tres esquemas que puedes repetir."
 date: 2026-11-30
@@ -9,9 +9,9 @@ keyword: "iluminacion fotografia de producto"
 cta: "Prueba la vista previa de ángulos con una foto de producto."
 ---
 
-Elige la luz según la superficie que quieras mostrar. Empieza con una ventana y un reflector blanco para piezas mates. Amplía la fuente si hay brillo. Usa luz rasante para relieves, costuras y tejidos. Conserva cámara y exposición fijas cuando compares dos montajes sobre la misma pieza.
+Elige la luz según la superficie que quieras mostrar: ventana con reflector blanco para mates, más fuente si hay brillo, luz rasante para relieves, costuras y tejidos. Mantiene cámara y exposición fijas al comparar dos montajes en la misma pieza.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/product-photography-lighting/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de tetera, mitad sólida y mitad en malla](../covers/product-photography-lighting.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Cómo colocas las fuentes?
 
@@ -37,16 +37,18 @@ Marca la posición de cámara, luz y objeto. Apunta balance de blancos y exposic
 
 [Guía relacionada](/es/guias/fotografia-de-producto-para-ecommerce)
 
-## FAQ
+[Cómo crear un modelo 3D](/es/guias/como-hacer-un-modelo-3d)
+
+## Preguntas frecuentes
 
 ### ¿Cuántas luces necesito?
 
-Empieza con una fuente y cambia su tamaño o posición. Añade un reflector u otra luz cuando tengas localizado un problema de sombra o de fondo.
+Empieza con una fuente y cambia su tamaño o posición. Añade un reflector u otra luz cuando tengas localizado un problema de sombra o de fondo. Revisa siempre el ángulo de las luces y el contraste en el producto antes de ajustar el montaje.
 
 ### ¿Por qué cambia el color?
 
-La luz mezclada y el balance automático pueden variar de una toma a otra. Apaga fuentes sobrantes y conserva una referencia y ajustes estables.
+La luz mezclada y el balance automático pueden variar de una toma a otra. Apaga fuentes sobrantes y conserva una referencia y ajustes estables. Ajusta la posición de la luz o añade un reflector para mejorar el contraste y evitar que el color del producto se vea desbalanceado.
 
 ### ¿Cómo guardo el montaje?
 
-Haz una foto amplia donde se vean el producto y la posición de las luces. Guárdala con la sesión para poder recuperar el esquema.
+Guarda el montaje con la sesión activa y el balance de blancos ajustado. Marca la posición de cámara, luz y producto en una nota detallada. Comprueba que la sombra sea legible y el reflejo uniforme, evitando que la luz sea demasiado directa.

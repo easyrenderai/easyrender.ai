@@ -1,6 +1,6 @@
 ---
 
-group: shopify-3d-models
+group: "shopify-3d-models"
 title: "How to add 3D models to Shopify products"
 description: "Upload a product model in Shopify, check your theme and test how shoppers see it on web and mobile."
 date: 2026-11-20
@@ -11,7 +11,7 @@ cta: "Try an angle preview from a product photo."
 
 Add a GLB or USDZ to the media gallery of a Shopify product and preview it with the storefront theme you use. Check it on a phone as well as desktop. Keep a product photo as the first media item so the listing works while the model loads.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/shopify-3d-models/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: open shipping carton, half solid and half wireframe](../covers/shopify-3d-models.webp "Editorial illustration made in Blender.")
 
 ## What should you check before upload?
 
@@ -39,16 +39,18 @@ If the model works in the admin but not the storefront, inspect the theme’s pr
 
 [Related guide](/learn/3d-models-for-ecommerce)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### Does every Shopify theme display 3D?
 
-Shopify lists themes with product-media support. Check the version used in production and the product template where the model will appear. A custom theme may need changes.
+Shopify lists themes with product-media support. Check the version used in production and the product template where the model will appear. A custom theme may need changes. Preview a draft on a phone and check that the gallery can switch from the lead image to the model.
 
 ### Which file should I upload?
 
-Start with a model format accepted by Shopify. Verify the source file in another viewer and then verify the processed media in the storefront. Keep the original model for later fixes.
+Start with a model format accepted by Shopify. Verify the source file in another viewer and then verify the processed media in the storefront. Keep the original model for later fixes. Shopify accepts GLB and USDZ for 3D product media. Check scale, orientation and textures after processing.
 
 ### Should I replace the hero photo with a model?
 
-Keep a clear photo first for the initial product impression. Place the model after the images that explain the product most quickly. Check that the reader can tell which gallery item is interactive.
+Keep a clear photo first for the initial product impression. Place the model after the images that explain the product most quickly. Check that the reader can tell which gallery item is interactive. On mobile, confirm the viewer opens by choice and customers can quickly return to the photos.

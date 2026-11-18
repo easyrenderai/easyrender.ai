@@ -1,17 +1,17 @@
 ---
 
-group: n8n-batch-3d-catalog
+group: "n8n-batch-3d-catalog"
 title: "Automate a 3D product catalog in n8n without duplicates"
 description: "Turn catalog rows into reviewed 3D models with n8n. Track SKU versions, resume jobs, bound spending and deliver files without duplicating paid work."
 date: 2026-12-09
 updated: 2026-12-09
-keyword: n8n batch 3d product catalog
-cta: Validate one catalog photo with the free preview before authorizing the products you want to build in 3D.
+keyword: "n8n batch 3d product catalog"
+cta: "Validate one catalog photo with the free preview before authorizing the products you want to build in 3D."
 ---
 
 To automate a 3D catalog in n8n, process product records through a saved state machine rather than generating whenever a result cell is blank. Track the SKU, photo revision, creation key, render ID and approval. Resume unfinished jobs, bound concurrent work and deliver only reviewed models to the matching products.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/n8n-batch-3d-catalog/hero.webp; prompt in the research brief. -->
+![Editorial rendering: stacked boxes, half solid and half wireframe](../covers/n8n-batch-3d-catalog.webp "Editorial illustration made in Blender.")
 
 > **An empty result does not mean nothing has started.** The job may still be running, waiting for review or missing its last response. Recover that state before making another paid request.
 
@@ -48,11 +48,11 @@ These queue fields belong to your system. They are not extra fields to send to `
 
 ## How do you process rows without starting duplicates?
 
-1. Select eligible source records, then claim one SKU/revision before creating work. A database uniqueness rule is preferable when multiple workers can run; a plain spreadsheet status cell is not an atomic lock.
+1. Select eligible source records, then claim one SKU/revision before creating work. A database uniqueness rule is preferable when multiple workers can run. A plain spreadsheet status cell is not an atomic lock.
 2. If `render_id` exists, read that render and resume from its status. Do not recreate it because `destination_media_id` is empty.
 3. If no ID exists but creation was attempted, retry preview creation with the same saved `Idempotency-Key` and unchanged input. Persist the returned ID before moving on.
 4. Wait for the preview and store the review decision. Only the approved branch can start the paid build, using its authorized `maxCredits`.
-5. Poll the same job until completion, failure or the workflow deadline. A deadline saves the record for reconciliation; it does not automatically create another attempt.
+5. Poll the same job until completion, failure or the workflow deadline. A deadline saves the record for reconciliation. It does not automatically create another attempt.
 6. Download and deliver the model. Save the destination media identifier before marking the source row delivered.
 
 For the first deployment, use a single worker and process one item at a time. n8n's [Loop Over Items](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/) supports explicit batching. Keep schedules from overlapping, then increase concurrency only after measuring service limits and your own recovery behavior.
@@ -68,9 +68,9 @@ An approved per-call ceiling does not by itself enforce a total campaign budget 
 | Confirmed spend  | Service records the debit         | A verified refund is recorded separately     |
 | Unknown outcome  | Response is lost after submission | Existing job or support evidence resolves it |
 
-Read the live quote and the render's remaining charge before building. Stop on insufficient funds or an exceeded key ceiling. A wallet refund and a key's lifetime gross-debit limit behave differently; do not reset your key-budget assumptions just because the balance increased.
+Read the live quote and the render's remaining charge before building. Stop on insufficient funds or an exceeded key ceiling. A wallet refund and a key's lifetime gross-debit limit behave differently. Do not reset your key-budget assumptions just because the balance increased.
 
-Use [n8n's rate-limit guidance](https://docs.n8n.io/integrations/builtin/handle-rate-limits.md) to pace safe reads. For a 429, honor the response's `Retry-After` value. For a timed-out paid mutation, reconcile the resource before retrying; backoff alone does not make a duplicate submission safe.
+Use [n8n's rate-limit guidance](https://docs.n8n.io/integrations/builtin/handle-rate-limits.md) to pace safe reads. For a 429, honor the response's `Retry-After` value. For a timed-out paid mutation, reconcile the resource before retrying. Backoff alone does not make a duplicate submission safe.
 
 ## What changes when you use the catalog API?
 
@@ -82,13 +82,13 @@ Request `GET /api/catalog/quote?items=N` for the exact proposed item count. Show
 | `store`          | Stable identifier for the destination store         |
 | `maxCredits`     | Approved total ceiling for this submission          |
 | `items`          | At most 100 items per request in the current schema |
-| Each item        | `externalId`, `title`, `imageUrl`; optional `note`  |
+| Each item        | `externalId`, `title`, `imageUrl`. Optional `note`  |
 
 Submit once to `POST /api/catalog`, then use `GET /api/catalog?platform=...&store=...` to inspect and advance the already authorized queue. Handle `needs_credits`, `needs_info` and `failed` explicitly. Keep the platform and store values identical when recovering the same batch.
 
 Catalog submission shares model links for store use. Choose the per-product route if that is not authorized. Also distinguish generating the catalog's models from writing product pages to a merchant's CMS: the store connector still needs a tested delivery step.
 
-<!-- IMAGE PENDING: unique real screenshot of catalog rows with saved job IDs and a recovered execution; use synthetic SKUs and no customer data. -->
+<!-- IMAGE PENDING: unique real screenshot of catalog rows with saved job IDs and a recovered execution. Use synthetic SKUs and no customer data. -->
 
 ## How do you know a product was delivered correctly?
 
@@ -114,7 +114,7 @@ The delivered GLB should open in a compatible viewer; [Khronos describes the for
 
 Use a small sample: one valid product, one intentionally invalid image and one record with an existing render ID. Verify that the invalid row stops, the existing job is resumed and the valid record reaches review. This tests queue behavior before authorizing a paid batch.
 
-Next simulate a lost creation response and a delivery interruption with fixtures. Then perform one authorized end-to-end run before enabling unattended scheduling. The public schema and repository contract were checked for this guide; no live batch result or cost saving is claimed.
+Next simulate a lost creation response and a delivery interruption with fixtures. Then perform one authorized end-to-end run before enabling unattended scheduling. The public schema and repository contract were checked for this guide. No live batch result or cost saving is claimed.
 
 Measure reviewed models delivered per unique SKU/revision, manual interventions, unresolved jobs and net credits per accepted model. For the asset workflow itself, use [how to make a 3D model](/learn/how-to-make-a-3d-model) and the [product-page package guide](/learn/n8n-product-pages-images-3d).
 

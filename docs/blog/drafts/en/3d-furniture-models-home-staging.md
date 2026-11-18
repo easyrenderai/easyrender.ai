@@ -1,6 +1,6 @@
 ---
 
-group: 3d-furniture-models-home-staging
+group: "3d-furniture-models-home-staging"
 title: "Use furniture 3D models in home staging"
 description: "Place an existing furniture model in a room scene, then review proportion, floor contact and lighting."
 date: 2026-12-08
@@ -11,11 +11,13 @@ cta: "Try an angle preview from a product photo."
 
 Add a furniture model to an existing room scene by checking its orientation and pivot first. Use independently verified dimensions to set it up in the editor. Match the light, place the object on the floor and review the scene from the final camera and one secondary view.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/3d-furniture-models-home-staging/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: console table, half solid and half wireframe](../covers/3d-furniture-models-home-staging.webp "Editorial illustration made in Blender.")
 
 ## How do you prepare the object?
 
 Open a copy in your scene editor. Check which direction is forward and whether the pivot makes placement predictable. Set units from the project brief and use measured product specifications where dimensional accuracy matters.
+
+![Interior scene with a round coffee table and chair](../evidence/staging-scene-example.jpg "Editorial room example. Check how the furniture sits on the floor and how the shadows follow the window light.")
 
 ## How do you make the placement believable?
 
@@ -35,16 +37,18 @@ Place the furniture with a small neutral object or reference to help judge propo
 
 [Related guide](/models)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### Can I use a model from a library?
 
-Yes, with suitable rights and a compatible format. Review the particular model for detail, orientation and the final viewing distance.
+Yes, you can use a model from a library, as long as it has suitable rights and is in a compatible format. Review the model for detail, orientation, and final viewing distance. Next, check the model’s file format and ensure it matches your staging software’s import requirements.
 
 ### Do I need precise source measurements?
 
-Use verified measurements when the design needs dimensional accuracy. Treat a purely illustrative scene as an appearance reference.
+You don’t need precise source measurements if the furniture is used for appearance only. For dimensional accuracy, use verified measurements and check the product’s official dimensions sheet to confirm the 3D model’s scale matches the product catalog. Verify the model’s scale against the catalog before staging.
 
 ### How do I show options to a client?
 
-Keep camera and lighting fixed between arrangements. Change only the relevant furniture so the client can compare the layouts.
+Show clients different furniture 3D models in the same room with consistent camera and lighting. Select one model at a time, adjusting only the furniture piece to compare layouts. Next, check that all 3D models are scaled correctly and aligned to the room’s dimensions before sharing.

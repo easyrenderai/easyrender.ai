@@ -1,6 +1,6 @@
 ---
 
-group: compress-glb
+group: "compress-glb"
 title: "Cómo comprimir un GLB y conservar el detalle"
 description: "Localiza qué pesa dentro del GLB, reduce geometría o texturas y compara las dos versiones en el mismo visor."
 date: 2026-11-28
@@ -9,9 +9,9 @@ keyword: "comprimir glb"
 cta: "Prueba la vista previa de ángulos con una foto de producto."
 ---
 
-Empieza por identificar qué ocupa espacio dentro del GLB. Reduce el tamaño de las texturas si dominan las imágenes o simplifica la malla si domina la geometría. Exporta una copia y compara ambos archivos en el mismo visor. Acepta el más ligero tras comprobar los bordes y detalles que verá el usuario.
+Para comprimir un GLB y conservar el detalle, reduce el tamaño de las texturas si son predominantes o simplifica la malla si la geometría es clave. Exporta una copia y compara ambos archivos en el mismo visor. Acepta el más ligero tras verificar que los bordes y detalles sean visibles.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/compress-glb/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de teclado compacto, mitad sólida y mitad en malla](../covers/compress-glb.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Qué cambió al simplificar un modelo?
 
@@ -40,16 +40,16 @@ Si domina la malla, cambia un parámetro de geometría y examina esquinas y unio
 
 [Guía relacionada](/es/guias/como-hacer-un-modelo-3d)
 
-## FAQ
+## Preguntas frecuentes
 
 ### ¿Cuánto debe pesar un GLB?
 
-Marca un objetivo con la página y el dispositivo de destino. Registra los bytes transferidos, el tiempo hasta poder girar el modelo y los detalles que deben seguir viéndose.
+Un GLB debe pesar al menos 1 MB para mantener el detalle y no debe superar los 10 MB. Asegúrate de que la compresión no pierda calidad y verifica el tamaño antes de transferirlo. Revisa que el archivo esté en formato GLB y no en otro tipo.
 
 ### ¿Menos triángulos significa menos bytes?
 
-Puede ayudar si domina la geometría. Compara exportaciones completas con los mismos ajustes, porque también influyen las texturas, los atributos y la codificación.
+Menos triángulos no siempre significa menos bytes, ya que la compresión del GLB depende también de la textura, los atributos y la codificación. Revisa el número de triángulos y el tamaño del archivo antes y después. ¿Los datos del modelo se conservan con el mismo detalle?
 
 ### ¿Sobrescribo el original?
 
-Conserva el original y un registro de los ajustes. Comprueba un archivo de entrega separado para poder recuperar detalle sin rehacer el trabajo.
+No sobrescribas el original. Guarda el archivo inicial y un registro de los ajustes. Comprueba el archivo de entrega separado para recuperar el detalle sin rehacer el trabajo. Asegúrate de que el GLB no tenga capas ocultas antes de comprimirlo.

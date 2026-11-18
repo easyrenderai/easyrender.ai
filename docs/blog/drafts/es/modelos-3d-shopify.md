@@ -1,6 +1,6 @@
 ---
 
-group: shopify-3d-models
+group: "shopify-3d-models"
 title: "Cómo añadir modelos 3D a productos de Shopify"
 description: "Sube un modelo 3D a Shopify y comprueba el tema, el visor de producto y la experiencia móvil."
 date: 2026-11-20
@@ -11,7 +11,7 @@ cta: "Prueba la vista previa de ángulos con una foto de producto."
 
 Añade un archivo GLB o USDZ a la galería de un producto en Shopify y abre la vista previa con el tema que usas en la tienda. Compruébala en móvil y escritorio. Conserva una foto principal que explique el producto mientras se carga el modelo.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/shopify-3d-models/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de caja de cartón abierta, mitad sólida y mitad en malla](../covers/shopify-3d-models.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Qué debes comprobar antes de subir el archivo?
 
@@ -39,16 +39,18 @@ Si se abre en el administrador y falta en la ficha, revisa la sección de medios
 
 [Guía relacionada](/es/guias/modelos-3d-para-ecommerce)
 
-## FAQ
+[Cómo crear un modelo 3D](/es/guias/como-hacer-un-modelo-3d)
+
+## Preguntas frecuentes
 
 ### ¿Funciona en cualquier tema de Shopify?
 
-Comprueba el tema y la versión que usa tu tienda. Shopify publica documentación de compatibilidad. En un tema personalizado, prueba la plantilla concreta de producto y revisa su sección de medios.
+Comprueba el tema y la versión que usa tu tienda. Shopify publica documentación de compatibilidad. En un tema personalizado, prueba la plantilla concreta de producto y revisa su sección de medios. Desde la vista previa del tema, comprueba en el móvil si puedes pasar de la foto al modelo y volver a la galería.
 
 ### ¿Cuál de los archivos debo subir?
 
-Parte de un modelo que Shopify admita. Abre el original en otro visor y verifica después la versión procesada en la tienda. Guarda el archivo de origen para corregirlo si hace falta.
+Sube un archivo en formato .glb o .obj que sea compatible con Shopify. Abre el modelo en otro visor para verificar que se muestre correctamente en la tienda. Asegúrate de que el archivo no supere los 100 MB y que esté en formato válido.
 
 ### ¿Debo sustituir la foto principal?
 
-Deja primero una imagen que identifique el producto de un vistazo. Coloca el modelo cerca de las fotos que mejor explican la pieza y comprueba que la galería indica que se puede girar.
+No sustituyas la foto principal. Coloca el modelo 3D cerca de las imágenes que mejor muestran la pieza y verifica que la galería indique que se puede girar. Asegúrate de que el modelo esté en formato compatible y que el tamaño sea adecuado para la vista en la tienda.

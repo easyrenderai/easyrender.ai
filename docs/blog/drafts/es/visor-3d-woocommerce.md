@@ -1,6 +1,6 @@
 ---
 
-group: woocommerce-3d-models
+group: "woocommerce-3d-models"
 title: "Cómo añadir un visor 3D a WooCommerce"
 description: "Configura una ficha WooCommerce con un GLB, una foto alternativa y una comprobación en móvil."
 date: 2026-11-29
@@ -11,7 +11,7 @@ cta: "Prueba la vista previa de ángulos con una foto de producto."
 
 Añade el visor 3D a un único producto de WooCommerce en una tienda de pruebas. Usa una extensión si quieres gestionarlo desde el administrador o integra un visor web si controlas la plantilla. Conserva una foto y comprueba la galería con tu tema y con los dispositivos habituales de tus clientes.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/woocommerce-3d-models/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de molinillo de café, mitad sólida y mitad en malla](../covers/woocommerce-3d-models.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Cómo eliges la integración?
 
@@ -35,16 +35,18 @@ Sube un modelo ligero. Abre la ficha en incógnito, revisa el póster, gira el m
 
 [Guía relacionada](/es/guias/modelos-3d-para-ecommerce)
 
-## FAQ
+[Cómo crear un modelo 3D](/es/guias/como-hacer-un-modelo-3d)
+
+## Preguntas frecuentes
 
 ### ¿Necesito un plugin?
 
-Usa una extensión para gestionar la galería desde el administrador. Si controlas plantilla y alojamiento, puedes implementar un visor web. Valora quién mantendrá cada opción.
+Una extensión permite gestionar el visor desde el administrador de WooCommerce. Si controlas la plantilla y el alojamiento, también puedes integrar un visor web. En ambos casos, abre la ficha en móvil y comprueba que puedes elegir una variante y usar el carrito.
 
 ### ¿GLB sirve para todos los modos de RA?
 
-Consulta los modos y dispositivos que documenta el visor. Abre un modelo en un dispositivo representativo antes de ofrecer una acción de RA en la ficha.
+GLB no es compatible con todos los modos de realidad aumentada. Sube un modelo ligero y abre la ficha en incógnito para probar el visor. Comunica que el modelo no muestra en RA por falta de soporte en la extensión.
 
 ### ¿Dónde debo colocar el 3D?
 
-Dale un sitio visible junto a las fotos. En pantallas estrechas conserva a mano la imagen principal y la compra, y deja el giro como una acción opcional.
+Coloca el visor 3D junto a las fotos en la página de producto. En pantallas estrechas, muestra la imagen principal y el botón de compra, y deja el giro como acción opcional. Verifica que el visor se cargue correctamente en los navegadores y dispositivos que vayas a soportar.

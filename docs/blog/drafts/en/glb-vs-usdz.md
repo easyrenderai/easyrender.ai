@@ -1,6 +1,6 @@
 ---
 
-group: glb-vs-usdz
+group: "glb-vs-usdz"
 title: "GLB vs USDZ for web and Apple AR"
 description: "Choose GLB for the browser or USDZ for Apple Quick Look and verify both views with the same product."
 date: 2026-12-10
@@ -11,7 +11,7 @@ cta: "Try an angle preview from a product photo."
 
 Use GLB as a starting point for an interactive browser model and USDZ when you need Apple Quick Look. Deliver both if the same listing offers those two experiences. Test the files independently on their target devices and compare orientation, materials and the path back to the listing.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/glb-vs-usdz/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: faceted planter, half solid and half wireframe](../covers/glb-vs-usdz.webp "Editorial illustration made in Blender.")
 
 ## Which file does each part of the page need?
 
@@ -39,16 +39,18 @@ Name the two files for the same SKU and revision. Open the GLB in the web viewer
 
 [Related guide](/learn/usdz-file)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### Can a page use both formats?
 
-Yes. Give each destination the file it supports and verify the visible controls. Retain a static image for readers who cannot use the viewer.
+You can use both GLB and USDZ on a page by providing each format to its respective destination and verifying visible controls. Retain a static image for users who can’t use the viewer. Check file sizes and loading times in both web and Apple AR environments.
 
 ### Is GLB a format for every AR viewer?
 
-Check documented device and browser support for the AR route you are using. A compatible web viewer alone does not guarantee the native transition.
+GLB is not supported by every AR viewer. Always verify device and browser compatibility. Check official documentation for GLB and USDZ support in your specific web and Apple AR use case. Next, confirm your AR viewer supports native transitions before deployment.
 
 ### Should I compare the files only by size?
 
-Record size and check appearance and interaction. A smaller file is useful only if the target can open it and the model still serves the product.
+Compare GLB for web and USDZ for Apple AR to ensure correct delivery. Name the two files for the same SKU and open the GLB in web viewer then the USDZ on Apple device. Verify finish under neutral light or misidentify variant due to lighting or file mismatch.

@@ -1,6 +1,6 @@
 ---
 
-group: import-furniture-models-into-sketchup
+group: "import-furniture-models-into-sketchup"
 title: "Cómo importar un mueble 3D en SketchUp"
 description: "Importa un GLB en una edición compatible y revisa material, orientación y colocación del componente."
 date: 2026-12-15
@@ -9,9 +9,9 @@ keyword: "importar muebles 3d en sketchup"
 cta: "Prueba la vista previa de ángulos con una foto de producto."
 ---
 
-Importa el mueble 3D en una copia de la escena de SketchUp. Comprueba primero si tu edición y versión admiten el archivo. Una vez dentro, revisa orientación, caras y texturas y prepara la pieza para reutilizarla como componente. Ajusta las dimensiones del proyecto a partir de especificaciones verificadas.
+Para importar un mueble 3D en SketchUp, abre la escena y selecciona el archivo desde el menú de importación. Asegúrate de que tu versión de SketchUp lo soporte, ajusta las dimensiones según las especificaciones del archivo y revisa la orientación, caras y texturas antes de convertirlo en componente.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/import-furniture-models-into-sketchup/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de banco con respaldo, mitad sólida y mitad en malla](../covers/import-furniture-models-into-sketchup.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Cómo importas el archivo GLB?
 
@@ -35,16 +35,18 @@ Examina el objeto con un estilo neutro desde el frontal y desde arriba. Revisa e
 
 [Guía relacionada](/es/modelos)
 
-## FAQ
+[Cómo crear un modelo 3D](/es/guias/como-hacer-un-modelo-3d)
+
+## Preguntas frecuentes
 
 ### ¿Todas las ediciones importan GLB?
 
-Consulta la lista oficial de formatos para tu edición, versión y dispositivo. Si no aparece el importador, busca un recorrido que la documentación confirme.
+No todas las ediciones de SketchUp soportan GLB. Revisa la lista oficial de formatos para tu versión exacta y asegúrate de que el archivo esté en el formato correcto y el importador esté activado. Verifica también que el archivo no tenga errores de estructura.
 
 ### ¿Puedo usar un modelo de biblioteca?
 
-Comprueba derechos y compatibilidad del activo. Prueba la pieza por separado antes de incorporarla a un proyecto pesado.
+Puedes usar un modelo de biblioteca siempre que tenga derechos de uso y sea compatible con SketchUp. Prueba la pieza por separado antes de integrarla en un proyecto pesado. Revisa que el formato sea .skp o .dae y que no tenga dependencias externas.
 
 ### ¿Qué hago si cambia una textura?
 
-Coteja el original en otro visor y revisa el material. Corrige el componente antes de distribuir sus copias por la escena.
+Si la textura cambia, revisa la asignación de material y el estilo en la importación. Selecciona el archivo GLB y abrelo desde Archivo > Importar > GLB. Comunica el error si el material no se aplica correctamente al objeto original.

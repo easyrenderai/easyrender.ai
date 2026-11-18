@@ -1,6 +1,6 @@
 ---
 
-group: white-background-product-photography
+group: "white-background-product-photography"
 title: "Cómo fotografiar un producto sobre fondo blanco"
 description: "Ilumina un fondo blanco sin perder el contorno, el detalle ni la sombra de contacto del producto."
 date: 2026-11-24
@@ -9,9 +9,9 @@ keyword: "fotografia de producto fondo blanco"
 cta: "Prueba la vista previa de ángulos con una foto de producto."
 ---
 
-Ilumina el producto y el fondo blanco por separado siempre que puedas. Aleja el objeto del fondo para controlar la luz que rebota y conservar el contorno. Expón primero para la pieza y ajusta después el blanco. Revisa las aristas claras y la sombra de contacto antes de exportar.
+Fotografía el producto y el fondo blanco por separado para controlar la iluminación. Aleja el objeto para evitar rebotes de luz y mantener el contorno. Expon para el producto, luego ajusta el fondo blanco y revisa aristas claras y sombra de contacto antes de exportar.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/white-background-product-photography/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de frasco con tapón, mitad sólida y mitad en malla](../covers/white-background-product-photography.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Cómo montas el fondo blanco?
 
@@ -39,16 +39,18 @@ Exporta una muestra al tamaño de la ficha y compárala con el resto del catálo
 
 [Guía relacionada](/es/guias/fotografia-de-producto-para-ecommerce)
 
-## FAQ
+[Cómo crear un modelo 3D](/es/guias/como-hacer-un-modelo-3d)
+
+## Preguntas frecuentes
 
 ### ¿Puedo usar una sola luz?
 
-Sí. Prueba con una ventana o luz difusa y un reflector. Separa la pieza del fondo y corrige el fondo de forma local si hace falta. Mantén el montaje para el siguiente artículo.
+Sí, puedes usar una sola luz: prueba con una ventana o luz difusa y un reflector. Separa la pieza del fondo y corrige el fondo de forma local si hace falta. Próximo paso: revisa que la iluminación no cause sombras en los bordes del producto.
 
 ### ¿Siempre tiene que ser blanco puro?
 
-Comprueba las normas de cada canal. Para tu tienda, usa un fondo coherente y conserva el límite claro entre la pieza y el fondo. Guarda exportaciones específicas cuando cambien los requisitos.
+Comprueba las normas de cada canal. Para tu tienda, usa un fondo coherente y conserva el límite claro entre la pieza y el fondo. Guarda exportaciones específicas cuando cambien los requisitos. Prueba su lectura en miniatura antes de exportar el resto del catálogo.
 
 ### ¿Cómo evito un halo blanco?
 
-Examina la máscara sobre un fondo oscuro al tamaño original. Deshaz el aclarado excesivo del borde y corrige la máscara solo en la zona afectada.
+Examina la máscara sobre un fondo oscuro al tamaño original. Deshaz el aclarado excesivo del borde y corrige la máscara solo en la zona afectada. Si recortas, verifica el borde sobre gris para detectar halos antes de exportar la imagen.

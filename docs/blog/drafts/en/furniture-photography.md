@@ -1,6 +1,6 @@
 ---
 
-group: furniture-photography
+group: "furniture-photography"
 title: "Furniture photography for online stores"
 description: "Plan and shoot a furniture gallery that shows the shape, materials and construction buyers need to see."
 date: 2026-11-19
@@ -11,7 +11,7 @@ cta: "Try an angle preview from a product photo."
 
 Start with a three-quarter photo that shows the front and depth of the furniture. Add a straight front view, a side or back and close-ups of the finish and hardware. Use the same setup across variants so shoppers can tell when the wood, upholstery or construction actually changes.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/furniture-photography/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: sideboard, half solid and half wireframe](../covers/furniture-photography.webp "Editorial illustration made in Blender.")
 
 ## How do you light a large piece of furniture?
 
@@ -39,16 +39,18 @@ Take the hardware and material close-ups after the full views. Photograph a seam
 
 [Related guide](/learn/product-photography-for-ecommerce)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### Can I photograph furniture with a phone?
 
-Yes. Use the main lens in good light and support the phone where you can repeat the angle. Back up before switching to an ultra-wide lens. Check the first picture enlarged for stretched corners and blurred texture.
+Yes, you can photograph furniture with a phone using the main lens in good light and support the phone to repeat the angle. Back up before switching to an ultra-wide lens, then check the first picture enlarged for stretched corners and blurred texture. Use a tripod or stable surface to maintain consistency.
 
 ### Should I show the room around the furniture?
 
-Use a room photo to show a possible setting. Keep a separate product shot where the outline, base and finish are clear. The specification table should carry the measurements.
+Use a room photo to show a possible setting. Keep a separate product shot where the outline, base and finish are clear. The specification table should carry the measurements. Keep lighting and decor neutral enough that the finish still looks consistent with the plain-background photo.
 
 ### Do all variants need the same gallery?
 
-Repeat the main angle when the finish or construction changes. Reuse detail images only when the photographed part is genuinely identical. Label which colour or assembly the image shows.
+Repeat the main angle when the finish or construction changes. Reuse detail images only when the photographed part is genuinely identical. Label which colour or assembly the image shows. Maintain the same framing across lead photos so differences in material or construction are easier to spot.

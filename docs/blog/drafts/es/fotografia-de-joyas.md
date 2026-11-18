@@ -1,6 +1,6 @@
 ---
 
-group: jewelry-photography
+group: "jewelry-photography"
 title: "Fotografía de joyas: cómo controlar los reflejos"
 description: "Fotografía joyas con contornos claros, reflejos controlados y detalles repetibles entre variantes."
 date: 2026-12-07
@@ -11,7 +11,7 @@ cta: "Prueba la vista previa de ángulos con una foto de producto."
 
 Para fotografiar joyas pulidas, controla qué refleja el metal. Coloca material difusor entre la luz y la pieza para crear un reflejo amplio y acerca una cartulina oscura para dibujar los bordes. Amplía piedras, garras y grabados antes de desmontar la escena o pasar a otra pieza.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/jewelry-photography/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de anillo con una piedra, mitad sólida y mitad en malla](../covers/jewelry-photography.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Cómo consigues un reflejo uniforme?
 
@@ -37,16 +37,18 @@ Haz una vista principal, otra del cierre y un detalle del engaste o marca. Mant�
 
 [Guía relacionada](/es/guias/fotografia-de-producto-para-ecommerce)
 
-## FAQ
+[Cómo crear un modelo 3D](/es/guias/como-hacer-un-modelo-3d)
+
+## Preguntas frecuentes
 
 ### ¿Uso una caja de luz?
 
-Puede simplificar los reflejos. Si borra el contorno, añade una cartulina oscura o mueve una parte del difusor hasta que se distinga la forma.
+Sí, usa una caja de luz para controlar los reflejos. Si borras el contorno, añade una cartulina oscura o mueve parte del difusor hasta que se distinga la forma. Revisa que la luz no cause destellos en el metal y que el fondo no refleje demasiado.
 
 ### ¿Cómo compruebo el color de una piedra?
 
-Mantén iluminación y balance de blancos estables y compara con la pieza real. El color también cambia entre pantallas.
+Mantén la iluminación y el balance de blancos estables y compara con la pieza real. El color puede variar entre pantallas, así que revisa el ajuste de color en el software antes de publicar la imagen. Verifica que el contraste y el tono no distorsionen el verdadero color de la piedra.
 
 ### ¿Qué ángulo elijo de principal?
 
-El que mejor enseña la forma y el elemento protagonista. Añade una toma separada para el cierre o la parte posterior.
+El que mejor enseña la forma y el elemento protagonista. Añade una toma separada para el cierre o la parte posterior. Añade una cartulina oscura detrás de la joya para que los bordes pulidos se distingan claramente en la imagen principal.

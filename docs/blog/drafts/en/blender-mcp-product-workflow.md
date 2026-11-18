@@ -1,6 +1,6 @@
 ---
 
-group: blender-mcp-product-workflow
+group: "blender-mcp-product-workflow"
 title: "From product photo to a Blender scene with MCP"
 description: "Bring a product GLB into a Blender scene and use Claude with a compatible MCP tool for bounded scene edits."
 date: 2026-12-13
@@ -9,9 +9,9 @@ keyword: "blender mcp"
 cta: "Try an angle preview from a product photo."
 ---
 
-Create and review the product model first, then use Blender to place it in a scene. Give Claude a narrowly scoped task through a compatible Blender MCP connector. Check the changes in Blender and save a copy. This keeps product geometry separate from the camera, lighting and scene instructions.
+Start by creating and reviewing the product model before importing it into Blender. Use a Blender MCP connector to give Claude a focused task. Check scene changes in Blender and save a copy to keep product geometry separate from camera, lighting, and scene setup.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/blender-mcp-product-workflow/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: adjustable desk lamp, half solid and half wireframe](../covers/blender-mcp-product-workflow.webp "Editorial illustration made in Blender.")
 
 ## How do you set up a small test?
 
@@ -35,16 +35,18 @@ Ask it to keep the mesh and materials intact, place the named product on the exi
 
 [Related guide](/mcp)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### Which MCP generates the model?
 
-Choose a photo-to-3D service for the asset. A Blender connector can help edit scene objects. Check the tools available in each before assigning the task.
+In this workflow, easyrender creates the product model from the photo, and the Blender connector helps edit the scene after import. Some connectors can also call a separate generation provider. Check the connector’s listed tools and credentials before asking Claude to produce an asset.
 
 ### Can I try it with an existing GLB?
 
-Yes. Import an asset you can verify to isolate the scene workflow from model generation.
+Yes. Import a known GLB into a test scene using Blender’s glTF importer. Check how the materials look and confirm the object orientation and dimensions in the viewport. Then ask Claude to list the scene objects so you can verify it targets the correct model.
 
 ### Should the first run edit a master scene?
 
-Start in a copy with a single named asset. Compare the changes and keep the original project available.
+Use a copy of the project and start with one named model. Give Claude a single operation, such as framing the product with the active camera. Inspect the mesh, materials and camera after the change, then save the result under a new filename.

@@ -1,78 +1,47 @@
-# Borradores del calendario editorial
+# Artículos del calendario editorial
 
-30 temas con 60 borradores, del 18 de noviembre al 17 de diciembre de 2026. Una pieza al día según el calendario editorial en horario de Madrid.
-Las fechas en el front matter son objetivos editoriales. El lector del blog carga las guías desde `apps/web/content/blog` y las comparativas desde `apps/web/content/compare`.
-La búsqueda de conversores se trabajará en su propia sesión.
+30 temas en seis idiomas, con un artículo al día del 18 de noviembre al 17 de diciembre de 2026 en horario de Madrid. Los enlaces abren los artículos completos. Las fechas son los turnos editoriales acordados. La publicación se activa al incorporar las versiones aprobadas al blog de producción.
 
-## Calendario editorial
+## Calendario
 
-| Fecha      | Tipo        | ES                                                                                            | Versión EN                                        | Brief                                                       |
-| ---------- | ----------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------- | ----------------------------------------------------------- |
-| 2026-11-18 | Guía        | [Fichas de producto con n8n: imágenes, texto y 3D](es/fichas-producto-n8n-imagenes-3d.md)     | [EN](en/n8n-product-pages-images-3d.md)           | [Brief](../briefs/n8n-product-pages-images-3d.md)           |
-| 2026-11-19 | Guía        | [Cómo fotografiar muebles para venderlos online](es/fotografia-de-muebles.md)                 | [EN](en/furniture-photography.md)                 | [Brief](../briefs/furniture-photography.md)                 |
-| 2026-11-20 | Guía        | [Cómo añadir modelos 3D a productos de Shopify](es/modelos-3d-shopify.md)                     | [EN](en/shopify-3d-models.md)                     | [Brief](../briefs/shopify-3d-models.md)                     |
-| 2026-11-21 | Guía        | [Qué ángulos mostrar en las fotos de un producto](es/angulos-fotografia-de-producto.md)       | [EN](en/product-photography-angles.md)            | [Brief](../briefs/product-photography-angles.md)            |
-| 2026-11-22 | Guía        | [Qué formato 3D elegir para web, RA o edición](es/formatos-de-archivo-3d.md)                  | [EN](en/3d-file-formats.md)                       | [Brief](../briefs/3d-file-formats.md)                       |
-| 2026-11-23 | Comparativa | [Meshy vs. Tripo para fotos de producto](es/meshy-vs-tripo.md)                                | [EN](en/meshy-vs-tripo.md)                        | [Brief](../briefs/meshy-vs-tripo.md)                        |
-| 2026-11-24 | Guía        | [Cómo fotografiar un producto sobre fondo blanco](es/fotografia-producto-fondo-blanco.md)     | [EN](en/white-background-product-photography.md)  | [Brief](../briefs/white-background-product-photography.md)  |
-| 2026-11-25 | Guía        | [GLB frente a glTF: cuándo elegir cada uno](es/glb-vs-gltf.md)                                | [EN](en/glb-vs-gltf.md)                           | [Brief](../briefs/glb-vs-gltf.md)                           |
-| 2026-11-26 | Guía        | [Cómo integrar 3D en n8n con una API de imagen a 3D](es/integrar-3d-flujo-n8n.md)             | [EN](en/n8n-image-to-3d-workflow.md)              | [Brief](../briefs/n8n-image-to-3d-workflow.md)              |
-| 2026-11-27 | Guía        | [Cómo crear un modelo 3D de un mueble desde una foto](es/modelo-3d-mueble-desde-foto.md)      | [EN](en/furniture-model-from-photo.md)            | [Brief](../briefs/furniture-model-from-photo.md)            |
-| 2026-11-28 | Guía        | [Cómo comprimir un GLB y conservar el detalle](es/comprimir-glb.md)                           | [EN](en/compress-glb.md)                          | [Brief](../briefs/compress-glb.md)                          |
-| 2026-11-29 | Guía        | [Cómo añadir un visor 3D a WooCommerce](es/visor-3d-woocommerce.md)                           | [EN](en/woocommerce-3d-models.md)                 | [Brief](../briefs/woocommerce-3d-models.md)                 |
-| 2026-11-30 | Guía        | [Iluminación de producto: tres montajes repetibles](es/iluminacion-fotografia-de-producto.md) | [EN](en/product-photography-lighting.md)          | [Brief](../briefs/product-photography-lighting.md)          |
-| 2026-12-01 | Guía        | [Cómo revisar un mueble en realidad aumentada](es/realidad-aumentada-muebles.md)              | [EN](en/augmented-reality-furniture.md)           | [Brief](../briefs/augmented-reality-furniture.md)           |
-| 2026-12-02 | Guía        | [Agente de IA en n8n para crear modelos 3D con MCP](es/agente-ia-n8n-modelos-3d-mcp.md)       | [EN](en/n8n-ai-agent-3d-mcp.md)                   | [Brief](../briefs/n8n-ai-agent-3d-mcp.md)                   |
-| 2026-12-03 | Guía        | [Cuánto cuesta crear un modelo 3D de producto](es/cuanto-cuesta-un-modelo-3d.md)              | [EN](en/3d-modeling-cost.md)                      | [Brief](../briefs/3d-modeling-cost.md)                      |
-| 2026-12-04 | Guía        | [Cómo exportar GLB desde Blender con texturas](es/exportar-glb-blender.md)                    | [EN](en/blender-export-glb.md)                    | [Brief](../briefs/blender-export-glb.md)                    |
-| 2026-12-05 | Guía        | [Qué incluir en una ficha de producto de muebles](es/ficha-de-producto-muebles.md)            | [EN](en/furniture-product-page-best-practices.md) | [Brief](../briefs/furniture-product-page-best-practices.md) |
-| 2026-12-06 | Comparativa | [Alternativas a Sketchfab para publicar modelos 3D](es/alternativas-sketchfab.md)             | [EN](en/sketchfab.md)                             | [Brief](../briefs/sketchfab.md)                             |
-| 2026-12-07 | Guía        | [Fotografía de joyas: cómo controlar los reflejos](es/fotografia-de-joyas.md)                 | [EN](en/jewelry-photography.md)                   | [Brief](../briefs/jewelry-photography.md)                   |
-| 2026-12-08 | Guía        | [Cómo usar modelos 3D de muebles en home staging](es/modelos-3d-muebles-home-staging.md)      | [EN](en/3d-furniture-models-home-staging.md)      | [Brief](../briefs/3d-furniture-models-home-staging.md)      |
-| 2026-12-09 | Guía        | [Automatiza tu catálogo 3D con n8n sin duplicar trabajos](es/automatizar-catalogo-3d-n8n.md)  | [EN](en/n8n-batch-3d-catalog.md)                  | [Brief](../briefs/n8n-batch-3d-catalog.md)                  |
-| 2026-12-10 | Guía        | [GLB frente a USDZ para web y RA de Apple](es/glb-vs-usdz.md)                                 | [EN](en/glb-vs-usdz.md)                           | [Brief](../briefs/glb-vs-usdz.md)                           |
-| 2026-12-11 | Guía        | [Fotografía de producto con IA: qué crear y revisar](es/fotografia-de-producto-con-ia.md)     | [EN](en/ai-product-photography.md)                | [Brief](../briefs/ai-product-photography.md)                |
-| 2026-12-12 | Guía        | [OBJ frente a FBX: geometría y materiales](es/obj-vs-fbx.md)                                  | [EN](en/obj-vs-fbx.md)                            | [Brief](../briefs/obj-vs-fbx.md)                            |
-| 2026-12-13 | Guía        | [De una foto a una escena con Claude y Blender MCP](es/blender-mcp-flujo-producto.md)         | [EN](en/blender-mcp-product-workflow.md)          | [Brief](../briefs/blender-mcp-product-workflow.md)          |
-| 2026-12-14 | Guía        | [Fotografía de calzado: qué vistas necesita la ficha](es/fotografia-de-calzado.md)            | [EN](en/shoe-photography.md)                      | [Brief](../briefs/shoe-photography.md)                      |
-| 2026-12-15 | Guía        | [Cómo importar un mueble 3D en SketchUp](es/importar-muebles-3d-en-sketchup.md)               | [EN](en/import-furniture-models-into-sketchup.md) | [Brief](../briefs/import-furniture-models-into-sketchup.md) |
-| 2026-12-16 | Guía        | [Low poly o high poly en un visor de producto](es/low-poly-vs-high-poly.md)                   | [EN](en/low-poly-vs-high-poly.md)                 | [Brief](../briefs/low-poly-vs-high-poly.md)                 |
-| 2026-12-17 | Guía        | [Qué generador de modelos 3D con IA elegir](es/mejores-generadores-3d-ia.md)                  | [EN](en/best-ai-3d-model-generators.md)           | [Brief](../briefs/best-ai-3d-model-generators.md)           |
+| Fecha      | Artículo                                                                                      | EN                                                | DE                                            | FR                                               | IT                                              | PT                                                 |
+| ---------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------- | --------------------------------------------- | ------------------------------------------------ | ----------------------------------------------- | -------------------------------------------------- |
+| 2026-11-18 | [Fichas de producto con n8n: imágenes, texto y 3D](es/fichas-producto-n8n-imagenes-3d.md)     | [EN](en/n8n-product-pages-images-3d.md)           | [DE](de/produktseiten-mit-n8n.md)             | [FR](fr/fiche-produit-n8n.md)                    | [IT](it/schede-prodotto-n8n.md)                 | [PT](pt/fichas-de-produto-com-n8n.md)              |
+| 2026-11-19 | [Cómo fotografiar muebles para venderlos online](es/fotografia-de-muebles.md)                 | [EN](en/furniture-photography.md)                 | [DE](de/mobelfotografie-onlineshop.md)        | [FR](fr/photographier-des-meubles.md)            | [IT](it/fotografare-mobili-per-ecommerce.md)    | [PT](pt/fotografar-moveis-para-venda-online.md)    |
+| 2026-11-20 | [Cómo añadir modelos 3D a productos de Shopify](es/modelos-3d-shopify.md)                     | [EN](en/shopify-3d-models.md)                     | [DE](de/3d-modelle-shopify.md)                | [FR](fr/modeles-3d-shopify.md)                   | [IT](it/modelli-3d-shopify.md)                  | [PT](pt/modelos-3d-shopify.md)                     |
+| 2026-11-21 | [Qué ángulos mostrar en las fotos de un producto](es/angulos-fotografia-de-producto.md)       | [EN](en/product-photography-angles.md)            | [DE](de/perspektiven-produktfotografie.md)    | [FR](fr/angles-photo-produit.md)                 | [IT](it/angolazioni-fotografia-prodotto.md)     | [PT](pt/angulos-de-fotografia-de-produto.md)       |
+| 2026-11-22 | [Qué formato 3D elegir para web, RA o edición](es/formatos-de-archivo-3d.md)                  | [EN](en/3d-file-formats.md)                       | [DE](de/3d-dateiformate.md)                   | [FR](fr/formats-de-fichiers-3d.md)               | [IT](it/formati-file-3d.md)                     | [PT](pt/formatos-de-ficheiros-3d.md)               |
+| 2026-11-23 | [Meshy vs. Tripo para fotos de producto](es/meshy-vs-tripo.md)                                | [EN](en/meshy-vs-tripo.md)                        | [DE](de/meshy-vs-tripo.md)                    | [FR](fr/meshy-vs-tripo.md)                       | [IT](it/meshy-vs-tripo.md)                      | [PT](pt/meshy-vs-tripo.md)                         |
+| 2026-11-24 | [Cómo fotografiar un producto sobre fondo blanco](es/fotografia-producto-fondo-blanco.md)     | [EN](en/white-background-product-photography.md)  | [DE](de/produktfotos-weisser-hintergrund.md)  | [FR](fr/photo-produit-fond-blanc.md)             | [IT](it/fotografia-prodotto-sfondo-bianco.md)   | [PT](pt/fotografia-produto-fundo-branco.md)        |
+| 2026-11-25 | [GLB frente a glTF: cuándo elegir cada uno](es/glb-vs-gltf.md)                                | [EN](en/glb-vs-gltf.md)                           | [DE](de/glb-vs-gltf.md)                       | [FR](fr/glb-vs-gltf.md)                          | [IT](it/glb-vs-gltf.md)                         | [PT](pt/glb-vs-gltf.md)                            |
+| 2026-11-26 | [Cómo integrar 3D en n8n con una API de imagen a 3D](es/integrar-3d-flujo-n8n.md)             | [EN](en/n8n-image-to-3d-workflow.md)              | [DE](de/bild-zu-3d-n8n.md)                    | [FR](fr/image-vers-3d-n8n.md)                    | [IT](it/immagine-in-3d-n8n.md)                  | [PT](pt/imagem-para-3d-n8n.md)                     |
+| 2026-11-27 | [Cómo crear un modelo 3D de un mueble desde una foto](es/modelo-3d-mueble-desde-foto.md)      | [EN](en/furniture-model-from-photo.md)            | [DE](de/3d-mobelmodell-aus-foto.md)           | [FR](fr/modele-3d-de-meuble-depuis-une-photo.md) | [IT](it/modello-3d-mobile-da-foto.md)           | [PT](pt/modelo-3d-movel-a-partir-de-fotografia.md) |
+| 2026-11-28 | [Cómo comprimir un GLB y conservar el detalle](es/comprimir-glb.md)                           | [EN](en/compress-glb.md)                          | [DE](de/glb-komprimieren.md)                  | [FR](fr/compresser-glb.md)                       | [IT](it/comprimere-glb.md)                      | [PT](pt/comprimir-glb.md)                          |
+| 2026-11-29 | [Cómo añadir un visor 3D a WooCommerce](es/visor-3d-woocommerce.md)                           | [EN](en/woocommerce-3d-models.md)                 | [DE](de/woocommerce-3d-produktviewer.md)      | [FR](fr/visualiseur-3d-woocommerce.md)           | [IT](it/visualizzatore-3d-woocommerce.md)       | [PT](pt/visualizador-3d-woocommerce.md)            |
+| 2026-11-30 | [Iluminación de producto: tres montajes repetibles](es/iluminacion-fotografia-de-producto.md) | [EN](en/product-photography-lighting.md)          | [DE](de/beleuchtung-produktfotografie.md)     | [FR](fr/eclairage-photo-produit.md)              | [IT](it/illuminazione-fotografia-prodotto.md)   | [PT](pt/iluminacao-fotografia-de-produto.md)       |
+| 2026-12-01 | [Cómo revisar un mueble en realidad aumentada](es/realidad-aumentada-muebles.md)              | [EN](en/augmented-reality-furniture.md)           | [DE](de/mobel-augmented-reality.md)           | [FR](fr/realite-augmentee-meubles.md)            | [IT](it/realta-aumentata-mobili.md)             | [PT](pt/realidade-aumentada-moveis.md)             |
+| 2026-12-02 | [Agente de IA en n8n para crear modelos 3D con MCP](es/agente-ia-n8n-modelos-3d-mcp.md)       | [EN](en/n8n-ai-agent-3d-mcp.md)                   | [DE](de/n8n-mcp-client.md)                    | [FR](fr/client-mcp-n8n.md)                       | [IT](it/client-mcp-n8n.md)                      | [PT](pt/cliente-mcp-n8n.md)                        |
+| 2026-12-03 | [Cuánto cuesta crear un modelo 3D de producto](es/cuanto-cuesta-un-modelo-3d.md)              | [EN](en/3d-modeling-cost.md)                      | [DE](de/kosten-3d-modell-erstellen.md)        | [FR](fr/prix-modelisation-3d-produit.md)         | [IT](it/costo-modello-3d-prodotto.md)           | [PT](pt/custo-modelo-3d-de-produto.md)             |
+| 2026-12-04 | [Cómo exportar GLB desde Blender con texturas](es/exportar-glb-blender.md)                    | [EN](en/blender-export-glb.md)                    | [DE](de/blender-glb-exportieren.md)           | [FR](fr/exporter-glb-blender.md)                 | [IT](it/esportare-glb-blender.md)               | [PT](pt/exportar-glb-blender.md)                   |
+| 2026-12-05 | [Qué incluir en una ficha de producto de muebles](es/ficha-de-producto-muebles.md)            | [EN](en/furniture-product-page-best-practices.md) | [DE](de/produktseite-mobel.md)                | [FR](fr/fiche-produit-meuble.md)                 | [IT](it/scheda-prodotto-arredamento.md)         | [PT](pt/ficha-de-produto-de-moveis.md)             |
+| 2026-12-06 | [Alternativas a Sketchfab para publicar modelos 3D](es/alternativas-sketchfab.md)             | [EN](en/sketchfab.md)                             | [DE](de/sketchfab-alternativen.md)            | [FR](fr/alternatives-a-sketchfab.md)             | [IT](it/alternative-a-sketchfab.md)             | [PT](pt/alternativas-ao-sketchfab.md)              |
+| 2026-12-07 | [Fotografía de joyas: cómo controlar los reflejos](es/fotografia-de-joyas.md)                 | [EN](en/jewelry-photography.md)                   | [DE](de/schmuck-fotografieren.md)             | [FR](fr/photographie-bijoux.md)                  | [IT](it/fotografia-gioielli.md)                 | [PT](pt/fotografia-de-joias.md)                    |
+| 2026-12-08 | [Cómo usar modelos 3D de muebles en home staging](es/modelos-3d-muebles-home-staging.md)      | [EN](en/3d-furniture-models-home-staging.md)      | [DE](de/3d-mobel-home-staging.md)             | [FR](fr/modeles-3d-meubles-home-staging.md)      | [IT](it/modelli-3d-mobili-home-staging.md)      | [PT](pt/modelos-3d-moveis-home-staging.md)         |
+| 2026-12-09 | [Automatiza tu catálogo 3D con n8n sin duplicar trabajos](es/automatizar-catalogo-3d-n8n.md)  | [EN](en/n8n-batch-3d-catalog.md)                  | [DE](de/produktkatalog-automatisieren-n8n.md) | [FR](fr/automatiser-un-catalogue-produit-n8n.md) | [IT](it/automatizzare-catalogo-prodotti-n8n.md) | [PT](pt/automatizar-catalogo-de-produtos-n8n.md)   |
+| 2026-12-10 | [GLB frente a USDZ para web y RA de Apple](es/glb-vs-usdz.md)                                 | [EN](en/glb-vs-usdz.md)                           | [DE](de/glb-vs-usdz.md)                       | [FR](fr/glb-vs-usdz.md)                          | [IT](it/glb-vs-usdz.md)                         | [PT](pt/glb-vs-usdz.md)                            |
+| 2026-12-11 | [Fotografía de producto con IA: qué crear y revisar](es/fotografia-de-producto-con-ia.md)     | [EN](en/ai-product-photography.md)                | [DE](de/ki-produktfotografie.md)              | [FR](fr/photo-produit-ia.md)                     | [IT](it/fotografia-prodotto-ia.md)              | [PT](pt/fotografia-de-produto-com-ia.md)           |
+| 2026-12-12 | [OBJ frente a FBX: geometría y materiales](es/obj-vs-fbx.md)                                  | [EN](en/obj-vs-fbx.md)                            | [DE](de/obj-vs-fbx.md)                        | [FR](fr/obj-vs-fbx.md)                           | [IT](it/obj-vs-fbx.md)                          | [PT](pt/obj-vs-fbx.md)                             |
+| 2026-12-13 | [De una foto a una escena con Claude y Blender MCP](es/blender-mcp-flujo-producto.md)         | [EN](en/blender-mcp-product-workflow.md)          | [DE](de/blender-mcp-claude.md)                | [FR](fr/blender-mcp-claude.md)                   | [IT](it/blender-mcp-claude.md)                  | [PT](pt/blender-mcp-claude.md)                     |
+| 2026-12-14 | [Fotografía de calzado: qué vistas necesita la ficha](es/fotografia-de-calzado.md)            | [EN](en/shoe-photography.md)                      | [DE](de/schuhe-fotografieren.md)              | [FR](fr/photographier-des-chaussures.md)         | [IT](it/fotografare-scarpe.md)                  | [PT](pt/fotografar-calcado.md)                     |
+| 2026-12-15 | [Cómo importar un mueble 3D en SketchUp](es/importar-muebles-3d-en-sketchup.md)               | [EN](en/import-furniture-models-into-sketchup.md) | [DE](de/mobel-in-sketchup-importieren.md)     | [FR](fr/importer-des-meubles-3d-sketchup.md)     | [IT](it/importare-mobili-3d-sketchup.md)        | [PT](pt/importar-moveis-3d-sketchup.md)            |
+| 2026-12-16 | [Low poly o high poly en un visor de producto](es/low-poly-vs-high-poly.md)                   | [EN](en/low-poly-vs-high-poly.md)                 | [DE](de/low-poly-vs-high-poly.md)             | [FR](fr/low-poly-vs-high-poly.md)                | [IT](it/low-poly-vs-high-poly.md)               | [PT](pt/low-poly-vs-high-poly.md)                  |
+| 2026-12-17 | [Qué generador de modelos 3D con IA elegir](es/mejores-generadores-3d-ia.md)                  | [EN](en/best-ai-3d-model-generators.md)           | [DE](de/beste-ki-3d-generatoren.md)           | [FR](fr/meilleurs-generateurs-3d-ia.md)          | [IT](it/migliori-generatori-3d-ia.md)           | [PT](pt/melhores-geradores-3d-com-ia.md)           |
 
-## Evidencia de la serie n8n
+## Revisión
 
-## Evidence and validation boundary
-
-- Read production OpenAPI 1.0.0 (24 paths) and public MCP discovery (16 tools), plus repository
-  handlers, on 17 November 2026. Read-only calls did not generate anything or spend credits.
-- Consulted current official n8n, Shopify, Khronos and MCP documentation; citations are inline.
-  Context7 was attempted but returned a monthly-quota error.
-- The recipes use built-in HTTP Request nodes or a compatible MCP client. They do not claim
-  the easyrender community node is published, verified or available on every n8n plan.
-- No authenticated n8n end-to-end execution or merchant publication was performed. These are
-  configuration recipes, not downloadable, tested workflow JSON files or customer case studies.
-- Independent editorial review is recorded in the four [research briefs](../briefs/).
-  Hero/screenshot and wider per-query SERP review remain publication-gate work.
-
-## Visual assets
-
-Eight original flow diagrams are ready in [assets](assets), one EN and one ES version per topic.
-They explain the architecture and are labeled as diagrams, not screenshots or executed results.
-They do not replace the required hero illustrations or real screenshots.
-
-Each brief contains a specific Higgsfield hero prompt and the real screenshot to capture. The
-user deferred Higgsfield login, so no AI image generation was performed through another provider.
-Images must be registered in `BLOG_IMAGES` and relative diagram links converted to registered
-public paths before moving drafts into live content.
-
-## Validación y publicación
-
-- Los 26 textos nuevos son primeros borradores. Los cuatro de n8n conservan su revisión anterior y la evidencia ya incorporada.
-- Cerrar SERP por mercado y revisión editorial independiente. Revisar los textos en cada variante y adecuar el contenido a la estructura de guía o comparativa.
-- Completar una portada A2 única y los recursos requeridos de cada pieza. Los briefs incluyen la toma concreta, la prueba y la portada prevista.
-- Adjuntar evidencia en los tutoriales de plataforma y las comparativas. No atribuir al producto una prueba aún pendiente.
-- Registrar el visto bueno de las versiones, mover a sus carpetas de producción, enlazar los activos, ejecutar los checks y examinar el preview.
-- Confirmar las fechas en el PR de publicación. Si una fecha ha vencido sin release, acordar el nuevo día antes de mover la pieza. Una fecha vencida se haría visible al desplegar.
-- Tras la aprobación editorial explícita, fusionar y ejecutar Release. Verificar URLs, alternates y sitemap tras el horario de publicación.
-
-[Mediciones y renders de los experimentos locales de Blender](evidence/README.md).
+- Los cargadores del sitio aceptan las 180 versiones. Verifiqué slugs, idioma, fecha, imágenes y enlaces internos contra las rutas de la serie y los sitemaps públicos.
+- Cada pieza lleva una [portada de Blender](covers) con su pie y texto alternativo en el idioma de la página. Los cuatro flujos de n8n tienen [diagramas localizados](assets).
+- La [evidencia de las pruebas](evidence) incluye resultados de reabrir archivos en Blender, una comparativa visual de Meshy y Tripo y un flujo de n8n que verifica archivos públicos y genera registros de borrador de prueba.
+- El pase editorial incluyó una muestra de resultados de búsqueda locales y comprobación de fuentes oficiales. Faltan comprobaciones de los resultados de búsqueda por consulta y país, y cerrar la revisión técnica y editorial independiente por artículo.
+- Quedan 75 respuestas que se salen de la extensión editorial y 24 temas que aún llevan una marca de evidencia visual adicional. La prueba de n8n usa archivos existentes y cubre la unión y validación. La generación y la entrega efectiva a la tienda quedan pendientes.
+- La revisión humana por idioma y la aprobación de publicación se registran en el PR. [Pipeline editorial](../PIPELINE.md).
