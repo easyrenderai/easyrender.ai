@@ -91,7 +91,7 @@ Das Grundprinzip ist bei diesen Werkzeugen ähnlich: ein scharfes Foto des ganze
 ![Eine matte Steinzeugvase auf ihrem Katalogfoto, frontal vor weißem Hintergrund](/showcase/vase.jpg "Das eine Foto.")
 ![Das 3D-Modell, das easyrender aus diesem Foto gebaut hat, eine helle Steinzeugvase in einem Viewer, die sich drehen lässt](/showcase/vase.glb "Das Modell, das easyrender daraus gebaut hat, über ein kostenloses Ansichtsblatt, Texturen für diese Seite komprimiert: 16.708 Dreiecke. Dreh es und prüf die Rückseite, die das Foto nie gezeigt hat.")
 
-easyrender ist eines dieser Werkzeuge. Es zeichnet zuerst kostenlos ein Blatt mit neun Ansichten, acht rund um das Objekt in 45-Grad-Schritten und eine von oben, und baut dann aus diesen Ansichten das Modell. Ein fertiges Modell kostet {{renderCredits}} Credits ({{renderPrice}}). [Foto hochladen](/de)
+easyrender ist eines dieser Werkzeuge. Es zeichnet zuerst kostenlos ein Blatt mit neun Ansichten, acht rund um das Objekt in 45-Grad-Schritten und eine von oben, und baut dann aus diesen Ansichten das Modell. Ein fertiges Modell kostet {{renderCredits}} Credits ({{renderPrice}}). [Foto hochladen](/de#try)
 
 Es modelliert ein Objekt nach dem anderen, etwa Möbel, Deko und Gebäudefassaden. Meshy und Tripo machen aus Bildern ebenfalls 3D-Modelle und bieten dazu Text-zu-3D, jeweils mit eigenen Preisen. Genauer vorgestellt werden sie in [Alternative zu Meshy AI](/de/vergleich/vergleich-meshy) und [Alternative zu Tripo AI](/de/vergleich/vergleich-tripo).
 

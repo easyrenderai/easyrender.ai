@@ -8,7 +8,7 @@ updated: 2026-11-15
 keyword: software de fotogrametria
 author: Jorge Rodríguez
 authorType: person
-cta: Si solo tienes una foto de catálogo de la pieza, mírala gratis desde todos los ángulos antes de decidir si hace falta escanearla.
+cta: ¿Solo tienes una foto de catálogo? Revisa gratis las vistas generadas. Si necesitas medidas verificables o capturar lo que no se ve en la foto, opta por la fotogrametría.
 ---
 
 El software de fotogrametría construye un modelo 3D a partir de muchas fotos solapadas de un objeto que tienes delante. RealityScan, Agisoft Metashape, Meshroom, Polycam y 3DF Zephyr son los habituales. Si solo tienes una foto, como la de catálogo de un proveedor, la fotogrametría no puede ni empezar, y la vía es una herramienta de imagen a 3D.
@@ -65,7 +65,7 @@ La imagen a 3D parte de una sola foto y deduce los lados que la cámara no vio. 
 
 easyrender trabaja así, en dos fases, y combina varios modelos de IA. Primero dibuja gratis una hoja de ángulos: nueve vistas del objeto, ocho a su alrededor en pasos de 45 grados y una desde arriba. Tú revisas esa hoja, y solo gastas créditos cuando te convence.
 
-Después, la generación lee esas nueve vistas y crea un modelo con textura, que descargas en GLB y USDZ. Un modelo cuesta {{renderCredits}} créditos ({{renderPrice}}), y la [página de precios](/es/precios) recoge los paquetes. [Sube una foto](/es) para ver gratis la hoja de ángulos.
+Después, la generación lee esas nueve vistas y crea un modelo con textura, que descargas en GLB y USDZ. Un modelo cuesta {{renderCredits}} créditos ({{renderPrice}}), y la [página de precios](/es/precios) recoge los paquetes. [Sube una foto](/es#try) para ver gratis la hoja de ángulos.
 
 ## ¿Qué quieres conseguir y cómo lo mides?
 

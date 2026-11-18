@@ -22,7 +22,9 @@ async function exportUsdz(glbUrl: string): Promise<Blob> {
     import('three/addons/loaders/GLTFLoader.js'),
     import('three/addons/exporters/USDZExporter.js'),
   ]);
-  const data = await (await fetch(glbUrl)).arrayBuffer();
+  const response = await fetch(glbUrl);
+  if (!response.ok) throw new Error('Model file is unavailable');
+  const data = await response.arrayBuffer();
   const gltf = await new GLTFLoader().parseAsync(data, '');
   const bytes = await new USDZExporter().parseAsync(gltf.scene);
   return new Blob([bytes as BlobPart], { type: 'model/vnd.usdz+zip' });
@@ -54,13 +56,13 @@ export function ModelView({
   const t = useTranslations('Render');
   const [exporting, setExporting] = useState(false);
   const [converting, setConverting] = useState<ExportFormat | null>(null);
-  const [hasExportError, setHasExportError] = useState(false);
+  const [exportError, setExportError] = useState<'usdz' | 'converted' | null>(null);
   const [viewer, setViewer] = useState<HTMLElement | null>(null);
 
   async function exportAs(format: ExportFormat) {
     if (!exportsUrl) return;
     setConverting(format);
-    setHasExportError(false);
+    setExportError(null);
     try {
       const response = await fetch(exportsUrl, {
         method: 'POST',
@@ -73,7 +75,7 @@ export function ModelView({
       // The link answers with a download, so the page stays where it is.
       window.location.assign(data.url);
     } catch {
-      setHasExportError(true);
+      setExportError('converted');
     } finally {
       setConverting(null);
     }
@@ -89,25 +91,29 @@ export function ModelView({
             onClick={() => captureBrowser('model_download_requested', { format: 'glb' })}
           >
             <Download />
-            GLB
+            {t('downloadGlb')}
           </a>
         </Button>
         <Button
           variant="outline"
           size="sm"
-          disabled={exporting}
+          disabled={exporting || converting !== null}
+          aria-busy={exporting}
           onClick={async () => {
             setExporting(true);
+            setExportError(null);
             try {
               save(await exportUsdz(src), `easyrender-${name}.usdz`);
               captureBrowser('model_exported', { format: 'usdz' });
+            } catch {
+              setExportError('usdz');
             } finally {
               setExporting(false);
             }
           }}
         >
           {exporting ? <Loader2 className="animate-spin" /> : <Download />}
-          USDZ
+          {t('downloadUsdz')}
         </Button>
         {exportsUrl &&
           EXPORT_FORMATS.map((format) => (
@@ -115,7 +121,7 @@ export function ModelView({
               key={format}
               variant="outline"
               size="sm"
-              disabled={converting !== null}
+              disabled={exporting || converting !== null}
               aria-busy={converting === format}
               onClick={() => exportAs(format)}
             >
@@ -124,9 +130,9 @@ export function ModelView({
             </Button>
           ))}
       </div>
-      {hasExportError && (
+      {exportError && (
         <p role="alert" className="text-sm text-destructive">
-          {t('errors.export')}
+          {t(exportError === 'usdz' ? 'errors.usdz' : 'errors.export')}
         </p>
       )}
     </div>

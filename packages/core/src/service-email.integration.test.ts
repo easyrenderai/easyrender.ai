@@ -226,7 +226,7 @@ describe.skipIf(!url)('service email outbox: scratch DB and fake transport only'
     await runServiceEmails(texts, fake);
     expect(fake).toHaveBeenCalledTimes(1);
     const body = String(vi.mocked(fake).mock.calls[0][1]?.body);
-    expect(body).toContain(`/r/${render.id}`);
+    expect(body).toContain(`next=${encodeURIComponent(`/r/${render.id}`)}`);
     expect(body).not.toContain('private/model');
     const unverified = await users(false);
     const other = await db().render.create({
@@ -393,6 +393,43 @@ describe.skipIf(!url)('service email outbox: scratch DB and fake transport only'
         where: { userId: u.id, status: 'cancelled', payloadEncrypted: null },
       }),
     ).toBe(1);
+  });
+  it('uses the model’s recorded interface language for a transactional email and its return', async () => {
+    const u = await users();
+    const render = await db().render.create({
+      data: {
+        userId: u.id,
+        status: 'ready',
+        glbKey: 'fixture.glb',
+        sourceKey: 'fixture.jpg',
+        landing_path: '/es',
+        notificationLocale: 'fr',
+      },
+    });
+    await db().$transaction((tx) => queueRenderServiceEmail(render.id, tx));
+    const delivery = await db().serviceEmailDelivery.findFirstOrThrow({
+      where: { renderId: render.id },
+    });
+    expect(delivery.locale).toBe('fr');
+    await runServiceEmails(
+      {
+        ...texts,
+        fr: {
+          render_ready: { ...copy, lang: 'fr', subject: 'Votre modèle est prêt' },
+          render_failed: copy,
+        },
+      },
+      fake,
+      { userId: u.id },
+    );
+    const payload = JSON.parse(String(vi.mocked(fake).mock.calls[0][1]?.body));
+    expect(payload.subject).toBe('Votre modèle est prêt');
+    expect(payload.html).toContain('lang="fr"');
+    const url = new URL(String(payload.text).match(/https?:\/\/[^\s]+/)?.[0] ?? '');
+    expect(url.pathname).toBe('/account');
+    expect(url.searchParams.get('next')).toBe(`/r/${render.id}`);
+    expect(url.searchParams.get('locale')).toBe('fr');
+    await db().render.delete({ where: { id: render.id } });
   });
   it('does not backfill past renders, anonymous work or events that occurred while disabled', async () => {
     const u = await users();

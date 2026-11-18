@@ -22,3 +22,14 @@ it('renders an eager angle image and loading feedback together', () => {
   expect(html).toContain('role="status"');
   expect(html).toContain('sheetLoading');
 });
+
+it('labels the main download as an action and explains which format is for Apple', async () => {
+  const { ModelView } = await import('@/components/model-view');
+  const html = renderToStaticMarkup(
+    createElement(ModelView, { src: '/fixture.glb', name: 'Chair', downloadUrl: '/fixture.glb' }),
+  );
+  expect(html).toContain('href="/fixture.glb"');
+  expect(html).toContain('downloadGlb');
+  expect(html).toContain('downloadUsdz');
+  expect(html).not.toContain('BLEND');
+});

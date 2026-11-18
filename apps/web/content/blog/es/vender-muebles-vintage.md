@@ -128,13 +128,13 @@ Cada uno hace un trabajo distinto en el anuncio. El modelo responde a preguntas 
 
 Así que usa el modelo para la forma y las proporciones, y los primeros planos como prueba del estado. En una pieza vintage, el modelo va junto a los primeros planos de los defectos, nunca en su lugar.
 
-Cada marketplace pone sus propias normas para los archivos 3D, así que en la práctica mandas un enlace cuando alguien te pide más ángulos (en easyrender, el modelo es público por defecto y ocultarlo hace que el enlace deje de funcionar), o añades el GLB a tu tienda Shopify como contenido multimedia del producto.
+Cada marketplace pone sus propias normas para los archivos 3D, así que en la práctica mandas un enlace cuando alguien te pide más ángulos (en Easy Render, puedes compartir la página de un modelo terminado que hayas publicado), o añades el GLB a tu tienda Shopify como contenido multimedia del producto.
 
 Las vías para conseguir un modelo están en [cómo hacer un modelo 3D](/es/guias/como-hacer-un-modelo-3d), y lo que hace una tienda con él, en [modelos 3D para ecommerce](/es/guias/modelos-3d-para-ecommerce).
 
 Si dudas entre encargarlo o partir de una foto, lee [contratar a un modelador 3D o usar IA](/es/comparativas/modelador-3d-o-ia).
 
-easyrender da a cada modelo terminado de su galería pública una página que puedes compartir con un enlace. Los modelos son públicos por defecto. Hoy ese enlace solo funciona mientras el modelo está en la galería pública; si lo ocultas, el enlace deja de funcionar. Pon el enlace en tu respuesta al comprador, junto a los primeros planos y tus medidas, que se quedan en el anuncio.
+Tus modelos son privados por defecto. Si publicas un modelo terminado en la galería de Easy Render, puedes compartir el enlace a su página. Pon el enlace en tu respuesta al comprador, junto a los primeros planos y tus medidas, que se quedan en el anuncio.
 
 ## ¿Cómo sabes si un anuncio funciona?
 

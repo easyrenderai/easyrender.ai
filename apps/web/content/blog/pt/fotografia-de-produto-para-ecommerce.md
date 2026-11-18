@@ -8,7 +8,7 @@ updated: 2026-11-15
 keyword: fotografia de produto
 author: Jorge Rodríguez
 authorType: person
-cta: Quando a próxima imagem principal a três quartos estiver pronta, passe-a por uma ferramenta de image-to-3D e veja os lados escondidos, grátis.
+cta: Carrega a fotografia principal de um produto e analisa gratuitamente as vistas geradas de outros ângulos.
 ---
 
 Uma boa fotografia de produto para ecommerce exige condições que se possam repetir: luz suave, fundo liso, câmara num tripé a meia altura do produto e a mesma lista de fotografias para cada artigo. Para a maioria das lojas pequenas, uma janela, uma placa branca e um telemóvel são suficientes, sem flashes de estúdio.
@@ -130,7 +130,7 @@ A exportação de 2048 píxeis de que falámos chega bem. O easyrender rejeita f
 
 Uma rotação 360 é outra coisa: um conjunto de fotografias tiradas num prato giratório, que o cliente percorre. Um modelo 3D é um único ficheiro que o cliente roda à vontade. [Fotografia 360 ou modelo 3D](/pt/comparacoes/360-vs-3d) explica como se faz cada um, quanto custa e quando escolher qual.
 
-O easyrender constrói um modelo a partir de uma dessas fotografias e mostra primeiro uma pré-visualização grátis de todos os ângulos. Funciona com peças soltas, como um candeeiro de pé ou uma poltrona, por isso dê-lhe a peça sozinha e não uma divisão decorada. [Carregar uma fotografia](/pt)
+O easyrender constrói um modelo a partir de uma dessas fotografias e mostra primeiro uma pré-visualização grátis de todos os ângulos. Funciona com peças soltas, como um candeeiro de pé ou uma poltrona, por isso dê-lhe a peça sozinha e não uma divisão decorada. [Carregar uma fotografia](/pt#try)
 
 ## Quais são os erros mais comuns?
 

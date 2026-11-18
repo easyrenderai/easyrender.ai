@@ -1,7 +1,10 @@
 import { headers } from 'next/headers';
 import { getLocale, getTranslations } from 'next-intl/server';
+import { Suspense } from 'react';
+import { AppLocalePicker } from '@/components/app-locale-picker';
 import { LocaleMenu } from '@/components/locale-menu';
 import { HTML_LANG, LOCALE_NAMES, type Locale, PATH_HEADER } from '@/i18n/config';
+import { isAppLocalePath } from '@/lib/app-locale';
 import { pickerPaths } from '@/lib/seo/equivalents';
 import { cn } from '@/lib/utils';
 
@@ -18,7 +21,17 @@ export async function LocaleSwitcher({ className }: { className?: string } = {})
     getTranslations('LocaleSwitcher'),
     headers(),
   ]);
-  const options = pickerPaths(headerList.get(PATH_HEADER) ?? '/');
+  const pathname = headerList.get(PATH_HEADER) ?? '/';
+  if (isAppLocalePath(pathname)) {
+    return (
+      <nav aria-label={t('label')} className={cn('flex items-center', className)}>
+        <Suspense>
+          <AppLocalePicker />
+        </Suspense>
+      </nav>
+    );
+  }
+  const options = pickerPaths(pathname);
   if (options.length < 2) return null;
 
   return (

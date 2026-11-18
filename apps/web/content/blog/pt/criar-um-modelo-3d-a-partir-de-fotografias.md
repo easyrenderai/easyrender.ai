@@ -8,7 +8,7 @@ updated: 2026-11-15
 keyword: modelo 3d a partir de foto
 author: Jorge Rodríguez
 authorType: person
-cta: Escolha uma fotografia nítida do seu catálogo, uma cadeira ou um aparador fotografados a três quartos, e veja-a de todos os ângulos antes de gastar um crédito.
+cta: Escolhe uma fotografia nítida do teu catálogo e verifica gratuitamente as vistas do produto antes de criares o modelo 3D.
 ---
 
 Para criar um modelo 3D a partir de uma fotografia, basta um disparo nítido de um único objeto e uma ferramenta de image-to-3D, que deduz os lados que a câmara não viu. A alternativa é a fotogrametria, que pede pelo menos 20 fotografias sobrepostas, tiradas à volta da peça. Em ambos os casos, a fotografia decide quase tudo.
@@ -103,7 +103,7 @@ A contagem dos elementos precisa de uma verificação humana. Conte as portas, a
 
 O easyrender aceita uma nota curta com cada fotografia, para o que a imagem esconde: «quatro portas», «costas abertas», «puxadores em latão». A folha acima é um resultado real do easyrender a partir da fotografia do passo 1. A pré-visualização é grátis, duas por dia sem créditos, e só gasta créditos se gerar o modelo.
 
-A pré-visualização grátis leva uma marca de água «easyrender.ai preview» que a folha acima não tem. [Carregar uma fotografia](/pt)
+A imagem acima é um exemplo final. A pré-visualização gratuita tem uma marca de água. [Carregar uma fotografia](/pt#try)
 
 ## Passo 4: gere o modelo e descarregue os ficheiros
 

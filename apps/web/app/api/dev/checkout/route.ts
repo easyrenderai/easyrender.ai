@@ -14,7 +14,7 @@ export const GET = (request: Request) =>
       credits: url.searchParams.get('credits'),
     });
     await devGrant(userId, request_, anonId);
-    const destination = new URL('/credits?status=success', url);
+    const destination = new URL('/credits', url);
     const next = checkoutReturnPath(url.searchParams.get('next'));
     if (next) destination.searchParams.set('next', next);
     return NextResponse.redirect(destination);

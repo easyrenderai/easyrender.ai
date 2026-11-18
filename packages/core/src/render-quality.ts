@@ -13,6 +13,9 @@ export type RenderQuality = {
   draftSheet?: SheetMeasures & { warnings: string[] };
   // One recovery of an invalid initial sheet at EasyRender's cost. Not a paid user redraw.
   sheetRecoveryAttempts?: number;
+  // Set with the ledger refund after a paid correction fails. Cleared when another is requested.
+  refundedCorrectionCredits?: number;
+  failedStep?: 'preview' | 'model';
   finalSheet?: SheetMeasures & { warnings: string[] };
   // True when the paid build went on with the draft because the redraw failed or was rejected;
   // `finalSheetProblem` says why (a guardrail code, or the model's own failure).

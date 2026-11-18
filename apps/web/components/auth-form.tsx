@@ -6,24 +6,20 @@ import { useLocale, useTranslations } from 'next-intl';
 import { AuthFields, type AuthMode } from '@/components/auth-fields';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { authProjectPath, authReturnPath, localizedAuthPath } from '@/lib/app-locale';
 import { hasPending } from '@/lib/pending-upload';
 
-export function AuthForm({
-  mode,
-  recovery,
-}: {
-  mode: AuthMode;
-  recovery?: { label: string; locale: string };
-}) {
+export function AuthForm({ mode, recovery }: { mode: AuthMode; recovery?: { label: string } }) {
   const t = useTranslations('Auth');
   const locale = useLocale();
-  const prefix = locale === 'en' ? '' : `/${locale}`;
   const router = useRouter();
   const params = useSearchParams();
-  const raw = params.get('next');
-  const requested = raw?.startsWith('/') && !raw.startsWith('//') ? raw : null;
+  const requested = authReturnPath(params.get('next'));
   const next = requested ?? '/dashboard';
-  const other = mode === 'sign-up' ? 'sign-in' : 'sign-up';
+  const other = mode === 'sign-up' ? '/sign-in' : '/sign-up';
+  const project = authProjectPath(requested);
+  const forgot = new URLSearchParams({ locale });
+  if (project) forgot.set('next', project);
 
   return (
     <Card className="mx-auto w-full max-w-sm">
@@ -43,6 +39,7 @@ export function AuthForm({
         )}
         <AuthFields
           mode={mode}
+          project={project}
           callbackURL={async () => (!requested && (await hasPending()) ? '/library' : next)}
           onDone={async () => {
             // A photo attached on the home page before signing up goes to the Library.
@@ -52,7 +49,7 @@ export function AuthForm({
         />
         {mode === 'sign-in' && recovery && (
           <Link
-            href={`/forgot-password?locale=${recovery.locale}`}
+            href={`/forgot-password?${forgot}`}
             className="py-2 text-center text-sm underline underline-offset-4"
           >
             {recovery.label}
@@ -61,7 +58,7 @@ export function AuthForm({
         <p className="text-center text-sm text-muted-foreground">
           {mode === 'sign-up' ? t('haveAccount') : t('newHere')}{' '}
           <Link
-            href={`${prefix}/${other}?next=${encodeURIComponent(next)}`}
+            href={`${localizedAuthPath(locale, other)}?next=${encodeURIComponent(next)}`}
             className="text-foreground underline underline-offset-4"
           >
             {mode === 'sign-up' ? t('signIn') : t('createAnAccount')}

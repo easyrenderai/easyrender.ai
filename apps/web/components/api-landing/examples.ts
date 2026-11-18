@@ -13,13 +13,7 @@ export const API_EXAMPLES = [
   },
   {
     key: 'visibility',
-    code: `export EASYRENDER_RENDER_ID="REPLACE_WITH_RESPONSE_ID"
-
-curl --fail-with-body --request PATCH \\
-  "$EASYRENDER_URL/api/renders/$EASYRENDER_RENDER_ID" \\
-  --header "Authorization: Bearer $EASYRENDER_API_KEY" \\
-  --header "Content-Type: application/json" \\
-  --data '{"isPublic":false}'`,
+    code: `export EASYRENDER_RENDER_ID="REPLACE_WITH_RESPONSE_ID"`,
   },
   {
     key: 'preview',

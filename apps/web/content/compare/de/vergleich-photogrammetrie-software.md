@@ -59,7 +59,7 @@ Bild-zu-3D startet mit einem einzigen Foto und leitet die Seiten ab, die die Kam
 
 easyrender arbeitet so, in zwei Stufen. Zuerst zeichnet es ein kostenloses Ansichtsblatt: neun Ansichten des Objekts, acht in 45-Grad-Schritten rundherum und eine von oben. Du prüfst dieses Blatt und gibst Credits erst aus, wenn es stimmt.
 
-Der Modellaufbau liest dann diese neun Ansichten und erstellt ein texturiertes Modell, das du als GLB und USDZ herunterlädst. Ein Modell kostet {{renderCredits}} Credits, also {{renderPrice}}, die [Preisseite](/de/preise) listet die Pakete. [Lade ein Foto hoch](/de) und sieh dir das Ansichtsblatt kostenlos an.
+Der Modellaufbau liest dann diese neun Ansichten und erstellt ein texturiertes Modell, das du als GLB und USDZ herunterlädst. Ein Modell kostet {{renderCredits}} Credits, also {{renderPrice}}, die [Preisseite](/de/preise) listet die Pakete. [Lade ein Foto hoch](/de#try) und sieh dir das Ansichtsblatt kostenlos an.
 
 ## Was willst du erreichen, und wie misst du es?
 

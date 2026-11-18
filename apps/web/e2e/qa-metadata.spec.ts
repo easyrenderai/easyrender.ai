@@ -61,6 +61,29 @@ test('public showcase exposes its own social image', async ({ page }) => {
     /\/showcase\/vase/,
   );
 });
+test('Spanish store setup separates assisted install, manual install and free preview', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 900 });
+  await page.goto(`${base}/es/ecommerce`);
+  const panel = page.getByRole('tabpanel');
+  await expect(
+    panel.getByRole('link', { name: /Reservar una llamada sobre la app/ }),
+  ).toHaveAttribute('href', /^https:\/\/calendar\.app\.google\//);
+  await page.getByRole('tab', { name: 'WooCommerce' }).click();
+  await expect(panel.getByRole('link', { name: /Ver cómo instalar el plugin/ })).toHaveAttribute(
+    'href',
+    /\/plugins\/woocommerce#install-until-it-is-listed$/,
+  );
+  await expect(
+    panel.getByRole('link', { name: /Crear cuenta para obtener una clave/ }),
+  ).toHaveAttribute('href', '/es/sign-up?next=%2Fconnectors');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole('tab', { name: 'Otra plataforma' }).click();
+  await panel.getByRole('link', { name: 'Probar la vista previa gratis' }).click();
+  await page.waitForURL(`${base}/es#try`);
+  await expect(page.locator('#try')).toBeVisible();
+});
 for (const colorScheme of ['light', 'dark'] as const) {
   test(`Spanish legal pages remain readable at 375px with ${colorScheme} preference`, async ({
     page,

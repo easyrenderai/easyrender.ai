@@ -33,6 +33,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { UpscaleAction } from '@/components/upscale/upscale-action';
 import { latestUpscale, useUpscales } from '@/components/upscale/use-upscales';
 
+import { useActivationError } from '@/lib/activation-errors';
+
 const RUNNING = new Set(['drafting', 'processing']);
 // Mirrors MAX_NOTE_LENGTH in the harness, which a client component cannot import (it pulls in sharp).
 const NOTE_MAX_LENGTH = 500;
@@ -45,6 +47,7 @@ export function ProductViewsDetail({
   balance: number;
 }) {
   const t = useTranslations('ProductViews');
+  const localizedError = useActivationError();
   const format = useFormatter();
   const router = useRouter();
   const client = useQueryClient();
@@ -78,26 +81,33 @@ export function ProductViewsDetail({
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ note }),
-    });
-    const data = await response.json().catch(() => ({}));
-    if (response.ok) {
+    }).catch(() => null);
+    const data = (await response?.json().catch(() => null)) ?? {};
+    if (response?.ok) {
       client.setQueryData(queryKey, data as ViewSetView);
       setPolishing(null);
       setNote('');
-    } else setDialogError(data.error ?? t('errors.polish'));
+    } else {
+      setDialogError(
+        localizedError(
+          data,
+          t(data.code === 'upstream' ? 'errors.polishRefunded' : 'errors.polish'),
+        ),
+      );
+    }
     setIsBusy(false);
   }
 
   async function buildThreeD() {
     setIsBusy(true);
     setError(null);
-    const response = await fetch(`${base}/render`, { method: 'POST' });
-    const data = await response.json().catch(() => ({}));
-    if (response.ok) {
+    const response = await fetch(`${base}/render`, { method: 'POST' }).catch(() => null);
+    const data = (await response?.json().catch(() => null)) ?? {};
+    if (response?.ok && typeof data.renderId === 'string') {
       router.push(`/r/${data.renderId}`);
       return;
     }
-    setError(data.error ?? t('errors.render'));
+    setError(localizedError(data, t('errors.render')));
     setIsBusy(false);
   }
 
@@ -240,6 +250,18 @@ export function ProductViewsDetail({
               <Button variant="outline" asChild>
                 <Link href={`/r/${set.renderId}`}>{t('openRender')}</Link>
               </Button>
+            ) : balance < set.buildCredits ? (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  {t('creditBalance', {
+                    credits: format.number(set.buildCredits),
+                    balance: format.number(balance),
+                  })}
+                </p>
+                <Button variant="outline" asChild>
+                  <Link href={`/credits?next=/views/${set.id}`}>{t('buyToBuild')}</Link>
+                </Button>
+              </div>
             ) : (
               <Button variant="outline" onClick={buildThreeD} disabled={isBusy}>
                 {isBusy ? <Loader2 className="animate-spin" /> : <Sparkles />}

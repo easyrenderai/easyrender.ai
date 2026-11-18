@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useActivationError } from '@/lib/activation-errors';
 import {
   attribution,
   attributionHeaders,
@@ -27,6 +28,7 @@ export { prepare };
 
 export function PromptBar({ signedIn, compact = false }: { signedIn: boolean; compact?: boolean }) {
   const t = useTranslations('PromptBar');
+  const localizedError = useActivationError();
   const showcase = useTranslations('Showcase');
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
@@ -70,7 +72,12 @@ export function PromptBar({ signedIn, compact = false }: { signedIn: boolean; co
     try {
       const body = new FormData();
       body.append('attribution', JSON.stringify(attribution()));
-      body.append('image', await prepare(file, t('errors.unreadable')), 'source.jpg');
+      const photo = await prepare(file).catch(() => null);
+      if (!photo) {
+        setError(t('errors.unreadable'));
+        return;
+      }
+      body.append('image', photo, 'source.jpg');
       body.append('prompt', prompt);
       body.append('isPublic', 'false');
       requestKey.current ??= crypto.randomUUID();
@@ -81,22 +88,17 @@ export function PromptBar({ signedIn, compact = false }: { signedIn: boolean; co
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok || typeof data.id !== 'string') {
-        const photoErrors: Record<string, string> = {
-          bad_image: t('errors.unreadable'),
-          photo_too_small: t('errors.small'),
-          photo_too_large: t('errors.large'),
-          photo_aspect: t('errors.aspect'),
-          photo_blank: t('errors.blank'),
-        };
-        throw new Error(photoErrors[data.code] ?? data.error ?? t('errors.upload'));
+        setError(localizedError(data, t('errors.upload')));
+        return;
       }
       observeRender(data);
       captureBrowser('render_preview_created', { source: 'home', has_prompt: Boolean(prompt) });
       // Anonymous visitors can inspect their real, watermarked sheet here. Registration is
       // requested only when they choose to build; the server enforces ownership and quotas.
       router.push(`/r/${data.id}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t('errors.upload'));
+    } catch {
+      setError(t('errors.upload'));
+    } finally {
       isSubmitting.current = false;
       setBusy(false);
     }

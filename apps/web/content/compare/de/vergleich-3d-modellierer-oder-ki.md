@@ -95,7 +95,7 @@ Wenn das Produkt echt ist und schon in deinem Shop steht und du ein Modell brauc
 - **Einzelstücke.** Ein Vintage-Sideboard verkauft sich einmal. Ein Modell nach Angebot rechnet sich für einen einzigen Verkauf selten. Den Rest dieses Inserats beschreibt [Vintage-Möbel verkaufen](/de/ratgeber/vintage-moebel-verkaufen).
 - **Sehen, bevor du zahlst.** Das Ansichtsblatt zeigt die abgeleiteten Ansichten, bevor du Credits für die Modellerstellung ausgibst.
 
-Hast du das Foto gerade zur Hand, [lade es hoch und sieh dir die kostenlose Vorschau an](/de), bevor du weiterliest.
+Hast du das Foto gerade zur Hand, [lade es hoch und sieh dir die kostenlose Vorschau an](/de#try), bevor du weiterliest.
 
 ## Was würden wir tun?
 

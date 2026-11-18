@@ -1,17 +1,12 @@
-import { getLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 import { AuthForm } from '@/components/auth-form';
 import { authMetadata } from '@/lib/seo/auth';
-import en from '@/messages/en.json';
-import es from '@/messages/es.json';
 export default async function SignInPage() {
-  const locale = (await getLocale()) === 'es' ? 'es' : 'en';
+  const t = await getTranslations('AuthService');
   return (
     <Suspense>
-      <AuthForm
-        mode="sign-in"
-        recovery={{ label: (locale === 'es' ? es : en).AuthService.forgotLink, locale }}
-      />
+      <AuthForm mode="sign-in" recovery={{ label: t('forgotLink') }} />
     </Suspense>
   );
 }

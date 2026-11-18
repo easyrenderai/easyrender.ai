@@ -95,7 +95,7 @@ Quand le produit est réel, déjà sur ton site, et que tu as besoin d’un mod�
 - **Des pièces uniques.** Une enfilade vintage ne se vend qu’une fois. Un modèle sur devis pour une seule vente est rarement rentable. [Vendre des meubles vintage en ligne](/fr/guides/vendre-des-meubles-vintage) couvre le reste de l’annonce.
 - **Voir avant de dépenser.** La planche de vues montre le résultat avant tout paiement, ce qu’aucun brief ne permet.
 
-Si tu as la photo sous la main, [envoie-la et regarde l’aperçu gratuit](/fr) avant de lire la suite.
+Si tu as la photo sous la main, [envoie-la et regarde l’aperçu gratuit](/fr#try) avant de lire la suite.
 
 ## Que ferions-nous ?
 

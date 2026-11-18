@@ -125,7 +125,7 @@ Start with the five that score highest. That usually means an armchair, a sidebo
 
 Then test routes before you commit. Run one product through two of them, for example a phone scan and an image-to-3D model of the same table lamp, and compare them on a phone. That tells you more than any feature list.
 
-For a large catalogue, look at bulk options and pricing per model. easyrender lets you drop a set of catalogue photos into a library, check a free preview for each, and build only the ones that look right.
+For a large catalogue, compare batch options and the price per model. Try a free preview with one product first, within your daily limit. Generate the 3D model once you’re happy with the preview.
 
 ## How do you add 3D to a store, step by step?
 

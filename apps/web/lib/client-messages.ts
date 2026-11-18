@@ -8,6 +8,7 @@
 type Messages = { [key: string]: string | Messages };
 
 export const CLIENT_NAMESPACES = [
+  'ActivationErrors',
   'Analytics',
   'AdminGift',
   'ShopifyApp',
@@ -24,6 +25,7 @@ export const CLIENT_NAMESPACES = [
   'Gallery',
   'Hub',
   'Library',
+  'LocaleSwitcher',
   'McpSetup',
   'PaygPicker',
   'Pricing.calculator',

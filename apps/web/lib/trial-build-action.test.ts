@@ -4,6 +4,7 @@ import { expect, it, vi } from 'vitest';
 import { TrialBuildAction } from '@/components/trial-build-action';
 
 vi.mock('@/lib/auth-client', () => ({ authClient: {} }));
+vi.mock('next/navigation', () => ({ usePathname: () => '/r/own-model' }));
 vi.mock('next-intl', () => ({
   useLocale: () => 'en',
   useTranslations: () => (key: string) => key,

@@ -7,6 +7,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 const ICONS: Record<RenderEditView['kind'], LucideIcon> = {
   sheet: Grid3x3,
   sheet_redraw: RefreshCw,
+  sheet_redraw_refund: RefreshCw,
   build: Box,
   material: Palette,
 };

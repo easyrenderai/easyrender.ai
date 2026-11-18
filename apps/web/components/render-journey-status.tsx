@@ -7,17 +7,31 @@ import { cn } from '@/lib/utils';
 export function RenderJourneyStatus({
   status,
   hasPreview,
+  isCorrecting = false,
+  isPaidSheet = false,
+  isPhotoOnly = false,
   hasConnectionError = false,
 }: {
   status: RenderView['status'];
   hasPreview: boolean;
+  isCorrecting?: boolean;
+  isPaidSheet?: boolean;
+  isPhotoOnly?: boolean;
   hasConnectionError?: boolean;
 }) {
   const t = useTranslations('Render.journey');
   const isRunning = status === 'drafting' || status === 'rendering';
+  const stage =
+    status === 'drafting' && isCorrecting
+      ? 'correcting'
+      : status === 'drafting' && isPaidSheet
+        ? 'paidSheet'
+        : status === 'preview_ready' && isPhotoOnly
+          ? 'photoOnly'
+          : status;
   const current = status === 'ready' || status === 'rendering' ? 2 : 1;
   return (
-    <section className="space-y-4" aria-label={t(`${status}Title`)}>
+    <section className="space-y-4" aria-label={t(`${stage}Title`)}>
       <ol className="grid grid-cols-3 gap-3 text-xs sm:text-sm">
         {(['photo', 'angles', 'model'] as const).map((key, index) => {
           const isDone =
@@ -59,8 +73,8 @@ export function RenderJourneyStatus({
           />
         )}
         <div>
-          <h2 className="text-base font-medium">{t(`${status}Title`)}</h2>
-          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t(`${status}Body`)}</p>
+          <h2 className="text-base font-medium">{t(`${stage}Title`)}</h2>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t(`${stage}Body`)}</p>
           {hasConnectionError && (
             <p className="mt-2 text-sm text-muted-foreground">{t('connection')}</p>
           )}
