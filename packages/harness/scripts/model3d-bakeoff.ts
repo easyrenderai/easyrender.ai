@@ -127,7 +127,11 @@ async function settle(first: Prediction, limitMs: number): Promise<Prediction> {
   let prediction = first;
   const deadline = Date.now() + limitMs;
   while (!isSettled(prediction.status)) {
-    if (Date.now() > deadline) throw new Error(`prediction ${prediction.id} timed out`);
+    if (Date.now() > deadline) {
+      // Stop the run on Replicate too: a prediction nobody waits for would keep billing.
+      await client.cancel(prediction.id).catch(() => undefined);
+      throw new Error(`prediction ${prediction.id} timed out and was cancelled`);
+    }
     await sleep(5000);
     prediction = await client.get(prediction.id);
   }
