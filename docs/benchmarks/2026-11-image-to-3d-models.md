@@ -53,6 +53,33 @@ Images in `images/2026-11-18-image-to-3d/`, top row TRELLIS v1, bottom row TRELL
 - **Cost of that quality:** about $0.22 to $0.85 against $0.05 to $0.06, 31 to 36 MB against 5 MB. A
   36 MB GLB is too heavy for a phone AR viewer without a decimation step we do not have.
 
+## TRELLIS.2 with other settings
+
+The default run used 1,000,000 faces, which explains the 31 to 36 MB files. A second run changed the
+settings (`fishwowater/trellis2`: `pipeline_type`, `decimation_target`, `texture_size`; workflow runs
+[44281838302](https://github.com/easyrenderai/easyrender.ai/actions/runs/44281838302) and
+[44281843703](https://github.com/easyrenderai/easyrender.ai/actions/runs/44281843703)). Raw rows:
+`data/image-to-3d-2026-11-18-trellis2-settings.json`.
+
+| Settings                                           | Photo        | Result                     | Seconds | Cost   | GLB size |
+| -------------------------------------------------- | ------------ | -------------------------- | ------- | ------ | -------- |
+| t2-mid: 1024 cascade, 200,000 faces, 2048 texture  | swivel chair | valid GLB                  | 143     | $0.200 | 7.9 MB   |
+| t2-mid                                             | armchair     | timed out after 40 minutes | -       | -      | -        |
+| t2-low: 512, 100,000 faces, 1024 texture           | armchair     | timed out after 40 minutes | -       | -      | -        |
+| t2-low                                             | swivel chair | timed out after 40 minutes | -       | -      | -        |
+| t2-high: 1536 cascade, 500,000 faces, 4096 texture | armchair     | timed out after 40 minutes | -       | -      | -        |
+
+- **File size:** 200,000 faces gave a 7.9 MB file against 35.5 MB at the default, and the swivel chair
+  looks the same (`images/2026-11-18-image-to-3d/swivel-chair-t2-mid-vs-default.jpg`, top row 200,000
+  faces, bottom row default). One photo, so this is a lean.
+- **Cost:** $0.20 for that run against $0.845 for the default run on the same photo. The difference is
+  mostly time on the GPU, and part of that is a cold start of 4 to 8 minutes billed to the run, so the
+  cost varies a lot between runs.
+- **Reliability:** four of five runs never finished. This copy of TRELLIS.2 on Replicate is too slow or
+  short of capacity to sell. The scripts did not cancel timed-out predictions at the time (fixed
+  since), so the four prediction ids may still be running on Replicate and should be cancelled in its
+  dashboard.
+
 ## Decision and what is not known
 
 - Production stays on TRELLIS v1 with the sheet cells. A render sells for 32 credits ($0.32) at a

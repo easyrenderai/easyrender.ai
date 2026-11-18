@@ -1,0 +1,29 @@
+[
+  {
+    "photo": "armchair",
+    "candidate": "t2-low",
+    "ok": false,
+    "note": "prediction 4wxtamm6h5rne0d1xretk6919m timed out"
+  },
+  {
+    "photo": "armchair",
+    "candidate": "t2-mid",
+    "ok": false,
+    "note": "prediction ytx5b547e5rn80d1xres6ckqag timed out"
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "t2-low",
+    "ok": false,
+    "note": "prediction 05zkcbc6qxrnc0d1xret47g5s4 timed out"
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "t2-mid",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 142.734750373,
+    "costUsd": 0.1998286505222,
+    "bytes": 7861036
+  }
+]
