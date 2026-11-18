@@ -1,17 +1,18 @@
 ---
 
-group: sketchfab
+group: "sketchfab"
 title: "Sketchfab alternatives for publishing 3D models"
 description: "Choose a hosted model page or a self-hosted GLB viewer based on access, embedding and maintenance."
 date: 2026-12-06
 updated: 2026-12-06
 keyword: "sketchfab alternative"
 cta: "Try an angle preview from a product photo."
+publishAt: "2026-12-06"
 ---
 
 Choose a Sketchfab alternative by how you want people to reach the model. A hosted viewer can give you a shareable model page. A self-hosted viewer gives you control over placement and hosting. Compare anonymous access, embed behaviour and model delivery with one representative file before moving a collection.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/sketchfab/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: desk fan, half solid and half wireframe](../covers/sketchfab.webp "Editorial illustration made in Blender.")
 
 ## Which option fits each publishing job?
 
@@ -39,16 +40,18 @@ Load a single GLB with a known texture and open each link in a logged-out browse
 
 [Related guide](/models)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### When is an embedded viewer overkill?
 
-A review link is often enough for internal feedback. Use a full embed if readers need to rotate the model in context and you can maintain that integration.
+Use an embedded viewer only when users need to rotate or examine the 3D model in context. Check if your audience requires interaction beyond viewing, and ensure the embed maintains consistent performance. Next step: test the embed with a small user group before full rollout.
 
 ### Can I use the same GLB everywhere?
 
-Confirm the format, size limits and texture handling for each destination. Use one file in your trial to isolate the differences.
+You can use the same GLB everywhere, as long as the destination supports it and the file stays under size limits. Check each platform’s texture handling and file size caps before publishing. Test with one GLB in your trial to confirm compatibility.
 
 ### How do I decide between hosted and self-hosted?
 
-Compare who maintains the viewer, the asset URL and access rights. Test how a failed 3D load falls back to the poster.
+Compare who maintains the viewer, the asset URL and access rights. Test how a failed 3D load falls back to the poster. Test the embed with a small user group before full rollout to ensure performance and access consistency across devices and browsers.

@@ -1,6 +1,6 @@
 ---
 
-group: glb-vs-gltf
+group: "glb-vs-gltf"
 title: "GLB frente a glTF: cuándo elegir cada uno"
 description: "Compara el mismo modelo en GLB y glTF separado para decidir cómo entregar geometría y texturas."
 date: 2026-11-25
@@ -11,7 +11,7 @@ cta: "Prueba la vista previa de ángulos con una foto de producto."
 
 Elige GLB si vas a entregar el modelo como un solo archivo. Elige glTF separado cuando necesites inspeccionar o gestionar los recursos por separado. Ambos pueden describir la misma escena. La diferencia práctica es cómo entregas el JSON, los datos de geometría y las imágenes que componen el material.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/glb-vs-gltf/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de jarrón redondeado, mitad sólida y mitad en malla](../covers/glb-vs-gltf.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Qué cambió al exportar el mismo jarrón?
 
@@ -21,6 +21,8 @@ En esta configuración el peso total fue casi idéntico. El JSON pequeño era so
 
 ![GLB binario abierto en Blender](../evidence/vase-glb-render.jpg)
 ![Paquete glTF separado abierto en Blender](../evidence/vase-gltf-render.jpg)
+
+Quitamos una dependencia cada vez de copias de la exportación separada. Sin el WebP, Blender abrió la geometría, pero la imagen quedó sin píxeles. Al quitar el BIN falló la importación. Prueba ambos casos en una carpeta aislada antes de entregar un paquete separado.
 
 ## ¿Cómo pruebas la entrega?
 
@@ -40,16 +42,16 @@ Copia solo el GLB a una carpeta nueva y ábrelo. Para un glTF separado, mueve la
 
 [Guía relacionada](/es/guias/como-hacer-un-modelo-3d)
 
-## FAQ
+## Preguntas frecuentes
 
 ### ¿Uno siempre pesa menos?
 
-Compara el peso total del mismo modelo, incluidos sus archivos asociados. La geometría, la codificación de imágenes y los ajustes pueden cambiar más el resultado que el contenedor.
+No, un GLB no siempre pesa menos que un glTF. Exporta el jarrón con Blender usando la opción de glTF separado. Verifica que el JSON y los archivos BIN/WebP estén completos, ya que la falta de un componente puede romper la carga.
 
 ### ¿Puede un GLB referenciar archivos externos?
 
-Sí. Cuando necesites un archivo autocontenido, copia solo el GLB a una carpeta vacía y comprueba que conserva sus materiales al abrirlo.
+Sí, un GLB puede referenciar archivos externos. Copia solo el GLB en una carpeta vacía y abre el archivo para verificar que conserva sus materiales. Revisa que los enlaces externos estén correctamente definidos y que el archivo se cargue sin errores.
 
 ### ¿Por qué cambia de aspecto entre visores?
 
-Comprueba iluminación, gestión de color y extensiones admitidas. Para valorar una exportación, compara las versiones en el mismo visor de destino.
+Si cambia de aspecto entre visores, es porque el glTF separado faltan archivos como la textura. Copia el GLB o el conjunto glTF en una carpeta nueva y abre el paquete. Si la textura no carga, verifica que la URI en el JSON coincida con la ruta de producción.

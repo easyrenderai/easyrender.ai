@@ -1,6 +1,6 @@
 ---
 
-group: 3d-file-formats
+group: "3d-file-formats"
 title: "3D file formats for web, AR and editing"
 description: "Choose GLB, USDZ, OBJ or FBX based on where the model goes and what has to survive the handoff."
 date: 2026-11-22
@@ -9,9 +9,9 @@ keyword: "3d file formats"
 cta: "Try an angle preview from a product photo."
 ---
 
-Choose the file format by opening the target app first. For a web product viewer, start with GLB. For Apple Quick Look, test a USDZ. When the next person needs to edit the asset, agree on a format their tool imports and list the features they need to keep.
+Use GLB for web product viewers and USDZ for Apple Quick Look. Send a GLB or USDZ with textures, orientation, and neutral lighting for inspection. Common mistake: assuming a file opens means it matches visuals or materials—always verify with the receiving app.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/3d-file-formats/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: stacked cylindrical parts, half solid and half wireframe](../covers/3d-file-formats.webp "Editorial illustration made in Blender.")
 
 ## What should you deliver for each job?
 
@@ -21,6 +21,8 @@ Choose the file format by opening the target app first. For a web product viewer
 | Apple Quick Look           | USDZ                              | Opens on a compatible device         |
 | Static geometry handoff    | OBJ plus MTL and maps when needed | Relative paths, normals and units    |
 | Scene or animation handoff | FBX if supported by both tools    | Rig, clips and material mapping      |
+
+We checked which data arrived when reopening exported files in Blender. A glTF project without its external WebP still opened with geometry, but its texture was missing. Removing the BIN stopped import. The FBX of a bedside table retained the texture when reopened, whereas that export’s OBJ material file referenced no map.
 
 ## How do you make a handoff checkable?
 
@@ -42,16 +44,18 @@ Open the result in the receiving app without access to your working folder. Rota
 
 [Related guide](/learn/glb-file)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### Does GLB always include textures?
 
-GLB can package resources in the binary. Inspect the actual output when portability matters. The format also allows references, so the extension by itself does not prove that every image is embedded.
+GLB may include textures, but not always—check the file’s resource list and embedded assets to confirm. Review the metadata for texture URLs and file paths to ensure they are valid and accessible. Verify texture URLs and file paths in the GLB metadata before use.
 
 ### Can OBJ carry animation?
 
-For a typical handoff, treat OBJ as static geometry. Agree separately on a format for rigs and clips, and test that the recipient’s importer reads those features.
+For a typical handoff, treat OBJ as static geometry. Agree separately on a format for rigs and clips, and test that the recipient’s importer reads those features. Check the GLB metadata for valid texture URLs and file paths before sharing the file with the recipient.
 
 ### Do I need the original project file?
 
-Keep the project as your editable source. Deliver the format required by the destination along with a visual reference, so you can regenerate it later without rebuilding the scene.
+Keep the project as your editable source. Deliver the format required by the destination along with a visual reference, so you can regenerate it later without rebuilding the scene. Check the GLB metadata for valid texture URLs and file paths before using the file.

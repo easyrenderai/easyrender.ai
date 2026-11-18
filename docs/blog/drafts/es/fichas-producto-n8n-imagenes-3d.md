@@ -1,17 +1,17 @@
 ---
 
-group: n8n-product-pages-images-3d
+group: "n8n-product-pages-images-3d"
 title: "Fichas de producto con n8n: imágenes, texto y 3D"
 description: "Prepara fichas de producto con n8n: datos verificados, imágenes, un modelo 3D revisado y un borrador en tu tienda, con aprobación antes de gastar."
 date: 2026-11-18
 updated: 2026-11-18
-keyword: n8n fichas de producto
-cta: Empieza con la foto de un producto. Revisa la previsualización gratis antes de decidir si quieres generar su modelo 3D descargable.
+keyword: "n8n fichas de producto"
+cta: "Empieza con la foto de un producto. Revisa la previsualización gratis antes de decidir si quieres generar su modelo 3D descargable."
 ---
 
 Para crear fichas de producto con n8n, conecta los datos verificados del catálogo con dos ramas: texto y contenido visual. Genera las imágenes, revísalas, construye el modelo 3D aprobado y reúne todo por SKU en un borrador de tu tienda. Conserva por separado las autorizaciones de gasto y publicación para saber qué se ha aceptado.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/n8n-product-pages-images-3d/hero.webp; prompt en el brief de investigación. -->
+![Ilustración de lámpara de mesa, mitad sólida y mitad en malla](../covers/n8n-product-pages-images-3d.webp "Ilustración editorial hecha en Blender.")
 
 > **Una ficha completa necesita más que una descripción.** Guarda juntos los datos del producto, las imágenes, el modelo 3D y el estado de publicación. Una generación terminada es un paso hacia una ficha aprobada.
 
@@ -29,7 +29,7 @@ Para una lámpara de sobremesa de cerámica, el resultado es un conjunto revisab
 | Borrador de la ficha   | Relación entre SKU y producto            | Producto y variante correctos, aún sin publicar       |
 | Registro del proceso   | Identificadores y aprobaciones guardados | Otra ejecución puede retomar el trabajo               |
 
-La [plantilla de n8n para crear fichas en Shopify](https://n8n.io/workflows/11695-generate-product-descriptions-from-images-and-publish-to-shopify-using-ai/) sirve como referencia para la rama de texto. El 3D necesita su propio estado, revisión y entrega de archivos. Esta guía describe cómo conectarlos; no presenta resultados de una ejecución real en una tienda.
+La [plantilla de n8n para crear fichas en Shopify](https://n8n.io/workflows/11695-generate-product-descriptions-from-images-and-publish-to-shopify-using-ai/) sirve como referencia para la rama de texto. El 3D necesita su propio estado, revisión y entrega de archivos. Esta guía describe cómo conectarlos. No presenta resultados de una ejecución real en una tienda.
 
 ## Así queda una ficha antes de pasar por n8n
 
@@ -46,6 +46,18 @@ Usa un producto conocido para revisar la salida que quieres obtener. En este eje
 | Estado de la ficha        | Borrador de muestra                                   |
 
 **La comprobación en este punto es enlazar los tres recursos al mismo SKU.** Abre el GLB por separado y mantén la foto original disponible para cotejar la forma y el acabado. Este material parte de activos existentes y sirve de referencia para configurar el flujo.
+
+## ¿Qué comprobamos en n8n?
+
+En n8n 2.48.5 cambiamos a propósito el orden de los archivos de tres SKU de ejemplo. El flujo unió los registros por SKU y versión de origen, descargó los dos GLB públicos aprobados y comprobó sus cabeceras binarias y tamaños declarados. El sillón quedó pendiente de revisión porque su modelo era de una versión anterior.
+
+| SKU           | Versión de origen | Resultado                         |
+| ------------- | ----------------- | --------------------------------- |
+| VASE-DEMO-01  | v2                | Borrador con GLB de 400.792 bytes |
+| TABLE-DEMO-01 | v3                | Borrador con GLB de 326.872 bytes |
+| CHAIR-DEMO-01 | v3 con modelo v2  | Pendiente de revisión             |
+
+La ejecución cubre la unión y validación de archivos existentes. La generación de imágenes, la construcción 3D de pago y la publicación en tienda requieren su propia prueba. [Importar el flujo de ejemplo](../evidence/n8n-local-draft-workflow.json), [ver el resultado de la ejecución](../evidence/n8n-local-draft-result.json).
 
 ## ¿Qué información debe venir del catálogo?
 
@@ -89,7 +101,7 @@ Utiliza el nodo [HTTP Request de n8n](https://docs.n8n.io/integrations/builtin/c
 6. Consulta ese render y aprueba el cargo pendiente, calculado como `max(0, renderCredits - credits)`. Envía `POST /api/renders/{id}/render` con el entero autorizado en `maxCredits`.
 7. Espera hasta que `status` sea `ready` y `hasModel` sea `true`. Después descarga `GET /api/renders/{id}/model?download=1` como archivo.
 
-Los campos y rutas están en el [esquema de la API desplegada](https://easyrender.ai/api/openapi.json). La petición REST de imágenes no ofrece el campo `maxCredits` de la construcción 3D. Controla su autorización en el flujo y utiliza una clave dedicada con techo de créditos; añadir un campo al JSON no crea un límite en el servidor.
+Los campos y rutas están en el [esquema de la API desplegada](https://easyrender.ai/api/openapi.json). La petición REST de imágenes no ofrece el campo `maxCredits` de la construcción 3D. Controla su autorización en el flujo y utiliza una clave dedicada con techo de créditos. Añadir un campo al JSON no crea un límite en el servidor.
 
 Si quieres empezar sin pagar un conjunto de imágenes, sigue el [flujo de previsualización con n8n](/es/guias/integrar-3d-flujo-n8n). Arranca en `POST /api/renders`, se detiene para revisar y mantiene separada la construcción posterior. Es la ruta adecuada para evaluar una pieza antes de preparar la ficha completa.
 
@@ -115,7 +127,7 @@ Un endpoint privado del modelo no es una URL pública de contenido multimedia. D
 
 La [documentación multimedia de Shopify](https://shopify.dev/docs/apps/build/product-merchandising/products-and-collections/manage-media) separa subida, procesamiento y asociación al producto. Sigue esa secuencia para la versión de API de tu tienda. Guarda los identificadores devueltos y confirma que el procesamiento ha terminado antes de marcar la entrega como completada.
 
-Empieza con un producto en borrador o un cambio sin publicar. Comprueba sus imágenes, la carga del modelo y la variante en el tema real. Que la plataforma acepte un archivo no demuestra que la ficha lo muestre correctamente; la [guía de 3D para ecommerce](/es/guias/modelos-3d-para-ecommerce) explica esa revisión.
+Empieza con un producto en borrador o un cambio sin publicar. Comprueba sus imágenes, la carga del modelo y la variante en el tema real. Que la plataforma acepte un archivo no demuestra que la ficha lo muestre correctamente. La [guía de 3D para ecommerce](/es/guias/modelos-3d-para-ecommerce) explica esa revisión.
 
 ## ¿Qué suele fallar en esta automatización?
 

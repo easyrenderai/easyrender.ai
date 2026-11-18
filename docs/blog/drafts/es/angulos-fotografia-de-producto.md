@@ -1,6 +1,6 @@
 ---
 
-group: product-photography-angles
+group: "product-photography-angles"
 title: "Qué ángulos mostrar en las fotos de un producto"
 description: "Elige una foto principal y vistas que expliquen la forma, los materiales y el uso de cada producto."
 date: 2026-11-21
@@ -11,7 +11,7 @@ cta: "Prueba la vista previa de ángulos con una foto de producto."
 
 Asigna una pregunta a cada foto de producto. Empieza por una vista que explique la forma y añade ángulos que enseñen cómo está hecho o se usa. Una trasera, un detalle o una foto del producto abierto suelen responder más dudas que otro encuadre casi idéntico del frente.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/product-photography-angles/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de mochila, mitad sólida y mitad en malla](../covers/product-photography-angles.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Qué ángulo debe abrir la galería?
 
@@ -40,16 +40,18 @@ Ordena las fotos por la importancia de la respuesta. Un primer plano funciona me
 
 [Guía relacionada](/es/guias/fotografia-de-producto-para-ecommerce)
 
-## FAQ
+[Cómo crear un modelo 3D](/es/guias/como-hacer-un-modelo-3d)
+
+## Preguntas frecuentes
 
 ### ¿Cuántas fotos necesito?
 
-Empieza con una foto principal y suma una por duda pendiente. Quita las vistas repetidas y comprueba los requisitos de los canales donde vas a publicar la ficha.
+Necesitas al menos tres fotos: frontal, tres cuartos y detalle. Añade una foto de la espalda o del anclaje si es un producto como una mochila. Comprueba que el recorte en miniatura no corte detalles clave o deje sin información el producto.
 
 ### ¿Cuándo funciona mejor el frontal?
 
-Elige el frontal si facilita comparar siluetas, colores o etiquetas. Una caja poco profunda con texto legible puede quedar más clara en frontal que en un ángulo pronunciado.
+El frontal es ideal para comparar siluetas, colores o etiquetas, especialmente cuando la caja es poco profunda y el texto es legible. Asegúrate de que el producto esté bien iluminado y que el fondo no distraiga. Revisa que la luz sea uniforme y que el fondo sea homogéneo.
 
 ### ¿El 3D puede sustituir a la foto de la trasera?
 
-Conserva una foto real si detrás hay algo que el comprador necesita verificar. El modelo añade exploración del volumen. Usa ambos cuando resuelvan preguntas diferentes.
+El 3D no sustituye a la foto de la trasera porque no permite verificar detalles visibles. Añade una vista de la espalda para que el comprador vea el diseño y el recorte. Común error: usar solo 3D sin mostrar el recorte a tamaño de miniatura.

@@ -1,6 +1,6 @@
 ---
 
-group: blender-export-glb
+group: "blender-export-glb"
 title: "Export GLB from Blender with textures"
 description: "Prepare materials and textures in Blender, export a GLB and verify it in a clean viewer session."
 date: 2026-12-04
@@ -11,7 +11,7 @@ cta: "Try an angle preview from a product photo."
 
 Prepare your materials with image textures connected to a supported shader, then export glTF 2.0 in Blender’s binary GLB format. Move the result to a fresh folder and open it in the destination viewer. Check that colour, normals and texture placement survive the move.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/blender-export-glb/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: speaker, half solid and half wireframe](../covers/blender-export-glb.webp "Editorial illustration made in Blender.")
 
 ## What do you prepare before exporting?
 
@@ -35,16 +35,18 @@ Choose File, Export, glTF 2.0, then glTF Binary. Use a selected-objects export w
 
 [Related guide](/learn/glb-file)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### Will every Blender material export?
 
-The exporter recognises supported node combinations. Some procedural effects need to be baked. Check the destination viewer with a simple material before setting up a complex asset.
+The exporter recognises supported node combinations. Some procedural effects need to be baked. Check the destination viewer with a simple material before setting up a complex asset. Open the exported file and inspect the surface, especially where transparency, roughness or normal details affect the appearance.
 
 ### How do I confirm it is self-contained?
 
-Move only the exported GLB to an empty folder and open it in the target viewer. Inspect the material under neutral lighting.
+Move only the exported GLB to an empty folder and open it in the target viewer. Inspect the material under neutral lighting to ensure textures load without errors. Next, verify the GLB contains all textures by checking the asset's embedded resources in the viewer's metadata panel.
 
 ### Does the BLEND file matter after export?
 
-Keep it as the editable source. Update that file for revisions and reproduce the export instead of treating the distribution file as the master.
+Keep it as the editable source. Update that file for revisions and reproduce the export instead of treating the distribution file as the master. Check the asset's embedded resources in the viewer's metadata panel to confirm all textures are included in the GLB.

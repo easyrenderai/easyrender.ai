@@ -1,6 +1,6 @@
 ---
 
-group: white-background-product-photography
+group: "white-background-product-photography"
 title: "White background product photography"
 description: "Light a white backdrop and keep the product’s edges, texture and contact shadow readable."
 date: 2026-11-24
@@ -9,9 +9,9 @@ keyword: "white background product photography"
 cta: "Try an angle preview from a product photo."
 ---
 
-Light the white background and the product separately when you can. Move the item away from the backdrop to control spill and keep its outline visible. Expose for the product first, then adjust the background. Check light edges and the contact shadow before exporting the image.
+Set the camera, product, and lights fixed for consistent results. Place a large diffused light on one side and a white reflector on the opposite to soften shadows. Common mistake: forgetting to check pale handles with a dark card out of frame.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/white-background-product-photography/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: lidded bottle, half solid and half wireframe](../covers/white-background-product-photography.webp "Editorial illustration made in Blender.")
 
 ## How do you set up the white background?
 
@@ -39,16 +39,18 @@ Export a proof at the size the site uses and check it against neighbouring produ
 
 [Related guide](/learn/product-photography-for-ecommerce)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### Can I work with one light?
 
-Yes. Try a diffused light or window plus a reflector. Separate the product from the backdrop and correct the background locally if needed. Repeat the same geometry for the next item.
+Yes, you can work with one light. Use a diffused light or window with a reflector, separate the product from the backdrop, and correct the background locally. Next, check your lighting angle and distance to ensure consistent product placement and shadow control.
 
 ### Is pure white always required?
 
-Check the channel’s current rules. For your own shop, choose a consistent backdrop and preserve the product boundary and finish. Keep a channel-specific export where requirements differ.
+Pure white is not always required a dark card out of frame can enhance edge visibility. Use a dark card just out of frame for pale items to prevent edge loss. Common mistake: omitting the dark card causes pale product details to vanish.
 
 ### How do I avoid a white fringe?
 
-Review the mask on a darker canvas at full image size. Undo excess edge brightening, then tune the mask narrowly around the affected area.
+Review the mask on a darker canvas at full image size. Undo excess edge brightening, then tune the mask narrowly around the affected area. Toggle between white and dark backgrounds to find which pixels belong to the object. Zoom in again after resizing the final export.

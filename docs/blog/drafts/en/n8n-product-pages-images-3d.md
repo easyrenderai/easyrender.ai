@@ -1,17 +1,17 @@
 ---
 
-group: n8n-product-pages-images-3d
+group: "n8n-product-pages-images-3d"
 title: "Build product pages with n8n: images, copy and 3D"
 description: "Build a product-page workflow in n8n: verified facts, image generation, a reviewed 3D model and a CMS draft, with approval before spending."
 date: 2026-11-18
 updated: 2026-11-18
-keyword: n8n product description
-cta: Start with one product photo. Review the free preview before deciding whether to build its downloadable 3D model.
+keyword: "n8n product description"
+cta: "Start with one product photo. Review the free preview before deciding whether to build its downloadable 3D model."
 ---
 
 To build product pages with n8n, connect a verified product record to separate copy and visual workflows, then bring the results together by SKU. Generate images, review them, build the approved 3D model and save a CMS draft. Keep spending approval and publication as explicit steps, with a record of what was accepted.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/n8n-product-pages-images-3d/hero.webp; prompt in the research brief. -->
+![Editorial rendering: table lamp, half solid and half wireframe](../covers/n8n-product-pages-images-3d.webp "Editorial illustration made in Blender.")
 
 > **A finished listing needs more than a description.** Keep the product facts, image files, 3D model and publication state together. A successful generation is one step toward an approved product page.
 
@@ -29,7 +29,7 @@ For a ceramic desk lamp, the output is a reviewable package: accurate copy, sele
 | CMS draft             | SKU-to-product mapping              | Correct product and variant, still unpublished     |
 | Processing record     | Saved IDs and approval              | Another execution can resume the work              |
 
-The [n8n image-to-Shopify template](https://n8n.io/workflows/11695-generate-product-descriptions-from-images-and-publish-to-shopify-using-ai/) illustrates the copy portion. Adding 3D requires its own job state, review and file delivery. The recipe here describes that architecture; it is not a report of an executed store deployment.
+The [n8n image-to-Shopify template](https://n8n.io/workflows/11695-generate-product-descriptions-from-images-and-publish-to-shopify-using-ai/) illustrates the copy portion. Adding 3D requires its own job state, review and file delivery. The recipe here describes that architecture. It is not a report of an executed store deployment.
 
 ## What should the listing package look like?
 
@@ -47,9 +47,21 @@ Start with a familiar object so you can verify the kind of file each stage shoul
 
 **Check that all three assets are assigned to the same SKU.** Open the model separately and keep the source photo available when checking shape and finish. This example uses existing assets to show what a reviewer should receive.
 
+## What passed in a local n8n run?
+
+In n8n 2.48.5, we deliberately reordered the media inputs across three sample SKUs. The workflow joined records by SKU and source version, downloaded both approved public GLBs and checked their binary headers and declared lengths. It held the armchair for review because its model came from an earlier version.
+
+| SKU           | Source revision  | Result                               |
+| ------------- | ---------------- | ------------------------------------ |
+| VASE-DEMO-01  | v2               | Draft record with a 400,792-byte GLB |
+| TABLE-DEMO-01 | v3               | Draft record with a 326,872-byte GLB |
+| CHAIR-DEMO-01 | v3 with model v2 | Held for review                      |
+
+The run covers assembly and file validation with existing assets. Image generation, the paid 3D build and publishing to a store still need a separate test. [Import the sample workflow](../evidence/n8n-local-draft-workflow.json), [see the run output](../evidence/n8n-local-draft-result.json).
+
 ## Which information must come from your catalog?
 
-Create an input record with `sku`, `source_version`, `name`, `material`, `dimensions`, `image_url` and `locale`. Keep unknown facts empty. Add separate approval fields for images, 3D spending and publication; a single `approved` flag is too vague once several actions can run.
+Create an input record with `sku`, `source_version`, `name`, `material`, `dimensions`, `image_url` and `locale`. Keep unknown facts empty. Add separate approval fields for images, 3D spending and publication. A single `approved` flag is too vague once several actions can run.
 
 | Field                | Example value              | Why it matters                                      |
 | -------------------- | -------------------------- | --------------------------------------------------- |
@@ -81,15 +93,15 @@ Treat this as a schema to validate, not a promise that the model will always com
 
 Use n8n's built-in [HTTP Request node](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/) for the API calls. Store the key in a credential with header name `Authorization` and value `Bearer YOUR_API_KEY`. The placeholder is replaced inside the credential, never inside a shared workflow export or product record.
 
-1. Read `GET https://easyrender.ai/api/credits`. Display the current image-set cost, account balance and requested product before approval. Image-set creation is paid; it is separate from the free preview route.
+1. Read `GET https://easyrender.ai/api/credits`. Display the current image-set cost, account balance and requested product before approval. Image-set creation is paid. It is separate from the free preview route.
 2. After approval, call `POST /api/product-views` with JSON containing `image_url`, `name` and an optional `prompt`. Save the returned `id` as `view_set_id` immediately.
-3. Poll `GET /api/product-views/{id}` using that saved identifier. A starting configuration is a 15-second wait with a fixed deadline; respect rate-limit responses. Stop on `failed`, and inspect the individual views before accepting the set.
+3. Poll `GET /api/product-views/{id}` using that saved identifier. A starting configuration is a 15-second wait with a fixed deadline. Respect rate-limit responses. Stop on `failed`, and inspect the individual views before accepting the set.
 4. Download accepted images from `GET /api/product-views/{id}/views/{view}`, using each returned view identifier. Use the same API credential and save the responses as files.
-5. Call `POST /api/product-views/{id}/render` only after the set is ready and accepted. Save its `renderId`. This creates or reuses a draft; it does not start the paid 3D build.
+5. Call `POST /api/product-views/{id}/render` only after the set is ready and accepted. Save its `renderId`. This creates or reuses a draft. It does not start the paid 3D build.
 6. Read that render and approve its remaining charge, calculated as `max(0, renderCredits - credits)`. Submit `POST /api/renders/{id}/render` with the approved integer in `maxCredits`.
 7. Poll until `status` is `ready` and `hasModel` is `true`, then download `GET /api/renders/{id}/model?download=1` as a file.
 
-These paths and fields are in the [deployed API schema](https://easyrender.ai/api/openapi.json). The current REST image-set request does not expose the build endpoint's `maxCredits` field. Enforce its authorization in the workflow and use a dedicated key with a limited credit ceiling; do not assume an extra JSON field creates a server-side limit.
+These paths and fields are in the [deployed API schema](https://easyrender.ai/api/openapi.json). The current REST image-set request does not expose the build endpoint's `maxCredits` field. Enforce its authorization in the workflow and use a dedicated key with a limited credit ceiling. Do not assume an extra JSON field creates a server-side limit.
 
 For an initial test without a paid image set, use the [preview-first n8n workflow](/learn/n8n-image-to-3d-workflow). It starts at `POST /api/renders`, pauses for review and keeps the later build separate. Choose this route when you only need to assess one product before planning the full listing package.
 
@@ -102,20 +114,20 @@ Carry the same `sku` and `source_version` through both branches. Save `view_set_
 | Copy state              | Visual state           | Next action                                |
 | ----------------------- | ---------------------- | ------------------------------------------ |
 | Ready                   | Still processing       | Save copy and wait for the existing job    |
-| Missing supplier facts  | Ready                  | Ask for the facts; retain the files        |
+| Missing supplier facts  | Ready                  | Ask for the facts. Retain the files        |
 | Approved                | Approved               | Assemble a CMS draft                       |
-| Approved                | Rejected               | Keep the text; revise only the visual task |
+| Approved                | Rejected               | Keep the text. Revise only the visual task |
 | Previous source version | Current source version | Review the mismatch before combining       |
 
 Do not describe generated views as additional photographs of the physical lamp. Keep original photography available to the reviewer and write captions appropriate to each asset. For preparing the source itself, follow the [photo-to-3D guide](/learn/how-to-make-a-3d-model-from-photos).
 
 ## How do the files reach Shopify or another CMS?
 
-A private model endpoint is not a public media URL. Download the file through authenticated n8n, then upload it through the destination platform's supported media flow. Keep the easyrender credential on its own requests; it does not belong in the storefront, file name or Shopify request.
+A private model endpoint is not a public media URL. Download the file through authenticated n8n, then upload it through the destination platform's supported media flow. Keep the easyrender credential on its own requests. It does not belong in the storefront, file name or Shopify request.
 
 [Shopify's media guide](https://shopify.dev/docs/apps/build/product-merchandising/products-and-collections/manage-media) separates upload, processing and attachment to a product. Follow that sequence for the API version used by your store. Save the returned file and product identifiers, and confirm processing has finished before marking the package delivered.
 
-Start with a draft product or an unpublished change. Check its images, model loading and variant mapping in the actual theme. A platform accepting a file does not prove that the product page presents it correctly; the [ecommerce 3D guide](/learn/3d-models-for-ecommerce) covers that storefront check.
+Start with a draft product or an unpublished change. Check its images, model loading and variant mapping in the actual theme. A platform accepting a file does not prove that the product page presents it correctly. The [ecommerce 3D guide](/learn/3d-models-for-ecommerce) covers that storefront check.
 
 ## What usually breaks this automation?
 
@@ -133,7 +145,7 @@ Start with a draft product or an unpublished change. Check its images, model loa
 
 Run one lamp through all branches and compare the final draft with its input record. Record the time spent reviewing, the number of manual fixes and the net credits used. Then process a small set of distinct products before letting a schedule feed the workflow unattended.
 
-Our implementation separates the view-set ID, render ID and final model availability. That gives this recipe three checkpoints instead of one generic success flag. Count reviewed, delivered product packages as the outcome; a green HTTP node is only an intermediate signal.
+Our implementation separates the view-set ID, render ID and final model availability. That gives this recipe three checkpoints instead of one generic success flag. Count reviewed, delivered product packages as the outcome. A green HTTP node is only an intermediate signal.
 
 For a broader production method, use the [3D creation guide](/learn/how-to-make-a-3d-model). For many SKUs, the [batch catalog workflow](/learn/n8n-batch-3d-catalog) adds recovery and budget accounting around the same single-product steps.
 
@@ -149,7 +161,7 @@ The free preview route and the paid image-set route are different. A product-vie
 
 ### Do I need a native easyrender node in n8n?
 
-No. The HTTP Request route uses built-in n8n nodes and the published REST contract. It does not depend on a community package being listed or verified. Start there for this recipe, then evaluate a dedicated node against the exact operations your workflow needs and its current installation availability.
+No, you don’t need a native EasyRender node in n8n. The HTTP Request node uses built-in functionality and the published REST contract. Start with the built-in node, then evaluate a dedicated EasyRender node for your exact operations and current installation availability.
 
 ### Will the workflow publish products automatically?
 

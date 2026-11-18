@@ -1,6 +1,6 @@
 ---
 
-group: augmented-reality-furniture
+group: "augmented-reality-furniture"
 title: "How to review a furniture model in AR"
 description: "Check placement, appearance and the mobile path back to a furniture product page."
 date: 2026-12-01
@@ -11,7 +11,7 @@ cta: "Try an angle preview from a product photo."
 
 Review a furniture model in AR on a compatible phone before linking it from a product page. Test the entry point, orientation, placement on the floor and return to the browser. Keep verified dimensions in the product specifications and use the AR session to assess the visual presentation.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/augmented-reality-furniture/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: chair with armrests, half solid and half wireframe](../covers/augmented-reality-furniture.webp "Editorial illustration made in Blender.")
 
 ## Which route do you test?
 
@@ -35,16 +35,18 @@ Use an uncluttered floor and good light. Place the model, walk around it and rec
 
 [Related guide](/learn/usdz-file)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### Do buyers still need the product measurements?
 
-Yes. Give the manufacturer’s verified measurements and check whether they belong to the selected version. Use AR for visual context.
+Yes. Give the manufacturer’s verified measurements and check whether they belong to the selected version. Use AR for visual context. Put width, depth and height next to the variant selector or specification table so the buyer can check dimensions independently of the preview.
 
 ### What should unsupported phones see?
 
-Keep the product photos and, where possible, the web viewer accessible. Verify the page still offers the product information and purchase controls.
+Keep the product photos and, where possible, the web viewer accessible. Verify the page still offers the product information and purchase controls. Move the furniture model slowly in AR to ensure it faces the intended direction and sits level on the ground.
 
 ### Can I test only on a desktop?
 
-Desktop is useful for initial file checks. Run the actual route on a supported phone before publishing an AR entry point.
+You can test the furniture model in AR on a desktop for initial file checks. Run the actual route on a supported phone before publishing an AR entry point. Check AR rendering and object alignment on mobile to ensure accuracy.

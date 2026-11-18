@@ -1,6 +1,6 @@
 ---
 
-group: blender-export-glb
+group: "blender-export-glb"
 title: "Cómo exportar GLB desde Blender con texturas"
 description: "Prepara los materiales en Blender, exporta el GLB y comprueba texturas en un visor independiente."
 date: 2026-12-04
@@ -11,7 +11,7 @@ cta: "Prueba la vista previa de ángulos con una foto de producto."
 
 Prepara los materiales con las texturas conectadas a un sombreador compatible. Exporta glTF 2.0 en formato binario GLB desde Blender. Mueve el resultado a una carpeta nueva y ábrelo en el visor de destino. Comprueba que se conservan el color, las normales y la colocación de la textura.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/blender-export-glb/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de altavoz, mitad sólida y mitad en malla](../covers/blender-export-glb.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Qué preparas antes de exportar?
 
@@ -35,16 +35,16 @@ Ve a Archivo, Exportar, glTF 2.0 y elige glTF binario. Exporta solo lo seleccion
 
 [Guía relacionada](/es/guias/como-hacer-un-modelo-3d)
 
-## FAQ
+## Preguntas frecuentes
 
 ### ¿Se exportan todos los materiales?
 
-El exportador reconoce combinaciones de nodos compatibles. Hornea efectos procedurales cuando corresponda y comprueba materiales sencillos en el destino antes de aplicar el flujo a una escena compleja.
+Sí, se exportan los materiales si usan combinaciones de nodos compatibles. Se hornean efectos procedurales cuando corresponda y se comprueban materiales sencillos antes de aplicarlos en escenas complejas. Revisa que el exportador soporte texturas y que los nodos estén correctamente conectados.
 
 ### ¿Cómo sé que es autocontenido?
 
-Mueve únicamente el GLB a una carpeta vacía y ábrelo en el visor de destino. Examina el material con una luz neutra.
+Mueve el GLB a una carpeta vacía y ábrelo en el visor de destino. Revisa el material con luz neutra para comprobar que las texturas estén integradas dentro del archivo, no en una carpeta aparte. Verifica que el archivo sea autocontenido y que no requiera referencias externas.
 
 ### ¿Guardo el BLEND?
 
-Sí. Es la fuente editable. Haz ahí los cambios y vuelve a exportar la copia de distribución.
+Sí. Es la fuente editable. Haz ahí los cambios y vuelve a exportar la copia de distribución. Conserva también los archivos de textura y anota los ajustes de exportación. Si necesitas cambiar el encuadre, los materiales o la geometría más adelante, podrás generar un nuevo GLB a partir del mismo proyecto.

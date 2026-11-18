@@ -1,6 +1,6 @@
 ---
 
-group: compress-glb
+group: "compress-glb"
 title: "How to compress a GLB and preserve useful detail"
 description: "Find what makes your GLB large, reduce geometry or textures and compare the result in the same viewer."
 date: 2026-11-28
@@ -9,9 +9,9 @@ keyword: "compress glb"
 cta: "Try an angle preview from a product photo."
 ---
 
-Start by locating the bytes inside the GLB. Reduce texture size if images dominate or simplify geometry if the mesh dominates. Export a copy and compare the two in the same viewer. Accept the smaller file only after checking the angles, edges and surface details your audience will see.
+To compress a GLB and preserve useful detail, reduce texture size if images dominate or simplify geometry if the mesh dominates. Export a copy and compare the two in the same viewer. Accept the smaller file only after checking angles, edges, and surface details your audience will see.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/compress-glb/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: compact keyboard, half solid and half wireframe](../covers/compress-glb.webp "Editorial illustration made in Blender.")
 
 ## What did simplifying one model change?
 
@@ -40,16 +40,18 @@ For a mesh-heavy model, try one geometry adjustment and check corners and inters
 
 [Related guide](/learn/glb-file)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### How small should a GLB be?
 
-Set a target by testing the actual page and device. Record transferred bytes, time until the viewer becomes usable and which details must remain clear.
+Make the GLB as small as possible without losing visible detail or performance. Test on the actual device and page, checking transferred bytes, load time, and clarity of essential features. Next, verify the file size and viewer performance before deployment.
 
 ### Does fewer triangles always mean fewer bytes?
 
-It can help if geometry dominates. Compare full exports with the same settings because textures, buffer encoding and attributes also contribute.
+Fewer triangles don’t always mean fewer bytes, as textures, buffer encoding, and attributes impact file size. Optimize geometry first, then check GLB file size and triangle count in a viewer. Compare full exports with same settings to verify compression efficiency.
 
 ### Should I overwrite the source?
 
-Keep the source and a record of export settings. Test a separate delivery file so you can restore detail without repeating the original modelling work.
+Keep the source and a record of export settings. Test a separate delivery file so you can restore detail without repeating the original modelling work. Test the compressed GLB in the actual destination viewer to confirm textures and details appear clear and intact.

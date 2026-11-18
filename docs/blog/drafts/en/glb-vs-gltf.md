@@ -1,6 +1,6 @@
 ---
 
-group: glb-vs-gltf
+group: "glb-vs-gltf"
 title: "GLB vs glTF: which package should you use?"
 description: "Compare the same model as GLB and separate glTF files, including packaging, external textures and deployment."
 date: 2026-11-25
@@ -9,9 +9,9 @@ keyword: "glb vs gltf"
 cta: "Try an angle preview from a product photo."
 ---
 
-Use a GLB if you want to hand the model off as one file. Use separate glTF when you need to inspect or manage individual resources. Both can describe the same scene. The practical difference is how you deliver the JSON scene, geometry buffers and image textures.
+Use glTF for separate files and GLB for single-file delivery. Export with Blender and verify the JSON, buffer, and WebP exist in the glTF folder. Check that the texture URI matches the deployed file path or the model fails to load.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/glb-vs-gltf/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: rounded vase, half solid and half wireframe](../covers/glb-vs-gltf.webp "Editorial illustration made in Blender.")
 
 ## What changed when we exported the same vase?
 
@@ -21,6 +21,8 @@ The total was nearly identical for these settings. The small JSON alone was not 
 
 ![Binary GLB in Blender](../evidence/vase-glb-render.jpg)
 ![Separate glTF package in Blender](../evidence/vase-gltf-render.jpg)
+
+We removed one dependency at a time from copies of the separate export. Blender still opened the geometry without the WebP, but its image entry had no pixel data. Removing the BIN stopped the import. Test both cases in an isolated folder before handing off a separate package.
 
 ## How do you test delivery?
 
@@ -40,16 +42,18 @@ For a single-file handoff, copy only the GLB to a new folder and open it. For se
 
 [Related guide](/learn/glb-file)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### Is one format always smaller?
 
-No. Compare the total payload for the same model, including its dependencies. Geometry, image encodings and exporter settings can matter much more than the container.
+No one format is always smaller due to dependencies and texture encoding. Export the same model with both GLB and separate glTF to compare total payload. Check the JSON URI against the deployed texture file to catch missing or misrouted assets.
 
 ### Can a GLB still refer to external files?
 
-It can. Test that the export opens in an otherwise empty folder when your workflow requires a self-contained file.
+It can. Test that the export opens in an otherwise empty folder when your workflow requires a self-contained file. Move the exported GLB into a fresh directory and inspect it in the intended viewer before handoff. Missing images or buffers can surface only after the accompanying files are removed.
 
 ### Why does the same model look different in two viewers?
 
-Check lighting, colour management and extension support before blaming the package. Use the same destination viewer when comparing your exports.
+Use the same viewer and export settings to ensure consistency. Test both GLB and glTF exports by copying only the GLB or the full directory to a new folder. Common mistake: assuming texture issues stem from the package when the URI path in the JSON doesn’t match the deployed file.

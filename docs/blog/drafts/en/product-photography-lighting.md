@@ -1,6 +1,6 @@
 ---
 
-group: product-photography-lighting
+group: "product-photography-lighting"
 title: "Product photography lighting: three setups"
 description: "Use three repeatable lighting setups for matte products, reflective surfaces and textured details."
 date: 2026-11-30
@@ -9,9 +9,9 @@ keyword: "product photography lighting"
 cta: "Try an angle preview from a product photo."
 ---
 
-Choose your light for the surface you need to show. Start with window light and a white reflector for matte products. Enlarge the source for glossy objects. Use grazing light for relief, seams and fabric. Keep camera position and exposure fixed when comparing two setups.
+Choose your light based on the surface: use window light with a white reflector for matte products, enlarge the source for glossy items, and apply grazing light for relief, seams, and fabric. Keep camera position and exposure constant when comparing setups.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/product-photography-lighting/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: teapot, half solid and half wireframe](../covers/product-photography-lighting.webp "Editorial illustration made in Blender.")
 
 ## How do you position the sources?
 
@@ -37,16 +37,18 @@ Mark camera, light and item positions. Write down white balance and exposure. Sa
 
 [Related guide](/learn/product-photography-for-ecommerce)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### How many lights do I need?
 
-Start with one source and change its size or position. Add a reflector or another light only when you have identified a separate shadow or background problem.
+Start with one source and change its size or position. Add a reflector or another light only when you have identified a separate shadow or background problem. Move the light back slightly and reposition the camera to see if the shadow depth improves.
 
 ### Why do my products change colour?
 
-Mixed lights and automatic white balance can change the result. Turn off sources you do not need, record a reference and keep settings stable.
+Mixed lights and automatic white balance cause color shifts. Set a white card opposite the main light and compare the image to the actual product under neutral light. Forgetting to record white balance or using inconsistent lighting leads to inaccurate color reproduction.
 
 ### What should I photograph for a setup note?
 
-Take a wide frame that includes the item and the light positions. Keep it with the final files so the next shoot can reproduce the arrangement.
+Photograph a highlight and shadow at full size for each surface type. Place a white card opposite the main light and adjust its position until the shadow shows depth. Common mistake: using a flat light setup that erases texture and depth.

@@ -1,6 +1,6 @@
 ---
 
-group: import-furniture-models-into-sketchup
+group: "import-furniture-models-into-sketchup"
 title: "Import a 3D furniture model into SketchUp"
 description: "Bring a furniture GLB into a compatible SketchUp edition and check materials, placement and the component."
 date: 2026-12-15
@@ -9,9 +9,9 @@ keyword: "import furniture models into SketchUp"
 cta: "Try an angle preview from a product photo."
 ---
 
-Import a furniture model into a copy of your SketchUp scene. Check that your edition and version support the file type first. After import, check orientation, faces and texture placement, then make the item easy to reuse as a component. Set project dimensions from independently verified specifications.
+Import a 3D furniture model into SketchUp by using the File > Import menu. Check your SketchUp edition supports the file type, then verify orientation, faces, and texture placement before converting it to a component. Set project dimensions from verified specifications.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/import-furniture-models-into-sketchup/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: lounge bench, half solid and half wireframe](../covers/import-furniture-models-into-sketchup.webp "Editorial illustration made in Blender.")
 
 ## How do you import a GLB?
 
@@ -35,16 +35,18 @@ Inspect it in a neutral style and look at the model from the front and top. Chec
 
 [Related guide](/models)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### Can every SketchUp edition import GLB?
 
-Check the official list for the edition, version and device. Use an explicitly supported path when the importer is unavailable.
+You can import GLB files into SketchUp only if your edition supports it. Check the official list for your version and device. Use a supported path if the importer isn't available. Next, verify your SketchUp version and device compatibility before importing.
 
 ### Can I use a furniture library model?
 
-Check the asset’s rights and compatibility. Try the item on its own before adding it to a heavy project.
+You can use a furniture library model if it’s licensed for commercial use and compatible with SketchUp. Import the model alone first to test scale, orientation, and performance before adding it to a large project. Check the asset’s file format and SketchUp version support.
 
 ### What if a texture changes?
 
-Compare with the source file in a separate viewer and check material settings. Fix the component before copying it through the scene.
+If a texture changes, compare it with the source file in a separate viewer and verify material settings. Before copying the component, ensure the material is correctly assigned in SketchUp. Check the texture’s UV layout and file path for mismatches.

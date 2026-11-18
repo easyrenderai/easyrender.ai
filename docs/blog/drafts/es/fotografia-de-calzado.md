@@ -1,6 +1,6 @@
 ---
 
-group: shoe-photography
+group: "shoe-photography"
 title: "Fotografía de calzado: qué vistas necesita la ficha"
 description: "Fotografía el perfil, talón, suela y construcción de un zapato con un orden que puedas repetir."
 date: 2026-12-14
@@ -9,9 +9,9 @@ keyword: "fotografia de calzado"
 cta: "Prueba la vista previa de ángulos con una foto de producto."
 ---
 
-Empieza la galería con la vista que mejor identifica el modelo. Añade perfil exterior, talón, suela y detalles de material o cierre. Mantén cámara y encuadre entre colores para que el comprador pueda comparar variantes en el catálogo. Conserva una vista clara de los rasgos que distinguen cada modelo.
+La ficha de calzado debe incluir vista frontal para identificar el modelo, seguida de perfil exterior, talón, suela y detalles del material o cierre. Asegúrate de que la cámara y el encuadre sean consistentes en colores para comparar variantes. Usa iluminación uniforme y ángulo fijo en todas las vistas.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/shoe-photography/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de zapatilla, mitad sólida y mitad en malla](../covers/shoe-photography.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Cómo fotografías las cuatro vistas útiles?
 
@@ -36,16 +36,18 @@ Marca la posición y repite el recorte principal. Verifica que cordones, etiquet
 
 [Guía relacionada](/es/guias/fotografia-de-producto-para-ecommerce)
 
-## FAQ
+[Cómo crear un modelo 3D](/es/guias/como-hacer-un-modelo-3d)
+
+## Preguntas frecuentes
 
 ### ¿Muestro el par en la primera foto?
 
-Consulta las reglas del canal y elige la vista que identifica mejor el modelo. Una foto aparte del par puede enseñar el conjunto.
+Sí, muestra el par en la primera foto para que el cliente identifique claramente el modelo. Elige la vista que mejor represente el producto, como la frontal o lateral. Revisa que el par esté bien iluminado y sin sombras, y comprueba que el fondo no distraiga.
 
 ### ¿Puedo reutilizar la foto de suela?
 
-Solo si la suela es igual entre esas variantes. Coteja el color y el dibujo además de la forma.
+Sí, puedes reutilizar la foto de suela si coincide en forma, color y dibujo. Asegúrate de que se ajuste a la variante del producto y verifica el código del artículo y el número de tamaño. Revisa siempre que la imagen sea clara y completa.
 
 ### ¿Cómo fotografío un zapato negro?
 
-Usa luz amplia y un reflector para sostener el detalle. Amplía las costuras y la textura antes de cambiar de modelo.
+Usa luz amplia y un reflector para sostener el detalle. Amplía las costuras y la textura antes de cambiar de modelo. Coloca el reflector cerca del lateral en sombra y muévelo hasta que puedas distinguir el contorno de la suela sin perder contraste en el cuero o el tejido.

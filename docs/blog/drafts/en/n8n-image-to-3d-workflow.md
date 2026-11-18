@@ -1,17 +1,17 @@
 ---
 
-group: n8n-image-to-3d-workflow
+group: "n8n-image-to-3d-workflow"
 title: "Image to 3D in n8n: build a workflow with the API"
 description: "Connect n8n to an image-to-3D API. Create a preview, save the job ID, approve the build and download the GLB with bounded polling and safe retries."
 date: 2026-11-26
 updated: 2026-11-26
-keyword: n8n image to 3d workflow
-cta: Test one product photo with the free preview, then connect the reviewed result to your n8n workflow.
+keyword: "n8n image to 3d workflow"
+cta: "Test one product photo with the free preview, then connect the reviewed result to your n8n workflow."
 ---
 
 To integrate image-to-3D generation into n8n, create a preview through an HTTP Request node, save its job ID and poll that same job. After review, authorize the paid build and download the finished GLB. Separate creation, waiting, approval and delivery so a timeout does not restart work or spend credits twice.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/n8n-image-to-3d-workflow/hero.webp; prompt in the research brief. -->
+![Editorial rendering: faceted jar, half solid and half wireframe](../covers/n8n-image-to-3d-workflow.webp "Editorial illustration made in Blender.")
 
 > **Persist the ID before adding automation.** If you know which job belongs to the photo, you can resume it. If the only record is a blank output cell, a rerun can create unnecessary work.
 
@@ -31,7 +31,7 @@ This guide uses the [HTTP Request node](https://docs.n8n.io/integrations/builtin
 
 ## What do you need before adding the first node?
 
-Choose one clear photo of a desk fan. The API accepts JPEG, PNG or WebP up to 4 MiB. For a public HTTPS image, use `image_url`; for a local or private file, upload it through the authenticated file endpoint and use its `upload_id` instead.
+Choose one clear photo of a desk fan. The API accepts JPEG, PNG or WebP up to 4 MiB. For a public HTTPS image, use `image_url`. For a local or private file, upload it through the authenticated file endpoint and use its `upload_id` instead.
 
 Create an API key in Connectors. A preview workflow needs `write` to create and `read` to inspect. Add `spend` only to the credential used for an approved paid operation. Store the key as an n8n Header Auth credential: `Authorization` is the header name and `Bearer YOUR_API_KEY` is its value.
 
@@ -59,11 +59,11 @@ Add a Manual Trigger and an Edit Fields node for your source record. Then config
 | Body field           | `image_url` mapped from your source record    |
 | Body field           | `name` mapped from the product name           |
 | Body field           | `isPublic` set to boolean `false`             |
-| Response format      | JSON; body only for the field paths below     |
+| Response format      | JSON. Body only for the field paths below     |
 
-Save the returned `id` before continuing. With response headers/status disabled, it is the output body's `id`. If you enable the full response option, adapt mappings to `body.id`; do not mix the two response shapes across nodes.
+Save the returned `id` before continuing. With response headers/status disabled, it is the output body's `id`. If you enable the full response option, adapt mappings to `body.id`. Do not mix the two response shapes across nodes.
 
-The creation key is 1–128 printable ASCII characters without spaces. Reusing it with identical input recovers the same render; changed input produces a conflict. This idempotency contract applies to preview creation, not every POST in the service. Keep it stable after a lost response.
+The creation key is 1–128 printable ASCII characters without spaces. Reusing it with identical input recovers the same render. Changed input produces a conflict. This idempotency contract applies to preview creation, not every POST in the service. Keep it stable after a lost response.
 
 ## Step 2: how do you wait without starting again?
 
@@ -102,12 +102,12 @@ Private model URLs require authentication. For Shopify, use its [media upload an
 
 | Symptom              | Cause to check                         | Recovery                                                       |
 | -------------------- | -------------------------------------- | -------------------------------------------------------------- |
-| HTTP 401             | Wrong, expired or revoked key          | Correct the credential; retain the job ID                      |
+| HTTP 401             | Wrong, expired or revoked key          | Correct the credential. Retain the job ID                      |
 | HTTP 403             | Missing scope or exhausted key ceiling | Inspect the error code and authorized key limits               |
 | HTTP 402             | Insufficient account credits           | Stop spending and request a budget decision                    |
 | HTTP 409 on creation | Key reused with different input        | Recover the old request or version the new source deliberately |
 | HTTP 429             | Rate/concurrency limit                 | Read `Retry-After` and delay the next request                  |
-| Paid POST times out  | Outcome unknown                        | Inspect the saved job; do not blindly repeat the action        |
+| Paid POST times out  | Outcome unknown                        | Inspect the saved job. Do not blindly repeat the action        |
 | File contains JSON   | Error response saved as a model        | Check status and content type before storage                   |
 
 For pacing, [n8n documents rate-limit handling](https://docs.n8n.io/integrations/builtin/handle-rate-limits.md). Avoid blanket Retry On Fail on paid nodes. Safe reads and uncertain mutations require different recovery paths, even when both show a red execution marker.
@@ -118,13 +118,13 @@ First test credential reading and preview creation with one photo. Verify that t
 
 Next check the branches using representative response fixtures: `drafting`, `preview_ready`, `ready`, `failed` and a rate-limit error. Fixture checks validate your routing, not the live rendering service. A final authenticated run is still needed to prove the complete configured n8n workflow works.
 
-The deployed schema was checked for this guide; no paid run was used to claim a completion time or success rate. For the underlying method choices, see [how to make a 3D model](/learn/how-to-make-a-3d-model). Expand to batches only after one accepted model reaches its intended destination.
+The deployed schema was checked for this guide. No paid run was used to claim a completion time or success rate. For the underlying method choices, see [how to make a 3D model](/learn/how-to-make-a-3d-model). Expand to batches only after one accepted model reaches its intended destination.
 
 ## FAQ
 
 ### Does creating a render also start the paid model?
 
-No. Preview creation returns a render ID and starts the preview stage. The paid 3D build is a separate action with its own authorization. Save the ID, inspect the available result and refresh the cost before proceeding, so the workflow can pause without losing the work already created.
+Creating a render does not start the paid model. Preview creation returns a render ID and begins the preview stage. The paid 3D build is a separate action with its own authorization. Save the ID, check the available result, and verify the cost before proceeding to pause the workflow without losing progress.
 
 ### Can I use a photo that is not publicly hosted?
 

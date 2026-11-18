@@ -1,6 +1,6 @@
 ---
 
-group: shoe-photography
+group: "shoe-photography"
 title: "Shoe photography: views your product page needs"
 description: "Photograph the profile, heel, outsole and construction of a shoe in a repeatable gallery sequence."
 date: 2026-12-14
@@ -11,7 +11,7 @@ cta: "Try an angle preview from a product photo."
 
 Start a footwear gallery with the view that best identifies the model. Follow with the outer profile, heel, outsole and details that explain the material or fastening. Keep the camera and framing consistent across colours so the images remain easy to compare in a product grid.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/shoe-photography/hero.webp; Prepare the editorial cover described in the brief. -->
+![Editorial rendering: sneaker, half solid and half wireframe](../covers/shoe-photography.webp "Editorial illustration made in Blender.")
 
 ## How do you shoot the four useful views?
 
@@ -36,16 +36,18 @@ Mark the shoe position and use the same crop for the lead photo. Check that laci
 
 [Related guide](/learn/product-photography-for-ecommerce)
 
+[How to make a 3D model](/learn/how-to-make-a-3d-model)
+
 ## FAQ
 
 ### Should I show both shoes in the first image?
 
-Follow the marketplace’s rules and pick the view that makes the model clear. A separate pair view can show the overall set.
+Show both shoes in the first image for pair consistency and SKU clarity. Position both shoes at the same height with identical lacing and labels visible. Common mistake: hiding a shoe’s sole or heel—verify all four views include full feature exposure.
 
 ### Can I reuse my outsole shot?
 
-Only if the sole shown is identical across the variants. Check colour and tread as well as shape.
+Yes you can reuse your outsole shot if the tread, material edge, and sole shape are identical. Take a flat outsole shot with consistent lighting and low camera angle. Common mistake: reusing a shot without verifying tread pattern or material edge matches.
 
 ### How do I photograph a black shoe?
 
-Use broad light and a reflector to keep seams and material visible. Zoom in and check the dark texture before switching to the next model.
+Use broad light and a reflector to keep seams and material visible. Zoom in and check the dark texture before switching to the next model. Next, test the shoe’s texture under 45-degree lighting and verify seam visibility with a neutral background.

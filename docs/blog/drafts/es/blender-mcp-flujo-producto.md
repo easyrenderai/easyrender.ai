@@ -1,6 +1,6 @@
 ---
 
-group: blender-mcp-product-workflow
+group: "blender-mcp-product-workflow"
 title: "De una foto a una escena con Claude y Blender MCP"
 description: "Integra un GLB de producto en Blender y usa Claude con MCP para editar una copia de la escena."
 date: 2026-12-13
@@ -9,9 +9,9 @@ keyword: "blender mcp"
 cta: "Prueba la vista previa de ángulos con una foto de producto."
 ---
 
-Genera y revisa primero el modelo del producto. Después intégralo en Blender y pide a Claude una tarea acotada mediante un conector MCP compatible. Comprueba el resultado en Blender y guarda una copia. Así puedes revisar por separado la geometría del producto y los cambios de cámara, luz o escena.
+Primero crea y revisa el modelo del producto. Intégralo en Blender y pide a Claude una tarea acotada mediante un conector MCP compatible. Comprueba el resultado en Blender y guarda una copia para revisar por separado la geometría y los cambios de cámara, luz o escena.
 
-<!-- ILLUSTRATION PENDING: /blog/illustrations/blender-mcp-product-workflow/hero.webp; Preparar la portada editorial descrita en el brief. -->
+![Ilustración de flexo ajustable, mitad sólida y mitad en malla](../covers/blender-mcp-product-workflow.webp "Ilustración editorial hecha en Blender.")
 
 ## ¿Cómo preparas una prueba pequeña?
 
@@ -35,16 +35,18 @@ Pide que conserve malla y materiales, coloque el producto con su nombre en la pl
 
 [Guía relacionada](/es/mcp)
 
-## FAQ
+[Cómo crear un modelo 3D](/es/guias/como-hacer-un-modelo-3d)
+
+## Preguntas frecuentes
 
 ### ¿Qué MCP genera el modelo?
 
-Elige un servicio de imagen a 3D para el activo. El conector de Blender puede actuar sobre la escena. Revisa qué herramientas tiene cada uno.
+En este flujo, easyrender crea el modelo a partir de la foto y el conector de Blender ayuda a editar la escena tras importarlo. Algunos conectores también pueden llamar a un generador externo. Comprueba las herramientas disponibles y qué servicio requiere sus propias credenciales.
 
 ### ¿Puedo probarlo con un GLB que ya tengo?
 
-Sí. Utiliza un archivo que puedas verificar para aislar la colocación en escena del paso de generación.
+Sí. Importa un GLB conocido en una escena de prueba con el importador glTF de Blender. Revisa cómo se ven los materiales y comprueba la orientación y las dimensiones del objeto. Pide después a Claude que enumere los objetos para confirmar que identifica el modelo correcto.
 
 ### ¿Empiezo con el proyecto final?
 
-Trabaja en una copia con un solo objeto identificado. Compara los cambios y conserva disponible la escena original.
+Trabaja en una copia del proyecto con un único objeto identificado por nombre. Pide a Claude un solo cambio, como encuadrar el producto con la cámara activa. Revisa la malla, los materiales y la cámara tras el cambio y guarda el resultado con otro nombre.
