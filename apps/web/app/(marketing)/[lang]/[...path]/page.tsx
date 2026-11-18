@@ -17,6 +17,7 @@ import { ModelsView } from '@/components/models/models-view';
 import { PricingView } from '@/components/pricing/pricing-view';
 import { StudioLens } from '@/components/studio/lens';
 import { StudioShell } from '@/components/studio/shell';
+import { ConverterView } from '@/components/viewer/converter-view';
 import { ViewerView } from '@/components/viewer/viewer-view';
 import { isRoutableLocale, type Locale } from '@/i18n/config';
 import { type BlogPost, getPost } from '@/lib/blog/posts';
@@ -35,6 +36,8 @@ import {
   compareIndexMetadata,
   comparePageGraph,
   comparePageMetadata,
+  converterGraph,
+  converterMetadata,
   cookiesMetadata,
   ecommerceGraph,
   ecommerceMetadata,
@@ -74,7 +77,7 @@ type Match =
   | { kind: 'mcp'; locale: Locale }
   | { kind: 'ecommerce'; locale: Locale }
   | { kind: 'models'; locale: Locale }
-  | { kind: 'viewer'; locale: Locale }
+  | { kind: 'viewer' | 'converter'; locale: Locale }
   | { kind: 'evals'; locale: Locale }
   | { kind: 'privacy' | 'terms'; locale: Locale }
   | { kind: 'cookies'; locale: Locale }
@@ -119,8 +122,10 @@ function resolve(lang: string, segments: string[]): Match {
   if (isPublished('models', locale) && path === ROUTES.models.paths[locale]) {
     return { kind: 'models', locale };
   }
-  if (isPublished('viewer', locale) && path === ROUTES.viewer.paths[locale]) {
-    return { kind: 'viewer', locale };
+  for (const kind of ['viewer', 'converter'] as const) {
+    if (isPublished(kind, locale) && path === ROUTES[kind].paths[locale]) {
+      return { kind, locale };
+    }
   }
   if (isPublished('evals', locale) && path === ROUTES.evals.paths[locale]) {
     return { kind: 'evals', locale };
@@ -171,6 +176,7 @@ export async function generateMetadata({
   if (match.kind === 'ecommerce') return ecommerceMetadata(match.locale);
   if (match.kind === 'models') return modelsMetadata(match.locale);
   if (match.kind === 'viewer') return viewerMetadata(match.locale);
+  if (match.kind === 'converter') return converterMetadata(match.locale);
   if (match.kind === 'evals') return evalsMetadata(match.locale);
   return {};
 }
@@ -281,6 +287,14 @@ export default async function LocalePage({ params }: PageProps<'/[lang]/[...path
       <>
         <JsonLd graph={await viewerGraph(match.locale)} />
         <ViewerView locale={match.locale} />
+      </>
+    );
+  }
+  if (match.kind === 'converter') {
+    return (
+      <>
+        <JsonLd graph={await converterGraph(match.locale)} />
+        <ConverterView locale={match.locale} />
       </>
     );
   }

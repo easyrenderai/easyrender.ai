@@ -21,6 +21,7 @@ const COLUMNS = [
       { href: '/hub', key: 'hub' },
       { href: '/explore', key: 'gallery' },
       { route: 'viewer', key: 'viewer' },
+      { route: 'converter', key: 'converter' },
       { route: 'pricing', key: 'pricing' },
       { hash: '#faq', key: 'faq' },
     ],

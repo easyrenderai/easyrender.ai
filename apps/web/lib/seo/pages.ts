@@ -299,6 +299,36 @@ export async function viewerGraph(locale: Locale) {
   ];
 }
 
+/** The free 3D file converter. */
+export async function converterMetadata(locale: Locale): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'Converter' });
+  return pageMetadata({
+    locale,
+    path: ROUTES.converter.paths[locale],
+    title: t('metaTitle'),
+    description: t('metaDescription'),
+    alternates: livePaths('converter'),
+  });
+}
+
+export async function converterGraph(locale: Locale) {
+  const { converterFaqItems } = await import('@/components/viewer/converter-view');
+  const [t, items] = await Promise.all([
+    getTranslations({ locale, namespace: 'Converter' }),
+    converterFaqItems(locale),
+  ]);
+  const path = ROUTES.converter.paths[locale];
+  return [
+    organization(),
+    webPage(locale, path, t('metaTitle'), t('metaDescription')),
+    breadcrumbList([
+      { name: t('home'), path: ROUTES.home.paths[locale] },
+      { name: t('breadcrumb'), path },
+    ]),
+    faqPage(items, `${absoluteUrl(path)}#faq`),
+  ];
+}
+
 /** The models page. Same head and structured data in every language it is open in. */
 export async function modelsMetadata(locale: Locale): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: 'Models' });

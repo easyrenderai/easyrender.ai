@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createStudioEnvironment, disposeStudioEnvironment } from '@/lib/studio/engine/environment';
 import { WebGLUnavailableError } from '@/lib/webgl';
-import { isZUpFormat, type ViewerFormat } from './formats';
+import type { ExportedFile } from './export';
+import { type ExportFormat, isZUpFormat, type ViewerFormat } from './formats';
 import { loadModel } from './load';
 import { describeModel, type ModelStats, materialsOf, texturesOf } from './stats';
 
@@ -26,6 +27,8 @@ export type Viewer = {
   /** Swaps the up axis between Y and Z and returns the new bounding box size. */
   flipUpAxis: () => [number, number, number];
   screenshot: () => Promise<Blob | null>;
+  /** Writes the open model in another format. `name` is the file name without its extension. */
+  convert: (format: ExportFormat, name: string) => Promise<ExportedFile>;
   dispose: () => void;
 };
 
@@ -84,6 +87,7 @@ export function createViewer(canvas: HTMLCanvasElement): Viewer {
   let model: THREE.Object3D | null = null;
   let release = () => {};
   let mixer: THREE.AnimationMixer | null = null;
+  let clips: THREE.AnimationClip[] = [];
   let isPlaying = true;
   let request = 0;
   let isDirty = true;
@@ -167,6 +171,7 @@ export function createViewer(canvas: HTMLCanvasElement): Viewer {
   function clear() {
     mixer?.stopAllAction();
     mixer = null;
+    clips = [];
     if (model) {
       pivot.remove(model);
       disposeObject(model);
@@ -206,6 +211,7 @@ export function createViewer(canvas: HTMLCanvasElement): Viewer {
       clear();
       model = loaded.object;
       release = loaded.release;
+      clips = loaded.animations;
       pivot.rotation.set(isZUpFormat(format) ? -Math.PI / 2 : 0, 0, 0);
       pivot.add(model);
       if (loaded.animations.length > 0) {
@@ -248,6 +254,26 @@ export function createViewer(canvas: HTMLCanvasElement): Viewer {
     screenshot() {
       renderer.render(scene, camera);
       return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+    },
+    async convert(format, name) {
+      if (!model) throw new Error('No model is open');
+      const { exportModel } = await import('./export');
+      // The file gets the model upright and at its own origin, not where the stage centred it.
+      const placed = pivot.position.clone();
+      const tilt = pivot.rotation.x;
+      pivot.position.set(0, 0, 0);
+      // The stage is Y up. A format that is read Z up (STL) is written Z up, so it opens upright
+      // in a slicer and in this viewer.
+      if (isZUpFormat(format)) pivot.rotation.x += Math.PI / 2;
+      pivot.updateMatrixWorld(true);
+      try {
+        return await exportModel(pivot, clips, format, name);
+      } finally {
+        pivot.rotation.x = tilt;
+        pivot.position.copy(placed);
+        pivot.updateMatrixWorld(true);
+        isDirty = true;
+      }
     },
     dispose() {
       isDisposed = true;

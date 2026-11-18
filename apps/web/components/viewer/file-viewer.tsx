@@ -4,6 +4,7 @@ import {
   Axis3d,
   Box,
   Camera,
+  Download,
   Grid3x3,
   Loader2,
   Maximize,
@@ -23,12 +24,15 @@ import { versionedPublicModel } from '@/lib/public-models';
 import { cn } from '@/lib/utils';
 import type { ModelInfo, Viewer } from '@/lib/viewer/engine';
 import {
+  EXPORT_FORMATS,
+  type ExportFormat,
   extensionOf,
   pickModelFile,
   VIEWER_ACCEPT,
   VIEWER_FORMATS,
   VIEWER_MAX_BYTES,
 } from '@/lib/viewer/formats';
+import { takeHandedOffFiles } from '@/lib/viewer/handoff';
 import { hasWebGL } from '@/lib/webgl';
 
 const SAMPLE = { name: 'clay-vase.glb', url: '/studio/models/clay-vase.hd.glb' };
@@ -84,6 +88,8 @@ export function FileViewer({ intro }: { intro: ReactNode }) {
   const [hasGrid, setGrid] = useState(true);
   const [isLight, setLight] = useState(false);
   const [isPlaying, setPlaying] = useState(true);
+  const [converting, setConverting] = useState<ExportFormat | null>(null);
+  const [hasConvertError, setConvertError] = useState(false);
   const frame = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLInputElement>(null);
   const canvas = useRef<HTMLCanvasElement | null>(null);
@@ -93,6 +99,9 @@ export function FileViewer({ intro }: { intro: ReactNode }) {
   // The canvas owns the WebGL context: when React removes it, the viewer goes with it.
   const attachCanvas = useCallback((node: HTMLCanvasElement | null) => {
     canvas.current = node;
+    // Arriving from the converter with a model already chosen: open it straight away.
+    const handedOff = node ? takeHandedOffFiles() : null;
+    if (handedOff) void openRef.current(handedOff, 'converter');
     return () => {
       viewer.current?.dispose();
       viewer.current = null;
@@ -100,7 +109,7 @@ export function FileViewer({ intro }: { intro: ReactNode }) {
     };
   }, []);
 
-  async function open(files: File[], source: 'drop' | 'picker' | 'sample') {
+  async function open(files: File[], source: 'drop' | 'picker' | 'sample' | 'converter') {
     if (files.length === 0) return;
     const picked = pickModelFile(files);
     if (!picked) {
@@ -116,6 +125,7 @@ export function FileViewer({ intro }: { intro: ReactNode }) {
       setState({ status: 'error', failure: { kind: 'webgl' } });
       return;
     }
+    setConvertError(false);
     setState({ status: 'loading', name: picked.file.name });
     try {
       if (!viewer.current) {
@@ -152,6 +162,10 @@ export function FileViewer({ intro }: { intro: ReactNode }) {
     }
   }
 
+  // Read through a ref so the canvas callback, created once, calls the current closure.
+  const openRef = useRef(open);
+  openRef.current = open;
+
   async function openSample() {
     setState({ status: 'loading', name: SAMPLE.name });
     try {
@@ -168,6 +182,27 @@ export function FileViewer({ intro }: { intro: ReactNode }) {
     dragDepth.current = 0;
     setDragging(false);
     void open(Array.from(event.dataTransfer.files), 'drop');
+  }
+
+  async function convert(format: ExportFormat, source: string) {
+    if (!viewer.current || converting) return;
+    setConverting(format);
+    setConvertError(false);
+    try {
+      const name = source.replace(/\.[^.]+$/, '') || 'model';
+      const { blob, extension } = await viewer.current.convert(format, name);
+      const url = URL.createObjectURL(blob);
+      Object.assign(document.createElement('a'), {
+        href: url,
+        download: `${name}.${extension}`,
+      }).click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      captureBrowser('viewer_model_converted', { from: extensionOf(source), to: format });
+    } catch {
+      setConvertError(true);
+    } finally {
+      setConverting(null);
+    }
   }
 
   async function saveScreenshot(name: string) {
@@ -327,20 +362,59 @@ export function FileViewer({ intro }: { intro: ReactNode }) {
 
         {isReady && (
           <>
-            <div className="absolute inset-x-3 top-3 flex items-center justify-between gap-2 sm:inset-x-6 sm:top-4">
-              <p className="min-w-0 truncate rounded-md border bg-popover px-2.5 py-1.5 font-mono text-xs text-popover-foreground">
-                {state.name}
-              </p>
-              <Button
-                type="button"
-                size="sm"
-                variant="secondary"
-                className="border"
-                onClick={() => input.current?.click()}
-              >
-                <Upload />
-                {t('openAnother')}
-              </Button>
+            <div className="absolute inset-x-3 top-3 flex flex-wrap items-start justify-between gap-2 sm:inset-x-6 sm:top-4">
+              <div className="flex min-w-0 items-center gap-2">
+                <p className="min-w-0 truncate rounded-md border bg-popover px-2.5 py-1.5 font-mono text-xs text-popover-foreground">
+                  {state.name}
+                </p>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  className="border"
+                  onClick={() => input.current?.click()}
+                >
+                  <Upload />
+                  {t('openAnother')}
+                </Button>
+              </div>
+              <div className="flex flex-col items-end gap-1.5">
+                <fieldset
+                  disabled={converting !== null}
+                  className="flex flex-wrap items-center gap-1 rounded-lg border bg-popover p-1 text-popover-foreground"
+                >
+                  <legend className="sr-only">{t('convert.label')}</legend>
+                  <span aria-hidden className="flex items-center gap-1.5 px-2 text-xs font-medium">
+                    <Download className="size-3.5" />
+                    {t('convert.label')}
+                  </span>
+                  {EXPORT_FORMATS.filter((format) => format !== state.info.format).map((format) => (
+                    <Button
+                      key={format}
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="font-mono text-xs"
+                      aria-busy={converting === format}
+                      aria-label={t('convert.to', { format: format.toUpperCase() })}
+                      onClick={() => void convert(format, state.name)}
+                    >
+                      {converting === format && (
+                        <Loader2 className="animate-spin motion-reduce:animate-none" />
+                      )}
+                      {format.toUpperCase()}
+                    </Button>
+                  ))}
+                </fieldset>
+                {hasConvertError && (
+                  <p
+                    role="alert"
+                    className="max-w-xs rounded-md border bg-popover px-2.5 py-1.5 text-xs text-destructive"
+                  >
+                    {t('convert.error')}
+                  </p>
+                )}
+              </div>
             </div>
             <div className="absolute inset-x-3 bottom-3 flex flex-col items-center gap-2 sm:bottom-5">
               <div

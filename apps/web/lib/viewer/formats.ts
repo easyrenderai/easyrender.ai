@@ -16,6 +16,12 @@ export const VIEWER_FORMATS = [
 
 export type ViewerFormat = (typeof VIEWER_FORMATS)[number];
 
+// What the open model can be written as. FBX, 3MF, DAE and 3DS are read-only: there is no browser
+// exporter for them.
+export const EXPORT_FORMATS = ['glb', 'gltf', 'obj', 'stl', 'ply', 'usdz'] as const;
+
+export type ExportFormat = (typeof EXPORT_FORMATS)[number];
+
 /** What the file picker offers. Extensions only: browsers know no MIME type for most of these. */
 export const VIEWER_ACCEPT = [
   ...VIEWER_FORMATS.map((format) => `.${format}`),
@@ -34,7 +40,8 @@ export const VIEWER_MAX_BYTES = 300 * 1024 * 1024;
 // These formats are usually exported with Z pointing up; the viewer stands them upright.
 const Z_UP: ReadonlySet<ViewerFormat> = new Set(['stl', '3mf', '3ds']);
 
-export const isZUpFormat = (format: ViewerFormat) => Z_UP.has(format);
+export const isZUpFormat = (format: ViewerFormat | ExportFormat) =>
+  Z_UP.has(format as ViewerFormat);
 
 export function extensionOf(filename: string): string {
   const dot = filename.lastIndexOf('.');

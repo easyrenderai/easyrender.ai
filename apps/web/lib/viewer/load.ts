@@ -56,7 +56,8 @@ export async function loadModel(
   files: readonly File[],
   main: File,
   format: ViewerFormat,
-  renderer: THREE.WebGLRenderer,
+  /** Null when there is no WebGL: everything loads except GPU-compressed (KTX2) textures. */
+  renderer: THREE.WebGLRenderer | null,
 ): Promise<LoadedModel> {
   const urls = new Map<string, string>();
   for (const file of files) {
@@ -100,11 +101,11 @@ export async function loadModel(
           import('three/addons/libs/meshopt_decoder.module.js'),
         ]);
       const draco = new DRACOLoader().setDecoderPath(`${DECODERS}/draco/`);
-      const ktx2 = new KTX2Loader().setTranscoderPath(`${DECODERS}/basis/`).detectSupport(renderer);
+      const ktx2 = new KTX2Loader().setTranscoderPath(`${DECODERS}/basis/`);
       const loader = new GLTFLoader(manager)
         .setDRACOLoader(draco)
-        .setKTX2Loader(ktx2)
         .setMeshoptDecoder(MeshoptDecoder);
+      if (renderer) loader.setKTX2Loader(ktx2.detectSupport(renderer));
       try {
         const gltf = await loader.parseAsync(
           format === 'glb' ? await bytes(main) : await text(main),

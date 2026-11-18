@@ -54,7 +54,8 @@
       "editorial": "Equipa editorial",
       "comparisons": "Comparações",
       "ecommerce": "E-commerce plugins",
-      "viewer": "Visualizador 3D"
+      "viewer": "Visualizador 3D",
+      "converter": "Conversor 3D"
     },
     "copyright": "© 2026 Easy Render. Com tecnologia Genfeed.",
     "pricesNote": "Confirma a moeda e o total antes de pagar. Os créditos não caducam."
@@ -3077,6 +3078,111 @@
         "failed": "Não conseguimos ler esse ficheiro. Pode estar danificado ou usar uma funcionalidade que este visualizador não suporta.",
         "sample": "Não foi possível carregar o modelo de exemplo. Verifique a ligação e tente novamente.",
         "incomplete": "Este modelo precisa de ficheiros que não foram largados com ele: {files}. Largue-os todos juntos."
+      },
+      "convert": {
+        "label": "Converter para",
+        "to": "Converter para {format}",
+        "error": "Não conseguimos converter este modelo para esse formato. Experimente outro."
+      }
+    },
+    "other": {
+      "body": "Precisa do ficheiro noutro formato?",
+      "action": "Abrir o conversor 3D"
+    }
+  },
+  "Converter": {
+    "metaTitle": "Conversor de ficheiros 3D online: GLB para OBJ, FBX para GLB, STL e USDZ · Easy Render",
+    "metaDescription": "Conversor de ficheiros 3D online e gratuito. Arraste um ficheiro GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ ou 3DS e transfira-o em GLB, GLTF, OBJ, STL, PLY ou USDZ. Funciona no navegador: sem envio, sem conta.",
+    "breadcrumb": "Conversor 3D",
+    "home": "Início",
+    "eyebrow": "Ferramenta gratuita",
+    "title": "Conversor de ficheiros 3D online",
+    "description": "Escolha um ficheiro 3D, selecione o formato de que precisa e transfira-o: GLB para OBJ, FBX para GLB, OBJ para STL, GLB para USDZ e mais. Três passos, sem conta.",
+    "formats": {
+      "title": "Converta para seis formatos 3D",
+      "description": "Abra um ficheiro GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ ou 3DS e guarde-o num destes.",
+      "items": {
+        "glb": "Um só ficheiro binário com forma, materiais, texturas e animação. A escolha certa para a web, lojas online e RA em Android.",
+        "gltf": "O mesmo conteúdo do GLB num único ficheiro JSON legível, com os dados incluídos.",
+        "obj": "Um .zip com o .obj, o respetivo .mtl e as texturas de cor. Abre em quase todos os programas 3D.",
+        "stl": "STL binário para fatiadores e impressão 3D. Apenas a forma: o STL não tem cor nem textura.",
+        "ply": "PLY binário com cores por vértice quando o modelo as tem. Comum em digitalizações.",
+        "usdz": "O formato da Apple: o ficheiro abre no AR Quick Look no iPhone e no iPad."
+      }
+    },
+    "steps": {
+      "title": "Como funciona",
+      "drop": {
+        "title": "Arraste o ficheiro",
+        "body": "Largue-o sobre a página ou escolha-o no seu dispositivo. Junte o .mtl, o .bin e as texturas no mesmo gesto se o modelo os tiver."
+      },
+      "choose": {
+        "title": "Escolha o formato",
+        "body": "Selecione o formato de saída em «Converter para» e carregue no botão. A maioria dos ficheiros demora alguns segundos."
+      },
+      "download": {
+        "title": "Transfira",
+        "body": "O novo ficheiro é transferido de imediato. A partir daí pode converter o mesmo modelo para outro formato ou abri-lo no visualizador 3D."
+      }
+    },
+    "other": {
+      "body": "Só quer ver um ficheiro?",
+      "action": "Abrir o visualizador 3D"
+    },
+    "cta": {
+      "title": "Ainda não tem um ficheiro 3D?",
+      "body": "A Easy Render transforma uma fotografia de produto num modelo 3D que pode transferir em GLB e USDZ. A pré-visualização é gratuita.",
+      "action": "Criar um modelo 3D a partir de uma fotografia"
+    },
+    "faq": {
+      "title": "Perguntas sobre o conversor 3D",
+      "items": {
+        "formats": {
+          "q": "Que conversões posso fazer?",
+          "a": "Pode abrir ficheiros GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ e 3DS e guardá-los em GLB, GLTF, OBJ, STL, PLY ou USDZ. Isso inclui GLB para OBJ, OBJ para GLB, FBX para GLB, GLB para STL, STL para OBJ, GLB para USDZ e qualquer outra combinação entre essas duas listas."
+        },
+        "fbx": {
+          "q": "Posso converter para FBX?",
+          "a": "Aqui não. Os ficheiros FBX, 3MF, DAE e 3DS podem ser abertos e convertidos para outro formato, mas um navegador não os consegue escrever. Para um programa que pede FBX, converta para GLB ou OBJ, que esses programas também importam."
+        },
+        "textures": {
+          "q": "Os materiais e as texturas são mantidos?",
+          "a": "GLB, GLTF e USDZ mantêm materiais e texturas. O OBJ mantém a cor e a textura de cor, num ficheiro .mtl e em imagens dentro do .zip. O STL guarda apenas a forma e o PLY apenas as cores por vértice, porque esses formatos não comportam mais."
+        },
+        "privacy": {
+          "q": "Os meus ficheiros são enviados para um servidor?",
+          "a": "Não. O seu navegador lê e converte o ficheiro no seu dispositivo. Não é enviado para os nossos servidores."
+        },
+        "free": {
+          "q": "O conversor é gratuito?",
+          "a": "Sim. Sem conta, sem marca de água e sem limite de ficheiros. Abrem ficheiros até 300 MB, consoante a memória do seu dispositivo."
+        }
+      }
+    },
+    "app": {
+      "label": "Conversor de ficheiros 3D",
+      "dropTitle": "Arraste o seu ficheiro 3D para aqui",
+      "dropActive": "Largue para abrir",
+      "browse": "Escolher um ficheiro",
+      "change": "Alterar",
+      "privacy": "O seu ficheiro fica no seu dispositivo. Nada é enviado.",
+      "targetLabel": "Converter para",
+      "convert": "Converter para {format}",
+      "steps": {
+        "reading": "A ler o ficheiro",
+        "converting": "A converter para {format}"
+      },
+      "done": "Convertido para {format}",
+      "download": "Transferir {name}",
+      "kilobytes": "{size} KB",
+      "megabytes": "{size} MB",
+      "otherFormat": "Converter para outro formato",
+      "view": "Ver em 3D",
+      "errors": {
+        "unsupported": "Não conseguimos abrir ficheiros .{extension}. Experimente GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ ou 3DS.",
+        "incomplete": "Este modelo precisa de ficheiros que não foram largados com ele: {files}. Largue-os todos juntos.",
+        "tooLarge": "Esse ficheiro tem mais de {megabytes} MB, demasiado grande para abrir num navegador.",
+        "failed": "Não conseguimos ler esse ficheiro. Pode estar danificado ou usar uma funcionalidade que este visualizador não suporta."
       }
     }
   }

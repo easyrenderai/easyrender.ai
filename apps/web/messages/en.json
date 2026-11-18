@@ -54,7 +54,8 @@
       "editorial": "Editorial team",
       "comparisons": "Comparisons",
       "ecommerce": "E-commerce plugins",
-      "viewer": "3D viewer"
+      "viewer": "3D viewer",
+      "converter": "3D converter"
     },
     "copyright": "© 2026 Easy Render. Powered by Genfeed.",
     "pricesNote": "Check the currency and total at checkout. Credits never expire."
@@ -3454,6 +3455,111 @@
         "failed": "We couldn't read that file. It may be damaged, or use a feature this viewer doesn't support.",
         "sample": "The sample model couldn't be loaded. Check your connection and try again.",
         "incomplete": "This model needs files that were not dropped with it: {files}. Drop them all together."
+      },
+      "convert": {
+        "label": "Convert to",
+        "to": "Convert to {format}",
+        "error": "We couldn't convert this model to that format. Try another one."
+      }
+    },
+    "other": {
+      "body": "Need the file in another format?",
+      "action": "Open the 3D converter"
+    }
+  },
+  "Converter": {
+    "metaTitle": "3D File Converter Online: GLB to OBJ, FBX to GLB, STL and USDZ · Easy Render",
+    "metaDescription": "Free online 3D file converter. Drop a GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ or 3DS file and download it as GLB, GLTF, OBJ, STL, PLY or USDZ. It runs in your browser: no upload, no account.",
+    "breadcrumb": "3D converter",
+    "home": "Home",
+    "eyebrow": "Free tool",
+    "title": "Online 3D file converter",
+    "description": "Choose a 3D file, pick the format you need and download it: GLB to OBJ, FBX to GLB, OBJ to STL, GLB to USDZ and more. Three steps, no account.",
+    "formats": {
+      "title": "Convert to six 3D formats",
+      "description": "Open any GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ or 3DS file and write it as one of these.",
+      "items": {
+        "glb": "One binary file with shape, materials, textures and animation. The right choice for the web, online stores and AR on Android.",
+        "gltf": "The same content as GLB in a single readable JSON file, with the data embedded.",
+        "obj": "A .zip with the .obj, its .mtl and the colour textures . Opens in almost every 3D program.",
+        "stl": "Binary STL for slicers and 3D printing. Shape only: STL has no colour or texture.",
+        "ply": "Binary PLY with vertex colours when the model has them. Common for scans.",
+        "usdz": "Apple's format: the file opens in AR Quick Look on iPhone and iPad."
+      }
+    },
+    "steps": {
+      "title": "How it works",
+      "drop": {
+        "title": "Drop the file",
+        "body": "Drag it onto the page or choose it from your device. Add the .mtl, .bin and textures in the same drop if the model has them."
+      },
+      "choose": {
+        "title": "Pick the format",
+        "body": "Choose the output under \"Convert to\" and press the button. Most files take a few seconds."
+      },
+      "download": {
+        "title": "Download",
+        "body": "The new file downloads at once. From there you can convert the same model to another format or open it in the 3D viewer."
+      }
+    },
+    "other": {
+      "body": "Only want to look at a file?",
+      "action": "Open the 3D viewer"
+    },
+    "cta": {
+      "title": "No 3D file yet?",
+      "body": "Easy Render turns one product photo into a 3D model you can download as GLB and USDZ. The preview is free.",
+      "action": "Create a 3D model from a photo"
+    },
+    "faq": {
+      "title": "Questions about the 3D converter",
+      "items": {
+        "formats": {
+          "q": "Which conversions can I do?",
+          "a": "You can open GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ and 3DS files and save them as GLB, GLTF, OBJ, STL, PLY or USDZ. That covers GLB to OBJ, OBJ to GLB, FBX to GLB, GLB to STL, STL to OBJ, GLB to USDZ and every other pair between those lists."
+        },
+        "fbx": {
+          "q": "Can I convert to FBX?",
+          "a": "Not here. FBX, 3MF, DAE and 3DS files can be opened and converted to another format, but browsers cannot write them. To get a model into a tool that asks for FBX, convert it to GLB or OBJ, which those tools also import."
+        },
+        "textures": {
+          "q": "Are materials and textures kept?",
+          "a": "GLB, GLTF and USDZ keep materials and textures. OBJ keeps the colour and the colour texture, in a .mtl file and image files inside the .zip. STL keeps only the shape and PLY only vertex colours, because those formats cannot hold more."
+        },
+        "privacy": {
+          "q": "Are my files uploaded?",
+          "a": "No. The file is read and converted by your browser on your device. It is not sent to our servers."
+        },
+        "free": {
+          "q": "Is the converter free?",
+          "a": "Yes. There is no account, no watermark and no limit on how many files you convert. Files up to 300 MB open, depending on the memory of your device."
+        }
+      }
+    },
+    "app": {
+      "label": "3D file converter",
+      "dropTitle": "Drag your 3D file here",
+      "dropActive": "Drop to open",
+      "browse": "Choose a file",
+      "change": "Change",
+      "privacy": "Your file stays on your device. Nothing is uploaded.",
+      "targetLabel": "Convert to",
+      "convert": "Convert to {format}",
+      "steps": {
+        "reading": "Reading the file",
+        "converting": "Converting to {format}"
+      },
+      "done": "Converted to {format}",
+      "download": "Download {name}",
+      "kilobytes": "{size} KB",
+      "megabytes": "{size} MB",
+      "otherFormat": "Convert to another format",
+      "view": "View it in 3D",
+      "errors": {
+        "unsupported": "We can't open .{extension} files. Try GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ or 3DS.",
+        "incomplete": "This model needs files that were not dropped with it: {files}. Drop them all together.",
+        "tooLarge": "That file is over {megabytes} MB, too large to open in a browser.",
+        "failed": "We couldn't read that file. It may be damaged, or use a feature this viewer doesn't support."
       }
     }
   }
