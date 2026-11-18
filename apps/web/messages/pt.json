@@ -619,8 +619,9 @@
     "views": {
       "photo": "Fotografia",
       "3d": "3D",
-      "both": "Lado a lado"
+      "compare": "Comparar"
     },
+    "compareLabel": "Comparar foto e 3D",
     "status": {
       "drafting": "A preparar a pré-visualização",
       "preview_ready": "Pronto para 3D",
@@ -666,6 +667,40 @@
       "previewing": "{count, plural, one {# pré-visualização em curso.} other {# pré-visualizações em curso.}}",
       "all": "Criar {count, plural, one {# modelo 3D} other {# modelos 3D}}: {credits} dos teus {balance} créditos.",
       "short": "Faltam-te {credits} créditos. Comprar créditos"
+    },
+    "panel": {
+      "title": "Biblioteca",
+      "status": "Estado",
+      "view": "Vista"
+    },
+    "folders": {
+      "title": "Pastas",
+      "all": "Todos os itens",
+      "unfiled": "Sem pasta",
+      "new": "Nova pasta",
+      "nameLabel": "Nome da pasta",
+      "namePlaceholder": "Cozinha",
+      "create": "Criar",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "renameTitle": "Mudar o nome da pasta",
+      "renameAria": "Mudar o nome de {name}",
+      "deleteAria": "Eliminar {name}",
+      "deleteTitle": "Eliminar esta pasta?",
+      "deleteBody": "{name} é eliminada. {count, plural, one {# item fica} other {# itens ficam}} na tua biblioteca, sem pasta.",
+      "delete": "Eliminar pasta",
+      "move": "Mover para uma pasta",
+      "moveAria": "Mover {name} para uma pasta",
+      "moveTitle": "Mover {name}",
+      "moveNone": "Sem pasta",
+      "moveEmpty": "Ainda não tens pastas. Usa Nova pasta para criar uma.",
+      "errors": {
+        "exists": "Já existe uma pasta com esse nome.",
+        "name": "Usa um nome que não esteja vazio nem seja demasiado longo.",
+        "limit": "Atingiste o limite de pastas.",
+        "generic": "Não foi possível guardar a pasta. Tenta novamente.",
+        "move": "Não foi possível mover o item. Tenta novamente."
+      }
     }
   },
   "ProductViews": {

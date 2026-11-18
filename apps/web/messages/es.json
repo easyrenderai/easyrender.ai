@@ -619,8 +619,9 @@
     "views": {
       "photo": "Foto",
       "3d": "3D",
-      "both": "Lado a lado"
+      "compare": "Comparar"
     },
+    "compareLabel": "Comparar foto y 3D",
     "status": {
       "drafting": "Preparando vista previa",
       "preview_ready": "Listo para 3D",
@@ -666,6 +667,40 @@
       "previewing": "{count, plural, one {# vista previa} other {# vistas previas}} en curso.",
       "all": "Pasar {count, plural, one {# artículo} other {# artículos}} a 3D: {credits} de tus {balance} créditos.",
       "short": "Te faltan {credits} créditos. Comprar más"
+    },
+    "panel": {
+      "title": "Biblioteca",
+      "status": "Estado",
+      "view": "Vista"
+    },
+    "folders": {
+      "title": "Carpetas",
+      "all": "Todos",
+      "unfiled": "Sin carpeta",
+      "new": "Nueva carpeta",
+      "nameLabel": "Nombre de la carpeta",
+      "namePlaceholder": "Cocina",
+      "create": "Crear",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "renameTitle": "Renombrar carpeta",
+      "renameAria": "Renombrar {name}",
+      "deleteAria": "Eliminar {name}",
+      "deleteTitle": "¿Eliminar esta carpeta?",
+      "deleteBody": "Se elimina {name}. {count, plural, one {# elemento sigue} other {# elementos siguen}} en tu biblioteca, sin carpeta.",
+      "delete": "Eliminar carpeta",
+      "move": "Mover a una carpeta",
+      "moveAria": "Mover {name} a una carpeta",
+      "moveTitle": "Mover {name}",
+      "moveNone": "Sin carpeta",
+      "moveEmpty": "Aún no tienes carpetas. Usa Nueva carpeta para crear una.",
+      "errors": {
+        "exists": "Ya existe una carpeta con ese nombre.",
+        "name": "Usa un nombre que no esté vacío ni sea demasiado largo.",
+        "limit": "Has alcanzado el límite de carpetas.",
+        "generic": "No se pudo guardar la carpeta. Inténtalo de nuevo.",
+        "move": "No se pudo mover el elemento. Inténtalo de nuevo."
+      }
     }
   },
   "ProductViews": {

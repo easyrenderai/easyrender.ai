@@ -619,8 +619,9 @@
     "views": {
       "photo": "Foto",
       "3d": "3D",
-      "both": "Affiancati"
+      "compare": "Confronta"
     },
+    "compareLabel": "Confronta foto e 3D",
     "status": {
       "drafting": "Anteprima in preparazione",
       "preview_ready": "Pronto per il 3D",
@@ -666,6 +667,40 @@
       "previewing": "{count, plural, one {# anteprima in corso.} other {# anteprime in corso.}}",
       "all": "Crea {count, plural, one {# modello 3D} other {# modelli 3D}}: {credits} dei tuoi {balance} crediti.",
       "short": "Ti mancano {credits} crediti. Acquista crediti"
+    },
+    "panel": {
+      "title": "Libreria",
+      "status": "Stato",
+      "view": "Vista"
+    },
+    "folders": {
+      "title": "Cartelle",
+      "all": "Tutti gli elementi",
+      "unfiled": "Senza cartella",
+      "new": "Nuova cartella",
+      "nameLabel": "Nome della cartella",
+      "namePlaceholder": "Cucina",
+      "create": "Crea",
+      "save": "Salva",
+      "cancel": "Annulla",
+      "renameTitle": "Rinomina cartella",
+      "renameAria": "Rinomina {name}",
+      "deleteAria": "Elimina {name}",
+      "deleteTitle": "Eliminare questa cartella?",
+      "deleteBody": "{name} viene eliminata. {count, plural, one {# elemento resta} other {# elementi restano}} nella tua libreria, senza cartella.",
+      "delete": "Elimina cartella",
+      "move": "Sposta in una cartella",
+      "moveAria": "Sposta {name} in una cartella",
+      "moveTitle": "Sposta {name}",
+      "moveNone": "Nessuna cartella",
+      "moveEmpty": "Non hai ancora cartelle. Usa Nuova cartella per crearne una.",
+      "errors": {
+        "exists": "Esiste già una cartella con questo nome.",
+        "name": "Usa un nome che non sia vuoto né troppo lungo.",
+        "limit": "Hai raggiunto il limite di cartelle.",
+        "generic": "Impossibile salvare la cartella. Riprova.",
+        "move": "Impossibile spostare l’elemento. Riprova."
+      }
     }
   },
   "ProductViews": {

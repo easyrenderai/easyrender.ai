@@ -49,6 +49,7 @@ model User {
   catalogItems CatalogItem[]
   shopifyShops ShopifyShop[]
   viewSets  ViewSet[]
+  libraryFolders LibraryFolder[]
   upscales  Upscale[]
   firstModelEnrollment FirstModelEnrollment?
 
@@ -215,14 +216,32 @@ model Render {
   completedAt       DateTime?
   previewCompletedAt DateTime?
   edits             RenderEdit[]
+  // The library folder the owner filed this render in. Null is unfiled; deleting a folder unfiles.
+  folderId          String?
+  folder            LibraryFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
 
   @@unique([requestScope, requestKey])
   @@index([userId, createdAt])
+  @@index([userId, folderId])
   @@index([anonId, createdAt])
   @@index([ipHash, createdAt])
   @@index([isPublic, status, createdAt])
   @@index([completedAt, id])
   @@index([previewCompletedAt, id])
+}
+
+// A flat folder in a person's library. Names are unique per owner. Deleting a folder keeps its
+// renders and unfiles them.
+model LibraryFolder {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime @default(now())
+  renders   Render[]
+
+  @@unique([userId, name])
+  @@index([userId])
 }
 
 // What the owner did to a render after the free preview, newest last: the angle sheet drawn, a

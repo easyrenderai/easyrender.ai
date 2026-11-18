@@ -619,8 +619,9 @@
     "views": {
       "photo": "Foto",
       "3d": "3D",
-      "both": "Nebeneinander"
+      "compare": "Vergleichen"
     },
+    "compareLabel": "Foto und 3D vergleichen",
     "status": {
       "drafting": "Vorschau in Arbeit",
       "preview_ready": "Bereit für 3D",
@@ -666,6 +667,40 @@
       "previewing": "{count, plural, one {# Vorschau in Arbeit.} other {# Vorschauen in Arbeit.}}",
       "all": "{count, plural, one {# 3D-Modell} other {# 3D-Modelle}} erstellen: {credits} von {balance} Credits.",
       "short": "Es fehlen {credits} Credits. Credits kaufen"
+    },
+    "panel": {
+      "title": "Bibliothek",
+      "status": "Status",
+      "view": "Ansicht"
+    },
+    "folders": {
+      "title": "Ordner",
+      "all": "Alle Elemente",
+      "unfiled": "Ohne Ordner",
+      "new": "Neuer Ordner",
+      "nameLabel": "Ordnername",
+      "namePlaceholder": "Küche",
+      "create": "Erstellen",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "renameTitle": "Ordner umbenennen",
+      "renameAria": "{name} umbenennen",
+      "deleteAria": "{name} löschen",
+      "deleteTitle": "Diesen Ordner löschen?",
+      "deleteBody": "{name} wird entfernt. {count, plural, one {# Element bleibt} other {# Elemente bleiben}} ohne Ordner in deiner Bibliothek.",
+      "delete": "Ordner löschen",
+      "move": "In einen Ordner verschieben",
+      "moveAria": "{name} in einen Ordner verschieben",
+      "moveTitle": "{name} verschieben",
+      "moveNone": "Kein Ordner",
+      "moveEmpty": "Du hast noch keine Ordner. Erstelle einen mit Neuer Ordner.",
+      "errors": {
+        "exists": "Ein Ordner mit diesem Namen gibt es schon.",
+        "name": "Nutze einen Namen, der nicht leer und nicht zu lang ist.",
+        "limit": "Du hast die maximale Anzahl an Ordnern erreicht.",
+        "generic": "Der Ordner konnte nicht gespeichert werden. Versuche es erneut.",
+        "move": "Das Element konnte nicht verschoben werden. Versuche es erneut."
+      }
     }
   },
   "ProductViews": {

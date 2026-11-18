@@ -619,8 +619,9 @@
     "views": {
       "photo": "Photo",
       "3d": "3D",
-      "both": "Côte à côte"
+      "compare": "Comparer"
     },
+    "compareLabel": "Comparer la photo et la 3D",
     "status": {
       "drafting": "Aperçu en préparation",
       "preview_ready": "Prêt pour la 3D",
@@ -666,6 +667,40 @@
       "previewing": "{count, plural, one {# aperçu en cours.} other {# aperçus en cours.}}",
       "all": "Créer {count, plural, one {# modèle 3D} other {# modèles 3D}} : {credits} de vos {balance} crédits.",
       "short": "Il manque {credits} crédits. Acheter des crédits"
+    },
+    "panel": {
+      "title": "Bibliothèque",
+      "status": "Statut",
+      "view": "Vue"
+    },
+    "folders": {
+      "title": "Dossiers",
+      "all": "Tous les éléments",
+      "unfiled": "Sans dossier",
+      "new": "Nouveau dossier",
+      "nameLabel": "Nom du dossier",
+      "namePlaceholder": "Cuisine",
+      "create": "Créer",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "renameTitle": "Renommer le dossier",
+      "renameAria": "Renommer {name}",
+      "deleteAria": "Supprimer {name}",
+      "deleteTitle": "Supprimer ce dossier ?",
+      "deleteBody": "{name} est supprimé. {count, plural, one {# élément reste} other {# éléments restent}} dans ta bibliothèque, sans dossier.",
+      "delete": "Supprimer le dossier",
+      "move": "Déplacer vers un dossier",
+      "moveAria": "Déplacer {name} vers un dossier",
+      "moveTitle": "Déplacer {name}",
+      "moveNone": "Aucun dossier",
+      "moveEmpty": "Tu n’as pas encore de dossier. Utilise Nouveau dossier pour en créer un.",
+      "errors": {
+        "exists": "Un dossier portant ce nom existe déjà.",
+        "name": "Utilise un nom ni vide ni trop long.",
+        "limit": "Tu as atteint la limite de dossiers.",
+        "generic": "Impossible d’enregistrer le dossier. Réessaie.",
+        "move": "Impossible de déplacer l’élément. Réessaie."
+      }
     }
   },
   "ProductViews": {

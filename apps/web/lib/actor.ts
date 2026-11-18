@@ -88,3 +88,10 @@ export async function currentUser() {
   const session = await auth().api.getSession({ headers: await nextHeaders() });
   return session?.user ?? null;
 }
+
+// The signed-in person for a route that a browser session, never an API key, may call.
+export async function requireUser() {
+  const user = await currentUser();
+  if (!user) throw new AppError('Sign in first', 401, 'unauthorized');
+  return user;
+}
