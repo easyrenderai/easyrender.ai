@@ -1,10 +1,11 @@
 'use client';
 import type { FirstModelOffer } from '@easyrender/core';
 import { Box, Loader2, Sparkles } from 'lucide-react';
-import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { type ReactNode, useState } from 'react';
+import { SiteLink } from '@/components/site-link';
 import { Button } from '@/components/ui/button';
+import { localizedAuthPath } from '@/lib/app-locale';
 import { authClient } from '@/lib/auth-client';
 
 export function TrialBuildAction({
@@ -34,7 +35,12 @@ export function TrialBuildAction({
     try {
       const result = await authClient.sendVerificationEmail({
         email: offer.email,
-        fetchOptions: { headers: { 'x-easyrender-email-locale': locale === 'es' ? 'es' : 'en' } },
+        fetchOptions: {
+          headers: {
+            'x-easyrender-email-locale': locale,
+            'x-easyrender-project-return': decodeURIComponent(next),
+          },
+        },
       });
       if (result.error) setError(t(result.error.status === 429 ? 'rateLimited' : 'sendError'));
       else setIsSent(true);
@@ -60,10 +66,10 @@ export function TrialBuildAction({
       </div>
       {offer.state === 'signup' ? (
         <Button size="lg" className="h-auto min-h-11 w-full whitespace-normal" asChild>
-          <Link href={`/sign-up?next=${next}`}>
+          <SiteLink href={`${localizedAuthPath(locale, '/sign-up')}?next=${next}`}>
             <Sparkles />
             {t('signup')}
-          </Link>
+          </SiteLink>
         </Button>
       ) : offer.state === 'verify' ? (
         <>

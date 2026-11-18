@@ -13,6 +13,7 @@ import { StudioShell } from '@/components/studio/shell';
 import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
 import { currentUser } from '@/lib/actor';
+import { localizedAuthPath } from '@/lib/app-locale';
 import { ROUTES } from '@/lib/seo/routes';
 import { API_EXAMPLES, API_SETUP } from './examples';
 
@@ -36,7 +37,10 @@ export async function ApiView({ locale }: { locale: Locale }) {
     apiFaqItems(locale),
   ]);
   const examples = await getTranslations({ locale, namespace: 'IntegrationLanding.examples' });
-  const accountHref = user ? '/connectors' : '/sign-up?next=%2Fconnectors';
+  const accountHref = user
+    ? '/connectors'
+    : `${localizedAuthPath(locale, '/sign-up')}?next=%2Fconnectors`;
+  const accountLabel = t(user ? 'connect.cta' : 'connect.signup');
   const copyLabels = {
     copyLabel: t('examples.copy'),
     copiedLabel: t('examples.copied'),
@@ -106,8 +110,11 @@ export async function ApiView({ locale }: { locale: Locale }) {
             </p>
             <Button asChild size="lg">
               <IntegrationLink channel="api" action="setup" href={accountHref}>
-                {t('connect.cta')} <ArrowRight aria-hidden="true" />
+                {accountLabel} <ArrowRight aria-hidden="true" />
               </IntegrationLink>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="#examples">{t('connect.curlLink')}</Link>
             </Button>
             <div className="space-y-2 pt-4">
               <p className="text-sm text-muted-foreground">{t('connect.mcpTitle')}</p>
@@ -185,7 +192,7 @@ export async function ApiView({ locale }: { locale: Locale }) {
         </div>
       </Section>
       <ResourceLinks locale={locale} context="api" />
-      <StudioClosing title={t('closing.title')} label={t('closing.cta')} href={accountHref} />
+      <StudioClosing title={t('closing.title')} label={accountLabel} href={accountHref} />
     </StudioShell>
   );
 }

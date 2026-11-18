@@ -9,11 +9,12 @@ import {
   topupAmountCents,
   topupPricing,
 } from '@easyrender/harness/pricing';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { BuyButton } from '@/components/buy-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { intlLocale } from '@/i18n/config';
 import { cn } from '@/lib/utils';
 
 export function PaygPicker({
@@ -29,9 +30,11 @@ export function PaygPicker({
 }) {
   const { payg: PAYG } = displayPricing(pricingVariant, currency);
   const t = useTranslations('PaygPicker');
-  const format = useFormatter();
+  const locale = intlLocale(useLocale());
+  const format = (value: number, options?: Intl.NumberFormatOptions) =>
+    new Intl.NumberFormat(locale, options).format(value);
   const usd = (credits: number) =>
-    format.number(topupAmountCents(credits, rate) / 100, {
+    format(topupAmountCents(credits, rate) / 100, {
       style: 'currency',
       currency: rate.currency.toUpperCase(),
     });
@@ -52,7 +55,7 @@ export function PaygPicker({
             key={preset}
             type="button"
             variant="outline"
-            aria-label={format.number(preset)}
+            aria-label={format(preset)}
             aria-describedby={`payg-price-${preset}`}
             aria-pressed={credits === preset}
             onClick={() => setCredits(preset)}
@@ -61,7 +64,7 @@ export function PaygPicker({
               credits === preset && 'border-primary bg-muted font-medium',
             )}
           >
-            <span>{format.number(preset)}</span>
+            <span>{format(preset)}</span>
             <span id={`payg-price-${preset}`} className="text-muted-foreground">
               {usd(preset)}
             </span>
@@ -86,10 +89,10 @@ export function PaygPicker({
       <p className="text-sm text-muted-foreground">
         {isValid
           ? t('estimate', { price: usd(credits), count: rendersFor(credits) })
-          : t('range', { min: format.number(PAYG.min), max: format.number(PAYG.max) })}
+          : t('range', { min: format(PAYG.min), max: format(PAYG.max) })}
       </p>
       <BuyButton
-        label={isValid ? t('buyAmount', { credits: format.number(credits) }) : t('buy')}
+        label={isValid ? t('buyAmount', { credits: format(credits) }) : t('buy')}
         body={{
           plan: 'payg',
           next,

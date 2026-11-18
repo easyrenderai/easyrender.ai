@@ -1,15 +1,12 @@
 'use client';
 
-import { ArrowRight } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { SiteLink as Link } from '@/components/site-link';
 import { photoUrl } from '@/lib/studio/catalog';
 import { useSection } from './use-section';
 
 const STOPS = ['store', 'hub', 'studio', 'client'] as const;
 
-// The flywheel behind the hub: a store's photo becomes a model, a studio uses it, the client
-// buys the piece, and more stores join.
+// The four steps from a product photo to a model you can reuse.
 export function StudioWheel() {
   const t = useTranslations('Studio.wheel');
   const locale = useLocale();
@@ -68,9 +65,6 @@ export function StudioWheel() {
           </ol>
         </div>
       </div>
-      <Link className="link link--below reveal" href="/hub">
-        {t('link')} <ArrowRight />
-      </Link>
     </section>
   );
 }

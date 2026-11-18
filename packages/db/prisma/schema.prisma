@@ -164,6 +164,8 @@ model Render {
   // Visitors get a free preview before signing up; the anon cookie ties it to them.
   anonId            String?
   ipHash            String?
+  // Language chosen in the product, independent of attribution consent.
+  notificationLocale String?
   prompt            String?
   // Display name for catalog items, usually the uploaded file name.
   name              String?

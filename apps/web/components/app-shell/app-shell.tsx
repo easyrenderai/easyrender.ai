@@ -4,8 +4,9 @@ import { PanelLeft, PanelRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { type ReactNode, useCallback, useEffect, useState } from 'react';
+import { type ReactNode, Suspense, useCallback, useEffect, useState } from 'react';
 import { useDefaultLayout, usePanelRef } from 'react-resizable-panels';
+import { AppLocalePicker } from '@/components/app-locale-picker';
 import { BrandMark } from '@/components/brand-mark';
 import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
@@ -218,8 +219,15 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
             <BrandMark className="size-[1.375rem]" />
           </Link>
           <AppBreadcrumb />
+          {!isAdmin && (
+            <div className="relative ml-auto shrink-0">
+              <Suspense>
+                <AppLocalePicker />
+              </Suspense>
+            </div>
+          )}
           {hasRight && (
-            <div className="ml-auto flex items-center gap-1">
+            <div className="flex shrink-0 items-center gap-1">
               <Button
                 variant="ghost"
                 size="icon-sm"

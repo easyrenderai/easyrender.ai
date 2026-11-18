@@ -1,6 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { db, type Render } from '@easyrender/db';
-import { FALLBACK_SHEET_SETTINGS, ProviderRequestError, SHEET_MODEL } from '@easyrender/harness';
+import {
+  FALLBACK_SHEET_SETTINGS,
+  ProviderRequestError,
+  SHEET_CREDITS,
+  SHEET_MODEL,
+} from '@easyrender/harness';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { grantCreditsInTransaction } from './credits';
 import { advance, createDraft, startSheet, toView } from './renders';
@@ -390,7 +395,11 @@ describe('an angle sheet that repeats one view', () => {
   });
 
   it('keeps the existing approved sheet when a paid correction repeats views', async () => {
-    fakeDatabase({ ...drafting, sheetKey: 'approved-sheet', sheetRedraws: 1 });
+    const storedCorrection = fakeDatabase({
+      ...drafting,
+      sheetKey: 'approved-sheet',
+      sheetRedraws: 1,
+    });
     getPrediction.mockResolvedValue({
       status: 'succeeded',
       output: 'https://replicate.example/sheet.png',
@@ -399,6 +408,11 @@ describe('an angle sheet that repeats one view', () => {
     const result = await advance('r1');
     expect(result?.status).toBe('preview_ready');
     expect(result?.sheetKey).toBe('approved-sheet');
+    expect(toView(storedCorrection())).toMatchObject({
+      error: null,
+      status: 'preview_ready',
+      refundedCorrectionCredits: SHEET_CREDITS,
+    });
     expect(start).not.toHaveBeenCalled();
     expect(grantCreditsInTransaction).toHaveBeenCalledWith(
       expect.anything(),

@@ -72,12 +72,10 @@ for (const locale of LOCALES) {
           page.locator(`footer a[href="${ROUTES[linked].paths[locale]}"]`),
         ).toBeVisible();
       }
-      await expect(page.locator(`main [lang="${locale === 'es' ? 'es' : 'en'}"]`)).toContainText(
-        kind === 'privacy'
-          ? 'PostHog'
-          : locale === 'es'
-            ? 'públicos por defecto'
-            : 'public by default',
+      const legalBody = page.locator(`main [lang="${locale === 'es' ? 'es' : 'en'}"]`);
+      if (kind === 'privacy') await expect(legalBody).toContainText('PostHog');
+      await expect(legalBody.locator('#legal-public + p')).toContainText(
+        locale === 'es' ? 'privados por defecto' : 'private by default',
       );
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),

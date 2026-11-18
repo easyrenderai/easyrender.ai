@@ -82,7 +82,7 @@
     },
     "try": {
       "title": "Try it with one photo, right here",
-      "description": "Drop a photo of furniture, decor or a product. The preview is free; create an account to see it."
+      "description": "Upload a product photo to get a free preview from multiple angles. No account or card is required."
     },
     "meta": {
       "title": "Easy Render | Photo to 3D",
@@ -91,7 +91,7 @@
     "intro": {
       "eyebrow": "Photo to 3D",
       "title": "What is Easy Render?",
-      "body": "Easy Render is an image-to-3D tool: it turns one photo of a piece of furniture, a decor object or a building exterior into a 3D model. First it draws the object from every side, a free angle sheet you can check before you spend anything. If the preview looks right, one click turns it into a 3D model you can spin and download as GLB and USDZ.",
+      "body": "Turn a photo of a product, a piece of furniture or a building exterior into a 3D model. First, review a free preview from several angles. If it looks right, create a 3D model you can rotate and download in GLB and USDZ.",
       "scope": "It does not model whole rooms. It does not invent measurements. You get the file; you decide if it is good enough to keep.",
       "primaryCta": "Upload a photo",
       "secondaryCta": "See models made from a photo"
@@ -115,12 +115,12 @@
       "title": "From your photo to your next project.",
       "hub": "Explore how the Hub works",
       "photo": {
-        "title": "Upload your product",
+        "title": "Upload a product photo",
         "body": "Start with a photo you already have."
       },
       "model": {
-        "title": "Get your model",
-        "body": "Review the free angles, then choose whether to build the 3D model."
+        "title": "Check the free preview",
+        "body": "Review the views. If they look right, create your downloadable 3D model."
       },
       "use": {
         "title": "Use it in your work",
@@ -132,12 +132,12 @@
     },
     "motionHero": {
       "title": "Your product. In every dimension.",
-      "description": "Start with a photo. Preview the angles for free, then choose whether to build the 3D model.",
+      "description": "Upload a photo and check the free preview from multiple angles. Then decide whether to create the 3D model.",
       "label": "Existing example: a photo becomes an angle sheet, then a textured, rotating 3D model. Timing is illustrative.",
       "play": "Play the process",
       "pause": "Pause the process",
       "photo": "Photo",
-      "angles": "Free angles",
+      "angles": "Free preview",
       "model": "3D model",
       "example": "Explore this example"
     }
@@ -152,9 +152,9 @@
         "name": "Pay as you go",
         "note": "per credit",
         "features": {
-          "min": "From {credits} credits ({price})",
+          "min": "Minimum purchase: {credits} credits ({price})",
           "downloads": "GLB and USDZ downloads",
-          "ar": "Coming soon: see it in your room from your phone",
+          "ar": "Files for compatible AR viewers",
           "api": "MCP server and REST API"
         },
         "cta": "Buy credits",
@@ -185,8 +185,8 @@
         "cta": "Book a call",
         "audience": "For large catalogs and assisted onboarding."
       },
-      "tryFree": "Try it free",
-      "noCard": "Free previews. No credit card required.",
+      "tryFree": "Try a free preview",
+      "noCard": "No account or credit card required for the preview.",
       "perModel": "per 3D model"
     },
     "faq": {
@@ -213,16 +213,16 @@
           "a": "A free preview that shows the object from every angle, then — if you spend credits — a 3D model you can spin on its page and download as a textured GLB for the web and a USDZ file."
         },
         "freePreview": {
-          "q": "Why is the preview free?",
-          "a": "Before the 3D model is built we draw the object from every angle. You check that preview at no cost and only spend credits when the shape and the details look right."
+          "q": "What does the free preview include?",
+          "a": "A set of views of your product from several angles. Review it before creating the downloadable 3D model. The preview needs no account or card and is subject to a daily limit."
         },
         "failed": {
           "q": "What if a render fails?",
           "a": "If the 3D model fails to build, the credits for that render go back to your balance automatically."
         },
         "public": {
-          "q": "Is my render public?",
-          "a": "Finished models appear in the public gallery by default. You can switch off “Show in public gallery” on the model’s page. Today, hiding a model may also stop its link from opening for other people, so keep it in the gallery if you want to share the link."
+          "q": "Is my model public?",
+          "a": "Models created in the web app are private by default. You can choose to list a finished model in the public gallery. Store integrations can share a model by link without listing it in the gallery."
         },
         "cost": {
           "q": "How much does a 3D model cost?",
@@ -238,7 +238,7 @@
         },
         "ar": {
           "q": "Can I see the model in my room?",
-          "a": "Augmented reality is coming soon: you will be able to open the model on your phone and place it in your room. It shows the shape and materials of the object, not its real-world size."
+          "a": "Store integrations can open finished models in augmented reality on compatible phones. The demo shows the shape and materials. Dimensions are approximate."
         }
       }
     }
@@ -328,11 +328,11 @@
     "gallery": "Gallery",
     "inputPhoto": "Input photo",
     "sourceAlt": "Source of {title}",
-    "everyAngle": "Every angle",
+    "everyAngle": "Generated views",
     "prompt": "Prompt",
     "noPrompt": "No prompt, photo only",
     "example": "Example",
-    "noAngleSheet": "Made from the photo alone, without an angle sheet.",
+    "noAngleSheet": "This project has no generated views.",
     "makeYourOwn": "Make your own",
     "public": "Public",
     "private": "Private",
@@ -351,16 +351,18 @@
       "preview_ready": "Preview ready",
       "rendering": "Building 3D model",
       "ready": "Ready",
-      "failed": "Failed"
+      "failed": "Failed",
+      "correcting": "Regenerating views",
+      "paidSheet": "Creating views"
     },
     "drafting": "Drawing every angle of your object. This takes about a minute.",
     "rendering": "Building the 3D model. This takes about two minutes.",
     "previewReady": "Your preview is ready. Check every angle above, then render the 3D model.",
-    "previewAlt": "Preview of every angle",
-    "noPreview": "No preview",
-    "signUpToRender": "Sign up to render in 3D",
-    "buyToRender": "Buy credits to render in 3D",
-    "render3d": "Render 3D ({credits} credits)",
+    "previewAlt": "Preview of the generated views",
+    "noPreview": "No preview available",
+    "signUpToRender": "Create an account to continue",
+    "buyToRender": "Buy credits to create the 3D model",
+    "render3d": "Create 3D model · {credits} credits",
     "tryAnother": "Try another photo",
     "showInGallery": "Show in public gallery",
     "finishedOnly": "Finished models only",
@@ -369,13 +371,21 @@
       "sheet": "Could not generate the angle sheet",
       "redraw": "Could not redraw the angle sheet",
       "upscale": "Could not upscale this picture. Try again in a minute.",
-      "export": "Could not convert the model. Try again in a minute."
+      "export": "Could not convert the model. Try again in a minute.",
+      "usdz": "We couldn’t prepare the USDZ file. Try again or download the GLB.",
+      "previewFailed": "We couldn’t create the preview. Try another photo.",
+      "modelFailed": "We couldn’t create the 3D model.",
+      "generationFailed": "We couldn’t finish this project.",
+      "creditsReturned": "We’ve returned {credits, number} credits to your balance.",
+      "buildStartRefunded": "We couldn’t start the 3D model. Any credits used to start it were returned.",
+      "sheetStartRefunded": "We couldn’t start the new views. Your credits were returned.",
+      "redrawStartRefunded": "We couldn’t regenerate the views. Your earlier preview is still there and your credits were returned."
     },
     "generateSheet": "Generate angle sheet ({credits} credits)",
-    "fixSheetLabel": "Something off in an angle?",
-    "fixSheetHint": "Describe what to fix and we redraw every angle from your photo, so mention everything you want changed. A redraw that fails is refunded.",
+    "fixSheetLabel": "Correct the views",
+    "fixSheetHint": "We’ll regenerate the views from your photo. Include everything you want changed.",
     "fixSheetPlaceholder": "e.g. The back legs should match the front ones, and the seat is flat",
-    "redrawSheet": "Redraw angles ({credits} credits)",
+    "redrawSheet": "Regenerate views · {credits} credits",
     "buyToRedraw": "Buy credits to redraw",
     "materials": {
       "title": "Materials",
@@ -403,9 +413,10 @@
       "empty": "No edits yet. Drawing the angle sheet, redrawing it, changing a material or building in 3D shows up here.",
       "kind": {
         "sheet": "Angle sheet drawn",
-        "sheet_redraw": "Angle sheet redrawn",
+        "sheet_redraw": "View correction started",
         "build": "3D build started",
-        "material": "Materials changed"
+        "material": "Materials changed",
+        "sheet_redraw_refund": "View correction refunded"
       },
       "credits": "{credits} credits"
     },
@@ -413,7 +424,8 @@
       "title": "What should I check before building?",
       "shape": "Does the silhouette match your product?",
       "parts": "Are the legs, handles and other parts present?",
-      "openings": "Are the openings and gaps preserved?"
+      "openings": "Are the openings and gaps preserved?",
+      "material": "Do the colors and materials match your photo?"
     },
     "correction": {
       "title": "What needs correcting?",
@@ -430,12 +442,14 @@
         "material": "Match the materials and colours to the original photo."
       },
       "review": "Review correction",
-      "confirmTitle": "Confirm the new angle sheet",
-      "confirmBody": "This regenerates the angles for {credits} credits. It does not build the 3D model.",
-      "back": "Edit instructions"
+      "confirmTitle": "Regenerate the views?",
+      "confirmBody": "Regenerating the views costs {credits} credits, separate from the 3D model. If it fails, you keep the previous preview and get those credits back.",
+      "back": "Edit instructions",
+      "note": "Other changes (optional)",
+      "refunded": "We couldn’t regenerate the views. Your previous preview is still there and we returned {credits, number} credits."
     },
     "nextSteps": {
-      "title": "Your model is ready. Put it to work.",
+      "title": "Download and use your 3D model",
       "formats": "Download GLB for websites and 3D scenes, or USDZ for compatible Apple apps.",
       "formatsWithExports": "Download GLB for websites and 3D scenes, USDZ for compatible Apple apps, or OBJ, FBX and BLEND for 3D software.",
       "choose": "How would you like to use it?",
@@ -505,25 +519,34 @@
       "photo": "Your photo is in",
       "angles": "Review the angles",
       "model": "Your 3D model",
-      "draftingTitle": "Preparing your free angles",
-      "draftingBody": "We are working from your photo. The next step is to review the shape before spending credits.",
+      "draftingTitle": "Preparing your free preview",
+      "draftingBody": "We’re preparing the angle views from your photo. The 3D model comes after you review them.",
       "preview_readyTitle": "Your angles are ready to review",
       "preview_readyBody": "Compare the shape and details with your photo. Build the 3D model only when you are happy with them.",
       "renderingTitle": "Building your 3D model",
-      "renderingBody": "Your angle sheet is being turned into geometry and textures. This page updates when it is ready.",
-      "readyTitle": "Ready to explore",
+      "renderingBody": "We’ll update this page when the model is ready.",
+      "readyTitle": "Your 3D model is ready",
       "readyBody": "Rotate your model, check the materials and choose how to use it.",
-      "failedTitle": "The process stopped",
-      "failedBody": "Review the error below before trying another photo.",
-      "connection": "Connection interrupted. We will keep checking; your job continues on the server.",
-      "buildCost": "Building this model uses {credits} credits. You choose when to start."
+      "failedTitle": "The project didn’t finish",
+      "failedBody": "See the details below.",
+      "connection": "We couldn’t check the status. We’ll retry automatically.",
+      "buildCost": "Creating the 3D model uses {credits} credits.",
+      "correctingTitle": "Regenerating your views",
+      "correctingBody": "We’ll replace your previous preview when the new views pass our checks.",
+      "paidSheetTitle": "Creating your angle views",
+      "paidSheetBody": "You can review the views here when they’re ready.",
+      "photoOnlyTitle": "Your photo is ready",
+      "photoOnlyBody": "This project can build a 3D model directly from your photo.",
+      "creditBalance": "You have {balance} credits. This model needs {credits}."
     },
     "modelLoading": "Loading 3D model…",
     "modelLoadError": "The 3D model could not load. Reload the page to try again.",
     "sheetLoading": "Loading angle sheet…",
     "sheetLoadError": "The angle sheet could not load. Reload the page to try again.",
     "repeatedViewsFailure": "We could not generate distinct angles. Try another photo. Any credits charged were refunded.",
-    "inconsistentStructureFailure": "The generated angles changed the shape of your object. Try another photo. Any credits charged were refunded."
+    "inconsistentStructureFailure": "The generated angles changed the shape of your object. Try another photo. Any credits charged were refunded.",
+    "downloadGlb": "Download GLB",
+    "downloadUsdz": "USDZ for Apple"
   },
   "PromptBar": {
     "steps": {
@@ -535,9 +558,9 @@
     "errors": {
       "type": "Attach a JPEG, PNG or WebP photo.",
       "noPhoto": "Attach a photo of the object or building first.",
-      "upload": "Upload failed",
+      "upload": "We couldn’t upload the photo. Try again.",
       "unreadable": "Could not read this photo",
-      "title": "Could not start this render",
+      "title": "We couldn’t start the preview",
       "small": "Use a higher-resolution original photo.",
       "large": "Choose a smaller photo and try again.",
       "aspect": "Use a photo that shows the whole product, rather than a very narrow crop.",
@@ -564,12 +587,12 @@
     "reveal": "Sign up free to see every angle",
     "optionalNotes": "Add details (optional)",
     "uploadingReal": "Uploading photo…",
-    "uploadingHint": "Your real preview starts after upload. We will show its status on the next screen.",
-    "previewNote": "Free angle preview. Building the downloadable 3D model uses credits.",
-    "guestNote": "Free angle preview · no account or card required. Daily limits apply.",
+    "uploadingHint": "We’ll start the preview as soon as your photo is uploaded.",
+    "previewNote": "View the angles for free. Creating the downloadable 3D model uses credits.",
+    "guestNote": "Free preview within daily limits. No account or card needed.",
     "seeExample": "Or explore a finished example:",
     "startPreview": "Upload a photo",
-    "compactNote": "No account or card for the preview. The 3D model uses credits."
+    "compactNote": "Free preview, no account or card. Creating the downloadable 3D model uses credits."
   },
   "Library": {
     "metaTitle": "Library · Easy Render",
@@ -613,7 +636,7 @@
       "loading": "Loading 3D",
       "drafting": "Preparing preview",
       "rendering": "Building 3D model",
-      "failed": "Failed. Credits were refunded."
+      "failed": "Generation failed. Open the project for details."
     },
     "generateOne": "Generate · {credits}",
     "errors": {
@@ -647,36 +670,36 @@
   },
   "ProductViews": {
     "metaTitle": "Product views · Easy Render",
-    "title": "Product views",
-    "subtitle": "One product photo in, nine clean packshots out on white. No studio, no 3D needed.",
+    "title": "Product photos",
+    "subtitle": "Turn one photo into nine product images on a white background.",
     "choose": "Choose a product photo",
     "chooseHint": "JPEG, PNG or WebP. Show the whole product.",
     "noteLabel": "Describe the product (optional)",
     "notePlaceholder": "Matte black metal frame, oak seat",
-    "create": "Make product views, {credits} credits",
+    "create": "Create product photos · {credits} credits",
     "buyCredits": "Buy credits to make product views",
     "aiNote": "Views are AI-generated from your photo. Hidden sides are inferred, so check each view against the real product and polish any that is off.",
-    "recents": "Your product views",
-    "empty": "No product views yet. Upload a photo to make your first set.",
+    "recents": "Your product photos",
+    "empty": "No product photos yet. Upload a photo to create your first set.",
     "untitled": "Untitled product",
     "viewsReady": "{count} views ready",
     "progress": "{ready} of {total} views ready",
     "canvas": "2000 × 2000 px · JPG · white background",
     "downloadAll": "Download all (ZIP)",
     "download": "Download",
-    "polish": "Polish",
+    "polish": "Correct photo",
     "flagged": "Check this view",
     "failed": "The views could not be drawn. Your credits were refunded.",
     "buyToPolish": "Buy credits to polish a view",
-    "polishTitle": "Polish the {view} view",
+    "polishTitle": "Correct the {view} view",
     "polishHint": "Describe what is wrong. This view is drawn again from your photo and the current picture; the others stay as they are.",
     "polishLabel": "What should change?",
     "polishPlaceholder": "The handle should be on the left, and the wood is lighter",
-    "polishSubmit": "Redraw this view, {credits} credits",
+    "polishSubmit": "Regenerate this photo · {credits} credits",
     "upsellTitle": "Need it in 3D?",
-    "upsellBody": "Build a 3D model and AR from these same views. Your finished views are reused, so you only pay for the 3D step.",
+    "upsellBody": "Reuse these views to create your model. You only pay for the 3D step.",
     "build3d": "Build 3D from these views, {credits} credits",
-    "openRender": "Open the 3D render",
+    "openRender": "Open the 3D model",
     "status": {
       "drafting": "Drawing the angle sheet",
       "processing": "Checking and finishing the views, {ready} of {total} ready",
@@ -709,8 +732,11 @@
       "create": "Could not make the product views. Try again in a minute.",
       "polish": "Could not polish this view. Try again in a minute.",
       "render": "Could not start the 3D render.",
-      "upscale": "Could not upscale this picture. Try again in a minute."
-    }
+      "upscale": "Could not upscale this picture. Try again in a minute.",
+      "polishRefunded": "We couldn’t correct this photo. Your credits were returned."
+    },
+    "creditBalance": "You have {balance} credits. This step needs {credits}.",
+    "buyToBuild": "Buy credits to create the 3D model"
   },
   "DashboardNav": {
     "overview": "Overview",
@@ -718,7 +744,7 @@
     "connectors": "Connectors",
     "credits": "Credits",
     "account": "Account",
-    "views": "Product views",
+    "views": "Product photos",
     "profile": "Profile",
     "admin": "Admin"
   },
@@ -774,7 +800,7 @@
     }
   },
   "AppHome": {
-    "heading": "What should we make in 3D?",
+    "heading": "Create a 3D model from a photo",
     "slot": "Drop photo",
     "hint": "JPG, PNG or WebP, up to 4 MB. You can also paste.",
     "placeholder": "Describe the product, or just drop a photo",
@@ -788,7 +814,8 @@
       "type": "Use a JPG, PNG or WebP photo.",
       "upload": "The upload failed. Try again.",
       "unreadable": "Could not read this photo."
-    }
+    },
+    "costNote": "Free preview. Creating the 3D model uses credits."
   },
   "NotFound": {
     "title": "Page not found",
@@ -836,23 +863,27 @@
   "Connectors": {
     "metaTitle": "Connectors · Easy Render",
     "title": "Connectors",
-    "description": "Hook Easy Render into your agents and tools. Everything they make lands in your library.",
-    "more": "More connectors",
+    "description": "Connect Easy Render to your agents, tools and store. New models appear in your library.",
+    "more": "Store integrations",
     "comingSoon": "Coming soon",
     "soon": {
       "shopify": {
         "title": "Shopify",
-        "body": "Sync products and publish 3D viewers to product pages."
+        "body": "Request access to the Shopify app to create models from product photos and add an AR block to your theme.",
+        "status": "By invitation"
       },
       "woo": {
         "title": "WooCommerce and PrestaShop",
-        "body": "Import your catalogue and embed models with a snippet."
+        "body": "Package and install the plugin for your platform. Use an API key to create models and show them on product pages.",
+        "status": "Manual installation"
       },
       "listings": {
         "title": "Listing sites",
         "body": "Push models to your real estate listings and portals."
       }
-    }
+    },
+    "setup": "See setup",
+    "english": "in English"
   },
   "ConnectorsPanel": {
     "defaultName": "My agent",
@@ -921,11 +952,9 @@
   "Credits": {
     "eyebrow": "Pricing",
     "title": "Credits",
-    "description": "Previews are free. A full 3D render costs {credits} credits ({price}). Credits never expire.",
+    "description": "The initial preview is free. A finished 3D model costs {credits} credits ({price}). Credits never expire.",
     "balance": "You have {credits} credits.",
     "balancePro": "You have {credits} credits and you are on {plan}.",
-    "success": "Payment received. Your credits are ready.",
-    "back": "Back to your render",
     "signUpToBuy": "Sign up to buy",
     "manageSubscription": "Manage subscription",
     "changePlan": "Change plan",
@@ -943,7 +972,7 @@
       }
     },
     "pro": {
-      "description": "{credits} credits every month, about {count} renders.",
+      "description": "{credits} credits every month, about {count} models.",
       "note": "per month",
       "features": {
         "credits": "{credits} credits added each month",
@@ -970,7 +999,13 @@
       "title": "Top up credits",
       "description": "Buy extra credits at your {plan} plan’s rate, without changing your plan. The total is rounded to the nearest cent.",
       "noExpiry": "Top-up credits never expire."
-    }
+    },
+    "checkoutConfirmed": "Payment confirmed. We added {credits} credits to your balance.",
+    "checkoutPending": "We’re confirming your payment. Your balance will update when the credits are added.",
+    "checkoutUnconfirmed": "We couldn’t verify a purchase from this link. Check your balance or open the original checkout return link.",
+    "checkoutCanceled": "You left checkout. You can return to your project or try again.",
+    "backToProject": "Back to your project",
+    "backToPhotos": "Back to your catalogue photos"
   },
   "Pricing": {
     "metaTitle": "Pricing: pay per 3D model · easyrender",
@@ -978,8 +1013,8 @@
     "home": "Home",
     "breadcrumb": "Pricing",
     "eyebrow": "Pricing",
-    "title": "Pay per 3D model. Previews are free.",
-    "description": "A finished 3D model costs {credits} credits ({price}). Buy credits as you go, or pick a monthly plan for a cheaper credit. Credits never expire.",
+    "title": "Free preview. Pay per 3D model.",
+    "description": "A downloadable 3D model costs {credits} credits ({price} at the pay-as-you-go rate). Buy credits as needed or choose Pro for a lower price per credit. Credits never expire.",
     "note": "Credits never expire. If a 3D build fails, its credits are refunded.",
     "compare": {
       "title": "Compare plans",
@@ -997,7 +1032,7 @@
       "step": "Step {number}",
       "preview": {
         "title": "Previews cost nothing",
-        "body": "Upload a photo and check a free sheet that shows the object from every angle before you spend anything."
+        "body": "Upload a photo and review the free preview from several angles. No account or card is needed. Daily limits apply."
       },
       "build": {
         "title": "A 3D model costs {credits} credits",
@@ -1005,7 +1040,7 @@
       },
       "refund": {
         "title": "Failed builds are refunded",
-        "body": "If a 3D model fails to build, the credits for that render go back to your balance automatically."
+        "body": "If generation fails, the credits used for that model automatically return to your balance."
       }
     },
     "faq": {
@@ -1016,8 +1051,8 @@
           "a": "Previews are free. A finished 3D model costs {credits} credits. On pay as you go a credit costs {unit}, so a model is {price}. Pro makes each credit cheaper."
         },
         "freePreview": {
-          "q": "Why is the preview free?",
-          "a": "Before the 3D model is built we draw the object from every angle. You check that preview at no cost and only spend credits when the shape and the details look right."
+          "q": "What does the free preview include?",
+          "a": "A set of images showing the product from several angles. You can check it without an account or card, within your daily limit. Creating the downloadable 3D model is a separate step."
         },
         "plans": {
           "q": "Pay as you go or a monthly plan?",
@@ -1046,12 +1081,12 @@
       }
     },
     "topUpTitle": "Top up credits",
-    "minimum": "Minimum purchase: {price} in credits, enough for {count} complete models.",
+    "minimum": "Minimum purchase: {price} in credits, enough for {count} standard 3D models.",
     "calculator": {
-      "title": "Estimate your catalog",
+      "title": "Estimate your 3D catalogue cost",
       "count": "Number of 3D models",
-      "consumption": "Credit value used",
-      "purchase": "Purchase from zero balance",
+      "consumption": "Cost of the models",
+      "purchase": "Amount to pay with no starting balance",
       "remaining": "Credits left over",
       "range": "Enter a whole number from 1 to {max}.",
       "note": "Estimate for standard 3D builds at pay-as-you-go rates, starting with no credits. Additional edits, images and upscales are not included.",
@@ -1060,21 +1095,21 @@
     "conditions": {
       "title": "Before you buy",
       "billing": "Pay as you go is a one-time credit purchase. Pro renews monthly until cancelled in Credits. Unused credits do not expire.",
-      "rights": "You keep your uploaded-content rights. Output rights are subject to third-party rights. Models are public by default and can be shared and downloaded.",
+      "rights": "You keep your rights to what you upload. Rights to generated content remain subject to third-party rights. Models created in the web app are private by default. A finished model can be published or shared through a supported store integration.",
       "tax": "Check the currency, applicable taxes and final total in checkout before paying.",
       "link": "Read the full terms (English)"
     }
   },
   "PaygPicker": {
     "custom": "Or enter an amount",
-    "estimate": "{price} for about {count} renders",
+    "estimate": "{price} for about {count} models",
     "range": "Choose between {min} and {max} credits",
     "buyAmount": "Buy {credits} credits",
     "buy": "Buy credits",
     "planRate": "Top-ups at your {plan} rate"
   },
   "BuyButton": {
-    "failed": "Checkout failed",
+    "failed": "We couldn’t open checkout. Try again.",
     "pricingChanged": "Pricing changed. Refresh the page and try again."
   },
   "Auth": {
@@ -1093,14 +1128,16 @@
     "createAccount": "Create account",
     "signUpTitle": "Create your account",
     "signInTitle": "Welcome back",
-    "signUpDescription": "Free previews of every angle. Pay only for the 3D models you keep.",
+    "signUpDescription": "Review your first preview for free. Creating a 3D model or generating new views uses credits.",
     "signInDescription": "Sign in to render, download and share your 3D models.",
     "haveAccount": "Already have an account?",
     "newHere": "New here?",
     "createAnAccount": "Create an account",
     "errors": {
-      "generic": "Could not sign you in. Try again.",
-      "oauth": "Google sign in did not finish. Try again or use your email."
+      "generic": "We couldn’t continue. Try again.",
+      "oauth": "Google sign-in did not finish. Try again or use your email.",
+      "credentials": "The email or password is incorrect.",
+      "rateLimited": "Too many attempts. Wait a few minutes and try again."
     },
     "google": "Continue with Google",
     "or": "or",
@@ -1134,7 +1171,7 @@
   },
   "Studio": {
     "hero": {
-      "title": "3D model from a photo.",
+      "title": "Create a 3D model from a photo",
       "cta": "Upload a photo",
       "note": "Free preview · no card",
       "stackLabel": "One object seen through five passes of the engine. Drag to turn it.",
@@ -1150,7 +1187,7 @@
     },
     "pipeline": {
       "lead": "Upload one photo. The engine does the rest.",
-      "body": "It rebuilds your product from every side and shows you the shape before you pay.",
+      "body": "See your product from several angles before you create a 3D model.",
       "photo": "Input photo",
       "placeholder": "Describe your product",
       "generate": "Generate",
@@ -1161,7 +1198,7 @@
         "ready": "Ready"
       },
       "noteTitle": "Free preview",
-      "noteBody": "The engine draws the object from every side before it builds the mesh. If something is off, you see it before you spend a credit.",
+      "noteBody": "The preview shows how the product looks from several angles. If something is off, you can review it before spending credits.",
       "noteLink": "Try it with a photo"
     },
     "industries": {
@@ -1169,14 +1206,15 @@
       "body": "The same piece is tried in a shopper’s room, dropped into a studio’s render and used as a prop in a game.",
       "store": {
         "eyebrow": "E-commerce",
-        "title": "See it in your room",
-        "body": "Augmented reality, coming soon: the shopper opens the camera on an iPhone or Android phone and places the product in the room.",
-        "link": "Talk to us about AR for stores",
+        "title": "Let shoppers see products in their space",
+        "body": "Add an augmented reality button and QR code to product pages with a finished 3D model. Shoppers can open it on a compatible phone.",
+        "link": "See store integrations",
         "domain": "yourstore.com",
         "meta": "Grey upholstery · GLB and USDZ",
         "button": "View in your space",
         "searching": "Finding the floor…",
-        "placed": "Placed"
+        "placed": "Placed",
+        "english": "in English"
       },
       "interior": {
         "eyebrow": "Architecture and interiors",
@@ -1226,27 +1264,27 @@
       }
     },
     "wheel": {
-      "lead": "It enters the hub once. It works everywhere.",
-      "body": "The store uploads its catalogue, the studio uses it in its projects and the client ends up buying the piece they saw in the render.",
+      "lead": "From a product photo to a reusable model.",
+      "body": "Explore how a sample is made and where its GLB can be used.",
       "link": "Explore the hub",
-      "photo": "Input photo",
-      "chip": "Available in the store",
+      "photo": "Source photo",
+      "chip": "3D example",
       "stops": {
         "store": {
-          "title": "The store uploads a photo",
-          "body": "of every product in its catalogue"
+          "title": "One product photo",
+          "body": "Start with a clear image"
         },
         "hub": {
-          "title": "The hub keeps the model",
-          "body": "with its mesh, materials and physics"
+          "title": "Generated model",
+          "body": "Review the mesh and materials"
         },
         "studio": {
-          "title": "A studio uses it",
-          "body": "in a render, a scene or a level"
+          "title": "Download the GLB",
+          "body": "Open it in a compatible viewer"
         },
         "client": {
-          "title": "The client buys the piece",
-          "body": "and more stores want to be in"
+          "title": "Use it in your project",
+          "body": "Check its scale before publishing"
         }
       }
     },
@@ -1372,8 +1410,8 @@
     "metaTitle": "Hub · Easy Render",
     "metaDescription": "Furniture, lighting, decor and props in 3D, each with the mesh and the materials the engine built. Take one to your store, your render or your engine.",
     "eyebrow": "Hub · {count, plural, one {# element} other {# elements}}",
-    "title": "Every element, ready to use",
-    "description": "Each piece comes with its mesh, its materials and a collider. Take it to your store, your render or your engine.",
+    "title": "Explore product models in 3D",
+    "description": "Open a sample to see its mesh and materials, then download the GLB to try it in your own project.",
     "all": "All",
     "categoryLabel": "Category",
     "search": "Search elements",
@@ -1385,8 +1423,8 @@
     "emptyQuery": "Nothing matches “{query}”. Try another word or clear the filter.",
     "emptyCategory": "There are no elements in {category} yet.",
     "cta": {
-      "title": "Have a catalogue? Add it to the hub",
-      "button": "Get started"
+      "title": "Try it with one of your products",
+      "button": "Upload a product photo"
     },
     "sheet": {
       "passLabel": "Engine pass",
@@ -1433,7 +1471,7 @@
       "metaTitle": "Guides: turning photos into 3D models · Easy Render",
       "metaDescription": "How to turn a photo into a 3D model, which files you get, and what Easy Render can and cannot model. Written by the people building it.",
       "title": "Guides",
-      "headline": "Everything we learn turning photos into 3D",
+      "headline": "Guides to creating and using 3D models from photos",
       "description": "How to turn a photo into a 3D model, which files you get, and what Easy Render can and cannot model.",
       "empty": "The first guides are being written. Nothing is published yet.",
       "readMore": "Read the guide",
@@ -1501,13 +1539,13 @@
     "breadcrumb": "Models",
     "home": "Home",
     "eyebrow": "Models",
-    "title": "The models behind every render",
-    "description": "Three models, one after the other: the first draws a quick draft of your photo from every side for free, the second redraws it at full size when you build, and the third builds the 3D file from those drawings. Here is which, with what settings, and what each step costs.",
+    "title": "How Easy Render turns your photo into a 3D model",
+    "description": "First we generate a free preview from several angles. When you choose to create the 3D model, we redraw the views at higher resolution and use them to build the textured file.",
     "provider": "All three models run on Replicate.",
     "stepLabel": "Step {number}",
     "settingsTitle": "Settings",
     "sheet": {
-      "title": "Draft sheet",
+      "title": "Angle preview",
       "role": "Draws the object from eight sides plus a top view on one 1K sheet, from your photo and a short prompt. It is your free preview: you see it before anything is built.",
       "settings": {
         "output": "Output: one 1K image (PNG)",
@@ -1515,7 +1553,7 @@
       }
     },
     "final": {
-      "title": "Final sheet",
+      "title": "Final views",
       "role": "When you build the 3D model, the sheet is drawn again at full size with the same brief, so the 3D build starts from sharper views.",
       "settings": {
         "output": "Output: one 2K image (PNG)",
@@ -1523,7 +1561,7 @@
       }
     },
     "build": {
-      "title": "3D build",
+      "title": "3D generation",
       "role": "Rebuilds a textured 3D model from your photo and the nine sheet views. The result downloads as GLB and USDZ.",
       "settings": {
         "texture": "Texture size: {texture} px",
@@ -1545,7 +1583,7 @@
       "title": "What can change",
       "body": "Prompts and model settings can be tuned without a release. The models and their prices are fixed in the app, so the credits on the button are what you pay."
     },
-    "cta": "See how renders are checked"
+    "cta": "See how we check 3D models"
   },
   "Evals": {
     "metaTitle": "Evals: how renders are checked · Easy Render",
@@ -1553,8 +1591,8 @@
     "breadcrumb": "Evals",
     "home": "Home",
     "eyebrow": "Evals",
-    "title": "How we check renders",
-    "description": "Every render passes automatic checks before it is stored. Separately, a run renders a golden set of product photos and scores them against five criteria, so a change to a prompt or a model shows up as a number.",
+    "title": "How we check 3D models",
+    "description": "Every render goes through automatic checks. In separate tests, we use a reference set of product photos to measure how changes affect five quality criteria.",
     "checks": {
       "title": "Checked on every render",
       "description": "These checks already run in production. A render that fails one is not delivered, and its credits are refunded.",
@@ -1563,8 +1601,8 @@
       "file": "3D file: a complete GLB (binary glTF, version 2) of more than {kb} KB."
     },
     "criteria": {
-      "title": "What a run scores",
-      "description": "Each photo of the golden set is rendered with the live pipeline and scored on five criteria, pass or fail.",
+      "title": "What we evaluate",
+      "description": "We generate a model from each reference photo with the production pipeline and record a pass or fail for each criterion.",
       "shape": {
         "title": "Shape and proportions",
         "description": "The model keeps the shape, proportions and parts of the photographed object, with nothing added or removed."
@@ -1592,8 +1630,8 @@
     },
     "results": {
       "title": "Results",
-      "emptyTitle": "No run published yet",
-      "emptyBody": "The first run is published here. Until then this page shows no scores, and none are made up.",
+      "emptyTitle": "No results published yet",
+      "emptyBody": "We’ll publish the results of our first test here.",
       "photos": "{photos} photos",
       "overall": "Overall pass rate",
       "models": "{sheet}, then {build}",
@@ -1625,7 +1663,9 @@
     "metaDescription": "How Easy Render uses cookies and analytics, which data is collected, and how to change your consent choices.",
     "acceptAdvertising": "Analytics + ad measurement",
     "advertisingTitle": "Optional advertising measurement: er_ad_touch and _gcl_*",
-    "advertising": "Only an explicit advertising choice permits Google ad storage and advertising user data. We retain allowlisted Google click IDs in er_ad_touch session storage for at most 30 minutes, send them only to Google, and remove them from the address after capture. Google may store its own conversion-linking cookies. Advertising personalization and Google Signals remain off. This choice is not inferred from accepting analytics. Google may also retain conversion-linking data in _gcl_* cookies and _gcl_ls local storage; their retention is separate from our 30-minute record. These accessible Google identifiers are cleared when you withdraw advertising permission."
+    "advertising": "Only an explicit advertising choice permits Google ad storage and advertising user data. We retain allowlisted Google click IDs in er_ad_touch session storage for at most 30 minutes, send them only to Google, and remove them from the address after capture. Google may store its own conversion-linking cookies. Advertising personalization and Google Signals remain off. This choice is not inferred from accepting analytics. Google may also retain conversion-linking data in _gcl_* cookies and _gcl_ls local storage; their retention is separate from our 30-minute record. These accessible Google identifiers are cleared when you withdraw advertising permission.",
+    "languageTitle": "er_home_locale, er_app_locale",
+    "language": "Remember your language on the site and in the app. These preferences last up to one year and do not record analytics."
   },
   "Ar": {
     "metaTitle": "View in your room",
@@ -2013,10 +2053,10 @@
       "description": "Connect Claude, Cursor or VS Code to easyrender. Turn product photos into 3D models through MCP: review the free preview and download the GLB when ready."
     },
     "hero": {
-      "title": "Image to 3D MCP server. From your agent.",
-      "subtitle": "Connect Easy Render through MCP. Give your agent a product photo, review the preview and build a textured GLB without switching to a modeling tool.",
-      "cta": "Connect your agent",
-      "note": "Review the free preview before building the 3D model."
+      "title": "Image-to-3D MCP server for AI agents",
+      "subtitle": "Give your agent a product photo. Review the free preview and approve the credits for a textured GLB.",
+      "cta": "See how to connect your agent",
+      "note": "Angle preview free within your account’s limit"
     },
     "clientsLabel": "Setup guides included for",
     "intro": {
@@ -2044,7 +2084,7 @@
       },
       "review": {
         "title": "Review before the paid build",
-        "body": "Inspect the angle sheet. Ask your agent to check your balance and wait for your approval before calling render_3d."
+        "body": "Review the generated angles. Ask your agent to check pending_credits with get_render and your balance with get_credits. Approve the amount before it calls render_3d with max_credits."
       },
       "download": {
         "title": "Build and retrieve the model",
@@ -2057,8 +2097,8 @@
       "tools": {
         "create_render": "Start the angle-sheet preview from a photo.",
         "get_render": "Check progress and retrieve the result links.",
-        "get_credits": "Read your balance and current build cost.",
-        "render_3d": "Spend credits to build the textured GLB."
+        "get_credits": "Check your balance and the reference price of a full build.",
+        "render_3d": "Build the textured GLB with the approved credit ceiling."
       },
       "limit": "Made for individual objects. Generated geometry is approximate, without guaranteed real-world dimensions or manufacturing precision."
     },
@@ -2067,17 +2107,18 @@
       "description": "Use the Easy Render MCP endpoint with your account. Choose your client below for its setup instructions.",
       "accountTitle": "Start with your account",
       "accountBody": "Sign in or create an account to manage your API keys and credits. Use the same account to find your agent’s renders in your library.",
-      "cta": "Open connectors",
+      "cta": "Open Connectors",
       "endpoint": "MCP endpoint",
-      "security": "Use the sign-in flow where supported, or your own API key. Keep keys in your client configuration, never in shared prompts.",
-      "guide": "Choose your MCP client"
+      "security": "Claude.ai and Codex can sign in with your account. For a setup that uses an API key, create one in Connectors and replace er_your_key. Keep the key in your client settings.",
+      "guide": "Choose your MCP client",
+      "signup": "Create an account to connect"
     },
     "faq": {
       "title": "Before you connect",
       "items": {
         "account": {
           "q": "Do I need an Easy Render account?",
-          "a": "Yes. MCP requests are authenticated and renders belong to your account. The connector setup offers sign-in instructions for Claude and API-key configuration for the other listed clients."
+          "a": "Yes. MCP requests use your Easy Render account. The setup below shows account sign-in for Claude.ai and Codex and API key settings for the other listed setups."
         },
         "input": {
           "q": "Can my agent use a local photo?",
@@ -2085,7 +2126,7 @@
         },
         "payment": {
           "q": "When are credits spent?",
-          "a": "The angle-sheet preview is free, subject to preview limits. render_3d starts the paid build. Ask your agent to call get_credits for the current cost and to request your approval before building. That instruction is part of your agent workflow, not an extra confirmation screen enforced by the MCP server. Failed 3D builds refund their credits."
+          "a": "The angle preview is free within your usage limit. Before calling render_3d, have your agent read pending_credits from get_render and check your balance with get_credits. Ask the agent to wait for your approval and send the approved ceiling as max_credits. The MCP server relies on the client to show the confirmation. If the build fails, the credits are refunded."
         },
         "output": {
           "q": "What does my agent get back?",
@@ -2102,16 +2143,16 @@
       }
     },
     "closing": {
-      "title": "Bring your next product into the conversation.",
-      "cta": "Connect Easy Render"
+      "title": "Create your first angle preview with your agent",
+      "cta": "Open Connectors"
     },
     "skill": {
-      "cta": "Install agent skill",
-      "title": "Give your agent the photo-to-3D workflow.",
-      "description": "Add the easyrender skill to guide your agent from the first photo to an approved GLB build.",
-      "body": "MCP connects the tools. The skill explains when to preview, how to check the current cost, how to work within your approved budget and how to resume a render after a timeout.",
+      "cta": "See how to install the skill",
+      "title": "Give your agent the photo-to-3D workflow",
+      "description": "The skill tells your agent when to show a preview, check credits and resume a render. Connect your account through MCP before using it.",
+      "body": "The agent should show the views and the actual remaining cost, then use the budget you approve. If a request times out, it checks the same render before retrying.",
       "steps": {
-        "install": "Run the install command from your project and choose a compatible agent.",
+        "install": "Run the command in your project and choose a compatible agent.",
         "connect": "Connect your easyrender account using the MCP setup above.",
         "ask": "Attach a product photo and tell your agent what to create and when it may spend credits."
       },
@@ -2120,7 +2161,7 @@
       "copy": "Copy command",
       "copied": "Copied",
       "copyError": "Could not copy. Select and copy the command manually.",
-      "requirement": "Requires Node.js/npm for the installer and an Agent Skills-compatible client. Installation adds instructions; it does not connect your account or start a render. You can also copy the skill folder from GitHub.",
+      "requirement": "The installer needs Node.js and npm. Your client must support Agent Skills. You can also copy the skill folder from GitHub. Connect your Easy Render account separately.",
       "exampleLabel": "Try this with your photo",
       "example": "Use the easyrender-image-to-3d skill to turn this product photo into a GLB. Show me the preview and cost before spending any credits.",
       "cost": "The skill is open source under the MIT license. Check the current cost with your agent before approving a build; your AI client may charge separately. Instructions are in English, and the agent can respond in your language."
@@ -2132,12 +2173,12 @@
       "description": "Add photo-to-3D generation to your app with the Easy Render REST API. Upload a product image, review the preview, start the paid build and download a textured GLB."
     },
     "hero": {
-      "title": "Image to 3D API. Built into your app.",
-      "subtitle": "Use the Easy Render REST API to turn product photos into textured GLBs. Your interface, your workflow, with a preview before the paid build.",
-      "cta": "Get your API key",
-      "note": "REST API · Product photo in. GLB out."
+      "title": "Image-to-3D API for product photos",
+      "subtitle": "Show a free angle preview in your app, then generate a textured GLB when the user approves the cost.",
+      "cta": "See the API setup",
+      "note": "REST API · Preview free within your account’s limit"
     },
-    "headerCta": "Get API key",
+    "headerCta": "API setup",
     "formatsLabel": "One HTTP workflow",
     "formats": {
       "auth": "Bearer authentication",
@@ -2182,11 +2223,13 @@
       "description": "Create a key in Connectors, then make requests from your backend or terminal.",
       "accountTitle": "Your account, your credits",
       "accountBody": "Sign in or create an account to manage API keys, buy credits and find generated models in your library.",
-      "cta": "Get API key",
+      "cta": "Create an API key",
       "setupLabel": "Terminal · environment",
       "setupNote": "Replace er_your_key with your key. Run the examples in the same shell. Keep the key on your server; never put it in browser or mobile client code.",
       "mcpTitle": "Want to connect an AI agent instead?",
-      "mcpLink": "See the MCP integration"
+      "mcpLink": "See the MCP integration",
+      "signup": "Create an account for an API key",
+      "curlLink": "See the cURL examples"
     },
     "examples": {
       "title": "From the first request to a GLB.",
@@ -2197,18 +2240,18 @@
         "label": "POST /api/renders"
       },
       "visibility": {
-        "title": "02 · Choose visibility",
-        "body": "Replace EASYRENDER_RENDER_ID with the id from the response. Finished renders are public by default. This request keeps the render out of the public gallery; send it before starting the build.",
-        "label": "PATCH /api/renders/'{'id'}'"
+        "title": "02 · Save the render ID",
+        "body": "Replace EASYRENDER_RENDER_ID with the id from the response. The preview and model are private by default. To list a finished model in the gallery, enable public visibility explicitly.",
+        "label": "Terminal · render ID"
       },
       "preview": {
         "title": "03 · Wait for the preview",
-        "body": "Repeat the first request with a delay until status is preview_ready. Then run the second request and inspect preview.webp. Use renderCredits from the JSON response to show the build cost. Stop if status is failed.",
+        "body": "Poll the first request at intervals. Once status is preview_ready and hasSheet is true, download and review preview.webp. Calculate the remaining credit cost from renderCredits minus credits already recorded on this render, with a minimum of zero. Stop if status is failed.",
         "label": "GET status → GET preview"
       },
       "build": {
         "title": "04 · Start the paid build",
-        "body": "This request spends credits. Run it only after reviewing the preview, confirming the cost and ensuring your account has enough credits. Your application must implement its own approval step.",
+        "body": "This request spends credits. Once the preview has been reviewed, show the remaining cost and confirm there is enough balance. Set maxCredits to the amount approved in your app. If the request times out, check the same render ID before retrying.",
         "label": "POST /api/renders/'{'id'}'/render"
       },
       "download": {
@@ -2234,11 +2277,11 @@
         },
         "cost": {
           "q": "How do I check the cost and my balance?",
-          "a": "Render responses include renderCredits, the total credit cost of a 3D build. GET /api/renders returns your library and balance. The preview has an allowance; a POST to the render endpoint starts the paid build. The pricing section on this page reflects the current plans."
+          "a": "renderCredits is the total build cost for this render and credits is the amount already recorded. Subtract credits from renderCredits to find the amount still due, with a minimum of zero. GET /api/renders returns the library and balance. The angle preview is free within your allowance."
         },
         "errors": {
           "q": "How should I handle progress and errors?",
-          "a": "Poll GET /api/renders/'{'id'}' with delays and a timeout. Wait for preview_ready before building and ready before downloading; stop on failed. HTTP 402 means insufficient credits, 409 an invalid build state, 413 an oversized image, 415 an unsupported image type and 429 an exhausted preview allowance. Do not blindly repeat upload or payment requests."
+          "a": "Poll GET /api/renders/'{'id'}' with a delay and a timeout. Check preview_ready and hasSheet before generating, and ready and hasModel before downloading. Stop on failed. HTTP 402 indicates insufficient balance, 409 an incompatible state or a credit ceiling that is too low, 413 a file that is too large, 415 an unsupported format and 429 a usage limit. After a timeout, look up the same render before retrying."
         },
         "webhooks": {
           "q": "Can my application receive a completion webhook?",
@@ -2251,8 +2294,8 @@
       }
     },
     "closing": {
-      "title": "Add the next dimension to your product.",
-      "cta": "Get your API key"
+      "title": "Generate a 3D model from your app",
+      "cta": "Create an API key"
     }
   },
   "Upscale": {
@@ -2260,7 +2303,8 @@
     "working": "Upscaling",
     "buy": "Buy credits to upscale",
     "download": "Download {width} px",
-    "downloadLarge": "Download larger file"
+    "downloadLarge": "Download larger file",
+    "refunded": "The enlargement failed. Your credits were returned."
   },
   "IntegrationLanding": {
     "result": {
@@ -2301,12 +2345,12 @@
       "api": {
         "title": "What does the image to 3D API cost?",
         "description": "Pay for 3D builds with your account credits. API access uses the same credit balance as the web app.",
-        "check": "Read renderCredits in the render response before building; it is the credit cost for that render. Keep approval and spending limits in your application."
+        "check": "Check renderCredits and credits from the latest render response. Ask for approval of the remaining cost and send that ceiling as maxCredits."
       },
       "mcp": {
         "title": "Review before you build",
         "description": "The preview is free, subject to your account’s preview limits. Inspect the angles before deciding to build the GLB.",
-        "check": "Ask your agent to check get_credits and wait for your approval before calling render_3d. Your AI client may charge separately."
+        "check": "Ask your agent to read pending_credits with get_render, check your balance with get_credits and wait for approval before building. Your AI client may charge separately."
       },
       "preview": {
         "label": "Angle-sheet preview",
@@ -2337,8 +2381,8 @@
       "photoAlt": "Table photo used as an example upload",
       "upload": "Product photo received",
       "flow": "Your backend sends the photo to POST /api/renders. Show the preview, display the returned cost and let the user approve the paid build. Poll the render status to retrieve the finished model.",
-      "cost": "Use the render’s current renderCredits field before building; the cost can change when a finished sheet is reused. Keep the API key on your server.",
-      "response": "Partial response after a full build has finished; sample ID, not a live render."
+      "cost": "Use the latest renderCredits and credits fields to calculate what is still due. Use maxCredits to cap the spend and keep the API key on your server.",
+      "response": "Partial response with a sample ID, not a live render. credits shows the credits recorded on that render."
     },
     "examples": {
       "title": "Run the complete example",
@@ -2376,7 +2420,7 @@
         },
         "public": {
           "title": "3. Uploads, AI processing and public models",
-          "body": "AI providers process the photo, prompts and intermediate outputs needed to produce previews and 3D models. Generated models are public by default and may appear in the gallery, be viewed, downloaded, shared and indexed by search engines. Public model pages can also expose previews and source imagery. Use the available visibility controls before sharing sensitive content. Changing visibility does not revoke files already downloaded or copies held by others; file URLs and cached copies may remain accessible. Contact us to request removal. Do not upload material that you cannot lawfully share or send to our processing providers."
+          "body": "AI providers process the photo, prompts and intermediate outputs needed to produce previews and 3D models. Models generated in the web app are private by default. A model may be published to the public gallery or shared by link through a supported store integration. Public models may be viewed, downloaded, shared and indexed by search engines. Anyone with a shared link can access the linked model. Model pages may also expose previews and source imagery. Review the visibility settings before sharing sensitive content. Changing visibility does not revoke files already downloaded or copies held by others; file URLs and cached copies may remain accessible. Contact us to request removal. Do not upload material that you cannot lawfully share or send to our processing providers."
         },
         "providers": {
           "title": "4. Service providers and other recipients",
@@ -2432,7 +2476,7 @@
         },
         "public": {
           "title": "6. Public models and sharing",
-          "body": "Generated models are public by default. Public model pages, previews and associated imagery may be listed in the gallery, indexed, shared and downloaded by others. Do not upload confidential material or content you lack permission to publish. Available visibility controls can remove public listing, but cannot recall earlier downloads, third-party copies or cached files, and existing file URLs may remain accessible. Contact info@easyrender.ai for removal requests. Publishing a model does not transfer your underlying intellectual property to other visitors or grant them an unrestricted commercial licence."
+          "body": "Models generated in the web app are private by default. You can publish a model to the gallery or share it by link through a supported store integration. Public model pages, previews and associated imagery may be listed in the gallery, indexed, shared and downloaded by others. Anyone with a shared link can access the linked model. Do not upload confidential material or content you lack permission to publish. The visibility controls can remove a public listing, but cannot recall earlier downloads, third-party copies or cached files, and existing file URLs may remain accessible. Contact info@easyrender.ai for removal requests. Publishing a model does not transfer your underlying intellectual property to other visitors or grant them an unrestricted commercial licence."
         },
         "use": {
           "title": "7. Acceptable use",
@@ -2913,7 +2957,8 @@
       "error": "We could not verify your Google account. Choose the same email shown above. If your session expired, sign in to Easy Render again and retry.",
       "verifyGoogle": "Verify and enter with Google",
       "linkedInstructions": "Google is connected. Sign in with that same Google account to verify your email and return to the admin page you requested."
-    }
+    },
+    "resumeProject": "Back to my project"
   },
   "ServiceEmails": {
     "verify_email": {
@@ -2937,11 +2982,11 @@
       "footerReason": "An update about your easyrender account or project. Need help? Reply to this email."
     },
     "render_ready": {
-      "subject": "Your result is ready to review · easyrender",
+      "subject": "Your 3D model is ready · easyrender",
       "title": "Time for a closer look.",
       "preheader": "Open your result and check it against your product photo.",
       "body": "Your render has finished. Open the result in easyrender and compare it with your original photo.\n\nStart with the details that make the product yours: its silhouette, proportions and finish. You can review the available next steps on the project page.",
-      "action": "View my result",
+      "action": "View my 3D model",
       "lang": "en",
       "footerReason": "An update about your easyrender account or project. Need help? Reply to this email."
     },
@@ -2965,8 +3010,8 @@
       "body": "Check the shape and materials, then use the GLB in your product page or 3D scene."
     },
     "format": {
-      "title": "Inspect a real file before you start",
-      "body": "Open the existing table example to compare the source photo, angle sheet and interactive model."
+      "title": "Explore a real GLB example",
+      "body": "Compare the source photo, generated views and interactive 3D model. Download the sample GLB from the model page."
     },
     "tools": {
       "title": "Compare the same product, not just feature lists",
@@ -2977,107 +3022,113 @@
       "body": "Single-photo AI infers unseen surfaces. Inspect proportions; use measured modeling when exact dimensions matter."
     },
     "interactive": {
-      "title": "Decide what your shopper needs to do",
-      "body": "A 3D model can rotate freely and enter a scene. Start by inspecting one existing example."
+      "title": "See how a 3D model rotates",
+      "body": "Drag the model to rotate it freely and see how that differs from a 360° photo sequence."
     },
     "scan": {
       "title": "Test the one-photo route",
       "body": "AI infers geometry from one image. For measured reconstruction, compare a multi-photo capture workflow."
     },
-    "inspect": "Inspect the example",
+    "inspect": "View the 3D example",
     "upload": "Upload my photo",
     "qualityTitle": "Check the result, not just the model name",
     "qualityBody": "Compare the source and result. Fine details, transparent surfaces and unseen sides may need correction; generated geometry is not a measured CAD model.",
-    "sample": "Inspect an example",
+    "sample": "See a 3D example",
     "evals": "See quality checks",
-    "create": "Make one from my photo",
-    "galleryBody": "Open the result to compare its photo and 3D model. Public examples can be inspected; downloads depend on ownership."
+    "create": "Create a free angle preview",
+    "galleryBody": "Open a model to compare it with the source photo. The gallery includes public models and curated examples. Downloads are available on eligible examples and your own models.",
+    "usdz": {
+      "title": "See the model in your browser",
+      "body": "Rotate this example in a web viewer. The sample download is a GLB. Quick Look on iPhone uses a USDZ file."
+    },
+    "sampleDisclosure": "Opens a 3D model in your browser."
   },
   "EcommerceLanding": {
     "meta": {
-      "title": "3D and AR for ecommerce · Easy Render",
-      "description": "Add a View in your room button to your product pages. Easy Render turns your catalogue photos into 3D models that shoppers open in AR, on Shopify, WooCommerce, PrestaShop or any other store."
+      "title": "3D models and AR for online stores · Easy Render",
+      "description": "Turn your product photos into 3D models. Add an augmented reality button and QR code to product pages with a finished model. See setup for Shopify, WooCommerce, PrestaShop or another store."
     },
     "breadcrumb": "E-commerce",
     "home": "Home",
     "hero": {
       "eyebrow": "E-commerce",
-      "title": "A View in your room button on every product page.",
-      "subtitle": "Easy Render turns the photos already in your catalogue into 3D models and adds an AR button and a QR code to each product page. Choose your platform to see how it is set up."
+      "title": "3D models and augmented reality for your online store",
+      "subtitle": "Turn catalogue photos into 3D models. Add a “View in your room” button and QR code to products with a finished model. Pick your platform to see the setup."
     },
     "picker": {
-      "label": "Choose your store platform"
+      "label": "Choose your store platform",
+      "manageKeys": "Manage API keys"
     },
     "platforms": {
       "shopify": {
         "name": "Shopify",
         "title": "Easy Render for Shopify",
         "steps": {
-          "one": "Install the app",
+          "one": "Request an installation link",
           "two": "Connect your Easy Render account",
-          "three": "Generate the catalogue",
+          "three": "Create 3D models from product photos",
           "four": "Add the block to your theme"
         },
         "path": "Online Store › Themes › Customize › Product › Add block",
-        "cta": "Ask for the Shopify app",
-        "secondary": "Create your account",
-        "note": "Installed from a link we send you; not in the Shopify App Store yet. Needs an Online Store 2.0 theme."
+        "cta": "Book a call for Shopify access",
+        "secondary": "Try a free preview",
+        "note": "Shopify access is by invitation. On the call, we’ll confirm availability and help you get the installation link. An Online Store 2.0 theme is required."
       },
       "woocommerce": {
         "name": "WooCommerce",
         "title": "Easy Render for WooCommerce",
         "steps": {
-          "one": "Upload the plugin",
+          "one": "Package and upload the plugin",
           "two": "Paste your API key",
-          "three": "Generate the catalogue",
-          "four": "The button appears by itself"
+          "three": "Create 3D models from product photos",
+          "four": "The button appears when a model is ready"
         },
         "path": "WooCommerce › 3D & AR",
-        "cta": "Get the WooCommerce plugin",
-        "secondary": "Create your API key",
-        "note": "A zip you upload; not in the WordPress.org directory yet. WordPress 6.0+, PHP 7.4+, photos over https."
+        "cta": "View WooCommerce setup instructions",
+        "secondary": "Create an account for an API key",
+        "note": "Build the ZIP from the GitHub source and upload it in WordPress. Requires WooCommerce, WordPress 6.0 or later, PHP 7.4 or later and product photos served over HTTPS."
       },
       "prestashop": {
         "name": "PrestaShop",
         "title": "Easy Render for PrestaShop",
         "steps": {
-          "one": "Upload the module",
+          "one": "Package and upload the module",
           "two": "Paste your API key",
-          "three": "Generate the catalogue",
-          "four": "The button appears by itself"
+          "three": "Create 3D models from product photos",
+          "four": "The button appears when a model is ready"
         },
         "path": "Modules › Module Manager › easyrender 3D & AR › Configure",
-        "cta": "Get the PrestaShop module",
-        "secondary": "Create your API key",
-        "note": "A zip you upload; not in PrestaShop Addons yet. PrestaShop 1.7.7+ or 8.x, photos over https."
+        "cta": "View PrestaShop setup instructions",
+        "secondary": "Create an account for an API key",
+        "note": "Build the ZIP from the GitHub source and upload it in PrestaShop. Requires PrestaShop 1.7.7 or later (including 8.x) and product photos served over HTTPS."
       },
       "tiendanube": {
         "name": "Tiendanube",
         "title": "Easy Render for Tiendanube",
         "steps": {
-          "one": "Create your account",
-          "two": "Turn your products into 3D",
-          "three": "Copy the model id",
-          "four": "Paste it in the product description"
+          "one": "Start with a free preview",
+          "two": "Create and publish the 3D model",
+          "three": "Replace the placeholder with your model ID",
+          "four": "Paste the HTML into your product description"
         },
         "path": "Products › Edit › Description › HTML",
-        "cta": "Create your account",
-        "secondary": "Ask for a Tiendanube app",
-        "note": "There is no Tiendanube app yet: the button is two lines of HTML pasted into each product’s description or into your theme. The model has to be public or shared by link."
+        "cta": "Try a free preview",
+        "secondary": "Book a call about Tiendanube",
+        "note": "Add the button through HTML in the product description or theme. This setup uses a public or link-shared model and works without a native Tiendanube app."
       },
       "other": {
         "name": "Other platform",
         "title": "Easy Render on any other store",
         "steps": {
-          "one": "Create your account",
-          "two": "Turn your products into 3D",
-          "three": "Copy the model id",
-          "four": "Paste the button"
+          "one": "Start with a free preview",
+          "two": "Create and publish the 3D model",
+          "three": "Replace the placeholder with your model ID",
+          "four": "Paste the HTML into your product page"
         },
         "path": "Your product template",
-        "cta": "Create your API key",
-        "secondary": "REST API guide",
-        "note": "Works on Magento, BigCommerce, Wix, Squarespace or a custom store. The model has to be public or shared by link."
+        "cta": "Try a free preview",
+        "secondary": "Explore REST API automation",
+        "note": "Use the HTML on platforms that allow custom product-page markup. The model must be public or shared by link. You only need an API key for automation."
       }
     },
     "snippet": {
@@ -3100,29 +3151,29 @@
       "qrCaption": "Scan with your phone to see it in your room",
       "qrAlt": "QR code that opens this table in AR on a phone",
       "photoAlt": "Product photo of an oak side table",
-      "live": "Live demo: the button and the QR code open a real model."
+      "live": "Try the demo. The button and QR code open a real model."
     },
     "shopper": {
       "title": "What your shopper sees",
       "phone": {
         "title": "On a phone: one tap",
-        "body": "The button opens the phone’s own AR viewer. No app to install."
+        "body": "The button opens the interactive 3D model. On compatible phones, shoppers can switch to augmented reality without installing an app."
       },
       "desktop": {
         "title": "On a computer: a QR code",
-        "body": "The QR code carries the page to the shopper’s phone."
+        "body": "Shoppers can scan the QR code to open the model on their phone."
       },
       "quiet": {
         "title": "No model, no button",
-        "body": "Products without a finished model show nothing."
+        "body": "Plugins display the button and QR code once a product has a finished model."
       }
     },
     "faq": {
-      "title": "Questions from store owners",
+      "title": "Frequently asked questions",
       "items": {
         "photos": {
           "q": "Which photos does it use?",
-          "a": "The main photo of each product. Products without a photo are skipped and counted on the plugin page, and a photo that cannot be used is reported so you can replace it."
+          "a": "The store integration uses the main photo for each product. It skips products without a usable photo and shows which products need attention."
         },
         "cost": {
           "q": "When am I charged?",
@@ -3130,7 +3181,7 @@
         },
         "theme": {
           "q": "Does it change my theme?",
-          "a": "No. On Shopify you add a block in the theme editor and can remove it there. On WooCommerce and PrestaShop the button is added through the platform’s own hooks, without editing theme files."
+          "a": "In Shopify, add or remove the block using the theme editor. With WooCommerce and PrestaShop, the plugin uses the platform’s built-in placement options."
         },
         "devices": {
           "q": "Which phones can open the AR view?",
@@ -3138,7 +3189,7 @@
         },
         "accuracy": {
           "q": "How close is the model to the real product?",
-          "a": "The model is generated from one photo, so the sides the photo does not show are estimated. Check each model before you rely on it, and treat sizes as approximate."
+          "a": "The model uses one product photo and estimates the sides it cannot see. Check the finished model before showing it to shoppers. Dimensions are approximate."
         },
         "remove": {
           "q": "What happens if I uninstall it?",
@@ -3147,32 +3198,33 @@
       }
     },
     "closing": {
-      "title": "Put your catalogue in your shopper’s room.",
-      "cta": "Create your account"
+      "title": "Try 3D with a photo from your catalogue",
+      "cta": "Try a free preview"
     },
     "cost": {
       "title": "What it costs",
-      "install": "Plugin and draft preview",
+      "install": "Plugin source and web preview",
       "model": "Per 3D model · {credits} credits",
       "catalogue": "A catalogue of {count} products",
-      "note": "The total is on the button before you click. A model that fails is refunded."
+      "note": "Example at the pay-as-you-go rate, excluding optional edits. Buy credits in advance. The generation button shows the total before you confirm, and failed models are refunded in credits."
     }
   },
   "FirstModel": {
     "title": "Your first 3D model is free",
     "body": "Generate your model and download the GLB. No card needed.",
-    "signup": "Create account · get my model",
-    "verify": "Verify email",
+    "signup": "Create an account to claim my free model",
+    "verify": "Send verification email",
     "verifyHint": "Verify your email to unlock your model.",
-    "sent": "Open the email, verify your address, then return here.",
-    "check": "Check verification",
+    "sent": "Open the link in your email, then return to this preview.",
+    "check": "I’ve verified my email",
     "build": "Generate my free model",
     "terms": "One model per verified account. Further models use credits.",
     "loading": "Checking your offer…",
     "loadError": "We could not check your offer. Your preview is saved.",
     "retry": "Try again",
     "rateLimited": "Please wait a few minutes before requesting another email.",
-    "sendError": "We could not send the email. Please try again shortly."
+    "sendError": "We could not send the email. Please try again shortly.",
+    "continuePaid": "See the option to use credits"
   },
   "FirstModelAdmin": {
     "title": "First model experiment",
@@ -3215,5 +3267,21 @@
     "pricing": "The report also splits cohorts by the existing pricing experiment.",
     "unknown": "Not available",
     "end": "Enrollment deadline"
+  },
+  "ActivationErrors": {
+    "unreadable": "We couldn’t read this photo. Choose another file.",
+    "photoType": "Choose a JPEG, PNG or WebP photo.",
+    "large": "Choose a smaller photo and try again.",
+    "small": "Use the original photo at a higher resolution.",
+    "aspect": "Choose a photo that shows the whole product.",
+    "blank": "The photo looks empty. Choose one that clearly shows the product.",
+    "previewLimit": "You’ve reached today’s preview limit. Try again tomorrow.",
+    "concurrentLimit": "You have work in progress. Wait for one job to finish and try again.",
+    "insufficientCredits": "Your balance is too low for this action. Check your credits before trying again.",
+    "signIn": "Sign in to continue.",
+    "verifyEmail": "Verify your email address to use the free model offer.",
+    "offerUnavailable": "The free model offer is no longer available for this preview. Check the options below.",
+    "staleState": "This project changed. Refresh the page and try again.",
+    "rateLimit": "Too many requests. Wait a minute and try again."
   }
 }

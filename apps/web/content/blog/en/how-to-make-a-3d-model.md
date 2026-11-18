@@ -93,7 +93,7 @@ The method is the same in every tool: one sharp photo of the whole object on a p
 ![A matte stoneware vase in its catalogue photo, straight on against a white background](/showcase/vase.jpg "The one photo.")
 ![The 3D model easyrender built from that photo, a pale stoneware vase in a viewer that can be turned](/showcase/vase.glb "The model easyrender built from it, by way of a free angle sheet, textures compressed for this page: 16,708 triangles. Turn it and check the back, which the photo never showed.")
 
-easyrender is one of these tools. It first draws a free sheet of nine views, eight round the object in 45-degree steps and one from above, then builds the model from those views. A finished model costs {{renderCredits}} credits ({{renderPrice}}). [Upload a photo](/)
+easyrender is one of these tools. It first draws a free sheet of nine views, eight round the object in 45-degree steps and one from above, then builds the model from those views. A finished model costs {{renderCredits}} credits ({{renderPrice}}). [Upload a photo](/#try)
 
 It models one object at a time, such as furniture, decor and building exteriors. Meshy and Tripo also turn images into 3D models and add text-to-3D, each with its own pricing. A closer look is in [Meshy alternative for product photos](/compare/meshy) and [Tripo alternative for product photos](/compare/tripo).
 

@@ -10,10 +10,13 @@ import {
   sendResendMail,
 } from './mailing/transport';
 
+import { isServiceEmailLocale, type ServiceEmailLocale } from './service-email-locale';
+
 export type { ServiceEmailCopy } from './mailing/service-template';
-export type ServiceEmailTexts = Record<
-  'en' | 'es',
-  Record<'render_ready' | 'render_failed', ServiceEmailCopy>
+
+type RenderEmailCopy = Record<'render_ready' | 'render_failed', ServiceEmailCopy>;
+export type ServiceEmailTexts = { en: RenderEmailCopy } & Partial<
+  Record<Exclude<ServiceEmailLocale, 'en'>, RenderEmailCopy>
 >;
 export type ServiceEmailInput = {
   purpose: 'verify_email' | 'reset_password';
@@ -21,7 +24,7 @@ export type ServiceEmailInput = {
   email: string;
   url: string;
   expiresAt: Date;
-  locale?: 'en' | 'es';
+  locale?: ServiceEmailLocale;
   copy: ServiceEmailCopy;
 };
 const HOUR = 3600000;
@@ -178,9 +181,12 @@ export async function queueRenderServiceEmail(
     return;
   if (await isSuppressed(tx, render.user.email)) return;
   const purpose = render.status === 'ready' ? 'render_ready' : 'render_failed';
-  const locale = /^\/es(?:\/|$)/.test(render.landing_path ?? render.user.landing_path ?? '')
-    ? 'es'
-    : 'en';
+  const fromLanding = (render.landing_path ?? render.user.landing_path ?? '').split('/')[1];
+  const locale = isServiceEmailLocale(render.notificationLocale)
+    ? render.notificationLocale
+    : isServiceEmailLocale(fromLanding)
+      ? fromLanding
+      : 'en';
   const dedupeKey = `render:${render.id}:${purpose}`;
   await tx.serviceEmailDelivery.upsert({
     where: { dedupeKey },
@@ -366,12 +372,12 @@ async function claim(id: string, texts: ServiceEmailTexts): Promise<ServiceEmail
         });
         return null;
       }
+      const locale = isServiceEmailLocale(entry.locale) ? entry.locale : 'en';
+      const url = new URL('/account', config.appUrl);
+      url.searchParams.set('next', `/r/${entry.renderId}`);
+      url.searchParams.set('locale', locale);
       payloadEncrypted = seal(
-        buildPayload(
-          entry.email,
-          `${config.appUrl}/r/${encodeURIComponent(entry.renderId)}`,
-          texts[entry.locale === 'es' ? 'es' : 'en'][entry.purpose],
-        ),
+        buildPayload(entry.email, url.href, (texts[locale] ?? texts.en)[entry.purpose]),
         config.secret,
         aad(entry),
       );

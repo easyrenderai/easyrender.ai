@@ -6,6 +6,7 @@ it('takes format and interactive comparison readers to an inspectable model', ()
     expect(landingIntent(group, 'es')).toMatchObject({
       action: 'inspect',
       href: '/r/cmwceijqd000007l23vfjeftv',
+      uploadHref: '/es#try',
     });
   }
 });
@@ -21,4 +22,9 @@ it('keeps creation actions localized and safely falls back for new editorial gro
     action: 'upload',
   });
   expect(landingIntent('constructor', 'es').key).toBe('photo');
+});
+
+it('gives USDZ readers the web viewer disclosure instead of the downloadable GLB description', () => {
+  expect(landingIntent('usdz-file', 'it').key).toBe('usdz');
+  expect(landingIntent('glb-file', 'en').key).toBe('format');
 });

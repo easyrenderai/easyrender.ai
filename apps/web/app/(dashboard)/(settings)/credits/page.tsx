@@ -1,4 +1,9 @@
-import { checkoutReturnPath, getBalance, getBillingStatus } from '@easyrender/core';
+import {
+  checkoutReturnPath,
+  confirmedPurchase,
+  getBalance,
+  getBillingStatus,
+} from '@easyrender/core';
 import {
   ENTERPRISE_BOOKING_URL,
   type PlanId,
@@ -6,10 +11,10 @@ import {
   RENDER_CREDITS,
   rendersFor,
 } from '@easyrender/harness';
-import { Check, CircleCheck } from 'lucide-react';
+import { Check, CircleCheck, Clock3, Info } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getFormatter, getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { BuyButton } from '@/components/buy-button';
 import { PaygPicker } from '@/components/payg-picker';
@@ -26,7 +31,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { intlLocale } from '@/i18n/config';
 import { currentUser } from '@/lib/actor';
+import { localizedAuthPath } from '@/lib/app-locale';
 import { currentPricing, currentTopupPricing } from '@/lib/pricing';
 import { ROUTES } from '@/lib/seo/routes';
 import { absoluteUrl } from '@/lib/seo/site';
@@ -103,25 +110,47 @@ function PlanCard({
 export default async function CreditsPage({ searchParams }: PageProps<'/credits'>) {
   const [pricing, topup] = await Promise.all([currentPricing(), currentTopupPricing()]);
   const { plans: SUBSCRIPTION_PLANS } = pricing;
-  const { status, next } = await searchParams;
+  const { status, next, session_id: session } = await searchParams;
   const user = await currentUser();
+  const [t, locale] = await Promise.all([getTranslations('Credits'), getLocale()]);
+  const number = (value: number, options?: Intl.NumberFormatOptions) =>
+    new Intl.NumberFormat(intlLocale(locale), options).format(value);
+  const sessionId =
+    user &&
+    status === 'success' &&
+    typeof session === 'string' &&
+    /^cs_[A-Za-z0-9_-]{1,240}$/.test(session)
+      ? session
+      : null;
+  const confirmed =
+    user && sessionId ? await confirmedPurchase(user.id, sessionId).catch(() => null) : null;
   const [balance, billing] = user
     ? await Promise.all([getBalance(user.id), getBillingStatus(user.id)])
     : [0, { plan: null, canManage: false }];
-  const [t, format] = await Promise.all([getTranslations('Credits'), getFormatter()]);
+  const checkoutNotice = confirmed
+    ? t('checkoutConfirmed', { credits: number(confirmed.issued_credits) })
+    : status === 'success'
+      ? t(sessionId ? 'checkoutPending' : 'checkoutUnconfirmed')
+      : status === 'canceled'
+        ? t('checkoutCanceled')
+        : null;
   const usd = (cents: number) =>
-    format.number(cents / 100, {
+    number(cents / 100, {
       style: 'currency',
       currency: pricing.currency.toUpperCase(),
       minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
     });
-  const credits = (value: number) => format.number(value);
+  const credits = (value: number) => number(value);
   const back = checkoutReturnPath(next);
   const signUp = (plan: string) => {
     const destination = `/credits?plan=${plan}${back ? `&next=${encodeURIComponent(back)}` : ''}#${plan}`;
     return (
       <Button className="w-full" asChild>
-        <Link href={`/sign-up?next=${encodeURIComponent(destination)}`}>{t('signUpToBuy')}</Link>
+        <Link
+          href={`${localizedAuthPath(locale, '/sign-up')}?next=${encodeURIComponent(destination)}`}
+        >
+          {t('signUpToBuy')}
+        </Link>
       </Button>
     );
   };
@@ -156,7 +185,9 @@ export default async function CreditsPage({ searchParams }: PageProps<'/credits'
 
   return (
     <div className="space-y-8">
-      <PurchaseConversion />
+      {sessionId && (
+        <PurchaseConversion key={sessionId} sessionId={sessionId} initial={confirmed} />
+      )}
       <PricingExposure variant={pricing.variant} subject={pricing.subject} />
       <div className="space-y-3">
         {/* Signed in, the breadcrumb names the page. The pricing page keeps its heading for visitors and search. */}
@@ -189,15 +220,17 @@ export default async function CreditsPage({ searchParams }: PageProps<'/credits'
             variant="outline"
           />
         )}
-        {status === 'success' && (
+        {checkoutNotice && (
           <Alert>
-            <CircleCheck />
-            <AlertDescription>{t('success')}</AlertDescription>
+            {confirmed ? <CircleCheck /> : sessionId ? <Clock3 /> : <Info />}
+            <AlertDescription>{checkoutNotice}</AlertDescription>
           </Alert>
         )}
         {back && (
           <Button variant="outline" size="sm" asChild>
-            <Link href={back}>{t('back')}</Link>
+            <Link href={back}>
+              {t(back.startsWith('/views') ? 'backToPhotos' : 'backToProject')}
+            </Link>
           </Button>
         )}
       </div>
@@ -209,7 +242,7 @@ export default async function CreditsPage({ searchParams }: PageProps<'/credits'
             price: usd(pricing.payg.min * pricing.creditPrice * 100),
             plan: topup.plan ? SUBSCRIPTION_PLANS[topup.plan].label : '',
           })}
-          price={format.number(topup.priceCents / topup.creditsPerUnit / 100, {
+          price={number(topup.priceCents / topup.creditsPerUnit / 100, {
             style: 'currency',
             currency: topup.currency.toUpperCase(),
             minimumFractionDigits: 2,

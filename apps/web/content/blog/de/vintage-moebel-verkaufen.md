@@ -131,7 +131,7 @@ Marktplätze haben eigene Regeln für 3D-Dateien. In der Praxis schickst du eine
 
 Ob du einen Modellierer beauftragst oder mit einem Foto startest, vergleicht [3D-Modellierer oder KI](/de/vergleich/vergleich-3d-modellierer-oder-ki).
 
-easyrender gibt jedem fertigen Modell in der öffentlichen Galerie eine Seite, die du per Link teilen kannst. Modelle sind standardmäßig öffentlich. Der Link funktioniert nur, solange das Modell in der Galerie steht. Blendest du es aus, funktioniert der Link nicht mehr. Schick ihn in deiner Antwort an den Käufer mit, neben den Nahaufnahmen und deinen gemessenen Maßen, die im Inserat bleiben.
+Deine Modelle sind zunächst privat. Veröffentlichst du ein fertiges Modell in der Galerie, kannst du seine Seite per Link teilen. Schick ihn in deiner Antwort an den Käufer mit, neben den Nahaufnahmen und deinen gemessenen Maßen, die im Inserat bleiben.
 
 ## Woran erkennst du, dass ein Inserat funktioniert?
 

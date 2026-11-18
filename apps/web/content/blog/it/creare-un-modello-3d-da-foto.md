@@ -100,7 +100,7 @@ Il numero delle parti va verificato da una persona. Conta ante, cassetti e gambe
 
 easyrender accetta una breve nota con ogni foto, per ciò che la foto nasconde: «quattro ante», «schienale aperto», «maniglie in ottone». La tavola qui sopra è un risultato reale di easyrender dalla foto del passo 1. L'anteprima è gratis, due al giorno senza crediti, e spendi crediti solo se costruisci il modello.
 
-L'anteprima gratuita porta una filigrana «easyrender.ai preview» che la tavola qui sopra non ha. [Carica una foto](/it)
+La tavola qui sopra è un esempio finale. L’anteprima gratuita ha una filigrana. [Carica una foto](/it#try)
 
 ## Passo 4: costruisci il modello e scarica i file
 

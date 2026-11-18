@@ -1,4 +1,3 @@
-import { ENTERPRISE_BOOKING_URL } from '@easyrender/harness';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { HomeHero } from '@/components/home/home-hero';
 import { HomeIntegrations } from '@/components/home/home-integrations';
@@ -15,6 +14,7 @@ import { StudioShell } from '@/components/studio/shell';
 import { StudioTools } from '@/components/studio/tools';
 import type { Locale } from '@/i18n/config';
 import { currentUser } from '@/lib/actor';
+import { isPublished, ROUTES } from '@/lib/seo/routes';
 
 // The home, shared by every language: / is English, /es and the other prefixes render the same
 // sections from their own messages. One component means the two homes cannot drift apart in
@@ -26,6 +26,7 @@ export async function HomeView() {
     getTranslations('Studio.cta'),
     getLocale(),
   ]);
+  const storeLocale = isPublished('ecommerce', locale as Locale) ? (locale as Locale) : 'en';
 
   return (
     <StudioShell>
@@ -35,7 +36,7 @@ export async function HomeView() {
       <HomeJourney />
       <HomeIntro />
 
-      <StudioIndustries salesHref={ENTERPRISE_BOOKING_URL} />
+      <StudioIndustries storeHref={ROUTES.ecommerce.paths[storeLocale]} storeLocale={storeLocale} />
       <StudioTools />
 
       <HomeIntegrations />

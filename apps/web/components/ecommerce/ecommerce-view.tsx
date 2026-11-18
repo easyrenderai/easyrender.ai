@@ -36,6 +36,7 @@ import { StudioShell } from '@/components/studio/shell';
 import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
 import { currentUser } from '@/lib/actor';
+import { localizedAuthPath } from '@/lib/app-locale';
 import { TABLE_EXAMPLE as sample } from '@/lib/marketing-examples';
 import { formatCount, formatMoney } from '@/lib/price-format';
 import { isPublished, ROUTES } from '@/lib/seo/routes';
@@ -86,19 +87,23 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
     QRCode.toDataURL(arUrl, { margin: 1, width: 280, errorCorrectionLevel: 'M' }),
     currentPricing(),
   ]);
-  const accountHref = user ? '/connectors' : '/sign-up?next=%2Fconnectors';
+  const connectorHref = user
+    ? '/connectors'
+    : `${localizedAuthPath(locale, '/sign-up')}?next=%2Fconnectors`;
+  const previewHref = `${ROUTES.home.paths[locale]}#try`;
   const apiLocale = isPublished('api', locale) ? locale : 'en';
   const money = (value: number) => formatMoney(locale, value, pricing.currency);
   const modelPrice = RENDER_CREDITS * pricing.creditPrice;
 
-  // The main button goes straight to the plugin wherever one can be downloaded.
   const actions: Record<Platform, { primary: string; secondary: string }> = {
-    shopify: { primary: ENTERPRISE_BOOKING_URL, secondary: accountHref },
-    woocommerce: { primary: `${SOURCE}/woocommerce`, secondary: accountHref },
-    prestashop: { primary: `${SOURCE}/prestashop`, secondary: accountHref },
-    // No Tiendanube app yet: the store pastes the two lines, and can ask for a native app.
-    tiendanube: { primary: accountHref, secondary: ENTERPRISE_BOOKING_URL },
-    other: { primary: accountHref, secondary: ROUTES.api.paths[apiLocale] },
+    shopify: { primary: ENTERPRISE_BOOKING_URL, secondary: previewHref },
+    woocommerce: {
+      primary: `${SOURCE}/woocommerce#install-until-it-is-listed`,
+      secondary: connectorHref,
+    },
+    prestashop: { primary: `${SOURCE}/prestashop#install`, secondary: connectorHref },
+    tiendanube: { primary: previewHref, secondary: ENTERPRISE_BOOKING_URL },
+    other: { primary: previewHref, secondary: ROUTES.api.paths[apiLocale] },
   };
   const icons: Record<Platform, ReactNode> = {
     shopify: <ShopifyMark className="size-4" />,
@@ -206,7 +211,12 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
   );
 
   const cta = (href: string, label: string, isPrimary: boolean) => (
-    <Button asChild size="lg" variant={isPrimary ? 'default' : 'outline'}>
+    <Button
+      asChild
+      size="lg"
+      variant={isPrimary ? 'default' : 'outline'}
+      className="h-auto min-h-10 max-w-full py-2 text-center whitespace-normal"
+    >
       {href.startsWith('/') ? (
         <Link href={href}>
           {label}
@@ -229,7 +239,13 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
         </h2>
         <div className="flex flex-wrap gap-3">
           {cta(actions[platform].primary, t(`platforms.${platform}.cta`), true)}
-          {cta(actions[platform].secondary, t(`platforms.${platform}.secondary`), false)}
+          {cta(
+            actions[platform].secondary,
+            user && (platform === 'woocommerce' || platform === 'prestashop')
+              ? t('picker.manageKeys')
+              : t(`platforms.${platform}.secondary`),
+            false,
+          )}
         </div>
       </div>
       <ol className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -346,7 +362,7 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
           ))}
         </div>
       </Section>
-      <StudioClosing title={t('closing.title')} label={t('closing.cta')} href={accountHref} />
+      <StudioClosing title={t('closing.title')} label={t('closing.cta')} href={previewHref} />
     </StudioShell>
   );
 }

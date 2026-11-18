@@ -96,7 +96,7 @@ Quando il prodotto è reale ed è già sul tuo sito, e ti serve un modello che c
 - **Pezzi unici.** Una madia vintage si vende una volta sola. Un modello su preventivo per una sola vendita si ripaga di rado. [Vendere mobili vintage online](/it/guide/vendere-mobili-vintage) copre il resto di quell'annuncio.
 - **Vedere prima di spendere.** La tavola delle angolazioni mostra una stima dell'aspetto prima che tu spenda un centesimo, cosa che nessun brief può fare.
 
-Se hai la foto a portata di mano, [caricala e guarda l'anteprima gratuita](/it) per valutare il pezzo.
+Se hai la foto a portata di mano, [caricala e guarda l'anteprima gratuita](/it#try) per valutare il pezzo.
 
 ## Cosa faremmo noi?
 

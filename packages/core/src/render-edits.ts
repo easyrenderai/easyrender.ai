@@ -1,8 +1,14 @@
 import { db, type RenderEdit } from '@easyrender/db';
 import { reportError } from './report';
 
-// The steps that go in a render's history. Each is written when the step starts.
-export const RENDER_EDIT_KINDS = ['sheet', 'sheet_redraw', 'build', 'material'] as const;
+// The steps that go in a render's history. Includes returned credits on a failed correction.
+export const RENDER_EDIT_KINDS = [
+  'sheet',
+  'sheet_redraw',
+  'sheet_redraw_refund',
+  'build',
+  'material',
+] as const;
 export type RenderEditKind = (typeof RENDER_EDIT_KINDS)[number];
 
 export type RenderEditView = {

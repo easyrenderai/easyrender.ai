@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { HTML_LANG, type Locale } from '@/i18n/config';
+import { localizedAuthPath, localizedSignInPath } from '@/lib/app-locale';
 import { authClient } from '@/lib/auth-client';
 import type en from '@/messages/en.json';
 
@@ -15,13 +17,29 @@ export function ServiceAuthForm({
   copy,
   locale,
   isAvailable,
+  project,
+  isSignedIn = false,
 }: {
   mode: 'forgot' | 'reset' | 'verify';
   token: string;
   copy: typeof en.AuthService;
-  locale: 'es' | 'en';
+  locale: Locale;
+  project?: string | null;
+  isSignedIn?: boolean;
   isAvailable: boolean;
 }) {
+  const resume = new URLSearchParams({ locale });
+  if (project) resume.set('next', project);
+  const signIn = project
+    ? localizedSignInPath(locale, project)
+    : localizedAuthPath(locale, '/sign-in');
+  const canResume = mode === 'verify' && project && isSignedIn;
+  const returnHref = canResume ? project : mode === 'verify' && !project ? '/account' : signIn;
+  const returnLabel = canResume
+    ? copy.resumeProject
+    : mode === 'verify' && !project
+      ? copy.account
+      : copy.signIn;
   const [isBusy, setIsBusy] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +58,12 @@ export function ServiceAuthForm({
       if (mode === 'forgot') {
         const result = await authClient.requestPasswordReset({
           email: String(form.get('email') ?? ''),
-          fetchOptions: { headers: { 'x-easyrender-email-locale': locale } },
+          fetchOptions: {
+            headers: {
+              'x-easyrender-email-locale': locale,
+              ...(project ? { 'x-easyrender-project-return': project } : {}),
+            },
+          },
         });
         status = result.error?.status ?? 200;
       } else if (mode === 'reset') {
@@ -72,7 +95,7 @@ export function ServiceAuthForm({
         window.history.replaceState(
           null,
           '',
-          `/${mode === 'verify' ? 'verify-email' : 'reset-password'}?locale=${locale}`,
+          `/${mode === 'verify' ? 'verify-email' : 'reset-password'}?${resume}`,
         );
     } catch {
       setError(copy.failed);
@@ -82,7 +105,7 @@ export function ServiceAuthForm({
   }
   const hasInvalidToken = mode !== 'forgot' && !token;
   return (
-    <main lang={locale} className="mx-auto w-full max-w-md px-4 py-16">
+    <main lang={HTML_LANG[locale]} className="mx-auto w-full max-w-md px-4 py-16">
       <Card>
         <CardHeader>
           <CardTitle>
@@ -176,18 +199,12 @@ export function ServiceAuthForm({
           )}
           <div className="flex flex-col gap-2">
             {mode === 'reset' && (hasInvalidToken || error) && (
-              <Link
-                href={`/forgot-password?locale=${locale}`}
-                className="underline underline-offset-4"
-              >
+              <Link href={`/forgot-password?${resume}`} className="underline underline-offset-4">
                 {copy.newLink}
               </Link>
             )}
-            <Link
-              href={mode === 'verify' ? '/account' : '/sign-in'}
-              className="underline underline-offset-4"
-            >
-              {mode === 'verify' ? copy.account : copy.signIn}
+            <Link href={returnHref} className="underline underline-offset-4">
+              {returnLabel}
             </Link>
           </div>
         </CardContent>

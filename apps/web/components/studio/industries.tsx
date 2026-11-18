@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import type { CSSProperties } from 'react';
 import { SiteLink as Link } from '@/components/site-link';
+import type { Locale } from '@/i18n/config';
 import { type ItemId, itemOf, photoUrl } from '@/lib/studio/catalog';
 import { createFormat } from '@/lib/studio/format';
 import { DemoCursor } from './icons';
@@ -23,7 +24,13 @@ const PINS: { id: ItemId; x: string; y: string; left?: boolean }[] = [
 ];
 
 // One model, three places it ends up: a shopper's room (AR), a studio's render, a game level.
-export function StudioIndustries({ salesHref }: { salesHref: string }) {
+export function StudioIndustries({
+  storeHref,
+  storeLocale,
+}: {
+  storeHref: string;
+  storeLocale: Locale;
+}) {
   const t = useTranslations('Studio.industries');
   const colliders = useTranslations('Catalog.colliders');
   const locale = useLocale();
@@ -104,9 +111,11 @@ export function StudioIndustries({ salesHref }: { salesHref: string }) {
             <p className="eyebrow">{t('store.eyebrow')}</p>
             <h3>{t('store.title')}</h3>
             <p>{t('store.body')}</p>
-            <a className="link" href={salesHref} target="_blank" rel="noopener noreferrer">
-              {t('store.link')} <ArrowRight />
-            </a>
+            <Link className="link" href={storeHref} hrefLang={storeLocale}>
+              {t('store.link')}
+              {storeLocale !== locale && ` (${t('store.english')})`}
+              <ArrowRight aria-hidden="true" />
+            </Link>
           </div>
         </article>
 

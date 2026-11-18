@@ -102,7 +102,7 @@ Ese último control salió de las pruebas. En copias pequeñas en escala de gris
 
 La comprobación del número de piezas requiere una revisión humana. Cuenta puertas, cajones y patas en cada casilla frente a la pieza real antes de generar el modelo. Si la previsualización está mal, cambia la foto o añádele una nota en lugar de repetir con lo mismo.
 
-easyrender acepta una nota corta con cada foto para lo que la foto esconde: «cuatro puertas», «trasera abierta», «tiradores de latón». La previsualización es gratis, dos al día sin créditos, y solo gastas créditos si generas el modelo. Lleva una marca de agua «easyrender.ai preview» que la hoja de arriba no lleva. [Sube una foto](/es)
+easyrender acepta una nota corta con cada foto para lo que la foto esconde: «cuatro puertas», «trasera abierta», «tiradores de latón». La vista previa de ángulos es gratuita dentro de tu cupo diario. Puedes revisarla antes de decidir si generas el modelo 3D. La vista previa lleva una marca de agua; arriba se muestra un ejemplo finalizado. [Sube una foto](/es#try)
 
 ## Paso 4: genera el modelo y descarga los archivos
 

@@ -11,7 +11,7 @@ import { isPublished, ROUTES } from '@/lib/seo/routes';
 // The cookie remembers a choice: set by the language picker on click, or by this redirect when it
 // picks a language from the country. Staying in English sets nothing, so a visitor with no
 // country, or from a country we do not map, is re-checked on the next visit and still gets
-// English. The app (sign in, dashboard, credits, studio) never reads it and stays in English.
+// English. The app remembers its interface language separately in proxy.ts.
 
 export { HOME_LOCALE_COOKIE, HOME_LOCALE_MAX_AGE, HOME_VARY } from './home-locale-constants';
 

@@ -1,13 +1,13 @@
 ---
 
 group: product-photography-for-ecommerce
-title: "Fotografia prodotto per l'ecommerce: uno schema ripetibile"
+title: "Fotografia di prodotto per l’e-commerce: come allestire il set"
 description: "Fotografia prodotto per l'ecommerce con poco budget: una luce morbida, uno sfondo semplice, una lista di scatti fissa e cosa chiedono Amazon e Shopify."
 date: 2026-11-15
 keyword: fotografia prodotto
 author: Jorge Rodríguez
 authorType: person
-cta: Quando la prossima immagine principale a tre quarti è pronta, passala dal 3D e controlla gratis i lati nascosti.
+cta: Carica la foto principale del prodotto e guarda gratuitamente le viste generate da altre angolazioni.
 ---
 
 Una buona fotografia di prodotto per l'ecommerce nasce da uno schema ripetibile: una luce grande e morbida, uno sfondo semplice, la fotocamera sul treppiede a metà altezza del prodotto e gli stessi scatti per ogni articolo. Ai piccoli negozi possono bastare una finestra, un pannello bianco e un telefono, senza flash da studio.
@@ -131,7 +131,7 @@ L'esportazione da 2048 pixel qui sopra è più che sufficiente. easyrender rifiu
 
 Un giro a 360 gradi è un'altra cosa: una serie di foto scattate su una base rotante, che chi compra scorre. Un modello 3D è un solo file che chi compra gira liberamente. [Fotografia a 360 gradi o modello 3D](/it/confronti/360-o-3d) spiega come si fa ciascuno, quanto costa e quando sceglierlo.
 
-easyrender costruisce un modello da una di quelle foto e prima ti mostra un'anteprima gratis di ogni angolazione. Funziona su pezzi singoli, come una lampada da terra o una poltrona, quindi carica la foto del pezzo da solo e non una stanza allestita. [Carica una foto](/it)
+easyrender costruisce un modello da una di quelle foto e prima ti mostra un'anteprima gratis di ogni angolazione. Funziona su pezzi singoli, come una lampada da terra o una poltrona, quindi carica la foto del pezzo da solo e non una stanza allestita. [Carica una foto](/it#try)
 
 ## Quali sono gli errori più comuni?
 

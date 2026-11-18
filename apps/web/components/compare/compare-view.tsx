@@ -45,6 +45,19 @@ export async function CompareView({ page }: { page: ComparePage }) {
   const home = ROUTES.home.paths[page.locale];
   const intent = landingIntent(page.group, page.locale);
   const nextT = await getTranslations({ locale: page.locale, namespace: 'LandingIntent' });
+  const isInspection = intent.action === 'inspect';
+  const ctaBody = isInspection
+    ? nextT(`${intent.key}.body`)
+    : (page.cta ?? nextT(`${intent.key}.body`));
+  const promoCopy = {
+    title: isInspection ? nextT(`${intent.key}.title`) : t('post.promo.title'),
+    solution: isInspection ? ctaBody : t('post.promo.solution'),
+    visual: t('post.promo.visual'),
+    play: t('post.promo.play'),
+    pause: t('post.promo.pause'),
+    button: nextT(intent.action),
+    disclosure: isInspection ? nextT('sampleDisclosure') : t('post.promo.disclosure'),
+  };
   const toc = tocOf(page.body);
 
   return (
@@ -128,15 +141,7 @@ export async function CompareView({ page }: { page: ComparePage }) {
                 position="mobile"
                 locale={page.locale}
                 href={intent.href}
-                copy={{
-                  title: t('post.promo.title'),
-                  solution: t('post.promo.solution'),
-                  visual: t('post.promo.visual'),
-                  play: t('post.promo.play'),
-                  pause: t('post.promo.pause'),
-                  button: nextT(intent.action),
-                  disclosure: t('post.promo.disclosure'),
-                }}
+                copy={promoCopy}
               />
             </div>
 
@@ -175,15 +180,22 @@ export async function CompareView({ page }: { page: ComparePage }) {
               <p className="text-2xl font-semibold tracking-tight text-balance">
                 {nextT(`${intent.key}.title`)}
               </p>
-              {page.cta && (
-                <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">{page.cta}</p>
-              )}
-              <Button asChild size="lg" className="mt-6">
-                <Link href={intent.href} data-article-cta="closing">
-                  {nextT(intent.action)}
-                  <ArrowRight />
-                </Link>
-              </Button>
+              <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">{ctaBody}</p>
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <Button asChild size="lg">
+                  <Link href={intent.href} data-article-cta="closing">
+                    {nextT(intent.action)}
+                    <ArrowRight />
+                  </Link>
+                </Button>
+                {isInspection && (
+                  <Button asChild variant="outline" size="lg">
+                    <Link href={intent.uploadHref} data-article-cta="closing">
+                      {nextT('upload')}
+                    </Link>
+                  </Button>
+                )}
+              </div>
             </aside>
           </div>
 
@@ -199,19 +211,7 @@ export async function CompareView({ page }: { page: ComparePage }) {
                   </p>
                   <TocList entries={toc} />
                 </nav>
-                <ArticlePromo
-                  locale={page.locale}
-                  href={intent.href}
-                  copy={{
-                    title: t('post.promo.title'),
-                    solution: t('post.promo.solution'),
-                    visual: t('post.promo.visual'),
-                    play: t('post.promo.play'),
-                    pause: t('post.promo.pause'),
-                    button: nextT(intent.action),
-                    disclosure: t('post.promo.disclosure'),
-                  }}
-                />
+                <ArticlePromo locale={page.locale} href={intent.href} copy={promoCopy} />
               </div>
             </aside>
           )}

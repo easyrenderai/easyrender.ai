@@ -193,6 +193,7 @@ export async function createCheckoutDetails(
     anonId?: string | null;
     expectedVariant?: string | null;
     country?: string | null;
+    locale?: Stripe.Checkout.SessionCreateParams.Locale;
   } = {},
 ) {
   // The caller supplies only a plan/quantity. Resolve again here, even for non-HTTP callers.
@@ -286,9 +287,10 @@ export async function createCheckoutDetails(
     currency: currency.toUpperCase(),
     items: [{ item_id: request.plan, quantity: request.plan === 'payg' ? request.credits : 1 }],
   };
+  const localeQuery = context.locale ? `&locale=${encodeURIComponent(context.locale)}` : '';
   const urls = {
-    success_url: `${config.appUrl()}/credits?status=success&session_id={CHECKOUT_SESSION_ID}${returnQuery}`,
-    cancel_url: `${config.appUrl()}/credits?status=canceled${returnQuery}`,
+    success_url: `${config.appUrl()}/credits?status=success&session_id={CHECKOUT_SESSION_ID}${returnQuery}${localeQuery}`,
+    cancel_url: `${config.appUrl()}/credits?status=canceled${returnQuery}${localeQuery}`,
   };
 
   if (request.plan !== 'payg') {
@@ -301,6 +303,7 @@ export async function createCheckoutDetails(
     }
     const session = await client.checkout.sessions.create({
       mode: 'subscription',
+      locale: context.locale,
       client_reference_id: userId,
       ...customer,
       line_items: lineItems,
@@ -316,6 +319,7 @@ export async function createCheckoutDetails(
 
   const session = await client.checkout.sessions.create({
     mode: 'payment',
+    locale: context.locale,
     client_reference_id: userId,
     ...customer,
     ...(user.stripeCustomerId ? {} : { customer_creation: 'always' as const }),
@@ -379,7 +383,10 @@ export const isActiveSubscription = (status: string | null | undefined) =>
   status === 'active' || status === 'trialing' || status === 'past_due';
 
 // Stripe's customer portal: change card, see invoices, change or cancel the monthly plan.
-export async function createBillingPortal(userId: string): Promise<string> {
+export async function createBillingPortal(
+  userId: string,
+  locale?: Stripe.BillingPortal.SessionCreateParams.Locale,
+): Promise<string> {
   const client = stripe();
   const user = await db().user.findUnique({
     where: { id: userId },
@@ -390,7 +397,8 @@ export async function createBillingPortal(userId: string): Promise<string> {
   }
   const session = await client.billingPortal.sessions.create({
     customer: user.stripeCustomerId,
-    return_url: `${config.appUrl()}/credits`,
+    locale,
+    return_url: `${config.appUrl()}/credits${locale ? `?locale=${encodeURIComponent(locale)}` : ''}`,
   });
   return session.url;
 }
@@ -713,6 +721,7 @@ export async function confirmedPurchase(userId: string, sessionId: string) {
     ),
     pricing_variant: purchasedVariant(purchase.packId),
     transaction_id: purchase.id,
+    issued_credits: purchase.credits,
     value: purchase.amountCents / 100,
     currency: purchase.currency.toUpperCase(),
     items: [{ item_id: purchase.packId, quantity: 1, price: purchase.amountCents / 100 }],

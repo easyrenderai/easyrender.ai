@@ -103,7 +103,7 @@ Commence par les cinq qui obtiennent la meilleure note. En général, ce sont un
 
 Teste ensuite les voies avant de t’engager. Fais passer un même produit par deux d’entre elles, par exemple un scan au téléphone et un modèle image vers 3D de la même lampe à poser, et compare-les sur un téléphone. Tu en apprendras plus qu’avec n’importe quel tableau de fonctionnalités.
 
-Pour un grand catalogue, regarde les options d’envoi par lots et le prix par modèle. easyrender te permet de déposer une série de photos de catalogue dans une bibliothèque, de contrôler un aperçu gratuit pour chacune, et de ne construire que celles qui sont justes.
+Pour un grand catalogue, compare les options de traitement par lots et le prix par modèle. Commence par un produit dans Easy Render. L’aperçu est gratuit dans la limite de ton quota quotidien. Lance la création du modèle 3D si le résultat te convient.
 
 ## Comment ajouter la 3D à une boutique, étape par étape ?
 

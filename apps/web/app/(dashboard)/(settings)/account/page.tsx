@@ -10,9 +10,10 @@ import { MailingPreferences } from '@/components/mailing-preferences';
 import { SignOutButton } from '@/components/sign-out-button';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DEFAULT_LOCALE, isRoutableLocale } from '@/i18n/config';
 import { currentUser } from '@/lib/actor';
-import en from '@/messages/en.json';
-import es from '@/messages/es.json';
+import { authProjectPath, localizedSignInPath } from '@/lib/app-locale';
+import { authServiceCopy } from '@/lib/auth-service-copy';
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata(): Promise<Metadata> {
@@ -20,10 +21,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('metaTitle') };
 }
 
-export default async function AccountPage() {
+export default async function AccountPage({ searchParams }: PageProps<'/account'>) {
   const user = await currentUser();
-  if (!user) redirect('/sign-in?next=/account');
-  const locale = (await getLocale()) === 'es' ? 'es' : 'en';
+  const current = await getLocale();
+  const locale = isRoutableLocale(current) ? current : DEFAULT_LOCALE;
+  const project = authProjectPath((await searchParams).next);
+  if (!user) redirect(localizedSignInPath(locale, project ?? '/account'));
+  if (project) redirect(`${project}?locale=${locale}`);
   const [balance, billing, t, format] = await Promise.all([
     getBalance(user.id),
     getBillingStatus(user.id),
@@ -63,7 +67,7 @@ export default async function AccountPage() {
         email={user.email}
         isVerified={user.emailVerified}
         isAvailable={serviceEmailAvailable()}
-        copy={(locale === 'es' ? es : en).AuthService}
+        copy={authServiceCopy[locale]}
         locale={locale}
       />
       <MailingPreferences userId={user.id} />

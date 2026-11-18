@@ -8,6 +8,7 @@ import { SiteMenu } from '@/components/site-menu';
 import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
 import { currentUser } from '@/lib/actor';
+import { localizedAuthPath } from '@/lib/app-locale';
 import { isPublished, ROUTES } from '@/lib/seo/routes';
 import { siteNavigation } from '@/lib/site-navigation';
 
@@ -21,6 +22,7 @@ export async function SiteHeader() {
     getTranslations('ApiLanding'),
   ]);
   const home = ROUTES.home.paths[locale as Locale];
+  const signIn = localizedAuthPath(locale, '/sign-in');
   const nav = siteNavigation(locale as Locale);
   // Pricing falls back to the home anchor; unpublished integration pages are filtered above.
   const navHref = (item: (typeof nav)[number]) => {
@@ -33,8 +35,8 @@ export async function SiteHeader() {
   };
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* One row at every width: section links only from xl, sign-in always visible,
-          the language dropdown always, signed in or not. Whatever is hidden moves into the menu, so nothing is cut off at 320px. */}
+      {/* One row at every width: members always see Dashboard; visitors find sign-in
+          in the phone menu. Section links appear from xl. */}
       <div className="relative mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-4">
           <Link
@@ -60,8 +62,8 @@ export async function SiteHeader() {
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <LocaleSwitcher />
-          <Button variant="ghost" size="sm" className="max-sm:hidden" asChild>
-            <Link href={user ? '/account' : '/sign-in'}>{t(user ? 'account' : 'signIn')}</Link>
+          <Button variant="ghost" size="sm" className={user ? undefined : 'max-sm:hidden'} asChild>
+            <Link href={user ? '/dashboard' : signIn}>{t(user ? 'dashboard' : 'signIn')}</Link>
           </Button>
           <HeaderConnect
             locale={locale as Locale}
@@ -69,7 +71,6 @@ export async function SiteHeader() {
             suffix={t('connectSuffix')}
             apiLabel={apiT('headerCta')}
             uploadLabel={t('upload')}
-            dashboardLabel={t('dashboard')}
             isSignedIn={Boolean(user)}
           />
           <SiteMenu openLabel={t('menuOpen')} closeLabel={t('menuClose')}>
@@ -86,10 +87,12 @@ export async function SiteHeader() {
                 </HeaderNavItem>
               ))}
             </nav>
-            {/* Phones: sign-in moves here, because translated labels push the header row past the screen. */}
-            <Button variant="outline" className="mt-2 sm:hidden" asChild>
-              <Link href={user ? '/account' : '/sign-in'}>{t(user ? 'account' : 'signIn')}</Link>
-            </Button>
+            {/* Members already have Dashboard in the phone's visible header row. */}
+            {!user ? (
+              <Button variant="outline" className="mt-2 sm:hidden" asChild>
+                <Link href={signIn}>{t('signIn')}</Link>
+              </Button>
+            ) : null}
           </SiteMenu>
         </div>
       </div>

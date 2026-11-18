@@ -2,7 +2,9 @@
 
 import type { UpscaleView } from '@easyrender/core';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { useActivationError } from '@/lib/activation-errors';
 import { upscalePollInterval } from '@/lib/upscale-polling';
 
 export type UpscaleTarget =
@@ -11,6 +13,8 @@ export type UpscaleTarget =
 
 // The owner's enlargements of one render or one views set, kept current while any is running.
 export function useUpscales(filter: { renderId?: string; viewSetId?: string }, isEnabled: boolean) {
+  const t = useTranslations('Upscale');
+  const localizedError = useActivationError();
   const query = filter.renderId
     ? `renderId=${encodeURIComponent(filter.renderId)}`
     : `viewSetId=${encodeURIComponent(filter.viewSetId ?? '')}`;
@@ -45,17 +49,17 @@ export function useUpscales(filter: { renderId?: string; viewSetId?: string }, i
         data as UpscaleView,
         ...previous.filter((row) => row.id !== data.id),
       ]);
-    } else setError(data?.error ?? fallback);
+    } else setError(localizedError(data, data?.code === 'upstream' ? t('refunded') : fallback));
     setBusyKey(null);
   }
 
   return { rows, busyKey, error, start };
 }
 
-// The newest enlargement that is running or finished for one picture.
+// The newest enlargement of one picture, including a terminal failure.
 export function latestUpscale(
   rows: UpscaleView[],
   match: (row: UpscaleView) => boolean,
 ): UpscaleView | null {
-  return rows.find((row) => row.status !== 'failed' && match(row)) ?? null;
+  return rows.find(match) ?? null;
 }

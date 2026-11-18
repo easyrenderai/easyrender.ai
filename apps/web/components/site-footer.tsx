@@ -3,6 +3,7 @@ import { BrandMark } from '@/components/brand-mark';
 import { SiteLink as Link } from '@/components/site-link';
 import { Separator } from '@/components/ui/separator';
 import type { Locale } from '@/i18n/config';
+import { localizedAuthPath } from '@/lib/app-locale';
 import { isPublished, ROUTES } from '@/lib/seo/routes';
 
 // Links stay inside the visitor's language. The only way across is the language picker, which
@@ -51,7 +52,11 @@ type FooterLink = (typeof COLUMNS)[number]['links'][number];
 /** The URL of a footer link in this language, or null when that page is not published in it. */
 function hrefFor(link: FooterLink, locale: Locale, home: string): string | null {
   if ('hash' in link) return `${home}${link.hash}`;
-  if ('href' in link) return link.href;
+  if ('href' in link) {
+    if (link.href === '/sign-in' || link.href === '/sign-up')
+      return localizedAuthPath(locale, link.href);
+    return link.href;
+  }
   if (link.route === 'mcp' && !isPublished('mcp', locale)) return `${home}#connect`;
   return isPublished(link.route, locale) ? ROUTES[link.route].paths[locale] : null;
 }

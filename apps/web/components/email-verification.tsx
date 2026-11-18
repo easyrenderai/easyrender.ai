@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { HTML_LANG, type Locale } from '@/i18n/config';
 import { authClient } from '@/lib/auth-client';
 import type en from '@/messages/en.json';
 
@@ -17,7 +18,7 @@ export function EmailVerification({
   isVerified: boolean;
   isAvailable: boolean;
   copy: typeof en.AuthService;
-  locale: 'es' | 'en';
+  locale: Locale;
 }) {
   const [isBusy, setIsBusy] = useState(false);
   const [isRequested, setIsRequested] = useState(false);
@@ -48,7 +49,7 @@ export function EmailVerification({
     }
   }
   return (
-    <Card lang={locale}>
+    <Card lang={HTML_LANG[locale]}>
       <CardHeader>
         <CardTitle>{copy.verificationTitle}</CardTitle>
       </CardHeader>
