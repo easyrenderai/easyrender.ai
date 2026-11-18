@@ -95,6 +95,8 @@ export function ProductViewsDetail({
         ),
       );
     }
+    // Credits may have moved (charge or refund). The header balance is the server read.
+    if (response) router.refresh();
     setIsBusy(false);
   }
 

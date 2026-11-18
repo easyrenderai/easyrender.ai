@@ -146,8 +146,11 @@ chrome accents. Chart series also use labels, legends and dashed previous-period
   `Resizable`, widths in pixels, saved per browser), snap shut when dragged below their minimum,
   and toggle from the top bar. Marketing pages use the site header and footer (`site-chrome.tsx`).
 - Settings are full pages with no drawers: Account, Credits and Connectors, linked by one row of
-  tabs and reached from the Account rail item. The credit balance is shown only there, never in
-  the top bar or the rail.
+  tabs and reached from the Account rail item. The current balance is also in the top bar of every
+  signed-in page: a pill on the account menu, and that same balance as a link to Credits inside the
+  menu. Below the `sm` breakpoint the marketing header keeps the balance in the phone menu, because
+  that row has no room for another control. The app shell shows a compact number there. The rail
+  does not repeat it.
 - The rail peek is a shadcn `HoverCard`: short delays, closes on click and navigation, and never
   opens for the active item.
 - Product pages sit in a centred column inside that shell. Do not choose columns from viewport

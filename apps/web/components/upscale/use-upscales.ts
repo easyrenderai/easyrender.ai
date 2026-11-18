@@ -2,6 +2,7 @@
 
 import type { UpscaleView } from '@easyrender/core';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useActivationError } from '@/lib/activation-errors';
@@ -15,6 +16,7 @@ export type UpscaleTarget =
 export function useUpscales(filter: { renderId?: string; viewSetId?: string }, isEnabled: boolean) {
   const t = useTranslations('Upscale');
   const localizedError = useActivationError();
+  const router = useRouter();
   const query = filter.renderId
     ? `renderId=${encodeURIComponent(filter.renderId)}`
     : `viewSetId=${encodeURIComponent(filter.viewSetId ?? '')}`;
@@ -50,6 +52,8 @@ export function useUpscales(filter: { renderId?: string; viewSetId?: string }, i
         ...previous.filter((row) => row.id !== data.id),
       ]);
     } else setError(localizedError(data, data?.code === 'upstream' ? t('refunded') : fallback));
+    // A completed upscale charges or refunds. The header balance is the server read.
+    if (response) router.refresh();
     setBusyKey(null);
   }
 

@@ -1,5 +1,6 @@
 import { connection } from 'next/server';
 import { getLocale, getTranslations } from 'next-intl/server';
+import { AccountCreditsLink, AccountMenu } from '@/components/account-menu';
 import { BrandMark } from '@/components/brand-mark';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { HeaderConnect, HeaderNavItem } from '@/components/site-header-links';
@@ -9,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
 import { currentUser } from '@/lib/actor';
 import { localizedAuthPath } from '@/lib/app-locale';
+import { loadHeaderAccount } from '@/lib/header-account';
 import { isPublished, ROUTES } from '@/lib/seo/routes';
 import { siteNavigation } from '@/lib/site-navigation';
 
@@ -16,10 +18,11 @@ export async function SiteHeader() {
   // Per-request: the header reads the session, so no page (404 included) is prerendered against the database.
   await connection();
   const user = await currentUser().catch(() => null);
-  const [t, locale, apiT] = await Promise.all([
+  const [t, locale, apiT, account] = await Promise.all([
     getTranslations('Header'),
     getLocale(),
     getTranslations('ApiLanding'),
+    user ? loadHeaderAccount(user.id) : Promise.resolve(null),
   ]);
   const home = ROUTES.home.paths[locale as Locale];
   const signIn = localizedAuthPath(locale, '/sign-in');
@@ -73,7 +76,14 @@ export async function SiteHeader() {
             uploadLabel={t('upload')}
             isSignedIn={Boolean(user)}
           />
+          {account ? <AccountMenu placement="marketing" copy={account} /> : null}
           <SiteMenu openLabel={t('menuOpen')} closeLabel={t('menuClose')}>
+            {account ? (
+              <AccountCreditsLink
+                label={account.balanceLabel ?? account.creditsLinkLabel}
+                className="sm:hidden"
+              />
+            ) : null}
             <nav aria-label={t('sections')} className="flex flex-col">
               {nav.map((item) => (
                 <HeaderNavItem

@@ -14,17 +14,27 @@ import pt from '@/messages/pt.json';
 // row. These budgets keep a later copy change from overflowing it again without a new browser
 // check. Headroom with the dropdown: the phone CTA has 36px left at 320px (de, 15 characters),
 // the full CTA 219px at 768px (fr), the desktop row 155px at 1280px (pt, 78). Section links stay
-// at xl: at 1024px they would leave pt only 27px. Signed in, the row is the dropdown, Dashboard and
-// the menu below 640px (the balance is no longer shown in the header), measured the same way: fr "Tableau de
-// bord" leaves 5px at 320px and 8px at 414px, where the wordmark shows, and the desktop row 170px
-// at 1280px. Raising a budget means re-measuring first.
+// at xl: at 1024px they would leave pt only 27px. Signed in, the row below 640px is the dropdown,
+// Dashboard and the menu: the balance stays in that menu, not in the row, because fr "Tableau de
+// bord" leaves 5px at 320px and 8px at 414px, where the wordmark shows. From sm the account pill
+// is in the row (a number until md, then the plural balance). The desktop row had 170px left at
+// 1280px before that pill; the plural word is counted below and the formatted number uses what
+// remains. Raising a budget means re-measuring first.
 const MAX_PHONE_CTA = 18; // Header.connect, the only label between the language dropdown and the menu below 640px
 const MAX_FULL_CTA = 22; // Header.connect + " " + Header.connectSuffix, from 640px
 const MAX_DESKTOP_ROW = 80; // every Header.nav label + signIn + the full CTA, from 1280px
 const MAX_DASHBOARD = 15; // Header.dashboard, next to the language dropdown below 640px when signed in
-const MAX_SIGNED_IN_ROW = 75; // every Header.nav label + dashboard, from 1280px
+const MAX_SIGNED_IN_ROW = 75; // every Header.nav label + dashboard + the creditsBalance word, from 1280px
 
 const MESSAGES = { en, es, de, fr, it: itMessages, pt };
+
+// The "other" branch of Header.creditsBalance, without the number. That word is what the pill
+// adds to the signed-in desktop row.
+function pluralOther(template: string): string {
+  const match = template.match(/other \{([^}]*)\}/);
+  if (!match?.[1]) throw new Error(`No plural other in ${template}`);
+  return match[1].replaceAll('#', '').trim();
+}
 
 describe('the header labels', () => {
   it('keeps integration anchors on the current page after navigation', () => {
@@ -62,13 +72,17 @@ describe('the header labels', () => {
 
   it.each(LOCALES)('%s fits the measured signed-in header widths', (locale) => {
     const header = MESSAGES[locale].Header;
+    const balance = pluralOther(header.creditsBalance);
     const row =
       siteNavigation(locale)
         .map(({ key }) => header.nav[key])
-        .join('') + header.dashboard;
+        .join('') +
+      header.dashboard +
+      balance;
     expect(header.dashboard.length, `${locale}: Header.dashboard`).toBeLessThanOrEqual(
       MAX_DASHBOARD,
     );
+    expect(balance.length, `${locale}: Header.creditsBalance`).toBeLessThanOrEqual(12);
     expect(row.length, `${locale}: signed-in desktop row`).toBeLessThanOrEqual(MAX_SIGNED_IN_ROW);
   });
 });
