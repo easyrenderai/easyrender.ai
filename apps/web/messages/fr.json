@@ -2913,6 +2913,7 @@
       "preheader": "Comparez votre modèle à votre photo de produit.",
       "body": "Ouvrez votre modèle et vérifiez sa silhouette, ses proportions et ses matériaux en le comparant à la photo d’origine.",
       "action": "Voir mon modèle",
+      "previewAlt": "Aperçu de votre modèle 3D",
       "lang": "fr",
       "footerReason": "Un message à propos de votre compte ou projet Easy Render. Pour obtenir de l’aide, répondez à cet e-mail."
     },

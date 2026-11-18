@@ -2913,6 +2913,7 @@
       "preheader": "Vergleiche dein Modell mit deinem Produktfoto.",
       "body": "Öffne dein 3D-Modell und vergleiche die Form, Proportionen und Oberflächen mit deinem Originalfoto.",
       "action": "Mein Modell ansehen",
+      "previewAlt": "Vorschau deines 3D-Modells",
       "lang": "de",
       "footerReason": "Eine Nachricht zu deinem Easy Render-Konto oder Projekt. Wenn du Hilfe brauchst, antworte auf diese E-Mail."
     },

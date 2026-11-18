@@ -28,6 +28,12 @@ export type MailPayload = {
   text: string;
   html: string;
   headers: Record<string, string>;
+  attachments?: {
+    filename: string;
+    content: string;
+    content_type: 'image/jpeg';
+    content_id: string;
+  }[];
 };
 export type MailingConfig = ResendConfig & { secret: string };
 /** Fail closed in previews, local development, or incomplete sender setup. */
