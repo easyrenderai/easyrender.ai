@@ -3,8 +3,8 @@
 group: n8n-image-to-3d-workflow
 title: "Image to 3D in n8n: build a workflow with the API"
 description: "Connect n8n to an image-to-3D API. Create a preview, save the job ID, approve the build and download the GLB with bounded polling and safe retries."
-date: 2026-11-19
-updated: 2026-11-17
+date: 2026-11-26
+updated: 2026-11-26
 keyword: n8n image to 3d workflow
 cta: Test one product photo with the free preview, then connect the reviewed result to your n8n workflow.
 ---

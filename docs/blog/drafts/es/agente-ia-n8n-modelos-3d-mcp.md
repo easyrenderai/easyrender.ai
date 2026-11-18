@@ -3,8 +3,8 @@
 group: n8n-ai-agent-3d-mcp
 title: "Agente de IA en n8n para crear modelos 3D con MCP"
 description: "Conecta un agente de n8n a herramientas 3D mediante MCP. Selecciona sus permisos, revisa la previsualización y aprueba el gasto antes de construir."
-date: 2026-11-20
-updated: 2026-11-17
+date: 2026-12-02
+updated: 2026-12-02
 keyword: agente ia n8n modelos 3d mcp
 cta: Dale a tu agente una foto de producto y pide una previsualización gratis antes de autorizar el modelo 3D descargable.
 ---

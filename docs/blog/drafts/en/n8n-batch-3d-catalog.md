@@ -3,8 +3,8 @@
 group: n8n-batch-3d-catalog
 title: "Automate a 3D product catalog in n8n without duplicates"
 description: "Turn catalog rows into reviewed 3D models with n8n. Track SKU versions, resume jobs, bound spending and deliver files without duplicating paid work."
-date: 2026-11-21
-updated: 2026-11-17
+date: 2026-12-09
+updated: 2026-12-09
 keyword: n8n batch 3d product catalog
 cta: Validate one catalog photo with the free preview before authorizing the products you want to build in 3D.
 ---

@@ -2,7 +2,7 @@
 
 ## Intent and goals
 
-- Proposed publication: 2026-11-19, subject to editorial approval, creatives and a successful production release. This is not a scheduled live post.
+- Proposed publication: 2026-11-26, subject to editorial approval, creatives and a successful production release. This is not a scheduled live post.
 - English: `n8n image to 3d workflow`. Spanish: `integrar 3d en n8n`. SV/KD: **ND, not measured for these exact queries**. Selected for product fit and publicly observable workflow intent, not a claimed keyword volume.
 - Goal: Connect HTTP Request nodes to the deployed REST contract; complete a preview and deliberately authorized build without duplicate requests.
 - Measure: completed reviewed outputs per source SKU, manual interventions, duplicate jobs and credits per accepted deliverable. No claimed uplift or execution time.

@@ -3,8 +3,8 @@
 group: n8n-image-to-3d-workflow
 title: "Cómo integrar 3D en n8n con una API de imagen a 3D"
 description: "Conecta n8n a una API de imagen a 3D: crea la previsualización, guarda el ID, aprueba el modelo y descarga el GLB sin duplicar peticiones de pago."
-date: 2026-11-19
-updated: 2026-11-17
+date: 2026-11-26
+updated: 2026-11-26
 keyword: integrar 3d en n8n
 cta: Prueba una foto de producto con la previsualización gratis y conecta después el resultado revisado a tu flujo de n8n.
 ---
