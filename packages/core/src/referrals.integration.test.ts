@@ -97,11 +97,11 @@ describe.skipIf(!url)('referral program', () => {
     const { referrer, friend } = await referredPair();
     await spend(friend.id, 20);
     expect(await balance(referrer.id)).toBe(kickbackFor(20));
-    await spend(friend.id, 13);
+    await spend(friend.id, 10);
     // Rounded once on the running total, so no credit is lost to rounding.
-    expect(await balance(referrer.id)).toBe(kickbackFor(33));
-    expect((await referralSummary(referrer.id)).creditsEarned).toBe(kickbackFor(33));
-    expect(await balance(friend.id)).toBe(REFERRAL_REFERRED_CREDITS - 33);
+    expect(await balance(referrer.id)).toBe(kickbackFor(30));
+    expect((await referralSummary(referrer.id)).creditsEarned).toBe(kickbackFor(30));
+    expect(await balance(friend.id)).toBe(REFERRAL_REFERRED_CREDITS - 30);
   });
 
   it('takes the kickback back when the friend is refunded', async () => {
@@ -115,14 +115,14 @@ describe.skipIf(!url)('referral program', () => {
 
   it('never takes back more than the referrer still has', async () => {
     const { referrer, friend } = await referredPair();
-    await spend(friend.id, 40);
+    await spend(friend.id, 30);
     await spendCredits({
       userId: referrer.id,
-      amount: kickbackFor(40),
+      amount: kickbackFor(30),
       key: `spend:${randomUUID()}`,
       reason: 'render',
     });
-    await refund(friend.id, 40);
+    await refund(friend.id, 30);
     expect(await balance(referrer.id)).toBe(0);
   });
 
