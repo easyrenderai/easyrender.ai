@@ -1,3 +1,4 @@
+export { type ColorMatchReport, matchColorToPhoto } from './color-match';
 export { type CorrectionReport, correctFidelity } from './correction';
 export { assertGeometryUnchanged, geometryHash } from './glb-document';
 export { improveMaterials } from './materials';

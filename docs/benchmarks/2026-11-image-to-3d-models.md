@@ -80,6 +80,26 @@ settings (`fishwowater/trellis2`: `pipeline_type`, `decimation_target`, `texture
   since), so the four prediction ids may still be running on Replicate and should be cancelled in its
   dashboard.
 
+## TRELLIS v1 settings and colour (2026-11-18)
+
+Question: can more settings on TRELLIS v1 add detail, and can the harness fix its dull colours?
+Nine builds on Replicate (armchair, swivel chair, coffee table) with `mesh_simplify` 0.90 (more
+geometry kept), 25 sampler steps in both stages instead of 12, and both together. The photo alone was
+the input, as in the other runs. Results: [data](data/2026-11-18-trellis1-settings.json).
+
+- **Detail:** no visible gain. Close-ups of the seat tufting and the wood grain look the same as the
+  baseline ([armchair](images/2026-11-18-trellis1-settings/grid-armchair.png),
+  [coffee table](images/2026-11-18-trellis1-settings/grid-coffee-table.png); top left is today's
+  settings). The 25-step builds only moved the colour towards red and dark. The limit is what the
+  model reads from the photo, not these settings.
+- **Colour:** the baseline texture is darker than the photo on two of three products (the armchair
+  most). The per-texel correction (`correctFidelity`) skipped all three of these builds, so nothing
+  corrected them. `matchColorToPhoto` scales the base-colour texture towards the photo's object colour
+  when that pass does not run ([armchair before and after](images/2026-11-18-trellis1-settings/armchair-color-match.png),
+  top row before). It is closer to the photo but not an exact match.
+- **Detail needs another model:** TRELLIS.2 is the only candidate that could add texture detail, and
+  it needs a host that finishes (see above).
+
 ## Decision and what is not known
 
 - Production stays on TRELLIS v1 with the sheet cells. A render sells for 32 credits ($0.32) at a

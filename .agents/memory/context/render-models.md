@@ -26,3 +26,9 @@ whether its settings fix that is being tested.
 **How to apply:** change a model only after a bake-off (`sheet-bakeoff.yml`, which costs real
 credits). Keep `costUsd` in `models.ts` in step with `pricing.ts`; credits follow from the pricing
 rule.
+
+**TRELLIS v1 colour and detail (2026-11-18):** extra settings (`mesh_simplify`, sampler steps) did not
+add visible detail, so v1 stays as is and detail goes to the TRELLIS.2 tier. Its textures run dark
+and the per-texel correction often skips, so `matchColorToPhoto` runs as a fallback.
+**Why:** colour drift is a model habit that a cheap texture scale fixes; detail is a model limit.
+**How to apply:** do not spend on v1 setting sweeps again; judge new detail work on TRELLIS.2.

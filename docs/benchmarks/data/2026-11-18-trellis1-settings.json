@@ -1,0 +1,83 @@
+[
+  {
+    "photo": "armchair",
+    "candidate": "v1-both",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 67.338248355,
+    "costUsd": 0.094273547697,
+    "bytes": 6198496
+  },
+  {
+    "photo": "armchair",
+    "candidate": "v1-simplify",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 41.492630575,
+    "costUsd": 0.058089682805,
+    "bytes": 5659120
+  },
+  {
+    "photo": "armchair",
+    "candidate": "v1-steps",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 45.090473023,
+    "costUsd": 0.0631266622322,
+    "bytes": 4979304
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "v1-both",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 62.359006319,
+    "costUsd": 0.0873026088466,
+    "bytes": 5018540
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "v1-simplify",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 59.813686285,
+    "costUsd": 0.083739160799,
+    "bytes": 4959264
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "v1-steps",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 56.15040908,
+    "costUsd": 0.078610572712,
+    "bytes": 4507548
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "v1-both",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 51.791278757,
+    "costUsd": 0.0725077902598,
+    "bytes": 6575788
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "v1-simplify",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 49.318210494,
+    "costUsd": 0.0690454946916,
+    "bytes": 6519164
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "v1-steps",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 43.206614266,
+    "costUsd": 0.060489259972400004,
+    "bytes": 5919856
+  }
+]

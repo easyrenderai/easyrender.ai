@@ -1,5 +1,6 @@
 import sharp from 'sharp';
 import { deltaE2000, type Lab, rgbToLab } from './color';
+import type { ColorMatchReport } from './color-match';
 import type { CorrectionReport } from './correction';
 import { detectMaterial, isMetalColor } from './detection';
 import { geometryHash } from './glb-document';
@@ -18,6 +19,8 @@ export type FidelityReport = {
   thresholds: typeof FIDELITY_THRESHOLDS;
   geometryHash?: string;
   correction?: CorrectionReport;
+  // The whole-object colour pass that runs when the per-texel correction was skipped or rejected.
+  colorMatch?: ColorMatchReport;
   camera?: {
     azimuth: number;
     elevation: number;
