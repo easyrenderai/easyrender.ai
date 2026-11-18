@@ -262,7 +262,7 @@ const SOCIAL_HOSTS = [
   'threads.com',
 ];
 export function referrerHost(value?: string | null): string {
-  if (!value) return '';
+  if (!value?.trim() || value.trim().toLowerCase() === '$direct') return '';
   try {
     return new URL(value.includes('://') ? value : `https://${value}`).hostname
       .toLowerCase()
@@ -309,6 +309,7 @@ export function channel(input: {
   if (
     !source &&
     !medium &&
+    !matchesHost(host, ['accounts.google.com']) &&
     (matchesHost(host, SEARCH_HOSTS) || /(^|\.)google\.[a-z.]+$/.test(host))
   )
     return 'organicSearch';

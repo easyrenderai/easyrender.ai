@@ -67,6 +67,20 @@ describe('periods and Madrid calendar', () => {
   });
 });
 describe('channels from tracking closed lists', () => {
+  it('treats PostHog direct sentinels as direct, without overriding paid campaigns', () => {
+    expect(channel({ referrer: '$direct' })).toBe('direct');
+    expect(channel({ referrer: ' $direct ' })).toBe('direct');
+    expect(channel({ referrer: '$direct', utm_source: 'google', utm_medium: 'cpc' })).toBe(
+      'paidSearch',
+    );
+  });
+  it('does not label account login as organic search', () => {
+    expect(channel({ referrer: 'https://accounts.google.com/o/oauth2' })).toBe('referral');
+    expect(
+      channel({ referrer: 'https://accounts.google.com', utm_source: 'google', utm_medium: 'cpc' }),
+    ).toBe('paidSearch');
+    expect(channel({ referrer: 'https://www.google.es/search' })).toBe('organicSearch');
+  });
   it.each(AI_HOSTS)('recognizes AI host %s', (host) =>
     expect(channel({ referrer: `https://${host}/chat` })).toBe('ai'),
   );
