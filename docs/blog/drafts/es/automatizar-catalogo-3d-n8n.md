@@ -3,8 +3,8 @@
 group: n8n-batch-3d-catalog
 title: "Automatiza tu catálogo 3D con n8n sin duplicar trabajos"
 description: "Convierte filas de catálogo en modelos 3D con n8n. Guarda versiones e identificadores, recupera trabajos y controla el gasto antes de entregar archivos."
-date: 2026-11-21
-updated: 2026-11-17
+date: 2026-12-09
+updated: 2026-12-09
 keyword: automatizar catalogo 3d n8n
 cta: Valida una foto del catálogo con la previsualización gratis antes de autorizar los productos que quieres construir en 3D.
 ---

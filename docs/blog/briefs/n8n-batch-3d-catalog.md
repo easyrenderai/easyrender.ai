@@ -2,7 +2,7 @@
 
 ## Intent and goals
 
-- Proposed publication: 2026-11-21, subject to editorial approval, creatives and a successful production release. This is not a scheduled live post.
+- Proposed publication: 2026-12-09, subject to editorial approval, creatives and a successful production release. This is not a scheduled live post.
 - English: `n8n batch 3d product catalog`. Spanish: `automatizar catalogo 3d n8n`. SV/KD: **ND, not measured for these exact queries**. Selected for product fit and publicly observable workflow intent, not a claimed keyword volume.
 - Goal: Process product rows with stable identifiers, bounded work and recovery after interruptions.
 - Measure: completed reviewed outputs per source SKU, manual interventions, duplicate jobs and credits per accepted deliverable. No claimed uplift or execution time.

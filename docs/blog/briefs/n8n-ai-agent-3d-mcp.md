@@ -2,7 +2,7 @@
 
 ## Intent and goals
 
-- Proposed publication: 2026-11-20, subject to editorial approval, creatives and a successful production release. This is not a scheduled live post.
+- Proposed publication: 2026-12-02, subject to editorial approval, creatives and a successful production release. This is not a scheduled live post.
 - English: `n8n ai agent 3d mcp`. Spanish: `agente ia n8n modelos 3d mcp`. SV/KD: **ND, not measured for these exact queries**. Selected for product fit and publicly observable workflow intent, not a claimed keyword volume.
 - Goal: Let an agent select a photo and inspect a preview while keeping spend and publishing outside its unrestricted tools.
 - Measure: completed reviewed outputs per source SKU, manual interventions, duplicate jobs and credits per accepted deliverable. No claimed uplift or execution time.

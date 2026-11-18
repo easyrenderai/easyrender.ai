@@ -3,8 +3,8 @@
 group: n8n-ai-agent-3d-mcp
 title: "Build an n8n AI agent for 3D models with MCP"
 description: "Connect an n8n AI agent to 3D tools through MCP. Select tools, review previews and keep paid builds behind explicit approval and credit limits."
-date: 2026-11-20
-updated: 2026-11-17
+date: 2026-12-02
+updated: 2026-12-02
 keyword: n8n ai agent 3d mcp
 cta: Give your agent one product photo and request a free preview before authorizing a downloadable 3D model.
 ---
