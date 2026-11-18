@@ -3,7 +3,7 @@
 ## Intent and goals
 
 - Proposed publication: 2026-11-18, subject to editorial approval, creatives and a successful production release. This is not a scheduled live post.
-- English: `n8n product pages images 3d`. Spanish: `fichas de producto con n8n`. SV/KD: **ND, not measured for these exact queries**. Selected for product fit and publicly observable workflow intent, not a claimed keyword volume.
+- Calendar targets: EN-US `n8n product description` (0–10 searches/month); ES-ES `n8n fichas de producto` (ND). The English term captures part of the workflow. Search volume for the combined image and 3D use case remains unknown.
 - Goal: Build one reviewed listing package from verified product facts, generated views and a downloadable GLB.
 - Measure: completed reviewed outputs per source SKU, manual interventions, duplicate jobs and credits per accepted deliverable. No claimed uplift or execution time.
 
@@ -43,6 +43,16 @@ Reviewed 17 November 2026. Facts are paraphrased; links are authoritative refere
 - https://www.khronos.org/gltf/ — glTF/GLB is a model delivery format.
 
 ## SERP gaps
+
+Consulta del 18 de noviembre de 2026 con «n8n product description» y variantes españolas de «n8n fichas de producto». La muestra es de búsqueda web general, sin un ranking geolocalizado por país.
+
+| Referencia revisada                                                                                                               | Qué resuelve                                                  | Qué debe aportar esta pieza                                           |
+| --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------- |
+| [n8n 5617](https://n8n.io/workflows/5617-generating-seo-optimized-product-descriptions-for-shopify-and-google-shopping-using-ai/) | Texto para Shopify y Google a partir de una hoja y una imagen | Añadir selección de vistas y revisión antes de adjuntar un GLB        |
+| [n8n 13673](https://n8n.io/workflows/13673-generate-e-commerce-product-descriptions-from-a-form-with-google-gemini/)              | Descripción y metadatos desde un formulario con Google Gemini | Entregar una ficha de borrador ligada a un SKU y a recursos revisados |
+| [n8n 10008](https://n8n.io/workflows/10008-generate-shopify-product-listings-from-images-with-gemini-ai-and-airtable/)            | Crear fichas en Shopify desde imágenes y Airtable             | Separar preparación, aprobación de gasto y publicación en el CMS      |
+
+Los resultados indican intención de crear o completar la ficha. Para resolverla, el comienzo debe explicar cómo salen el texto, las fotos y el modelo del mismo SKU. El artículo técnico sobre integración REST conserva los pasos de infraestructura y recuperación en detalle.
 
 Focused search review, not an exhaustive top-ten ranking audit or authenticated volume study. Relevant primary marketplace examples reviewed:
 

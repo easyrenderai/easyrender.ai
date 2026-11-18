@@ -5,7 +5,7 @@ title: "Fichas de producto con n8n: imágenes, texto y 3D"
 description: "Prepara fichas de producto con n8n: datos verificados, imágenes, un modelo 3D revisado y un borrador en tu tienda, con aprobación antes de gastar."
 date: 2026-11-18
 updated: 2026-11-18
-keyword: fichas de producto con n8n
+keyword: n8n fichas de producto
 cta: Empieza con la foto de un producto. Revisa la previsualización gratis antes de decidir si quieres generar su modelo 3D descargable.
 ---
 

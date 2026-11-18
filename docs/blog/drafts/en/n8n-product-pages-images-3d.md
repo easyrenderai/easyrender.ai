@@ -5,7 +5,7 @@ title: "Build product pages with n8n: images, copy and 3D"
 description: "Build a product-page workflow in n8n: verified facts, image generation, a reviewed 3D model and a CMS draft, with approval before spending."
 date: 2026-11-18
 updated: 2026-11-18
-keyword: n8n product pages images 3d
+keyword: n8n product description
 cta: Start with one product photo. Review the free preview before deciding whether to build its downloadable 3D model.
 ---
 
