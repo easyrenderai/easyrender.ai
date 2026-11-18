@@ -100,7 +100,8 @@ const isGranted = await grantCredits({
 say(isGranted ? `Granted ${credits} credits` : 'Initial grant already applied, nothing added');
 
 const created = await createApiKey(user.id, 'agent-evals', {
-  scopes: ['read', 'write', 'spend'],
+  // share is needed because the evals make each render private (PATCH isPublic).
+  scopes: ['read', 'write', 'spend', 'share'],
   creditLimit,
 });
 say(
