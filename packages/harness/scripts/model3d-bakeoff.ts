@@ -4,7 +4,7 @@
 // with the single-image candidates. Shape and texture are judged by a person looking at the GLBs.
 //
 // Usage: REPLICATE_API_TOKEN=... bun packages/harness/scripts/model3d-bakeoff.ts --spend
-//          [--candidates=trellis1,hunyuan31,trellis2] [--photos=armchair,swivel-chair] [--out=model3d-out]
+//          [--candidates=trellis1,hunyuan31,trellis2,t2-low,t2-mid,t2-high] [--photos=armchair,swivel-chair] [--out=model3d-out]
 //
 // It spends money on Replicate, so it refuses to run without --spend.
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -59,6 +59,34 @@ const CANDIDATES: Candidate[] = [
     },
   },
 ];
+
+// TRELLIS.2 settings (fishwowater/trellis2, same version as `trellis2`). The first run used the page
+// defaults for the face count (1,000,000) and gave 31 to 36 MB GLBs. pipeline_type trades speed and
+// detail, decimation_target (100,000 to 2,000,000 faces) sets the file size, texture_size the texture.
+const trellis2Settings = (
+  pipelineType: string,
+  decimationTarget: number,
+  textureSize: number,
+): Candidate => ({
+  id: '',
+  version: '52e1ad6852599ea10ce8e257635a3c11485cba51c181ea5173e34d9b2955b226',
+  listedUsd: null,
+  usdPerSecond: A100_USD_PER_SECOND,
+  input: {
+    pipeline_type: pipelineType,
+    decimation_target: decimationTarget,
+    texture_size: textureSize,
+    generate_model: true,
+    generate_video: false,
+    randomize_seed: false,
+    seed: 42,
+  },
+});
+CANDIDATES.push(
+  { ...trellis2Settings('512', 100_000, 1024), id: 't2-low' },
+  { ...trellis2Settings('1024_cascade', 200_000, 2048), id: 't2-mid' },
+  { ...trellis2Settings('1536_cascade', 500_000, 4096), id: 't2-high' },
+);
 
 const PHOTOS = [
   'armchair',
