@@ -619,8 +619,9 @@
     "views": {
       "photo": "Fotografia",
       "3d": "3D",
-      "both": "Lado a lado"
+      "compare": "Comparar"
     },
+    "compareLabel": "Comparar foto e 3D",
     "status": {
       "drafting": "A preparar a pré-visualização",
       "preview_ready": "Pronto para 3D",
