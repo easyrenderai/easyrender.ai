@@ -31,6 +31,22 @@ Para una lámpara de sobremesa de cerámica, el resultado es un conjunto revisab
 
 La [plantilla de n8n para crear fichas en Shopify](https://n8n.io/workflows/11695-generate-product-descriptions-from-images-and-publish-to-shopify-using-ai/) sirve como referencia para la rama de texto. El 3D necesita su propio estado, revisión y entrega de archivos. Esta guía describe cómo conectarlos; no presenta resultados de una ejecución real en una tienda.
 
+## Así queda una ficha antes de pasar por n8n
+
+Usa un producto conocido para revisar la salida que quieres obtener. En este ejemplo, la foto y el GLB públicos del jarrón permiten comprobar el tipo de archivo que llegará a la ficha. Lo que sigue es una muestra de revisión de medios, con una hoja de ángulos y un modelo existentes de easyrender.
+
+![Foto original del jarrón, hoja de ángulos y captura del modelo 3D, de izquierda a derecha](../evidence/n8n-ficha-foto-vistas-modelo.jpg "Activos de ejemplo de easyrender. La hoja contiene vistas generadas. La imagen de la derecha es una captura del modelo.")
+
+| Campo a revisar           | Muestra                                               |
+| ------------------------- | ----------------------------------------------------- |
+| Identificador del ejemplo | `VASE-DEMO-01`                                        |
+| Foto de referencia        | [Abrir la foto original](/showcase/vase.jpg)          |
+| Vistas para revisar       | [Abrir la hoja de ángulos](/showcase/vase-angles.jpg) |
+| Archivo para el visor     | [Abrir el GLB de ejemplo](/showcase/vase.glb)         |
+| Estado de la ficha        | Borrador de muestra                                   |
+
+**La comprobación en este punto es enlazar los tres recursos al mismo SKU.** Abre el GLB por separado y mantén la foto original disponible para cotejar la forma y el acabado. Este material parte de activos existentes y sirve de referencia para configurar el flujo.
+
 ## ¿Qué información debe venir del catálogo?
 
 Prepara un registro con `sku`, `source_version`, `name`, `material`, `dimensions`, `image_url` y `locale`. Deja vacíos los datos desconocidos. Añade campos distintos para aprobar imágenes, gasto en 3D y publicación: un único `approved` resulta ambiguo cuando el flujo puede realizar varias acciones.
