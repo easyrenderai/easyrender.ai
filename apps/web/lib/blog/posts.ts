@@ -4,7 +4,7 @@ import { CREDIT_USD, PAYG, PRO_PLAN, RENDER_CREDITS } from '@easyrender/harness'
 import { LOCALES, type Locale, ROUTABLE_LOCALES } from '@/i18n/config';
 import { ROUTES } from '@/lib/seo/routes';
 import { isFaqHeading } from './faq';
-import { parseFrontMatter } from './frontmatter';
+import { parseContentDate, parseFrontMatter } from './frontmatter';
 
 // Posts are content files: content/blog/{locale}/{slug}.md, one file per language per post.
 //
@@ -171,11 +171,6 @@ const CONTENT_ROOT = join(process.cwd(), 'content', 'blog');
 export const postPath = (locale: Locale, slug: string): string =>
   `${ROUTES.blog.paths[locale]}/${encodeURIComponent(slug)}`;
 
-const isoDate = (value: string): string | null => {
-  const date = new Date(/^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00Z` : value);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
-};
-
 /**
  * Turns one content file into a post. Returns the reason instead of throwing so that a single
  * malformed file cannot take the whole blog down; readPosts logs it and moves on.
@@ -189,9 +184,9 @@ export function parsePost(
   for (const field of ['group', 'title', 'description', 'date'] as const) {
     if (!data[field]) return { error: `missing ${field}` };
   }
-  const date = isoDate(data.date as string);
+  const date = parseContentDate(data.date as string);
   if (!date) return { error: `invalid date "${data.date}"` };
-  const updated = data.updated ? isoDate(data.updated) : null;
+  const updated = data.updated ? parseContentDate(data.updated) : null;
   if (data.updated && !updated) return { error: `invalid updated "${data.updated}"` };
   const text = fillPrices(stripComments(body));
   if (!text) return { error: 'empty body' };

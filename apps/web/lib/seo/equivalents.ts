@@ -1,6 +1,6 @@
 import type { Locale } from '@/i18n/config';
 import { postLivePaths, readPosts } from '@/lib/blog/posts';
-import { compareLivePaths, readComparePages } from '@/lib/compare/pages';
+import { compareLivePaths, getComparePage } from '@/lib/compare/pages';
 import { isPublished, livePaths, ROUTE_KEYS, ROUTES } from './routes';
 
 export type Equivalent = { locale: Locale; path: string };
@@ -21,8 +21,8 @@ export function equivalentPaths(pathname: string, now: Date = new Date()): Equiv
   const post = findPost(path, now);
   if (post) return toList(postLivePaths(post, now));
 
-  const comparison = findComparison(path);
-  if (comparison) return toList(compareLivePaths(comparison));
+  const comparison = findComparison(path, now);
+  if (comparison) return toList(compareLivePaths(comparison, now));
 
   return toList(livePaths('home'));
 }
@@ -52,14 +52,14 @@ function findPost(path: string, now: Date): string | null {
 }
 
 /** The comparison group whose URL this is, in any language that publishes the file. */
-function findComparison(path: string): string | null {
+function findComparison(path: string, now: Date): string | null {
   for (const locale of Object.keys(ROUTES.compare.paths) as Locale[]) {
     if (!isPublished('compare', locale)) continue;
     const hub = ROUTES.compare.paths[locale];
     if (!path.startsWith(`${hub}/`)) continue;
     const slug = path.slice(hub.length + 1);
     if (!slug || slug.includes('/')) continue;
-    const match = readComparePages(locale).find((page) => page.slug === slug);
+    const match = getComparePage(slug, locale, now);
     if (match) return match.group;
   }
   return null;
