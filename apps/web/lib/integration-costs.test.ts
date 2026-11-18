@@ -41,10 +41,10 @@ vi.mock('@/components/landing', () => ({
 
 describe('integration cost disclosure', () => {
   it.each([
-    ['control', 'usd', '$0.64', '$64.00', '$5.00'],
-    ['test', 'usd', '$1.28', '$128.00', '$10.00'],
-    ['control', 'eur', '€0.64', '€64.00', '€5.00'],
-    ['test', 'eur', '€1.28', '€128.00', '€10.00'],
+    ['control', 'usd', '$0.32', '$32.00', '$5.00'],
+    ['test', 'usd', '$0.64', '$64.00', '$10.00'],
+    ['control', 'eur', '€0.32', '€32.00', '€5.00'],
+    ['test', 'eur', '€0.64', '€64.00', '€10.00'],
   ])(
     'uses the checkout offer %s in %s for the API integration',
     async (variant, currency, build, batch, minimum) => {
@@ -54,7 +54,7 @@ describe('integration cost disclosure', () => {
         expect(html).toContain(build);
         expect(html).toContain(batch);
         expect(html).toContain(minimum);
-        expect(html).toContain('64 credits for the final angle sheet');
+        expect(html).toContain('32 credits for the textured GLB, built from your preview sheet');
         expect(html).toContain('Failed 3D builds refund their credits');
         expect(html).toContain('renderCredits');
       }
@@ -64,9 +64,9 @@ describe('integration cost disclosure', () => {
   it('shows Spanish credit and currency amounts without untranslated placeholders', async () => {
     Object.assign(state, { variant: 'test', currency: 'eur' });
     const html = renderToStaticMarkup(await IntegrationCosts({ locale: 'es', kind: 'api' }));
-    expect(html).toContain('1,28');
-    expect(html).toContain('128,00');
-    expect(html).toContain('64 créditos por la hoja final');
+    expect(html).toContain('0,64');
+    expect(html).toContain('64,00');
+    expect(html).toContain('32 créditos por el GLB con textura');
     expect(html).toContain('renderCredits');
     expect(html).not.toMatch(/\{(?:price|credits|unit|count)\}/);
   });

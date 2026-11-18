@@ -20,6 +20,7 @@ a line here. Keep this map short.
   [wood](context/materials-wood.md), [metal tube](context/materials-metal-tube.md),
   [PBR values](context/materials-pbr-reference.md). Code: `packages/harness/src/materials.ts`.
 - **Material edits (owner swaps shine and tint, part pipeline next):** [material edits](context/material-edits.md).
+- **Render models and cost (sheet model, TRELLIS build, bake-off results):** [render models](context/render-models.md); results in `docs/benchmarks/`.
 - **Staged room scenes, lived-in look:** [staging rules](context/staging-lived-in-rooms.md).
 - **Upscaling (the paid Upscale action, which model and why):** [upscalers](context/upscalers.md).
 - **Issues, board, priority, status columns:** [project board](context/project-board.md).

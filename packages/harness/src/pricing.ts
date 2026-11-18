@@ -7,18 +7,21 @@ export function creditsFor(costUsd: number): number {
   return Math.ceil(Number((costUsd / (1 - MARGIN) / CREDIT_USD).toFixed(6)));
 }
 
-// The draft angle sheet (one 1K image). The free preview makes one at our cost; this is what
-// generating one later, from the library, costs. It counts toward the 3D render's price.
-export const SHEET_COST_USD = 0.034;
+// The angle sheet (one 1K image). The free preview makes one at our cost; this is what generating
+// one later, from the library, costs. It does not count toward the 3D render's price: the build
+// runs from this same sheet.
+export const SHEET_COST_USD = 0.0336;
 export const SHEET_CREDITS = creditsFor(SHEET_COST_USD);
 
-// A paid build redraws the sheet at 2K with the final model, then builds from it. That 2K sheet
-// plus a typical TRELLIS run (~60s on an A100, which is a ceiling: Replicate lists about $0.047
-// and 34s for a typical run) is what one full render costs us.
-export const FINAL_SHEET_COST_USD = 0.101;
-export const BUILD_COST_USD = 0.09;
-export const RENDER_COST_USD = FINAL_SHEET_COST_USD + BUILD_COST_USD;
+// A paid build runs TRELLIS on the preview sheet and does not draw the sheet again. 17 real
+// builds measured $0.07 to $0.13 (average $0.093) in the 2026-11-17 bake-off; Replicate lists
+// about $0.039 for a typical run. The figure is the measured average, not the list price.
+export const BUILD_COST_USD = 0.095;
+export const RENDER_COST_USD = BUILD_COST_USD;
 export const RENDER_CREDITS = creditsFor(RENDER_COST_USD);
+
+// The 2K sheet of a product views set (nine packshots are cut from it).
+export const FINAL_SHEET_COST_USD = 0.0504;
 
 // The upscaler, per output image. It is the paid Upscale action (one finished picture, a product
 // view or the angle sheet of a paid render, enlarged to print size, at a flat price because the
@@ -36,10 +39,8 @@ export const PRODUCT_VIEWS_COST_USD =
 export const PRODUCT_VIEWS_CREDITS = creditsFor(PRODUCT_VIEWS_COST_USD);
 // Polishing one view: the owner describes what is wrong and that view is drawn again.
 export const VIEW_POLISH_CREDITS = creditsFor(VIEW_REDRAW_COST_USD);
-// A 3D build from a finished set reuses its 2K sheet, so it only charges for what is left of a
-// full render: the 3D step.
-export const FINAL_SHEET_CREDITS = creditsFor(FINAL_SHEET_COST_USD);
-export const BUILD_FROM_VIEWS_CREDITS = RENDER_CREDITS - FINAL_SHEET_CREDITS;
+// A 3D build from a finished set reuses its 2K sheet: it is the same 3D step as any render.
+export const BUILD_FROM_VIEWS_CREDITS = RENDER_CREDITS;
 
 // Pay as you go: buy any number of credits at CREDIT_USD each, through one Stripe price of $0.01.
 export const PAYG = { min: 500, max: 100_000, presets: [1000, 2500, 5000, 10_000] };

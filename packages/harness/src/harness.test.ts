@@ -25,7 +25,7 @@ describe('pricing', () => {
   it('keeps a 70% margin over cost', () => {
     expect(creditsFor(0.3)).toBe(100);
     expect(creditsFor(0.24)).toBe(80);
-    expect(RENDER_CREDITS).toBe(64);
+    expect(RENDER_CREDITS).toBe(32);
     // revenue per render covers cost / (1 - margin)
     expect(RENDER_CREDITS * 0.01 * 0.3).toBeGreaterThanOrEqual(RENDER_COST_USD - 1e-9);
   });
@@ -48,8 +48,8 @@ describe('pricing', () => {
   });
 
   it('counts whole renders per credit amount', () => {
-    expect(rendersFor(1000)).toBe(15);
-    expect(rendersFor(PRO_PLAN.monthlyCredits)).toBe(85);
+    expect(rendersFor(1000)).toBe(31);
+    expect(rendersFor(PRO_PLAN.monthlyCredits)).toBe(171);
   });
 
   it('gives every monthly plan a cheaper credit than pay as you go, and a bigger plan a cheaper one', () => {
@@ -121,6 +121,23 @@ describe('sheet', () => {
     const meta = await sharp(preview).metadata();
     expect(meta.format).toBe('webp');
     expect(meta.width).toBe(1024);
+  });
+
+  it('leaves the sheet it stamps untouched, so the stored master stays clean', async () => {
+    const sheet = new Uint8Array(
+      await sharp({
+        create: { width: 1024, height: 1024, channels: 3, background: '#ffffff' },
+      })
+        .png()
+        .toBuffer(),
+    );
+    const before = Buffer.from(sheet);
+    const preview = await watermark(sheet);
+    expect(Buffer.from(sheet).equals(before)).toBe(true);
+    expect(Buffer.from(preview).equals(before)).toBe(false);
+    // The master is still a plain white sheet: no mark in any pixel.
+    const { data } = await sharp(sheet).raw().toBuffer({ resolveWithObject: true });
+    expect(data.every((value) => value === 255)).toBe(true);
   });
 
   it('draws the brand mark over the preview, as shapes that need no fonts', async () => {

@@ -12,10 +12,8 @@ import {
   cleanNote,
   createReplicate,
   cutCells,
-  DEFAULT_FINAL_SHEET_SETTINGS,
   download,
   FALLBACK_SHEET_SETTINGS,
-  FINAL_SHEET_CREDITS,
   FINAL_SHEET_MODEL,
   findGlbUrl,
   isSettled,
@@ -789,7 +787,7 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
   // An angle sheet bought earlier already counts toward the price, and so does the final sheet
   // of a product views set, which the build then reuses instead of drawing again.
   let alreadyPaid = render.credits;
-  let owed = Math.max(0, buildTotal(render) - alreadyPaid);
+  let owed = Math.max(0, RENDER_CREDITS - alreadyPaid);
 
   const claimed = await db().$transaction(async (tx) => {
     await lockRenderActor(tx, actor);
@@ -798,7 +796,7 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
     if (current?.status !== 'preview_ready') return false;
     render = current;
     alreadyPaid = current.credits;
-    owed = Math.max(0, buildTotal(current) - alreadyPaid);
+    owed = Math.max(0, RENDER_CREDITS - alreadyPaid);
     await assertGenerationConcurrency(actor, tx);
     if (actor.isUsingFreeModel) {
       const isGranted = await grantFirstModelInTransaction(tx, id, actor, owed);
@@ -844,38 +842,8 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
     { model_id: id, credits_spent: owed },
   );
   try {
-    // A paid build draws the final sheet first (the visitor saw a cheaper draft); the 3D build
-    // starts when it is done, in advance(). Without a draft the build runs from the photo alone.
-    if (render.sheetKey && !render.hasFinalSheet) {
-      const client = replicate();
-      const source = await getFile(render.sourceKey);
-      const sourceUrl = await client.upload(source, 'source.jpg', 'image/jpeg');
-      const recipe = await harness();
-      const notes = sheetNotes(render);
-      const request = sheetRequest(
-        sourceUrl,
-        notes,
-        selectSkillFrom(recipe.skills, render.name, notes),
-        DEFAULT_FINAL_SHEET_SETTINGS,
-        recipe.sheetPrompt,
-        selectMaterialsFrom(recipe.materials, render.name, notes),
-      );
-      let prediction: Prediction | null = null;
-      try {
-        prediction = await client.start(
-          request.path,
-          request.body,
-          config.webhookUrl(`/api/webhooks/replicate?render=${id}`),
-        );
-      } catch (error) {
-        if (isUncertainStart(error)) throw error;
-        // Only a definite rejection permits falling back to the draft.
-        reportError(error, { renderId: id, stage: 'final_sheet_start' });
-      }
-      if (prediction) {
-        return await persistStartedPrediction(render, { finalSheetPredictionId: prediction.id });
-      }
-    }
+    // The 3D build runs on the sheet the visitor already saw (the stored one, never the watermarked
+    // copy): there is no second draw. Without a sheet it runs from the photo alone.
     const sheet = await checkedBuildSheet(render.sheetKey);
     const prediction = await startThreeD(id, render.sourceKey, sheet);
     return await persistStartedPrediction(render, {
@@ -1111,10 +1079,6 @@ export async function redrawSheet(id: string, actor: Actor, note: string): Promi
   }
 }
 
-// What a full build costs this render: a sheet that is already the final one is not drawn again.
-const buildTotal = (render: Pick<Render, 'hasFinalSheet'>) =>
-  render.hasFinalSheet ? RENDER_CREDITS - FINAL_SHEET_CREDITS : RENDER_CREDITS;
-
 export type RenderView = {
   id: string;
   status: Render['status'];
@@ -1183,7 +1147,7 @@ export function toView(render: Render): RenderView {
     modelVersion: render.updatedAt.getTime(),
     // A failed render was refunded in full, so nothing counts as spent on it.
     credits: render.status === 'failed' ? 0 : render.credits,
-    renderCredits: buildTotal(render),
+    renderCredits: RENDER_CREDITS,
     sheetCredits: SHEET_CREDITS,
     upscaleCredits: UPSCALE_CREDITS,
     canUpscale: Boolean(render.sheetKey) && (render.status === 'ready' || render.hasFinalSheet),
