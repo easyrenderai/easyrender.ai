@@ -985,13 +985,13 @@
     "billing": "Faturação",
     "referral": {
       "title": "Convida amigos",
-      "description": "Partilha o teu link. Quando alguém se registar com ele e verificar o e-mail, recebes {reward} créditos e essa pessoa recebe {welcome} créditos.",
+      "description": "Partilha o teu link. Quando alguém se registar com ele e verificar o e-mail, recebe {welcome} créditos. Depois, ganhas {back, plural, one {# crédito} other {# créditos}} por cada {spend} créditos que gastar.",
       "linkLabel": "O teu link de convite",
       "copy": "Copiar link",
       "copied": "Copiado",
       "copyError": "Não foi possível copiar. Seleciona o link e copia-o.",
       "stats": "{rewarded} aderiram · {pending} a aguardar verificação · {credits} créditos ganhos",
-      "limit": "És recompensado por até {max} amigos.",
+      "limit": "Ganhas com até {max} amigos.",
       "verifyFirst": "Verifica o teu e-mail para obteres o teu link de convite."
     }
   },
