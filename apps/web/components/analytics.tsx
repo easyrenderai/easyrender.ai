@@ -124,8 +124,16 @@ function EnabledAnalytics() {
   useEffect(() => {
     if (pathname) gaPageview();
   }, [pathname]);
-  // Advertising always needs an explicit choice, including regions with opt-out GA policy.
-  if (!isResolved || region.gpc || choice.accepted !== null || !gaId) return null;
+  // Standard regions keep opt-out GA and cookie-page controls without an unsolicited prompt.
+  // Hiding the banner never grants advertising consent; that remains an explicit choice.
+  if (
+    !isResolved ||
+    region.consent_region !== 'strict' ||
+    region.gpc ||
+    choice.accepted !== null ||
+    !gaId
+  )
+    return null;
   return (
     <aside
       aria-label={t('title')}
