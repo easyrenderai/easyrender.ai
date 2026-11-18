@@ -982,7 +982,18 @@
     "yourAccount": "A tua conta",
     "balance": "<strong>{credits}</strong> créditos",
     "buyCredits": "Comprar créditos",
-    "billing": "Faturação"
+    "billing": "Faturação",
+    "referral": {
+      "title": "Convida amigos",
+      "description": "Partilha o teu link. Quando alguém se registar com ele e verificar o e-mail, recebes {reward} créditos e essa pessoa recebe {welcome} créditos.",
+      "linkLabel": "O teu link de convite",
+      "copy": "Copiar link",
+      "copied": "Copiado",
+      "copyError": "Não foi possível copiar. Seleciona o link e copia-o.",
+      "stats": "{rewarded} aderiram · {pending} a aguardar verificação · {credits} créditos ganhos",
+      "limit": "És recompensado por até {max} amigos.",
+      "verifyFirst": "Verifica o teu e-mail para obteres o teu link de convite."
+    }
   },
   "Credits": {
     "eyebrow": "Preços",
@@ -1178,7 +1189,12 @@
     "or": "ou",
     "legalNotice": "Ao criares uma conta, aceitas os <terms>Termos de Serviço</terms>. Consulta a <privacy>Política de Privacidade</privacy> para saberes como utilizamos os teus dados.",
     "metaSignIn": "Iniciar sessão",
-    "metaSignUp": "Criar conta"
+    "metaSignUp": "Criar conta",
+    "referral": {
+      "label": "Código de convite",
+      "applied": "Convite aplicado",
+      "hint": "Não tens de escrever nada. Recebes {credits} créditos quando verificares o teu e-mail."
+    }
   },
   "OAuth": {
     "title": "Connect {client} to Easy Render?",
@@ -1700,7 +1716,9 @@
     "advertisingTitle": "Medição publicitária opcional: er_ad_touch e _gcl_*",
     "advertising": "Só uma escolha publicitária explícita permite armazenamento publicitário da Google e utilização de dados para medir anúncios. Guardamos identificadores de clique Google permitidos em er_ad_touch por até 30 minutos, enviamo-los apenas à Google e retiramo-los do endereço após a captura. A Google pode guardar os seus próprios cookies de ligação de conversões. A personalização e o Google Signals continuam desligados. Aceitar análise não ativa esta opção. A Google também pode conservar dados de ligação nos cookies _gcl_* e no armazenamento local _gcl_ls; a sua duração é distinta do nosso registo de 30 minutos. Estes identificadores Google acessíveis são apagados quando retiras a permissão publicitária.",
     "languageTitle": "er_home_locale, er_app_locale",
-    "language": "Guardam o idioma que escolheste no site e na aplicação por até um ano. Estas preferências não recolhem dados de análise."
+    "language": "Guardam o idioma que escolheste no site e na aplicação por até um ano. Estas preferências não recolhem dados de análise.",
+    "referralTitle": "er_ref",
+    "referral": "Definido apenas quando abres o link de convite de um amigo. Guarda o código durante 30 dias para que o convite sobreviva à navegação e ao início de sessão com Google, e é usado uma única vez, ao criares a conta."
   },
   "Ar": {
     "metaTitle": "Veja na sua casa",

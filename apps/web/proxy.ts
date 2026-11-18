@@ -1,4 +1,9 @@
 import { adminDecision } from '@easyrender/core/admin-analytics/helpers';
+import {
+  normalizeReferralCode,
+  REFERRAL_COOKIE,
+  REFERRAL_COOKIE_MAX_AGE,
+} from '@easyrender/core/referral-code';
 import { type NextRequest, NextResponse } from 'next/server';
 import { isRoutableLocale, LOCALE_HEADER, PATH_HEADER } from './i18n/config';
 import { adminVerificationPath } from './lib/admin-analytics/navigation';
@@ -104,6 +109,16 @@ export function proxy(request: NextRequest) {
   headers.set(PATH_HEADER, pathname);
 
   const response = withAnonymousId(request, headers);
+  // A share link (?ref=CODE) is remembered, so the code survives navigation and Google sign in.
+  const referral = normalizeReferralCode(searchParams.get('ref'));
+  if (referral && request.method === 'GET')
+    response.cookies.set(REFERRAL_COOKIE, referral, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: request.nextUrl.protocol === 'https:',
+      path: '/',
+      maxAge: REFERRAL_COOKIE_MAX_AGE,
+    });
   const destination = request.headers.get('sec-fetch-dest');
   const isDocument =
     request.method === 'GET' &&

@@ -982,7 +982,18 @@
     "yourAccount": "Dein Konto",
     "balance": "<strong>{credits}</strong> Credits",
     "buyCredits": "Credits kaufen",
-    "billing": "Abrechnung"
+    "billing": "Abrechnung",
+    "referral": {
+      "title": "Freunde einladen",
+      "description": "Teile deinen Link. Wenn sich jemand damit registriert und die E-Mail-Adresse bestätigt, erhältst du {reward} Credits und die Person {welcome} Credits.",
+      "linkLabel": "Dein Einladungslink",
+      "copy": "Link kopieren",
+      "copied": "Kopiert",
+      "copyError": "Kopieren nicht möglich. Markiere den Link und kopiere ihn.",
+      "stats": "{rewarded} beigetreten · {pending} warten auf Bestätigung · {credits} Credits verdient",
+      "limit": "Du wirst für bis zu {max} Freunde belohnt.",
+      "verifyFirst": "Bestätige deine E-Mail-Adresse, um deinen Einladungslink zu erhalten."
+    }
   },
   "Credits": {
     "eyebrow": "Preise",
@@ -1178,7 +1189,12 @@
     "or": "oder",
     "legalNotice": "Wenn du ein Konto erstellst, akzeptierst du die <terms>Nutzungsbedingungen</terms>. In der <privacy>Datenschutzerklärung</privacy> erfährst du, wie wir deine Daten verwenden.",
     "metaSignIn": "Anmelden",
-    "metaSignUp": "Konto erstellen"
+    "metaSignUp": "Konto erstellen",
+    "referral": {
+      "label": "Einladungscode",
+      "applied": "Einladung angewendet",
+      "hint": "Du musst nichts eingeben. Du erhältst {credits} Credits, sobald du deine E-Mail-Adresse bestätigst."
+    }
   },
   "OAuth": {
     "title": "Connect {client} to Easy Render?",
@@ -1700,7 +1716,9 @@
     "advertisingTitle": "Optionale Werbemessung: er_ad_touch und _gcl_*",
     "advertising": "Nur eine ausdrückliche Auswahl erlaubt Google-Werbespeicher und die Datennutzung zur Werbemessung. Erlaubte Google-Klickkennungen speichern wir höchstens 30 Minuten in er_ad_touch, senden sie nur an Google und entfernen sie nach der Erfassung aus der Adresse. Google kann eigene Cookies zur Conversion-Zuordnung speichern. Personalisierte Werbung und Google Signals bleiben aus. Analyse-Zustimmung aktiviert diese Option nicht. Google kann Zuordnungsdaten auch in _gcl_*-Cookies und im lokalen Speicher _gcl_ls aufbewahren; deren Speicherdauer ist von unserem 30-Minuten-Eintrag getrennt. Zugängliche Google-Kennungen werden beim Widerruf der Werbeerlaubnis gelöscht.",
     "languageTitle": "er_home_locale, er_app_locale",
-    "language": "Speichern deine Sprachwahl auf der Website und in der App für bis zu ein Jahr. Sie erfassen keine Analysedaten."
+    "language": "Speichern deine Sprachwahl auf der Website und in der App für bis zu ein Jahr. Sie erfassen keine Analysedaten.",
+    "referralTitle": "er_ref",
+    "referral": "Wird nur gesetzt, wenn du den Einladungslink eines Freundes öffnest. Er merkt sich den Code 30 Tage, damit die Einladung die Navigation und die Anmeldung mit Google übersteht, und wird einmal verwendet, beim Erstellen des Kontos."
   },
   "Ar": {
     "metaTitle": "In deinem Zuhause ansehen",

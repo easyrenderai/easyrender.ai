@@ -982,7 +982,18 @@
     "yourAccount": "Your account",
     "balance": "<strong>{credits}</strong> credits",
     "buyCredits": "Buy credits",
-    "billing": "Billing"
+    "billing": "Billing",
+    "referral": {
+      "title": "Invite friends",
+      "description": "Share your link. When someone signs up with it and verifies their email, you get {reward} credits and they get {welcome} credits.",
+      "linkLabel": "Your referral link",
+      "copy": "Copy link",
+      "copied": "Copied",
+      "copyError": "Could not copy. Select the link and copy it.",
+      "stats": "{rewarded} joined · {pending} waiting to verify · {credits} credits earned",
+      "limit": "You are rewarded for up to {max} friends.",
+      "verifyFirst": "Verify your email to get your referral link."
+    }
   },
   "Credits": {
     "eyebrow": "Pricing",
@@ -1178,7 +1189,12 @@
     "or": "or",
     "legalNotice": "By creating an account, you agree to the <terms>Terms of Service</terms>. Read our <privacy>Privacy Policy</privacy> to understand how we use your data.",
     "metaSignIn": "Sign in",
-    "metaSignUp": "Create account"
+    "metaSignUp": "Create account",
+    "referral": {
+      "label": "Referral code",
+      "applied": "Referral applied",
+      "hint": "Nothing to enter. You get {credits} credits when you verify your email."
+    }
   },
   "OAuth": {
     "title": "Connect {client} to Easy Render?",
@@ -1700,7 +1716,9 @@
     "advertisingTitle": "Optional advertising measurement: er_ad_touch and _gcl_*",
     "advertising": "Only an explicit advertising choice permits Google ad storage and advertising user data. We retain allowlisted Google click IDs in er_ad_touch session storage for at most 30 minutes, send them only to Google, and remove them from the address after capture. Google may store its own conversion-linking cookies. Advertising personalization and Google Signals remain off. This choice is not inferred from accepting analytics. Google may also retain conversion-linking data in _gcl_* cookies and _gcl_ls local storage; their retention is separate from our 30-minute record. These accessible Google identifiers are cleared when you withdraw advertising permission.",
     "languageTitle": "er_home_locale, er_app_locale",
-    "language": "Remember your language on the site and in the app. These preferences last up to one year and do not record analytics."
+    "language": "Remember your language on the site and in the app. These preferences last up to one year and do not record analytics.",
+    "referralTitle": "er_ref",
+    "referral": "Set only when you open a friend's referral link. It remembers the code for 30 days so the invitation survives navigation and Google sign-in, and is used once, when you create an account."
   },
   "Ar": {
     "metaTitle": "View in your room",

@@ -1,6 +1,13 @@
 import 'server-only';
 import { dash } from '@better-auth/infra';
-import { reportError, serviceEmailAvailable, signupAttribution } from '@easyrender/core';
+import {
+  REFERRAL_COOKIE,
+  recordReferral,
+  reportError,
+  rewardReferral,
+  serviceEmailAvailable,
+  signupAttribution,
+} from '@easyrender/core';
 import { adminDecision } from '@easyrender/core/admin-analytics/helpers';
 import { normalizeAttribution } from '@easyrender/core/attribution';
 import { db } from '@easyrender/db';
@@ -16,6 +23,9 @@ import {
 import { nextCookies } from 'better-auth/next-js';
 import { privacyRegion } from '@/lib/analytics/privacy-region';
 import { queueAuthServiceEmail } from '@/lib/service-email';
+
+const cookieValue = (headers: Headers, name: string) =>
+  headers.get('cookie')?.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`))?.[1] ?? null;
 
 function createAuth() {
   return betterAuth({
@@ -122,6 +132,7 @@ function createAuth() {
             privacyRegion(h),
           ),
           anonId: h.get('cookie')?.match(/(?:^|;\s*)er_anon=([^;]+)/)?.[1] ?? null,
+          referralCode: cookieValue(h, REFERRAL_COOKIE),
         });
         // Only the normalized server context enters state; never persist raw client extras.
         ctx.body.additionalData = {};
@@ -150,6 +161,16 @@ function createAuth() {
                   : (h.get('cookie')?.match(/(?:^|;\s*)er_anon=([^;]+)/)?.[1] ?? null),
               method: ctx?.path?.includes('callback') ? 'google' : 'email',
             });
+            // The code comes from the cookie the sign up link set, never from the form body.
+            await recordReferral({
+              userId: user.id,
+              code:
+                typeof stored?.referralCode === 'string'
+                  ? stored.referralCode
+                  : cookieValue(h, REFERRAL_COOKIE),
+            });
+            // Google accounts arrive verified; email accounts are paid when they verify.
+            if (user.emailVerified) await rewardReferral(user.id);
           },
         },
       },
@@ -172,6 +193,9 @@ function createAuth() {
       sendOnSignUp: serviceEmailAvailable(),
       sendOnSignIn: false,
       autoSignInAfterVerification: false,
+      afterEmailVerification: async (user) => {
+        await rewardReferral(user.id);
+      },
       expiresIn: 3600,
       sendVerificationEmail: async (data, request) => {
         try {
