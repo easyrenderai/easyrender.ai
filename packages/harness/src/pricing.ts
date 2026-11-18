@@ -10,8 +10,8 @@ export function creditsFor(costUsd: number): number {
 // The angle sheet (one 1K image). The free preview makes one at our cost; this is what generating
 // one later, from the library, costs. It counts toward the 3D render's price (startBuild charges
 // RENDER_CREDITS minus what the render already paid), so a library sheet followed by a build
-// brings in 32 credits for about $0.13 of cost, a margin of about 60% instead of 70%. The free
-// preview, which is the usual path, is unaffected.
+// earns a margin below the usual 70% (the sheet is paid for once and the build is not charged in
+// full again). The free preview, which is the usual path, is unaffected.
 export const SHEET_COST_USD = 0.0336;
 export const SHEET_CREDITS = creditsFor(SHEET_COST_USD);
 
