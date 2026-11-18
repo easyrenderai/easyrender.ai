@@ -4,7 +4,12 @@ import {
   isMailingTokenLocation,
   redactMailingTokens,
 } from './lib/mailing-privacy';
-import { BROWSER_EXTENSION_ERRORS, BROWSER_EXTENSION_URLS } from './lib/sentry-noise';
+import {
+  BLOB_URL_SPANS,
+  BROWSER_EXTENSION_ERRORS,
+  BROWSER_EXTENSION_URLS,
+  WEBGL_UNAVAILABLE_ERRORS,
+} from './lib/sentry-noise';
 
 // No session replay: shoppers upload product photos and we do not record the screen.
 Sentry.init({
@@ -16,7 +21,8 @@ Sentry.init({
   beforeBreadcrumb: (crumb) =>
     isMailingTokenLocation(window.location.href) ? null : redactMailingTokens(crumb),
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  ignoreErrors: BROWSER_EXTENSION_ERRORS,
+  ignoreErrors: [...BROWSER_EXTENSION_ERRORS, ...WEBGL_UNAVAILABLE_ERRORS],
+  ignoreSpans: BLOB_URL_SPANS,
   denyUrls: BROWSER_EXTENSION_URLS,
   environment: process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV,
   tracesSampleRate: 0.1,

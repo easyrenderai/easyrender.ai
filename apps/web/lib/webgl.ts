@@ -23,3 +23,12 @@ export function hasWebGL(): boolean {
 export function resetWebGLProbe() {
   cached = null;
 }
+
+// Thrown when a 3D section starts in a browser that cannot create a WebGL context. The page keeps
+// its still images, so callers treat this as "no 3D here" and stay quiet instead of reporting it.
+export class WebGLUnavailableError extends Error {
+  constructor() {
+    super('WebGL is not available');
+    this.name = 'WebGLUnavailableError';
+  }
+}
