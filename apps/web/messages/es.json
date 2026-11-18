@@ -982,7 +982,18 @@
     "yourAccount": "Tu cuenta",
     "balance": "<strong>{credits}</strong> créditos",
     "buyCredits": "Comprar créditos",
-    "billing": "Facturación"
+    "billing": "Facturación",
+    "referral": {
+      "title": "Invita a tus amigos",
+      "description": "Comparte tu enlace. Cuando alguien se registre con él y verifique su correo, tú recibes {reward} créditos y esa persona recibe {welcome} créditos.",
+      "linkLabel": "Tu enlace de invitación",
+      "copy": "Copiar enlace",
+      "copied": "Copiado",
+      "copyError": "No se pudo copiar. Selecciona el enlace y cópialo.",
+      "stats": "{rewarded} se unieron · {pending} pendientes de verificar · {credits} créditos ganados",
+      "limit": "Recibes recompensa por hasta {max} amigos.",
+      "verifyFirst": "Verifica tu correo para obtener tu enlace de invitación."
+    }
   },
   "Credits": {
     "eyebrow": "Precios",
@@ -1178,7 +1189,12 @@
     "or": "o",
     "legalNotice": "Al crear una cuenta, aceptas los <terms>Términos del servicio</terms>. Consulta nuestra <privacy>Política de privacidad</privacy> para saber cómo utilizamos tus datos.",
     "metaSignIn": "Iniciar sesión",
-    "metaSignUp": "Crear cuenta"
+    "metaSignUp": "Crear cuenta",
+    "referral": {
+      "label": "Código de invitación",
+      "applied": "Invitación aplicada",
+      "hint": "No tienes que escribir nada. Recibes {credits} créditos al verificar tu correo."
+    }
   },
   "OAuth": {
     "title": "¿Conectar {client} con Easy Render?",
@@ -1700,7 +1716,9 @@
     "advertisingTitle": "Medición publicitaria opcional: er_ad_touch y _gcl_*",
     "advertising": "Solo una elección publicitaria explícita permite almacenamiento publicitario de Google y uso de datos para medir anuncios. Guardamos identificadores de clic de Google permitidos en er_ad_touch por un máximo de 30 minutos, los enviamos solo a Google y los quitamos de la dirección tras capturarlos. Google puede guardar sus propias cookies para vincular conversiones. La personalización y Google Signals siguen desactivados. Aceptar analítica no activa esta opción. Google también puede conservar datos para vincular conversiones en cookies _gcl_* y en almacenamiento local _gcl_ls; su duración es distinta de nuestro registro de 30 minutos. Estos identificadores accesibles se borran al retirar el permiso publicitario.",
     "languageTitle": "er_home_locale, er_app_locale",
-    "language": "Recuerdan tu idioma en la web y en la aplicación. Estas preferencias duran hasta un año y no recogen datos de analítica."
+    "language": "Recuerdan tu idioma en la web y en la aplicación. Estas preferencias duran hasta un año y no recogen datos de analítica.",
+    "referralTitle": "er_ref",
+    "referral": "Solo se crea cuando abres el enlace de invitación de un amigo. Recuerda el código 30 días para que la invitación sobreviva a la navegación y al acceso con Google, y se usa una sola vez, al crear tu cuenta."
   },
   "Ar": {
     "metaTitle": "Míralo en tu casa",

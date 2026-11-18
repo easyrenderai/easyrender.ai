@@ -982,7 +982,18 @@
     "yourAccount": "Votre compte",
     "balance": "<strong>{credits}</strong> crédits",
     "buyCredits": "Acheter des crédits",
-    "billing": "Facturation"
+    "billing": "Facturation",
+    "referral": {
+      "title": "Inviter des amis",
+      "description": "Partagez votre lien. Quand quelqu'un s'inscrit avec et vérifie son e-mail, vous recevez {reward} crédits et cette personne reçoit {welcome} crédits.",
+      "linkLabel": "Votre lien de parrainage",
+      "copy": "Copier le lien",
+      "copied": "Copié",
+      "copyError": "Copie impossible. Sélectionnez le lien et copiez-le.",
+      "stats": "{rewarded} inscrits · {pending} en attente de vérification · {credits} crédits gagnés",
+      "limit": "Vous êtes récompensé pour jusqu'à {max} amis.",
+      "verifyFirst": "Vérifiez votre e-mail pour obtenir votre lien de parrainage."
+    }
   },
   "Credits": {
     "eyebrow": "Tarifs",
@@ -1178,7 +1189,12 @@
     "or": "ou",
     "legalNotice": "En créant un compte, vous acceptez les <terms>Conditions d’utilisation</terms>. Consultez notre <privacy>Politique de confidentialité</privacy> pour comprendre comment nous utilisons vos données.",
     "metaSignIn": "Se connecter",
-    "metaSignUp": "Créer un compte"
+    "metaSignUp": "Créer un compte",
+    "referral": {
+      "label": "Code de parrainage",
+      "applied": "Parrainage appliqué",
+      "hint": "Rien à saisir. Vous recevez {credits} crédits dès que vous vérifiez votre e-mail."
+    }
   },
   "OAuth": {
     "title": "Connect {client} to Easy Render?",
@@ -1700,7 +1716,9 @@
     "advertisingTitle": "Mesure publicitaire facultative : er_ad_touch et _gcl_*",
     "advertising": "Seul un choix publicitaire explicite autorise le stockage publicitaire Google et l’utilisation des données pour mesurer les annonces. Nous conservons les identifiants de clic Google autorisés dans er_ad_touch pendant 30 minutes maximum, les envoyons uniquement à Google et les retirons de l’adresse après capture. Google peut stocker ses propres cookies de liaison des conversions. La personnalisation et Google Signals restent désactivés. Accepter l’analyse n’active pas cette option. Google peut aussi conserver des données de liaison dans les cookies _gcl_* et le stockage local _gcl_ls ; leur durée est distincte de notre enregistrement de 30 minutes. Ces identifiants Google accessibles sont effacés au retrait de l’autorisation publicitaire.",
     "languageTitle": "er_home_locale, er_app_locale",
-    "language": "Mémorisent votre langue sur le site et dans l’application pendant un an maximum. Ces préférences ne servent pas à l’analyse d’audience."
+    "language": "Mémorisent votre langue sur le site et dans l’application pendant un an maximum. Ces préférences ne servent pas à l’analyse d’audience.",
+    "referralTitle": "er_ref",
+    "referral": "Défini uniquement quand vous ouvrez le lien de parrainage d'un ami. Il mémorise le code 30 jours pour que l'invitation survive à la navigation et à la connexion avec Google, et il est utilisé une seule fois, à la création du compte."
   },
   "Ar": {
     "metaTitle": "Voir chez vous",

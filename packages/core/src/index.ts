@@ -31,6 +31,8 @@ export * from './oauth';
 export { flushPosthogEvents } from './posthog-outbox';
 export * from './pricing-experiment';
 export * from './product-views';
+export * from './referral-code';
+export * from './referrals';
 export * from './remote-image';
 export * from './render-edits';
 export * from './render-materials';

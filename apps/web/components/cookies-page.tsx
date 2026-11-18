@@ -8,7 +8,16 @@ export async function CookiesPage() {
       <p className="text-sm text-muted-foreground">{t('intro')}</p>
       <dl className="space-y-5 text-sm">
         {(
-          ['anon', 'language', 'consent', 'ga', 'advertising', 'posthog', 'attribution'] as const
+          [
+            'anon',
+            'language',
+            'referral',
+            'consent',
+            'ga',
+            'advertising',
+            'posthog',
+            'attribution',
+          ] as const
         ).map((key) => (
           <div key={key}>
             <dt className="font-medium">{t(`${key}Title`)}</dt>
