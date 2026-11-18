@@ -1,4 +1,5 @@
 ---
+
 name: referrals
 description: How the referral program works (share link, cookie, when credits are paid, abuse checks)
 type: project
