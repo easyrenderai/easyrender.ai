@@ -667,6 +667,40 @@
       "previewing": "{count, plural, one {# preview} other {# previews}} in progress.",
       "all": "Build {count, plural, one {# item} other {# items}} in 3D: {credits} of your {balance} credits.",
       "short": "Short by {credits} credits. Buy more"
+    },
+    "panel": {
+      "title": "Library",
+      "status": "Status",
+      "view": "View"
+    },
+    "folders": {
+      "title": "Folders",
+      "all": "All items",
+      "unfiled": "Unfiled",
+      "new": "New folder",
+      "nameLabel": "Folder name",
+      "namePlaceholder": "Kitchen",
+      "create": "Create",
+      "save": "Save",
+      "cancel": "Cancel",
+      "renameTitle": "Rename folder",
+      "renameAria": "Rename {name}",
+      "deleteAria": "Delete {name}",
+      "deleteTitle": "Delete this folder?",
+      "deleteBody": "{name} is removed. Its {count, plural, one {# item stays} other {# items stay}} in your library, unfiled.",
+      "delete": "Delete folder",
+      "move": "Move to folder",
+      "moveAria": "Move {name} to a folder",
+      "moveTitle": "Move {name}",
+      "moveNone": "No folder",
+      "moveEmpty": "You have no folders yet. Use New folder to make one.",
+      "errors": {
+        "exists": "A folder with that name already exists.",
+        "name": "Use a name that is not empty and not too long.",
+        "limit": "You have reached the folder limit.",
+        "generic": "Could not save the folder. Try again.",
+        "move": "Could not move the item. Try again."
+      }
     }
   },
   "ProductViews": {

@@ -78,6 +78,7 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
   const isXl = useMediaQuery(XL_QUERY);
   const { setLeftNode, setRightNode, hasLeftContext, hasRightContext, slot } = usePanelSlotState();
   const isAdmin = isAdminPath(pathname);
+  const isLibrary = pathname === '/library' || pathname.startsWith('/library/');
   // Settings and admin are full pages: no drawers.
   const isFullPage = isSettingsPath(pathname) || isAdmin;
   const hasLeft = isMd && !isFullPage;
@@ -274,7 +275,10 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
                     inert={!isLeftOpen}
                     className="h-full min-w-55 overflow-hidden"
                   >
-                    {hasLeftContext ? (
+                    {isLibrary ? (
+                      // The library draws its own filters and folders here.
+                      <div ref={setLeftNode} className="h-full overflow-y-auto" />
+                    ) : hasLeftContext ? (
                       <Tabs value={leftTab} onValueChange={setLeftTab} className="h-full gap-0">
                         <TabsList className="m-2 grid grid-cols-2">
                           <TabsTrigger value="renders">{t('panel.title')}</TabsTrigger>
