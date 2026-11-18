@@ -3018,10 +3018,11 @@
     },
     "render_ready": {
       "subject": "Your 3D model is ready · easyrender",
-      "title": "Time for a closer look.",
+      "title": "Your 3D model is ready",
       "preheader": "Open your result and check it against your product photo.",
-      "body": "Your render has finished. Open the result in easyrender and compare it with your original photo.\n\nStart with the details that make the product yours: its silhouette, proportions and finish. You can review the available next steps on the project page.",
+      "body": "Open it to compare its shape, proportions and finish with your original photo.",
       "action": "View my 3D model",
+      "previewAlt": "Preview of your 3D model",
       "lang": "en",
       "footerReason": "An update about your easyrender account or project. Need help? Reply to this email."
     },

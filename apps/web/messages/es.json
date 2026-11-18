@@ -3018,10 +3018,11 @@
     },
     "render_ready": {
       "subject": "Tu modelo 3D está listo · easyrender",
-      "title": "Es hora de mirar los detalles.",
+      "title": "Tu modelo 3D está listo",
       "preheader": "Abre tu resultado y compáralo con la foto de tu producto.",
-      "body": "Tu render ha terminado. Abre el resultado en easyrender y compáralo con tu foto original.\n\nEmpieza por lo que hace reconocible a tu producto: su silueta, sus proporciones y su acabado. En la página del proyecto encontrarás los siguientes pasos disponibles.",
+      "body": "Abre el modelo y compáralo con tu foto original. Fíjate en la forma, las proporciones y el acabado.",
       "action": "Ver mi modelo 3D",
+      "previewAlt": "Vista previa de tu modelo 3D",
       "lang": "es",
       "footerReason": "Un aviso sobre tu cuenta o tu proyecto en easyrender. ¿Necesitas ayuda? Responde a este correo."
     },
