@@ -985,13 +985,13 @@
     "billing": "Facturation",
     "referral": {
       "title": "Inviter des amis",
-      "description": "Partagez votre lien. Quand quelqu'un s'inscrit avec et vérifie son e-mail, vous recevez {reward} crédits et cette personne reçoit {welcome} crédits.",
+      "description": "Partagez votre lien. Quand quelqu'un s'inscrit avec et vérifie son e-mail, cette personne reçoit {welcome} crédits. Ensuite, vous gagnez {back, plural, one {# crédit} other {# crédits}} pour chaque tranche de {spend} crédits qu'elle dépense.",
       "linkLabel": "Votre lien de parrainage",
       "copy": "Copier le lien",
       "copied": "Copié",
       "copyError": "Copie impossible. Sélectionnez le lien et copiez-le.",
       "stats": "{rewarded} inscrits · {pending} en attente de vérification · {credits} crédits gagnés",
-      "limit": "Vous êtes récompensé pour jusqu'à {max} amis.",
+      "limit": "Vous gagnez avec jusqu'à {max} amis.",
       "verifyFirst": "Vérifiez votre e-mail pour obtenir votre lien de parrainage."
     }
   },

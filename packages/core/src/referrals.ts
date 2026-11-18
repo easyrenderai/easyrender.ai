@@ -1,10 +1,6 @@
 import { randomInt } from 'node:crypto';
 import { db, type Prisma } from '@easyrender/db';
-import {
-  REFERRAL_MAX_REWARDS,
-  REFERRAL_REFERRED_CREDITS,
-  REFERRAL_REFERRER_CREDITS,
-} from '@easyrender/harness';
+import { REFERRAL_MAX_REWARDS, REFERRAL_REFERRED_CREDITS } from '@easyrender/harness';
 import { config } from './config';
 import { grantCreditsInTransaction } from './credits';
 import { ALPHABET, CODE_LENGTH, normalizeReferralCode } from './referral-code';
@@ -98,7 +94,7 @@ export async function recordReferral(input: { userId: string; code: unknown }): 
 }
 
 /**
- * Pays a pending referral once the new account's email is verified. Safe to call on every
+ * Pays the new account's bonus once its email is verified, and starts the referrer's kickback. Safe to call on every
  * verification and sign in: the status flip and the ledger keys make a second call a no-op.
  */
 export async function rewardReferral(userId: string): Promise<boolean> {
@@ -115,14 +111,14 @@ export async function rewardReferral(userId: string): Promise<boolean> {
       const rewarded = await tx.referral.count({
         where: { referrerId: referral.referrerId, status: 'rewarded' },
       });
-      const referrerCredits = rewarded < REFERRAL_MAX_REWARDS ? REFERRAL_REFERRER_CREDITS : 0;
       const { count } = await tx.referral.updateMany({
         where: { id: referral.id, status: 'pending' },
         data: {
           status: 'rewarded',
           rewardedAt: new Date(),
           referredCredits: REFERRAL_REFERRED_CREDITS,
-          referrerCredits,
+          // The referrer's kickback on this friend's spend, up to the cap of friends.
+          isKickbackActive: rewarded < REFERRAL_MAX_REWARDS,
         },
       });
       if (!count) return false;
@@ -132,13 +128,6 @@ export async function rewardReferral(userId: string): Promise<boolean> {
         key: `referral:referred:${referral.id}`,
         reason: 'referral_welcome',
       });
-      if (referrerCredits > 0)
-        await grantCreditsInTransaction(tx, {
-          userId: referral.referrerId,
-          amount: referrerCredits,
-          key: `referral:referrer:${referral.id}`,
-          reason: 'referral_reward',
-        });
       return true;
     });
   } catch {

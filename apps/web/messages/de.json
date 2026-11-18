@@ -985,13 +985,13 @@
     "billing": "Abrechnung",
     "referral": {
       "title": "Freunde einladen",
-      "description": "Teile deinen Link. Wenn sich jemand damit registriert und die E-Mail-Adresse bestätigt, erhältst du {reward} Credits und die Person {welcome} Credits.",
+      "description": "Teile deinen Link. Wenn sich jemand damit registriert und die E-Mail-Adresse bestätigt, erhält die Person {welcome} Credits. Danach verdienst du {back, plural, one {# Credit} other {# Credits}} für je {spend} Credits, die sie ausgibt.",
       "linkLabel": "Dein Einladungslink",
       "copy": "Link kopieren",
       "copied": "Kopiert",
       "copyError": "Kopieren nicht möglich. Markiere den Link und kopiere ihn.",
       "stats": "{rewarded} beigetreten · {pending} warten auf Bestätigung · {credits} Credits verdient",
-      "limit": "Du wirst für bis zu {max} Freunde belohnt.",
+      "limit": "Du verdienst an bis zu {max} Freunden.",
       "verifyFirst": "Bestätige deine E-Mail-Adresse, um deinen Einladungslink zu erhalten."
     }
   },

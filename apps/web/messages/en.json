@@ -985,13 +985,13 @@
     "billing": "Billing",
     "referral": {
       "title": "Invite friends",
-      "description": "Share your link. When someone signs up with it and verifies their email, you get {reward} credits and they get {welcome} credits.",
+      "description": "Share your link. When someone signs up with it and verifies their email, they get {welcome} credits. After that you earn {back, plural, one {# credit} other {# credits}} for every {spend} credits they spend.",
       "linkLabel": "Your referral link",
       "copy": "Copy link",
       "copied": "Copied",
       "copyError": "Could not copy. Select the link and copy it.",
       "stats": "{rewarded} joined · {pending} waiting to verify · {credits} credits earned",
-      "limit": "You are rewarded for up to {max} friends.",
+      "limit": "You earn from up to {max} friends.",
       "verifyFirst": "Verify your email to get your referral link."
     }
   },

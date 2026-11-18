@@ -985,13 +985,13 @@
     "billing": "Facturación",
     "referral": {
       "title": "Invita a tus amigos",
-      "description": "Comparte tu enlace. Cuando alguien se registre con él y verifique su correo, tú recibes {reward} créditos y esa persona recibe {welcome} créditos.",
+      "description": "Comparte tu enlace. Cuando alguien se registre con él y verifique su correo, recibe {welcome} créditos. Después, tú ganas {back, plural, one {# crédito} other {# créditos}} por cada {spend} créditos que gaste.",
       "linkLabel": "Tu enlace de invitación",
       "copy": "Copiar enlace",
       "copied": "Copiado",
       "copyError": "No se pudo copiar. Selecciona el enlace y cópialo.",
       "stats": "{rewarded} se unieron · {pending} pendientes de verificar · {credits} créditos ganados",
-      "limit": "Recibes recompensa por hasta {max} amigos.",
+      "limit": "Ganas con hasta {max} amigos.",
       "verifyFirst": "Verifica tu correo para obtener tu enlace de invitación."
     }
   },

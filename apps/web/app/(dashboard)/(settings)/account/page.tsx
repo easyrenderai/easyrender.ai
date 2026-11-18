@@ -5,9 +5,9 @@ import {
   serviceEmailAvailable,
 } from '@easyrender/core';
 import {
+  REFERRAL_KICKBACK,
   REFERRAL_MAX_REWARDS,
   REFERRAL_REFERRED_CREDITS,
-  REFERRAL_REFERRER_CREDITS,
   SUBSCRIPTION_PLANS,
 } from '@easyrender/harness';
 import type { Metadata } from 'next';
@@ -87,7 +87,8 @@ export default async function AccountPage({ searchParams }: PageProps<'/account'
           <CardTitle>{t('referral.title')}</CardTitle>
           <CardDescription>
             {t('referral.description', {
-              reward: format.number(REFERRAL_REFERRER_CREDITS),
+              back: REFERRAL_KICKBACK.back,
+              spend: format.number(REFERRAL_KICKBACK.spend),
               welcome: format.number(REFERRAL_REFERRED_CREDITS),
             })}
           </CardDescription>
