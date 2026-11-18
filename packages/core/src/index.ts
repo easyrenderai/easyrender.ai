@@ -12,6 +12,7 @@ export * from './errors';
 export * from './first-model-experiment';
 export * from './google-measurement';
 export * from './google-outbox';
+export * from './library-folders';
 export type { MailingCatalog, MailingCopy, MailingLocale, MailingRoute } from './mailing/policy';
 export {
   confirmMailing,

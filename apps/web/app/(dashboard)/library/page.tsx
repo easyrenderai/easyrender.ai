@@ -1,4 +1,4 @@
-import { getBalance, listLibrary, toView } from '@easyrender/core';
+import { getBalance, listFolders, listLibrary, toLibraryView } from '@easyrender/core';
 import { RENDER_CREDITS, SHEET_CREDITS } from '@easyrender/harness';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -16,10 +16,15 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function LibraryPage() {
   const user = await currentUser();
   if (!user) redirect(localizedSignInPath(await getLocale(), '/library'));
-  const [renders, balance] = await Promise.all([listLibrary(user.id), getBalance(user.id)]);
+  const [renders, balance, folders] = await Promise.all([
+    listLibrary(user.id),
+    getBalance(user.id),
+    listFolders(user.id),
+  ]);
   return (
     <CatalogLibrary
-      initial={renders.map(toView)}
+      initial={renders.map(toLibraryView)}
+      initialFolders={folders}
       initialBalance={balance}
       renderCredits={RENDER_CREDITS}
       sheetCredits={SHEET_CREDITS}

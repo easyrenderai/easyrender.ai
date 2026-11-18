@@ -62,12 +62,15 @@ export const PanelSlotProvider = PanelSlotContext.Provider;
 // What a page offers for a drawer: the right one for the parts a render is made of, the left one
 // for the history of its edits. Inside the app shell, on a screen wide enough to show that drawer,
 // it is drawn in the drawer. Anywhere else (a narrow screen, the marketing frame) it stays where
-// it is written, in the page.
+// it is written, in the page (unless `isInline` is false).
 export function ShellPanel({
   side = 'right',
+  isInline = true,
   children,
 }: {
   side?: PanelSide;
+  // False for content that only belongs in the drawer: where there is no drawer it is not drawn.
+  isInline?: boolean;
   children: ReactNode;
 }) {
   const slot = useContext(PanelSlotContext);
@@ -77,6 +80,7 @@ export function ShellPanel({
   useEffect(() => (register ? register(side) : undefined), [register, side]);
   const node = slot?.nodes[side];
   if (node && isWide) return createPortal(children, node);
+  if (!isInline) return null;
   return (
     <div className={slot ? (side === 'left' ? 'md:hidden' : 'xl:hidden') : undefined}>
       {children}
