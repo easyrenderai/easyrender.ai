@@ -1977,7 +1977,7 @@
       "visitsCaveat": "Visitas = landing_view; páginas vistas = $pageview. Los únicos suman estimaciones por hash diario, no personas distintas del periodo. Consentimiento y bloqueadores sesgan el tráfico.",
       "cohortDefinition": "Cada celda es la conversión acumulada hasta el final de la semana 0–8. Las semanas incompletas quedan vacías. Los ingresos brutos usan la primera moneda hasta el final seleccionado.",
       "anonymousLink": "anonId + userId demuestra una previsualización reclamada, no conversión de registro: startBuild/startSheet asigna la propiedad después. La tasa fiable necesita un enlace en el registro.",
-      "reconciliationScope": "La BD excluye al equipo por defecto; PostHog incluye todos los eventos. La conciliación de vistas previas y modelos usa finalizaciones inmutables válidas; excluye éxitos antiguos sin fecha. Las diferencias pueden reflejar cobertura y fechas. Coincidir no demuestra un seguimiento correcto.",
+      "reconciliationScope": "La BD excluye al equipo por defecto; PostHog incluye todos los eventos. La conciliación de vistas previas y modelos usa finalizaciones inmutables válidas; excluye éxitos antiguos sin fecha. Las diferencias pueden reflejar cobertura y fechas. Coincidir no demuestra un seguimiento correcto. Los inicios de preview incluyen regeneraciones y no tienen un historial inmutable comparable en la base de datos; su recuento en BD y su diferencia son desconocidos.",
       "healthNotes": "Actualizar invalida las cachés de base (5 min) y fuentes externas (10 min). Las fuentes ausentes no son cero. Los errores se depuran; respuestas y secretos permanecen en el servidor.",
       "stripeScope": "Los pagos de Stripe sin cuenta conocida se excluyen al filtrar el equipo. Las suscripciones se filtran por cliente. El primer pago y LTV se limitan al historial consultado de Stripe.",
       "w0": "Semana 0",
@@ -2060,7 +2060,14 @@
       "spendImportTooLarge": "El archivo supera 512 KB. Divídelo en lotes más pequeños.",
       "spendImportInvalid": "Importación inválida. Revisa el formato JSON, fechas, moneda y contadores enteros no negativos.",
       "spendImportDenied": "Falta el permiso de administrador o ha caducado. Inicia sesión con una cuenta verificada autorizada.",
-      "spendImportFailed": "No se pudo confirmar la importación. Revisa la conexión y reintenta con el mismo archivo; no se duplicarán los registros diarios."
+      "spendImportFailed": "No se pudo confirmar la importación. Revisa la conexión y reintenta con el mismo archivo; no se duplicarán los registros diarios.",
+      "paidSignupFunnel": "Búsqueda de pago · cohorte de registro",
+      "paidPreviewAccounts": "Cuentas con preview",
+      "creditCheckoutAccounts": "Checkout de créditos creado",
+      "previewWithoutCheckout": "Preview sin checkout de créditos",
+      "checkoutWithoutPayment": "Checkout de créditos sin pago posterior",
+      "paidAfterCheckout": "Cuentas con pago posterior",
+      "paidSignupFunnelScope": "Cuentas nuevas de búsqueda de pago en el periodo, agrupadas por campaña de primera visita. Cuenta cuentas únicas hasta el final del periodo. Una preview reclamada puede ser anterior al registro. Checkout significa una sesión de compra de créditos creada después del registro y de la preview; no demuestra que se abrió Stripe. No incluye los inicios de checkout de suscripción. Pago posterior es cualquier pago positivo después de ese checkout, no necesariamente de esa sesión. No se infiere una tasa de conversión de visitantes anónimos."
     }
   },
   "AdminGift": {

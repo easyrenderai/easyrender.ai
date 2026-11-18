@@ -23,6 +23,7 @@ import {
   type View,
 } from './helpers';
 import { organicLandingTable } from './organic';
+import { paidSignupFunnel } from './paid-funnel';
 
 export type Payment = {
   id: string;
@@ -706,6 +707,9 @@ export function buildReport(
     }
     view.tables.push(
       advertisingTable(s.adSpend, finance.payments, [...attributed.values()], range),
+    );
+    view.tables.push(
+      paidSignupFunnel(s.users, s.attribution, s.renders, s.purchases, finance.payments, range),
     );
     view.tables.push(
       organicLandingTable(s.users, s.attribution, s.renders, finance.payments, range),

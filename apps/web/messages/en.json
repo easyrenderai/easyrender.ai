@@ -1977,7 +1977,7 @@
       "visitsCaveat": "Visits = landing_view; pageviews = $pageview. Unique visitors sum daily hash estimates, not distinct people across the period. Consent and blockers bias traffic; do not compare markets as equal coverage.",
       "cohortDefinition": "Each cell is cumulative conversion by the end of cohort week 0–8. Unfinished weeks are blank. Revenue is gross in the first displayed currency through the selected end.",
       "anonymousLink": "anonId + userId proves a claimed preview, not signup conversion: startBuild/startSheet assigns ownership after signup. A trustworthy anonymous-preview → signup rate needs a signup-time link.",
-      "reconciliationScope": "DB excludes team by default; PostHog includes all events. Preview/model reconciliation uses valid immutable completion dates; undated legacy success is excluded. Differences can reflect coverage and event timing. Equality is not proof of correct tracking.",
+      "reconciliationScope": "DB excludes team by default; PostHog includes all events. Preview/model reconciliation uses valid immutable completion dates; undated legacy success is excluded. Differences can reflect coverage and event timing. Equality is not proof of correct tracking. Preview starts include regenerations and have no comparable immutable database history; their DB count and difference are unknown.",
       "healthNotes": "Refresh invalidates database (5 min) and external-source (10 min) caches. Missing sources never become zero. Errors are sanitized; raw API responses and secrets stay server-side.",
       "stripeScope": "Stripe payments without a known account are excluded with team filtering. Current subscriptions are filtered by customer identity. First-payer classification and LTV are bounded by fetched Stripe history.",
       "w0": "Week 0",
@@ -2060,7 +2060,14 @@
       "spendImportTooLarge": "The file exceeds 512 KB. Split it into smaller batches.",
       "spendImportInvalid": "Invalid import. Check the JSON format, dates, currency and nonnegative integer counters.",
       "spendImportDenied": "Administrator permission is missing or expired. Sign in again with an authorized verified account.",
-      "spendImportFailed": "Could not confirm the import. Check your connection and retry the same file; daily records will not be duplicated."
+      "spendImportFailed": "Could not confirm the import. Check your connection and retry the same file; daily records will not be duplicated.",
+      "paidSignupFunnel": "Paid search · signup cohort",
+      "paidPreviewAccounts": "Accounts with preview",
+      "creditCheckoutAccounts": "Credit checkout created",
+      "previewWithoutCheckout": "Preview without credit checkout",
+      "checkoutWithoutPayment": "Credit checkout without later payment",
+      "paidAfterCheckout": "Accounts with later payment",
+      "paidSignupFunnelScope": "New paid-search accounts in the selected window, grouped by first-touch campaign. Counts unique accounts through period end. A claimed preview may precede signup. Checkout means a credit-purchase session created after signup and preview; it does not prove Stripe was opened. Subscription checkout starts are not stored here. Later payment means any positive payment after that credit checkout, not necessarily payment for that session. No anonymous-visitor conversion rate is inferred."
     }
   },
   "AdminGift": {

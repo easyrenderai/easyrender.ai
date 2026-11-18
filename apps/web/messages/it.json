@@ -2014,7 +2014,7 @@
       "visitsCaveat": "Visits = landing_view; pageviews = $pageview. Unique visitors sum daily hash estimates, not distinct people across the period. Consent and blockers bias traffic; do not compare markets as equal coverage.",
       "cohortDefinition": "Each cell is cumulative conversion by the end of cohort week 0–8. Unfinished weeks are blank. Revenue is gross in the first displayed currency through the selected end.",
       "anonymousLink": "anonId + userId proves a claimed preview, not signup conversion: startBuild/startSheet assigns ownership after signup. A trustworthy anonymous-preview → signup rate needs a signup-time link.",
-      "reconciliationScope": "Il DB esclude il team per impostazione predefinita; PostHog include tutti gli eventi. La riconciliazione di anteprime/modelli usa date di completamento immutabili valide, senza vecchi successi non datati. Le differenze possono riflettere copertura e date. L’uguaglianza non dimostra un tracciamento corretto.",
+      "reconciliationScope": "Il DB esclude il team per impostazione predefinita; PostHog include tutti gli eventi. La riconciliazione di anteprime/modelli usa date di completamento immutabili valide, senza vecchi successi non datati. Le differenze possono riflettere copertura e date. L’uguaglianza non dimostra un tracciamento corretto. Gli avvii delle anteprime includono le rigenerazioni e non hanno uno storico immutabile comparabile nel database; conteggio nel DB e differenza restano sconosciuti.",
       "healthNotes": "Refresh invalidates database (5 min) and external-source (10 min) caches. Missing sources never become zero. Errors are sanitized; raw API responses and secrets stay server-side.",
       "stripeScope": "Stripe payments without a known account are excluded with team filtering. Current subscriptions are filtered by customer identity. First-payer classification and LTV are bounded by fetched Stripe history.",
       "w0": "Week 0",
@@ -2097,7 +2097,14 @@
       "spendImportTooLarge": "Il file supera 512 KB. Dividilo in lotti più piccoli.",
       "spendImportInvalid": "Importazione non valida. Controlla formato JSON, date, valuta e contatori interi non negativi.",
       "spendImportDenied": "Permessi amministratore mancanti o scaduti. Accedi con un account verificato autorizzato.",
-      "spendImportFailed": "Impossibile confermare l’importazione. Controlla la connessione e riprova con lo stesso file; le righe giornaliere non saranno duplicate."
+      "spendImportFailed": "Impossibile confermare l’importazione. Controlla la connessione e riprova con lo stesso file; le righe giornaliere non saranno duplicate.",
+      "paidSignupFunnel": "Ricerca a pagamento · coorte di registrazione",
+      "paidPreviewAccounts": "Account con anteprima",
+      "creditCheckoutAccounts": "Checkout crediti creato",
+      "previewWithoutCheckout": "Anteprima senza checkout crediti",
+      "checkoutWithoutPayment": "Checkout crediti senza pagamento successivo",
+      "paidAfterCheckout": "Account con pagamento successivo",
+      "paidSignupFunnelScope": "Nuovi account da ricerca a pagamento nel periodo, per campagna del primo contatto. Account unici fino alla fine del periodo. Un’anteprima acquisita può precedere la registrazione. Checkout indica una sessione di acquisto crediti creata dopo registrazione e anteprima; non dimostra che Stripe sia stato aperto. Gli inizi dei checkout di abbonamento non sono registrati qui. Pagamento successivo indica qualsiasi pagamento positivo dopo il checkout, non necessariamente per quella sessione. Nessun tasso di conversione dei visitatori anonimi viene dedotto."
     }
   },
   "McpLanding": {

@@ -2014,7 +2014,7 @@
       "visitsCaveat": "Visits = landing_view; pageviews = $pageview. Unique visitors sum daily hash estimates, not distinct people across the period. Consent and blockers bias traffic; do not compare markets as equal coverage.",
       "cohortDefinition": "Each cell is cumulative conversion by the end of cohort week 0–8. Unfinished weeks are blank. Revenue is gross in the first displayed currency through the selected end.",
       "anonymousLink": "anonId + userId proves a claimed preview, not signup conversion: startBuild/startSheet assigns ownership after signup. A trustworthy anonymous-preview → signup rate needs a signup-time link.",
-      "reconciliationScope": "A BD exclui a equipa por predefinição; o PostHog inclui todos os eventos. A reconciliação de pré-visualizações/modelos usa conclusões imutáveis válidas, sem sucessos antigos sem data. Diferenças podem refletir cobertura e datas. Igualdade não prova um rastreio correto.",
+      "reconciliationScope": "A BD exclui a equipa por predefinição; o PostHog inclui todos os eventos. A reconciliação de pré-visualizações/modelos usa conclusões imutáveis válidas, sem sucessos antigos sem data. Diferenças podem refletir cobertura e datas. Igualdade não prova um rastreio correto. Os inícios de pré-visualização incluem regenerações e não têm um histórico imutável comparável na base de dados; a contagem na BD e a diferença permanecem desconhecidas.",
       "healthNotes": "Refresh invalidates database (5 min) and external-source (10 min) caches. Missing sources never become zero. Errors are sanitized; raw API responses and secrets stay server-side.",
       "stripeScope": "Stripe payments without a known account are excluded with team filtering. Current subscriptions are filtered by customer identity. First-payer classification and LTV are bounded by fetched Stripe history.",
       "w0": "Week 0",
@@ -2097,7 +2097,14 @@
       "spendImportTooLarge": "O ficheiro ultrapassa 512 KB. Divide-o em lotes menores.",
       "spendImportInvalid": "Importação inválida. Verifica o formato JSON, datas, moeda e contadores inteiros não negativos.",
       "spendImportDenied": "Permissão de administrador em falta ou expirada. Inicia sessão com uma conta verificada autorizada.",
-      "spendImportFailed": "Não foi possível confirmar a importação. Verifica a ligação e tenta novamente com o mesmo ficheiro; os registos diários não serão duplicados."
+      "spendImportFailed": "Não foi possível confirmar a importação. Verifica a ligação e tenta novamente com o mesmo ficheiro; os registos diários não serão duplicados.",
+      "paidSignupFunnel": "Pesquisa paga · coorte de registo",
+      "paidPreviewAccounts": "Contas com pré-visualização",
+      "creditCheckoutAccounts": "Checkout de créditos criado",
+      "previewWithoutCheckout": "Pré-visualização sem checkout de créditos",
+      "checkoutWithoutPayment": "Checkout de créditos sem pagamento posterior",
+      "paidAfterCheckout": "Contas com pagamento posterior",
+      "paidSignupFunnelScope": "Novas contas de pesquisa paga no período, por campanha do primeiro contacto. Contas únicas até ao fim do período. Uma pré-visualização reclamada pode anteceder o registo. Checkout indica uma sessão de compra de créditos criada após o registo e a pré-visualização; não comprova a abertura do Stripe. Os inícios de checkout de subscrição não são registados aqui. Pagamento posterior significa qualquer pagamento positivo após esse checkout, não necessariamente dessa sessão. Não se infere uma taxa de conversão de visitantes anónimos."
     }
   },
   "McpLanding": {
