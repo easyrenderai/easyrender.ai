@@ -49,8 +49,15 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   },
   // The base colour texture inside /showcase/clay-vase.glb, copied out of the file unchanged.
   '/blog/figures/glb-file/clay-vase-texture.webp': { width: 1024, height: 1024 },
+  '/blog/figures/n8n-product-pages-images-3d/n8n-ficha-foto-vistas-modelo.jpg': {
+    width: 1200,
+    height: 400,
+  },
+  '/blog/figures/n8n-product-pages-images-3d/workflow-en.webp': { width: 1280, height: 720 },
+  '/blog/figures/n8n-product-pages-images-3d/workflow-es.webp': { width: 1280, height: 720 },
 
   // Drawn illustrations, see ILLUSTRATION_DIR below.
+  '/blog/illustrations/n8n-product-pages-images-3d/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/how-to-make-a-3d-model-from-photos/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/product-photography-for-ecommerce/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/3d-models-for-ecommerce/hero.webp': { width: 1280, height: 720 },
