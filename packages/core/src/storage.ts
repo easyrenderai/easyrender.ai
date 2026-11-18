@@ -76,16 +76,19 @@ export async function getFile(key: string): Promise<Uint8Array> {
 }
 
 /** Pass through unchanged model assets without retaining a second full GLB in server memory. */
-export async function getFileStream(key: string): Promise<ReadableStream<Uint8Array>> {
+export async function getFileStream(
+  key: string,
+  options: Pick<RequestInit, 'signal' | 'redirect'> = {},
+): Promise<ReadableStream<Uint8Array>> {
   if (key.startsWith(LOCAL_PREFIX)) {
     const target = resolve(localRoot(), key.slice(LOCAL_PREFIX.length));
     if (!target.startsWith(localRoot() + sep)) throw new Error('invalid storage key');
     await stat(/* turbopackIgnore: true */ target);
     return Readable.toWeb(
-      createReadStream(/* turbopackIgnore: true */ target),
+      createReadStream(/* turbopackIgnore: true */ target, { signal: options.signal ?? undefined }),
     ) as ReadableStream<Uint8Array>;
   }
-  const response = await fetch(key, { signal: AbortSignal.timeout(60_000) });
+  const response = await fetch(key, { signal: AbortSignal.timeout(60_000), ...options });
   if (!response.ok || !response.body) throw new Error(`storage read failed: ${response.status}`);
   return response.body;
 }

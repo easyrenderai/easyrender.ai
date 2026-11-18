@@ -13,7 +13,8 @@
     "./admin-analytics/helpers": {
       "default": "./src/admin-analytics/helpers.ts"
     },
-    "./attribution": "./src/attribution.ts"
+    "./attribution": "./src/attribution.ts",
+    "./referral-code": "./src/referral-code.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

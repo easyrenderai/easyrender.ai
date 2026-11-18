@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny-ps" width="96" height="96" viewBox="0 0 48 48">
+  <title>easyrender</title>
+  <desc>EasyRender brand mark</desc>
+  <rect width="48" height="48" fill="#FFFFFF"/>
+  <g transform="rotate(-38 24 24)">
+    <circle cx="24" cy="24" r="17" fill="none" stroke="#18181B" stroke-width="2"/>
+    <path d="M24 7A17 17 0 0 1 24 41A6.5 17 0 0 1 24 7Z" fill="#18181B"/>
+  </g>
+</svg>

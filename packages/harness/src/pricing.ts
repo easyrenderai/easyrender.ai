@@ -191,3 +191,12 @@ export function topupAmountCents(
 }
 
 export const rendersFor = (credits: number) => Math.floor(credits / RENDER_CREDITS);
+
+// Referral program. A new account that signs up through a share link gets REFERRAL_REFERRED_CREDITS
+// once it has verified its email. The owner of the link then earns a kickback for as long as the
+// friend keeps going: `back` credits for every `spend` credits the friend spends (net of refunds).
+// A referrer earns from at most REFERRAL_MAX_REWARDS friends; the friend still gets the bonus
+// past that.
+export const REFERRAL_REFERRED_CREDITS = RENDER_CREDITS;
+export const REFERRAL_KICKBACK = { spend: 5, back: 1 } as const;
+export const REFERRAL_MAX_REWARDS = 20;

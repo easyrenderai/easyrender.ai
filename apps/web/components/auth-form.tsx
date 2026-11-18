@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { AuthFields, type AuthMode } from '@/components/auth-fields';
+import { ReferralApplied } from '@/components/referral-applied';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { authProjectPath, authReturnPath, localizedAuthPath } from '@/lib/app-locale';
@@ -37,6 +38,7 @@ export function AuthForm({ mode, recovery }: { mode: AuthMode; recovery?: { labe
             <AlertDescription>{t('errors.oauth')}</AlertDescription>
           </Alert>
         )}
+        {mode === 'sign-up' && <ReferralApplied code={params.get('ref')} />}
         <AuthFields
           mode={mode}
           project={project}

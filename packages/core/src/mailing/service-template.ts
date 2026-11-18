@@ -1,5 +1,5 @@
 import { AppError } from '../errors';
-import { renderBrandedEmail } from './template';
+import { RESULT_PREVIEW_CID, renderBrandedEmail } from './template';
 import type { MailPayload, ResendConfig } from './transport';
 
 export type ServiceEmailCopy = {
@@ -11,6 +11,7 @@ export type ServiceEmailCopy = {
   notice?: string;
   footerReason?: string;
   lang?: string;
+  previewAlt?: string;
 };
 
 export function buildServiceMailPayload(
@@ -18,9 +19,11 @@ export function buildServiceMailPayload(
   url: string,
   copy: ServiceEmailCopy,
   config: ResendConfig,
+  preview?: Buffer,
 ): MailPayload {
   if (/[\r\n]/.test(email + copy.subject) || new URL(url).origin !== config.appUrl)
     throw new AppError('Invalid service email', 400, 'invalid_service_email');
+  const previewAlt = preview ? copy.previewAlt : undefined;
   return {
     from: config.from,
     to: [email],
@@ -43,10 +46,23 @@ export function buildServiceMailPayload(
       preheader: copy.preheader ?? copy.subject,
       body: copy.body,
       action: { url, label: copy.action },
+      previewAlt,
       notice: copy.notice,
       footerReason: copy.footerReason,
       identity: config.identity,
     }),
     headers: {},
+    ...(preview && previewAlt
+      ? {
+          attachments: [
+            {
+              filename: 'render-preview.jpg',
+              content_type: 'image/jpeg',
+              content_id: RESULT_PREVIEW_CID,
+              content: preview.toString('base64'),
+            },
+          ],
+        }
+      : {}),
   };
 }

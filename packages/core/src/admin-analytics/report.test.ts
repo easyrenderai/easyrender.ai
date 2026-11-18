@@ -413,3 +413,13 @@ it('uses immutable preview completion for sheet history and excludes future/unda
     ).toBe(0);
   }
 });
+
+it('exposes the paid signup cohort with its measurement limits in attribution', () => {
+  const s = { ...snapshot, columns: { user: true, Render: true } };
+  const report = buildReport('attribution', s, range, databaseFinance(s), traffic);
+  expect(report.tables.find((table) => table.key === 'paidSignupFunnel')).toMatchObject({
+    rows: [],
+    quality: 'proxy',
+    note: 'paidSignupFunnelScope',
+  });
+});

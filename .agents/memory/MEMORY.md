@@ -23,4 +23,5 @@ a line here. Keep this map short.
 - **Render models and cost (sheet model, TRELLIS build, bake-off results):** [render models](context/render-models.md); results in `docs/benchmarks/`.
 - **Staged room scenes, lived-in look:** [staging rules](context/staging-lived-in-rooms.md).
 - **Upscaling (the paid Upscale action, which model and why):** [upscalers](context/upscalers.md).
+- **Referral program (share link, cookie, payout rules):** [referrals](context/referrals.md).
 - **Issues, board, priority, status columns:** [project board](context/project-board.md).

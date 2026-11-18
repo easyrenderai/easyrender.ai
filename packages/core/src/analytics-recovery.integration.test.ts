@@ -73,6 +73,78 @@ describe.skipIf(!url)('bounded reconciliation of committed business facts', () =
       scratchDatabase('DROP');
     }
   });
+  it('recovers missing signup events at account creation time without re-counting or rewriting attribution', async () => {
+    const id = `${userId}-signup-gap`;
+    const createdAt = new Date(Date.now() - 3600000);
+    await db().user.create({
+      data: {
+        id,
+        name: 'Fixture',
+        email: `${id}@example.invalid`,
+        createdAt,
+        first_seen_at: createdAt.toISOString(),
+        utm_source: 'google',
+        utm_medium: 'cpc',
+        utm_campaign: 'signup-origin',
+      },
+    });
+    await reconcileBusinessAnalytics();
+    expect(
+      await db().posthogDelivery.findUnique({ where: { id: eventUuid(`signup:${id}`) } }),
+    ).toMatchObject({
+      event: 'signup',
+      subjectId: id,
+      occurredAt: createdAt,
+      properties: { ft_utm_campaign: 'signup-origin', ft_utm_source: 'google', method: 'otro' },
+    });
+    await db().user.update({ where: { id }, data: { utm_campaign: 'later-change' } });
+    await reconcileBusinessAnalytics();
+    expect(await db().posthogDelivery.count({ where: { subjectId: id, event: 'signup' } })).toBe(1);
+    expect(
+      await db().posthogDelivery.findUnique({ where: { id: eventUuid(`signup:${id}`) } }),
+    ).toMatchObject({
+      occurredAt: createdAt,
+      properties: { ft_utm_campaign: 'signup-origin' },
+    });
+    expect(await db().creditLedger.count({ where: { userId: id } })).toBe(0);
+  });
+  it('bounds signup recovery, skips in-flight and historical accounts, and preserves existing receipts', async () => {
+    const at = new Date(Date.now() - 3600000);
+    const prefix = `${userId}-batch`;
+    const ids = Array.from({ length: 51 }, (_, i) => `${prefix}-${i}`);
+    await db().user.createMany({
+      data: ids.map((id) => ({
+        id,
+        name: 'Fixture',
+        email: `${id}@example.invalid`,
+        createdAt: at,
+      })),
+    });
+    await db().user.createMany({
+      data: [
+        {
+          id: `${prefix}-old`,
+          name: 'Fixture',
+          email: `${prefix}-old@example.invalid`,
+          createdAt: new Date(Date.now() - 8 * 86400000),
+        },
+        { id: `${prefix}-inflight`, name: 'Fixture', email: `${prefix}-inflight@example.invalid` },
+      ],
+    });
+    await reconcileBusinessAnalytics();
+    expect(
+      await db().posthogDelivery.count({ where: { event: 'signup', subjectId: { in: ids } } }),
+    ).toBe(50);
+    await reconcileBusinessAnalytics();
+    expect(
+      await db().posthogDelivery.count({ where: { event: 'signup', subjectId: { in: ids } } }),
+    ).toBe(51);
+    expect(
+      await db().posthogDelivery.count({
+        where: { subjectId: { in: [`${prefix}-old`, `${prefix}-inflight`] } },
+      }),
+    ).toBe(0);
+  });
   it('repairs terminal model and preview gaps with original dates, bounded pages and no legacy invention', async () => {
     const ids = Array.from({ length: 51 }, (_, i) => `${userId}-r-${String(i).padStart(2, '0')}`);
     await db().render.createMany({

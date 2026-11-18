@@ -1,5 +1,27 @@
 # Analytics and attribution
 
+## November 18 tracking corrections
+
+- The automatic consent prompt is restricted to the configured strict region (EEA, UK,
+  Switzerland and listed territories), including unresolved country codes. Standard-region
+  visitors do not see it. Failed/pending region resolution and GPC suppress the prompt and GA.
+  Advertising still requires an explicit choice in every region; cookie-page controls remain
+  available. This does not change the existing cookieless PostHog policy.
+- Admin channel classification treats PostHog's `$direct` marker as direct and no longer
+  classifies `accounts.google.com` as organic search. Explicit campaign UTMs retain priority.
+- The durable business-event recovery worker now repairs missing `signup` receipts from
+  committed accounts created within seven days, with a five-minute grace period and at most
+  50 accounts per run. It preserves `User.createdAt`, existing first-touch fields, and the
+  deterministic signup event ID. Unknown signup method is `otro`; preview history, pricing
+  assignments and aliases are not fabricated. Existing receipts are never replaced.
+- GA4 unwanted referrals must exactly match `accounts.google.com` and `checkout.stripe.com`.
+  The active Ads purchase goal is the GA4 import; the obsolete website-only conversion is
+  removed. These account settings are configured separately from application deployment.
+
+Recent-event reconciliation and GA4 reports have different processing windows and consent
+coverage. An accepted delivery is not proof of Google Ads attribution; validate that separately
+against a genuine consented ad-origin purchase. Do not fabricate a click or purchase for QA.
+
 First-touch attribution is independent of browser analytics consent. `Render` is the existing
 preview AND model table; its ID serves as both `preview_id` and `model_id`. `Render` and `User`
 receive ten nullable text columns, including an ISO UTC `first_seen_at`. No existing columns,

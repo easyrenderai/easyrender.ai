@@ -982,7 +982,18 @@
     "yourAccount": "A tua conta",
     "balance": "<strong>{credits}</strong> créditos",
     "buyCredits": "Comprar créditos",
-    "billing": "Faturação"
+    "billing": "Faturação",
+    "referral": {
+      "title": "Convida amigos",
+      "description": "Partilha o teu link. Quando alguém se registar com ele e verificar o e-mail, recebe {welcome} créditos. Depois, ganhas {back, plural, one {# crédito} other {# créditos}} por cada {spend} créditos que gastar.",
+      "linkLabel": "O teu link de convite",
+      "copy": "Copiar link",
+      "copied": "Copiado",
+      "copyError": "Não foi possível copiar. Seleciona o link e copia-o.",
+      "stats": "{rewarded} aderiram · {pending} a aguardar verificação · {credits} créditos ganhos",
+      "limit": "Ganhas com até {max} amigos.",
+      "verifyFirst": "Verifica o teu e-mail para obteres o teu link de convite."
+    }
   },
   "Credits": {
     "eyebrow": "Preços",
@@ -1178,7 +1189,12 @@
     "or": "ou",
     "legalNotice": "Ao criares uma conta, aceitas os <terms>Termos de Serviço</terms>. Consulta a <privacy>Política de Privacidade</privacy> para saberes como utilizamos os teus dados.",
     "metaSignIn": "Iniciar sessão",
-    "metaSignUp": "Criar conta"
+    "metaSignUp": "Criar conta",
+    "referral": {
+      "label": "Código de convite",
+      "applied": "Convite aplicado",
+      "hint": "Não tens de escrever nada. Recebes {credits} créditos quando verificares o teu e-mail."
+    }
   },
   "OAuth": {
     "title": "Connect {client} to Easy Render?",
@@ -1692,7 +1708,9 @@
     "advertisingTitle": "Medição publicitária opcional: er_ad_touch e _gcl_*",
     "advertising": "Só uma escolha publicitária explícita permite armazenamento publicitário da Google e utilização de dados para medir anúncios. Guardamos identificadores de clique Google permitidos em er_ad_touch por até 30 minutos, enviamo-los apenas à Google e retiramo-los do endereço após a captura. A Google pode guardar os seus próprios cookies de ligação de conversões. A personalização e o Google Signals continuam desligados. Aceitar análise não ativa esta opção. A Google também pode conservar dados de ligação nos cookies _gcl_* e no armazenamento local _gcl_ls; a sua duração é distinta do nosso registo de 30 minutos. Estes identificadores Google acessíveis são apagados quando retiras a permissão publicitária.",
     "languageTitle": "er_home_locale, er_app_locale",
-    "language": "Guardam o idioma que escolheste no site e na aplicação por até um ano. Estas preferências não recolhem dados de análise."
+    "language": "Guardam o idioma que escolheste no site e na aplicação por até um ano. Estas preferências não recolhem dados de análise.",
+    "referralTitle": "er_ref",
+    "referral": "Definido apenas quando abres o link de convite de um amigo. Guarda o código durante 30 dias para que o convite sobreviva à navegação e ao início de sessão com Google, e é usado uma única vez, ao criares a conta."
   },
   "Ar": {
     "metaTitle": "Veja na sua casa",
@@ -1988,7 +2006,7 @@
       "visitsCaveat": "Visits = landing_view; pageviews = $pageview. Unique visitors sum daily hash estimates, not distinct people across the period. Consent and blockers bias traffic; do not compare markets as equal coverage.",
       "cohortDefinition": "Each cell is cumulative conversion by the end of cohort week 0–8. Unfinished weeks are blank. Revenue is gross in the first displayed currency through the selected end.",
       "anonymousLink": "anonId + userId proves a claimed preview, not signup conversion: startBuild/startSheet assigns ownership after signup. A trustworthy anonymous-preview → signup rate needs a signup-time link.",
-      "reconciliationScope": "A BD exclui a equipa por predefinição; o PostHog inclui todos os eventos. A reconciliação de pré-visualizações/modelos usa conclusões imutáveis válidas, sem sucessos antigos sem data. Diferenças podem refletir cobertura e datas. Igualdade não prova um rastreio correto.",
+      "reconciliationScope": "A BD exclui a equipa por predefinição; o PostHog inclui todos os eventos. A reconciliação de pré-visualizações/modelos usa conclusões imutáveis válidas, sem sucessos antigos sem data. Diferenças podem refletir cobertura e datas. Igualdade não prova um rastreio correto. Os inícios de pré-visualização incluem regenerações e não têm um histórico imutável comparável na base de dados; a contagem na BD e a diferença permanecem desconhecidas.",
       "healthNotes": "Refresh invalidates database (5 min) and external-source (10 min) caches. Missing sources never become zero. Errors are sanitized; raw API responses and secrets stay server-side.",
       "stripeScope": "Stripe payments without a known account are excluded with team filtering. Current subscriptions are filtered by customer identity. First-payer classification and LTV are bounded by fetched Stripe history.",
       "w0": "Week 0",
@@ -2071,7 +2089,14 @@
       "spendImportTooLarge": "O ficheiro ultrapassa 512 KB. Divide-o em lotes menores.",
       "spendImportInvalid": "Importação inválida. Verifica o formato JSON, datas, moeda e contadores inteiros não negativos.",
       "spendImportDenied": "Permissão de administrador em falta ou expirada. Inicia sessão com uma conta verificada autorizada.",
-      "spendImportFailed": "Não foi possível confirmar a importação. Verifica a ligação e tenta novamente com o mesmo ficheiro; os registos diários não serão duplicados."
+      "spendImportFailed": "Não foi possível confirmar a importação. Verifica a ligação e tenta novamente com o mesmo ficheiro; os registos diários não serão duplicados.",
+      "paidSignupFunnel": "Pesquisa paga · coorte de registo",
+      "paidPreviewAccounts": "Contas com pré-visualização",
+      "creditCheckoutAccounts": "Checkout de créditos criado",
+      "previewWithoutCheckout": "Pré-visualização sem checkout de créditos",
+      "checkoutWithoutPayment": "Checkout de créditos sem pagamento posterior",
+      "paidAfterCheckout": "Contas com pagamento posterior",
+      "paidSignupFunnelScope": "Novas contas de pesquisa paga no período, por campanha do primeiro contacto. Contas únicas até ao fim do período. Uma pré-visualização reclamada pode anteceder o registo. Checkout indica uma sessão de compra de créditos criada após o registo e a pré-visualização; não comprova a abertura do Stripe. Os inícios de checkout de subscrição não são registados aqui. Pagamento posterior significa qualquer pagamento positivo após esse checkout, não necessariamente dessa sessão. Não se infere uma taxa de conversão de visitantes anónimos."
     }
   },
   "McpLanding": {
@@ -2905,6 +2930,7 @@
       "preheader": "Compara o modelo com a fotografia do produto.",
       "body": "Abre o modelo e compara a forma, as proporções e os materiais com a fotografia original.",
       "action": "Ver o meu modelo",
+      "previewAlt": "Pré-visualização do teu modelo 3D",
       "lang": "pt-PT",
       "footerReason": "Uma mensagem sobre a tua conta ou projeto Easy Render. Se precisares de ajuda, responde a este e-mail."
     },

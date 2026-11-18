@@ -146,5 +146,11 @@ it('serves DB metrics and accurate purchase reconciliation with PostHog and Stri
     posthog: null,
     difference: null,
   });
+  expect(health.view.tables.find((table) => table.key === 'reconciliation')?.rows).toContainEqual({
+    event: 'preview_start',
+    database: null,
+    posthog: null,
+    difference: null,
+  });
   expect(fetcher).not.toHaveBeenCalled();
 });

@@ -53,7 +53,37 @@ model User {
   upscales  Upscale[]
   firstModelEnrollment FirstModelEnrollment?
 
+  // Referral program: a lazily issued share code, and the referral that brought this user in.
+  referralCode      String?    @unique
+  referralsMade     Referral[] @relation("ReferralReferrer")
+  referralReceived  Referral?  @relation("ReferralReferred")
+
   @@map("user")
+}
+
+// One row per new account that signed up through a referral link. referredUserId is unique, so a
+// new account can bring in at most one reward. Credits move through the ledger, keyed by this id.
+model Referral {
+  id             String    @id @default(cuid())
+  code           String
+  referrerId     String
+  referrer       User      @relation("ReferralReferrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referredUserId String    @unique
+  referred       User      @relation("ReferralReferred", fields: [referredUserId], references: [id], onDelete: Cascade)
+  // pending: waiting for the new user's email. rewarded: credits granted. rejected: abuse check.
+  status         String    @default("pending")
+  rejectReason   String?
+  // Kickback paid to the referrer so far (net of reversals), and what the friend has spent (net of
+  // refunds). The kickback is the friend's net spend divided by the rate, rounded down.
+  referrerCredits Int      @default(0)
+  referredCredits Int      @default(0)
+  referredSpent   Int      @default(0)
+  kickbackSeq     Int      @default(0)
+  isKickbackActive Boolean  @default(true)
+  createdAt      DateTime  @default(now())
+  rewardedAt     DateTime?
+
+  @@index([referrerId, status])
 }
 
 model Session {
