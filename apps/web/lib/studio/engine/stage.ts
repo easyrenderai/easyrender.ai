@@ -4,6 +4,7 @@
 // dozens of live viewports on a page without hitting the browser's WebGL context limit.
 
 import * as THREE from 'three';
+import { hasWebGL, WebGLUnavailableError } from '@/lib/webgl';
 import { createStudioEnvironment, disposeStudioEnvironment } from './environment';
 import { disposeTree } from './resources';
 
@@ -249,7 +250,10 @@ export class View {
 
 let stage: Stage | null = null;
 
+// Throws WebGLUnavailableError when the browser has no WebGL. Probing first keeps three.js from
+// logging its own error and rethrowing "Error creating WebGL context." from the constructor.
 export function getStage() {
+  if (!stage && !hasWebGL()) throw new WebGLUnavailableError();
   stage ??= new Stage();
   return stage;
 }

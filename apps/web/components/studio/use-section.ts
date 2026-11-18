@@ -2,6 +2,7 @@
 
 import { useEffect, useEffectEvent, useRef } from 'react';
 import { Scope } from '@/lib/studio/scope';
+import { WebGLUnavailableError } from '@/lib/webgl';
 
 // Runs `setup` once the element scrolls near the viewport and tears everything down on unmount.
 // `setup` loads its 3D code with a dynamic import, so three.js stays out of the first bundle.
@@ -30,6 +31,7 @@ export function useSection<T extends HTMLElement>(
         const start = () => {
           if (!scope.alive) return;
           Promise.resolve(run(root, scope)).catch((error) => {
+            if (error instanceof WebGLUnavailableError) return;
             console.warn('studio: section failed to start', error);
           });
         };
