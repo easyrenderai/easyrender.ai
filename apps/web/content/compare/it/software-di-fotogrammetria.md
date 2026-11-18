@@ -60,7 +60,7 @@ Il metodo da immagine a 3D parte da una sola foto e stima i lati che la fotocame
 
 easyrender lavora così, in due fasi. Prima disegna una tavola delle angolazioni gratuita: nove viste dell'oggetto, otto intorno a passi di 45 gradi e una dall'alto. Controlli la tavola, e spendi crediti solo quando ti convince.
 
-Poi il sistema usa quelle nove viste e crea un unico modello con texture, da scaricare in GLB e USDZ. Un modello costa {{renderCredits}} crediti ({{renderPrice}}), e la [pagina dei prezzi](/it/prezzi) elenca i pacchetti. [Carica una foto](/it) per vedere gratis la tavola delle angolazioni.
+Poi il sistema usa quelle nove viste e crea un unico modello con texture, da scaricare in GLB e USDZ. Un modello costa {{renderCredits}} crediti ({{renderPrice}}), e la [pagina dei prezzi](/it/prezzi) elenca i pacchetti. [Carica una foto](/it#try) per vedere gratis la tavola delle angolazioni.
 
 ## Cosa vuoi ottenere, e come lo misuri?
 

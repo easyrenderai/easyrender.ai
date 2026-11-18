@@ -8,7 +8,7 @@ updated: 2026-11-15
 keyword: modelador 3d
 author: Jorge Rodríguez
 authorType: person
-cta: Antes de escrever o briefing, passe uma fotografia nítida da peça pela pré-visualização grátis e veja todos os ângulos com os seus próprios olhos.
+cta: Antes de encomendares um modelo, carrega uma fotografia nítida da peça e vê as vistas geradas gratuitamente.
 ---
 
 <!-- NOTA PARA QUEM CARREGA: rota de destino /pt/comparacoes/modelador-3d-ou-ia (equivalencias-hreflang.csv). Confirmar o formato de conteúdo das comparativas e o nome do grupo hreflang («compare-3d-modeler-vs-ai» é provisório). -->
@@ -99,7 +99,7 @@ Quando o produto é real e já está no seu sítio, e o que precisa é de um mod
 - **Peças únicas.** Um aparador vintage vende-se uma vez. Um modelo orçamentado para uma só venda raramente se paga. [Vender móveis vintage online](/pt/guias/vender-moveis-vintage) trata do resto do anúncio.
 - **Ver antes de gastar.** A folha de ângulos permite avaliar a forma antes de gerar o modelo pago, o que nenhum briefing consegue.
 
-Se já tem a fotografia, [carregue-a e veja a pré-visualização grátis](/pt) antes de continuar a ler.
+Se já tem a fotografia, [carregue-a e veja a pré-visualização grátis](/pt#try) antes de continuar a ler.
 
 ## O que faríamos nós?
 

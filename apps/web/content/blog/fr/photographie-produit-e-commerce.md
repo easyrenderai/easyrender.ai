@@ -1,14 +1,14 @@
 ---
 
 group: product-photography-for-ecommerce
-title: "Photographie produit e-commerce : le kit d’une boutique"
+title: "Photographie de produit pour l’e-commerce : s’équiper à petit budget"
 description: "Photographie produit pour l’e-commerce à petit budget : lumière douce, fond uni, liste de vues fixe, et ce que demandent Amazon et Shopify."
 date: 2026-11-12
 updated: 2026-11-12
 author: Jorge Rodríguez
 authorType: person
 keyword: photographie produit
-cta: "Quand ta prochaine image principale de trois-quarts est prête, passe-la en image vers 3D et contrôle gratuitement les faces cachées."
+cta: Importe une photo de produit et regarde gratuitement les vues générées.
 ---
 
 Une bonne photographie produit pour l’e-commerce repose sur un dispositif répétable : une grande source de lumière douce, un fond uni, un appareil sur trépied à mi-hauteur du produit et la même liste de vues pour chaque référence. Pas besoin de flashes : une fenêtre, un carton plume blanc et un téléphone suffisent à la plupart des petites boutiques.
@@ -134,7 +134,7 @@ L’export en 2 048 pixels ci-dessus suffit largement. easyrender refuse les 
 
 Une photo 360 est autre chose : une série de photos prises sur un plateau tournant, que l’acheteur fait défiler. Un modèle 3D est un seul fichier que l’acheteur fait tourner librement et qu’il peut, sur un téléphone, placer dans sa pièce. [Photo 360 ou modèle 3D](/fr/comparatifs/360-ou-3d) explique comment chacun se fabrique, ce qu’il coûte et quand le choisir.
 
-easyrender construit un modèle à partir d’une de ces photos et montre d’abord un aperçu gratuit de tous les angles. Il travaille sur des pièces isolées, comme un lampadaire ou un fauteuil : donne-lui le meuble seul, pas une pièce mise en scène. [Envoyer une photo](/fr)
+easyrender construit un modèle à partir d’une de ces photos et montre d’abord un aperçu gratuit de tous les angles. Il travaille sur des pièces isolées, comme un lampadaire ou un fauteuil : donne-lui le meuble seul, pas une pièce mise en scène. [Envoyer une photo](/fr#try)
 
 ## Quelles sont les erreurs fréquentes ?
 

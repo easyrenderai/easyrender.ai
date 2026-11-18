@@ -1,9 +1,10 @@
-import { AppError, getRender } from '@easyrender/core';
+import { AppError, getRender, isListed } from '@easyrender/core';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { ArView } from '@/components/ar-view';
 import { resolveViewerActor } from '@/lib/actor';
+import { TABLE_EXAMPLE } from '@/lib/marketing-examples';
 import { noindexMetadata } from '@/lib/seo/metadata';
 
 export const dynamic = 'force-dynamic';
@@ -22,7 +23,10 @@ export default async function ArPage({ params }: PageProps<'/ar/[id]'>) {
     if (error instanceof AppError && error.status === 404) notFound();
     throw error;
   });
-  const name = render.name ?? t('metaTitle');
+  const isTableExample = id === TABLE_EXAMPLE.id && isListed(render);
+  const name = isTableExample
+    ? (await getTranslations('Showcase'))('items.table.title')
+    : render.name?.trim() || t('metaTitle');
   const isReady = render.status === 'ready' && Boolean(render.glbKey);
   if (!isReady) {
     return (

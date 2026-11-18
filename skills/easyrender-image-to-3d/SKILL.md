@@ -47,11 +47,12 @@ consult [the workflow examples](references/workflows.md).
    otherwise ask the user to review it and state that you have not visually checked it. Check
    the silhouette, part count, visible materials and obvious invented details before recommending
    the paid build. A free preview is watermarked and usage-limited.
-4. Refresh `get_render` and `get_credits` before spending. For a `preview_ready` render, the
-   incremental debit is `max(0, renderCredits - credits)` from that render's current response.
-   `get_credits.render_credits` is the full-build reference, not necessarily this remaining debit.
-   If required values are absent or invalid, do not guess a price or start the paid operation.
-   State the pending credit cost and confirm sufficient balance and remaining task budget.
+4. Refresh `get_render` and `get_credits` before spending. For a `preview_ready` render, use
+   `pending_credits` from `get_render` for the amount still due. If an older client does not show
+   that field, calculate `max(0, renderCredits - credits)` from the same render's current response.
+   Use `get_credits` for the balance and full-build reference price. If required values are absent
+   or invalid, do not guess a price or start the paid operation. State the pending credit cost and
+   confirm sufficient balance and remaining task budget.
 5. Call `render_3d` with `max_credits` bounded by the approved remaining budget, only when the
    user has authorized that spend. Existing explicit authorization for the same assets and a sufficient budget remains valid: do not ask for approval again for
    each item. Honor instructions such as “show me first” even if a budget was mentioned. A request

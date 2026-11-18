@@ -16,6 +16,7 @@ import {
   captureBrowser,
   captureSignup,
 } from '@/lib/analytics/browser';
+import { localizedAuthPath } from '@/lib/app-locale';
 import { authClient } from '@/lib/auth-client';
 import { ROUTES } from '@/lib/seo/routes';
 
@@ -27,10 +28,12 @@ export function AuthFields({
   onDone,
   submitLabel,
   callbackURL,
+  project,
 }: {
   mode: AuthMode;
   onDone: () => void | Promise<void>;
   submitLabel?: string;
+  project?: string | null;
   // Where Google sends the visitor after sign in (they leave the page, so onDone cannot run).
   callbackURL: () => string | Promise<string>;
 }) {
@@ -58,13 +61,20 @@ export function AuthFields({
               body: { attribution: attribution() },
               headers: {
                 ...attributionHeaders(),
-                'x-easyrender-email-locale': locale === 'es' ? 'es' : 'en',
+                'x-easyrender-email-locale': locale,
+                ...(project ? { 'x-easyrender-project-return': project } : {}),
               },
             },
           })
         : await authClient.signIn.email({ email, password });
     if (result.error) {
-      setError(result.error.message ?? t('errors.generic'));
+      setError(
+        result.error.status === 429
+          ? t('errors.rateLimited')
+          : mode === 'sign-in' && result.error.status === 401
+            ? t('errors.credentials')
+            : t('errors.generic'),
+      );
       setBusy(false);
       return;
     }
@@ -85,16 +95,16 @@ export function AuthFields({
       fetchOptions: {
         headers: {
           ...attributionHeaders(),
-          'x-easyrender-email-locale': locale === 'es' ? 'es' : 'en',
+          'x-easyrender-email-locale': locale,
         },
       },
       callbackURL: target,
       newUserCallbackURL: target,
-      errorCallbackURL: `/sign-in?error=oauth&next=${encodeURIComponent(target)}`,
+      errorCallbackURL: `${localizedAuthPath(locale, '/sign-in')}?error=oauth&next=${encodeURIComponent(target)}`,
     });
     // On success the browser is already redirecting to Google.
     if (result.error) {
-      setError(result.error.message ?? t('errors.generic'));
+      setError(t('errors.oauth'));
       setBusy(false);
     }
   }

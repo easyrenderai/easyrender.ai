@@ -100,7 +100,7 @@ Wenn eine Datei an mehreren Orten funktionieren soll: in deinem Shopify-Shop, in
 
 Ein Modell bietet sich auch an, wenn das Produkt nicht bei dir ist. Ein Spin braucht das Stück auf dem Drehteller. Ein Modell aus einem Foto braucht nur das Katalogfoto des Lieferanten, etwa von einem Bouclé-Loungesessel, den du verkaufst, aber nie auf Lager hast. Es eignet sich auch für große Möbel, die kein Drehteller in deinen Räumen trägt.
 
-Hast du dieses Foto parat, [lade es hoch und prüf die kostenlose Vorschau](/de).
+Hast du dieses Foto parat, [lade es hoch und prüf die kostenlose Vorschau](/de#try).
 
 ## Kannst du beides nutzen?
 

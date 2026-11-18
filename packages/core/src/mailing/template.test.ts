@@ -89,21 +89,27 @@ describe('branded email rendering', () => {
     expect(mail.from).toBe(config.from);
     expect(mail.reply_to).toBe(config.replyTo);
   });
-  it.each(['en', 'es'])('renders all real %s service copies with readable fallbacks', (lang) => {
-    const { ServiceEmails } = JSON.parse(
-      readFileSync(new URL(`../../../../apps/web/messages/${lang}.json`, import.meta.url), 'utf8'),
-    );
-    for (const copy of Object.values(ServiceEmails) as Parameters<
-      typeof buildServiceMailPayload
-    >[2][]) {
-      const mail = buildServiceMailPayload('reader@example.com', action.url, copy, config);
-      expect(copy.title).toBeTruthy();
-      expect(copy.preheader).toBeTruthy();
-      expect(mail.html).toContain(`<html lang="${lang}">`);
-      expect(mail.text).toContain(copy.body);
-      expect(mail.text).toContain(copy.action);
-      expect(mail.subject).not.toContain('Easy Render');
-      expect(mail.html).not.toMatch(/undefined|\[object Object\]/);
-    }
-  });
+  it.each(['en', 'es', 'de', 'fr', 'it', 'pt'])(
+    'renders all real %s service copies with readable fallbacks',
+    (lang) => {
+      const { ServiceEmails } = JSON.parse(
+        readFileSync(
+          new URL(`../../../../apps/web/messages/${lang}.json`, import.meta.url),
+          'utf8',
+        ),
+      );
+      for (const copy of Object.values(ServiceEmails) as Parameters<
+        typeof buildServiceMailPayload
+      >[2][]) {
+        const mail = buildServiceMailPayload('reader@example.com', action.url, copy, config);
+        expect(copy.title).toBeTruthy();
+        expect(copy.preheader).toBeTruthy();
+        expect(mail.html).toContain(`<html lang="${lang === 'pt' ? 'pt-PT' : lang}">`);
+        expect(mail.text).toContain(copy.body);
+        expect(mail.text).toContain(copy.action);
+        expect(mail.subject).not.toContain('Easy Render');
+        expect(mail.html).not.toMatch(/undefined|\[object Object\]/);
+      }
+    },
+  );
 });

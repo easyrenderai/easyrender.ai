@@ -43,6 +43,7 @@ import { finishMaterialFidelity } from './render-fidelity';
 import { type RenderQuality, storedQuality, withQuality } from './render-quality';
 import { reportError } from './report';
 import { queueRenderServiceEmail } from './service-email';
+import type { ServiceEmailLocale } from './service-email-locale';
 import { getFile, putFile } from './storage';
 
 // Who is asking: a signed-in user, an anonymous visitor (cookie), or both.
@@ -51,6 +52,7 @@ export type Actor = {
   anonId?: string | null;
   ipHash?: string | null;
   geoCountry?: string | null;
+  locale?: ServiceEmailLocale;
   apiKeyId?: string;
   apiKeyScopes?: string[];
   maxCredits?: number;
@@ -283,6 +285,7 @@ export async function createDraft(input: {
         userId: input.actor.userId ?? null,
         anonId: input.actor.anonId ?? null,
         ipHash: input.actor.ipHash ?? null,
+        notificationLocale: input.actor.locale,
         prompt,
         name,
         source,
@@ -437,6 +440,8 @@ async function fail(id: string, error: unknown, expected?: Pick<Render, 'status'
   // render remains in flight and a webhook, polling request or recovery worker can retry.
   const changed = await db().$transaction(async (tx) => {
     const isRedraw = render.status === 'drafting' && Boolean(render.sheetKey);
+    const amount = isRedraw ? SHEET_CREDITS : render.credits;
+    const refundedCredits = render.userId ? amount : 0;
     const { count } = await tx.render.updateMany({
       where: {
         id,
@@ -444,12 +449,21 @@ async function fail(id: string, error: unknown, expected?: Pick<Render, 'status'
         updatedAt: expected?.updatedAt ?? render.updatedAt,
       },
       data: isRedraw
-        ? { status: 'preview_ready', error: null }
-        : { status: 'failed', error: message.slice(0, 500) },
+        ? {
+            status: 'preview_ready',
+            error: null,
+            quality: withQuality(render, { refundedCorrectionCredits: refundedCredits }),
+          }
+        : {
+            status: 'failed',
+            error: message.slice(0, 500),
+            quality: withQuality(render, {
+              failedStep: render.status === 'rendering' ? 'model' : 'preview',
+            }),
+          },
     });
     if (!count) return false;
-    const amount = isRedraw ? SHEET_CREDITS : render.credits;
-    if (render.userId && amount > 0) {
+    if (render.userId && refundedCredits > 0) {
       await grantCreditsInTransaction(tx, {
         userId: render.userId,
         amount,
@@ -457,6 +471,11 @@ async function fail(id: string, error: unknown, expected?: Pick<Render, 'status'
         reason: isRedraw ? 'sheet_redraw_failed' : 'render_failed',
         renderId: id,
       });
+      if (isRedraw) {
+        await tx.renderEdit.create({
+          data: { renderId: id, kind: 'sheet_redraw_refund', credits: refundedCredits },
+        });
+      }
     }
     if (!isRedraw) await queueRenderServiceEmail(id, tx);
     return true;
@@ -793,7 +812,12 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
     assertAuthorizedCredits(actor.isUsingFreeModel ? 0 : owed, actor);
     const { count } = await tx.render.updateMany({
       where: { id, status: 'preview_ready' },
-      data: { status: 'rendering', userId: actor.userId, credits: alreadyPaid + owed },
+      data: {
+        status: 'rendering',
+        userId: actor.userId,
+        credits: alreadyPaid + owed,
+        ...(actor.locale ? { notificationLocale: actor.locale } : {}),
+      },
     });
     if (!count) {
       if (actor.isUsingFreeModel)
@@ -1051,6 +1075,7 @@ export async function redrawSheet(id: string, actor: Actor, note: string): Promi
         sheetNote: fix,
         sheetPredictionId: null,
         hasFinalSheet: false,
+        quality: withQuality(current, { refundedCorrectionCredits: 0 }),
       },
     });
     if (!count) return null;
@@ -1097,6 +1122,9 @@ export type RenderView = {
   name: string | null;
   error: string | null;
   failureReason?: 'repeated_views' | 'inconsistent_structure';
+  failedStep?: 'preview' | 'model';
+  refundedCredits?: number;
+  refundedCorrectionCredits?: number;
   hasPreview: boolean;
   // True once the 3x3 angle sheet exists. Without it the preview is the plain photo.
   hasSheet: boolean;
@@ -1126,6 +1154,9 @@ export function toView(render: Render): RenderView {
           ? 'inconsistent_structure'
           : undefined
       : undefined;
+  const quality = storedQuality(render);
+  const refundedCorrectionCredits =
+    render.status === 'preview_ready' ? quality.refundedCorrectionCredits : 0;
   return {
     id: render.id,
     status: render.status,
@@ -1140,6 +1171,11 @@ export function toView(render: Render): RenderView {
             : 'Generation failed. Credits, if any, were refunded.'
         : null,
     ...(failureReason ? { failureReason } : {}),
+    ...(render.status === 'failed' && quality.failedStep ? { failedStep: quality.failedStep } : {}),
+    ...(render.status === 'failed' && render.userId && render.credits > 0
+      ? { refundedCredits: render.credits }
+      : {}),
+    ...(refundedCorrectionCredits ? { refundedCorrectionCredits } : {}),
     hasPreview: render.status !== 'drafting' && render.status !== 'failed',
     hasSheet: Boolean(render.sheetKey),
     sheetNote: render.sheetNote,

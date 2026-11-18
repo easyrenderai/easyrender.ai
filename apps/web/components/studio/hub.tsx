@@ -496,7 +496,7 @@ function HubSheet({ id, fmt, onClose }: { id: string | null; fmt: Format; onClos
                 </div>
                 <div>
                   <dt>{t('formats')}</dt>
-                  <dd>{item.formats.join(' · ')}</dd>
+                  <dd>GLB</dd>
                 </div>
               </dl>
 

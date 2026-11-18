@@ -8,7 +8,7 @@ updated: 2026-11-15
 keyword: software de fotogrametria
 author: Jorge Rodríguez
 authorType: person
-cta: Se só tem uma fotografia de catálogo da peça, veja-a grátis de todos os ângulos antes de decidir se precisa mesmo de a digitalizar.
+cta: Se só tens uma fotografia do produto, revê gratuitamente as vistas geradas. Para obteres medidas verificáveis, considera um processo de captura com várias fotografias.
 ---
 
 <!-- NOTA PARA QUEM CARREGA: rota de destino /pt/comparacoes/software-de-fotogrametria (equivalencias-hreflang.csv). Confirmar o formato de conteúdo das comparativas e o nome do grupo hreflang («compare-photogrammetry-software» é provisório). -->
@@ -63,7 +63,7 @@ O image-to-3D parte de uma única fotografia e deduz os lados que a câmara não
 
 O easyrender trabalha assim, em duas fases. Primeiro desenha uma folha de ângulos grátis: nove vistas do objeto, oito à volta em passos de 45 graus e uma de cima. Confere essa folha e só gasta créditos quando estiver certa.
 
-A geração lê depois essas nove vistas e cria um modelo com textura, que se descarrega em GLB e USDZ. Um modelo custa {{renderCredits}} créditos, ou seja {{renderPrice}}, e a [página de preços](/pt/precos) mostra os pacotes. [Carregar uma fotografia](/pt) para ver a folha de ângulos grátis.
+A geração lê depois essas nove vistas e cria um modelo com textura, que se descarrega em GLB e USDZ. Um modelo custa {{renderCredits}} créditos, ou seja {{renderPrice}}, e a [página de preços](/pt/precos) mostra os pacotes. [Carregar uma fotografia](/pt#try) para ver a folha de ângulos grátis.
 
 ## O que quer obter, e como o mede?
 

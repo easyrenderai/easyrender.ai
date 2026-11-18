@@ -2,10 +2,10 @@
 
 import type { FirstModelOffer, RenderEditView, RenderView as View } from '@easyrender/core';
 import { useQuery } from '@tanstack/react-query';
-import { Box, Globe, Grid3x3, Loader2, Lock, RefreshCw, Sparkles } from 'lucide-react';
+import { Box, Download, Globe, Grid3x3, Loader2, Lock, RefreshCw, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { AngleSheet } from '@/components/angle-sheet';
 import { ShellPanel } from '@/components/app-shell/shell-context';
@@ -13,6 +13,7 @@ import { ModelView } from '@/components/model-view';
 import { DATE_FORMAT, RenderDetail } from '@/components/render-detail';
 import { RenderHistory } from '@/components/render-history';
 import { RenderJourneyStatus } from '@/components/render-journey-status';
+import { SiteLink } from '@/components/site-link';
 import { TrialBuildAction } from '@/components/trial-build-action';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -30,10 +31,13 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { UpscaleAction } from '@/components/upscale/upscale-action';
 import { latestUpscale, useUpscales } from '@/components/upscale/use-upscales';
+import { isLocale } from '@/i18n/config';
+import { useActivationError } from '@/lib/activation-errors';
 import { captureBrowser, observeRender } from '@/lib/analytics/browser';
+import { localizedAuthPath } from '@/lib/app-locale';
 import { newRenderHref } from '@/lib/new-render-href';
-
 import { startRenderPolling } from '@/lib/render-polling';
+import { ROUTES } from '@/lib/seo/routes';
 import { correctionNote, SHEET_ISSUES, type SheetIssue } from '@/lib/sheet-correction';
 
 const RUNNING = new Set(['drafting', 'rendering']);
@@ -48,6 +52,7 @@ export function RenderView({
   balance,
   owner,
   canExport = false,
+  sampleDownload,
 }: {
   initial: View;
   // The owner's history of this render, read on the server. A new step refreshes it.
@@ -58,8 +63,11 @@ export function RenderView({
   owner: boolean;
   /** The deployment can convert models to OBJ, FBX and BLEND. */
   canExport?: boolean;
+  sampleDownload?: string;
 }) {
   const t = useTranslations('Render');
+  const locale = useLocale();
+  const localizedError = useActivationError();
   const trialText = useTranslations('FirstModel');
   const format = useFormatter();
   const router = useRouter();
@@ -78,7 +86,19 @@ export function RenderView({
   );
   const isCorrectionValid = correction.length > 0 && correction.length <= NOTE_MAX_LENGTH;
   // Signed-in people start a new render in the app (the dashboard composer), not on the marketing home.
-  const newHref = newRenderHref(signedIn);
+  const home = ROUTES.home.paths[isLocale(locale) ? locale : 'en'];
+  const newHref = signedIn ? newRenderHref(true) : `${home}#try`;
+  const isCorrecting = render.status === 'drafting' && render.hasSheet;
+  const isPaidSheet = render.status === 'drafting' && !render.hasSheet && render.credits > 0;
+  const statusLabel = t(
+    isCorrecting
+      ? 'status.correcting'
+      : isPaidSheet
+        ? 'status.paidSheet'
+        : `status.${render.status}`,
+  );
+  const next = encodeURIComponent(`/r/${render.id}`);
+  const signupHref = `${localizedAuthPath(locale, '/sign-up')}?next=${next}`;
   // The first-model offer is created once when the preview is ready. The POST is not repeated on
   // reconnect or on a later mount of the same page.
   const trial = useQuery({
@@ -95,13 +115,20 @@ export function RenderView({
   });
   const trialOffer = trial.isSuccess && !trial.isFetching ? trial.data : undefined;
   const hasTrialError = trial.isError && !trial.isFetching;
-  const upscales = useUpscales({ renderId: initial.id }, owner && signedIn && initial.canUpscale);
+  const upscales = useUpscales({ renderId: initial.id }, owner && signedIn && render.canUpscale);
 
   // use-effect-audit: ignore polls the render through the abortable poller in lib/render-polling, which has its own tests
   useEffect(() => {
     if (!RUNNING.has(render.status)) return;
-    return startRenderPolling(render.id, setRender, setHasConnectionError);
-  }, [render.id, render.status]);
+    return startRenderPolling(
+      render.id,
+      (updated) => {
+        setRender(updated);
+        if (!RUNNING.has(updated.status)) router.refresh();
+      },
+      setHasConnectionError,
+    );
+  }, [render.id, render.status, router]);
 
   // use-effect-audit: ignore reports the render state to analytics, an external system
   useEffect(() => {
@@ -127,7 +154,17 @@ export function RenderView({
           source: 'render_detail',
           credits: isUsingFreeModel ? 0 : owed,
         });
-      } else setError(data.error ?? t('errors.start'));
+      } else {
+        setError(
+          localizedError(
+            data,
+            t(data.code === 'upstream' ? 'errors.buildStartRefunded' : 'errors.start'),
+          ),
+        );
+        if (isUsingFreeModel && ['trial_unavailable', 'trial_verify_email'].includes(data.code)) {
+          void trial.refetch();
+        }
+      }
     } catch {
       setError(t('errors.start'));
     } finally {
@@ -138,16 +175,26 @@ export function RenderView({
   async function makeSheet() {
     setStarting(true);
     setError(null);
-    const response = await fetch(`/api/renders/${render.id}/sheet`, { method: 'POST' });
-    const data = await response.json().catch(() => ({}));
-    if (response.ok) {
+    const response = await fetch(`/api/renders/${render.id}/sheet`, { method: 'POST' }).catch(
+      () => null,
+    );
+    const data = (await response?.json().catch(() => null)) ?? {};
+    if (response?.ok) {
       setRender(data);
       router.refresh();
       captureBrowser('render_sheet_generation_started', {
         source: 'render_detail',
         credits: render.sheetCredits,
       });
-    } else setError(data.error ?? t('errors.sheet'));
+    } else {
+      setError(
+        localizedError(
+          data,
+          t(data.code === 'upstream' ? 'errors.sheetStartRefunded' : 'errors.sheet'),
+        ),
+      );
+      if (data.code === 'upstream') router.refresh();
+    }
     setStarting(false);
   }
 
@@ -159,9 +206,9 @@ export function RenderView({
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ note: correction }),
-    });
-    const data = await response.json().catch(() => ({}));
-    if (response.ok) {
+    }).catch(() => null);
+    const data = (await response?.json().catch(() => null)) ?? {};
+    if (response?.ok) {
       setIsConfirmingCorrection(false);
       setRender(data);
       router.refresh();
@@ -169,7 +216,15 @@ export function RenderView({
         source: 'render_detail',
         credits: render.sheetCredits,
       });
-    } else setRedrawError(data.error ?? t('errors.redraw'));
+    } else {
+      setRedrawError(
+        localizedError(
+          data,
+          t(data.code === 'upstream' ? 'errors.redrawStartRefunded' : 'errors.redraw'),
+        ),
+      );
+      if (data.code === 'upstream') router.refresh();
+    }
     setStarting(false);
   }
 
@@ -190,7 +245,6 @@ export function RenderView({
   // An angle sheet bought earlier already counts toward the price.
   const owed = Math.max(0, render.renderCredits - render.credits);
   const base = `/api/renders/${render.id}`;
-  const next = encodeURIComponent(`/r/${render.id}`);
   const title = render.name || render.prompt || t('untitled');
 
   const viewer =
@@ -203,7 +257,7 @@ export function RenderView({
         editableRenderId={owner ? render.id : undefined}
         nextStepsHref={owner ? newHref : undefined}
       />
-    ) : (
+    ) : owner && RUNNING.has(render.status) ? null : (
       <div className="flex aspect-square w-full flex-col items-center justify-center gap-3 rounded-xl border bg-muted/40 p-6 text-center text-muted-foreground sm:aspect-[4/3]">
         {render.status === 'failed' ? (
           <p className="text-sm">
@@ -211,7 +265,16 @@ export function RenderView({
               ? t('repeatedViewsFailure')
               : render.failureReason === 'inconsistent_structure'
                 ? t('inconsistentStructureFailure')
-                : render.error}
+                : t(
+                    render.failedStep === 'preview'
+                      ? 'errors.previewFailed'
+                      : render.failedStep === 'model'
+                        ? 'errors.modelFailed'
+                        : 'errors.generationFailed',
+                  )}
+            {Boolean(render.refundedCredits) &&
+              !render.failureReason &&
+              ` ${t('errors.creditsReturned', { credits: render.refundedCredits ?? 0 })}`}
           </p>
         ) : RUNNING.has(render.status) ? (
           <>
@@ -223,7 +286,9 @@ export function RenderView({
         ) : (
           <>
             <Box className="size-8" />
-            <p className="max-w-sm text-sm">{t('previewReady')}</p>
+            <p className="max-w-sm text-sm">
+              {t(render.hasSheet ? 'previewReady' : 'noAngleSheet')}
+            </p>
           </>
         )}
       </div>
@@ -245,11 +310,18 @@ export function RenderView({
   const angles = (
     <div className="space-y-4">
       {sheet}
+      {owner && Boolean(render.refundedCorrectionCredits) && (
+        <Alert variant="destructive">
+          <AlertDescription>
+            {t('correction.refunded', { credits: render.refundedCorrectionCredits ?? 0 })}
+          </AlertDescription>
+        </Alert>
+      )}
       {owner && render.status === 'preview_ready' && render.hasSheet && (
         <details className="text-sm text-muted-foreground">
           <summary className="cursor-pointer">{t('review.title')}</summary>
           <ul className="mt-3 list-disc space-y-2 pl-5">
-            {(['shape', 'parts', 'openings'] as const).map((key) => (
+            {(['shape', 'parts', 'openings', 'material'] as const).map((key) => (
               <li key={key}>{t(`review.${key}`)}</li>
             ))}
           </ul>
@@ -300,7 +372,7 @@ export function RenderView({
                 ))}
               </div>
             </fieldset>
-            <Label htmlFor="sheet-note">{t('fixSheetLabel')}</Label>
+            <Label htmlFor="sheet-note">{t('correction.note')}</Label>
             <Textarea
               id="sheet-note"
               value={note}
@@ -370,6 +442,46 @@ export function RenderView({
     </div>
   );
 
+  const buildAction = (
+    <>
+      {(!signedIn || balance >= owed) && (
+        <p className="text-sm text-muted-foreground">
+          {t('journey.buildCost', { credits: format.number(owed) })}
+        </p>
+      )}
+      {!signedIn ? (
+        <Button size="lg" className="h-auto min-h-11 w-full whitespace-normal" asChild>
+          <SiteLink href={signupHref}>
+            <Sparkles />
+            {t('signUpToRender')}
+          </SiteLink>
+        </Button>
+      ) : balance < owed ? (
+        <>
+          <p className="text-sm text-muted-foreground">
+            {t('journey.creditBalance', {
+              balance: format.number(balance),
+              credits: format.number(owed),
+            })}
+          </p>
+          <Button size="lg" className="h-auto min-h-11 w-full whitespace-normal" asChild>
+            <Link href={`/credits?next=${next}`}>{t('buyToRender')}</Link>
+          </Button>
+        </>
+      ) : (
+        <Button
+          size="lg"
+          className="h-auto min-h-11 w-full whitespace-normal"
+          onClick={() => build()}
+          disabled={starting}
+        >
+          {starting ? <Loader2 className="animate-spin" /> : <Box />}
+          {t('render3d', { credits: format.number(owed) })}
+        </Button>
+      )}
+    </>
+  );
+
   const actions = owner ? (
     <>
       {render.status === 'preview_ready' &&
@@ -381,6 +493,10 @@ export function RenderView({
             <Button variant="outline" className="w-full" onClick={() => void trial.refetch()}>
               {trialText('retry')}
             </Button>
+            <details className="space-y-3 text-sm">
+              <summary className="cursor-pointer">{trialText('continuePaid')}</summary>
+              {buildAction}
+            </details>
           </div>
         ) : (
           <TrialBuildAction
@@ -389,38 +505,7 @@ export function RenderView({
             next={next}
             onBuild={() => build(true)}
             onRefresh={() => void trial.refetch()}
-            fallback={
-              <>
-                {render.status === 'preview_ready' && (
-                  <p className="text-sm text-muted-foreground">
-                    {t('journey.buildCost', { credits: owed })}
-                  </p>
-                )}
-                {render.status === 'preview_ready' &&
-                  (!signedIn ? (
-                    <Button size="lg" className="w-full" asChild>
-                      <Link href={`/sign-up?next=${next}`}>
-                        <Sparkles />
-                        {t('signUpToRender')}
-                      </Link>
-                    </Button>
-                  ) : balance < owed ? (
-                    <Button size="lg" className="w-full" asChild>
-                      <Link href={`/credits?next=${next}`}>{t('buyToRender')}</Link>
-                    </Button>
-                  ) : (
-                    <Button
-                      size="lg"
-                      className="w-full"
-                      onClick={() => build()}
-                      disabled={starting}
-                    >
-                      {starting ? <Loader2 className="animate-spin" /> : <Box />}
-                      {t('render3d', { credits: owed })}
-                    </Button>
-                  ))}
-              </>
-            }
+            fallback={buildAction}
           />
         ))}
       {render.status === 'preview_ready' &&
@@ -434,7 +519,7 @@ export function RenderView({
         )}
       {render.status === 'failed' && (
         <Button variant="outline" className="w-full" asChild>
-          <Link href={newHref}>{t('tryAnother')}</Link>
+          <SiteLink href={newHref}>{t('tryAnother')}</SiteLink>
         </Button>
       )}
       {signedIn && render.status !== 'failed' && (
@@ -458,12 +543,22 @@ export function RenderView({
       )}
     </>
   ) : (
-    <Button className="w-full" asChild>
-      <Link href={signedIn ? newHref : '/#top'}>
-        <Sparkles />
-        {t('makeYourOwn')}
-      </Link>
-    </Button>
+    <>
+      <Button className="w-full" asChild>
+        <SiteLink href={newHref}>
+          <Sparkles />
+          {t('makeYourOwn')}
+        </SiteLink>
+      </Button>
+      {sampleDownload && (
+        <Button className="w-full" variant="outline" asChild>
+          <a href={sampleDownload} download>
+            <Download />
+            {t('downloadGlb')}
+          </a>
+        </Button>
+      )}
+    </>
   );
 
   return (
@@ -476,13 +571,16 @@ export function RenderView({
             <RenderJourneyStatus
               status={render.status}
               hasPreview={render.hasPreview}
+              isCorrecting={isCorrecting}
+              isPaidSheet={isPaidSheet}
+              isPhotoOnly={render.status === 'preview_ready' && !render.hasSheet}
               hasConnectionError={hasConnectionError}
             />
           ) : undefined
         }
         title={title}
         prompt={render.prompt}
-        badges={[t(`status.${render.status}`)]}
+        badges={[statusLabel]}
         viewer={viewer}
         isViewerFirst={render.status === 'ready'}
         input={`${base}/source`}
@@ -493,11 +591,11 @@ export function RenderView({
             value: (
               <span className="inline-flex items-center gap-1.5">
                 {RUNNING.has(render.status) && <Loader2 className="size-3.5 animate-spin" />}
-                {t(`status.${render.status}`)}
+                {statusLabel}
               </span>
             ),
           },
-          { label: t('meta.formats'), value: 'GLB · USDZ' },
+          ...(render.status === 'ready' ? [{ label: t('meta.formats'), value: 'GLB · USDZ' }] : []),
           ...(owner
             ? [{ label: t('meta.creditsUsed'), value: format.number(render.credits) }]
             : []),

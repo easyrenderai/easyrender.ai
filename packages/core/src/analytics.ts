@@ -106,7 +106,10 @@ export function captureRender(
       attribution: pickAttribution(render),
       hasDeferredDelivery: options.hasDeferredDelivery,
     },
-    properties,
+    {
+      ...(render.notificationLocale ? { ui_locale: render.notificationLocale } : {}),
+      ...properties,
+    },
     undefined,
     options.occurredAt,
   );

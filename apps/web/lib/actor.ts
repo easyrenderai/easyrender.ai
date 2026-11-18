@@ -10,14 +10,21 @@ import {
   verifyApiKeyPrincipal,
 } from '@easyrender/core';
 import { headers as nextHeaders } from 'next/headers';
+import { isRoutableLocale } from '@/i18n/config';
 import { privacyRegion } from '@/lib/analytics/privacy-region';
+import { APP_LOCALE_COOKIE } from '@/lib/app-locale';
 import { auth } from './auth';
 
 export const ANON_COOKIE = 'er_anon';
 
 function readCookie(headers: Headers, name: string): string | null {
   const match = headers.get('cookie')?.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
-  return match ? decodeURIComponent(match[1]) : null;
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return null;
+  }
 }
 
 function ipHash(headers: Headers): string | null {
@@ -53,7 +60,13 @@ export async function resolveActor(headers?: Headers, scope: ApiKeyScope = 'read
     return actor;
   }
   const session = await auth().api.getSession({ headers: h });
-  return { ...base, userId: session?.user.id ?? null, source: 'web' };
+  const locale = readCookie(h, APP_LOCALE_COOKIE);
+  return {
+    ...base,
+    userId: session?.user.id ?? null,
+    source: 'web',
+    locale: isRoutableLocale(locale) ? locale : undefined,
+  };
 }
 
 // Pages are for people. A request with a stale or wrong Authorization header (a crawler, an agent

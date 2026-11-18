@@ -7,6 +7,7 @@ import {
 } from '@easyrender/core';
 import { db } from '@easyrender/db';
 import { NextResponse } from 'next/server';
+import { isRoutableLocale } from '@/i18n/config';
 import { resolveActor } from '@/lib/actor';
 import {
   allowsServerAdvertisingMeasurement,
@@ -21,6 +22,7 @@ export const POST = (request: Request) =>
     const body = (await request.json().catch(() => ({}))) as {
       plan?: unknown;
       credits?: unknown;
+      locale?: unknown;
       googleAnalytics?: { measurementId?: unknown };
     };
     const details = await createCheckoutDetails(userId, body, {
@@ -28,6 +30,7 @@ export const POST = (request: Request) =>
       expectedVariant: request.headers.get('x-pricing-variant'),
       // The same country the pricing pages used, so the page and the charge agree.
       country: geoCountry,
+      locale: isRoutableLocale(body.locale) ? body.locale : undefined,
     });
     const context = parseGoogleContext(
       body.googleAnalytics,

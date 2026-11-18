@@ -2,9 +2,10 @@ import { getBalance, listViewSets, toViewSetView } from '@easyrender/core';
 import { PRODUCT_VIEWS_CREDITS } from '@easyrender/harness/pricing';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { ProductViewsStudio } from '@/components/product-views-studio';
 import { currentUser } from '@/lib/actor';
+import { localizedSignInPath } from '@/lib/app-locale';
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata(): Promise<Metadata> {
@@ -14,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ProductViewsPage() {
   const user = await currentUser();
-  if (!user) redirect('/sign-in?next=/views');
+  if (!user) redirect(localizedSignInPath(await getLocale(), '/views'));
   const [sets, balance] = await Promise.all([listViewSets(user.id), getBalance(user.id)]);
   return (
     <ProductViewsStudio

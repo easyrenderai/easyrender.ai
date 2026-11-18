@@ -86,10 +86,17 @@ describe('service email integration with real Better Auth handlers', () => {
   });
   it('returns the same recovery response for existing and unknown accounts, with durable enqueue only for existing', async () => {
     const count = mocks.queued.length;
-    const existing = await request('request-password-reset', {
-      email: 'local-auth@example.invalid',
-      redirectTo: 'http://localhost:3100/reset-password',
-    });
+    const existing = await request(
+      'request-password-reset',
+      {
+        email: 'local-auth@example.invalid',
+        redirectTo: 'http://localhost:3100/reset-password',
+      },
+      {
+        'x-easyrender-email-locale': 'fr',
+        'x-easyrender-project-return': '/r/local-project',
+      },
+    );
     const unknown = await request('request-password-reset', {
       email: 'missing@example.invalid',
       redirectTo: 'http://localhost:3100/reset-password',
@@ -99,7 +106,10 @@ describe('service email integration with real Better Auth handlers', () => {
     expect(await existing.json()).toEqual(await unknown.json());
     expect(mocks.queued).toHaveLength(count + 1);
     expect(mocks.queued.at(-1)?.purpose).toBe('reset_password');
-    expect(new URL(mocks.queued.at(-1)?.url ?? '').pathname).toBe('/reset-password');
+    const reset = new URL(mocks.queued.at(-1)?.url ?? '');
+    expect(reset.pathname).toBe('/reset-password');
+    expect(reset.searchParams.get('locale')).toBe('fr');
+    expect(reset.searchParams.get('next')).toBe('/r/local-project');
   });
   it('rejects external recovery redirects and makes disabled delivery truthful for every address', async () => {
     const external = await request('request-password-reset', {

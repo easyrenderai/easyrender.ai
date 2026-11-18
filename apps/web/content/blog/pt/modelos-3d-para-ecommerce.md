@@ -8,7 +8,7 @@ updated: 2026-11-15
 keyword: modelos 3d para ecommerce
 author: Jorge Rodríguez
 authorType: person
-cta: Escolha uma peça com profundidade, uma poltrona ou um aparador, e veja todos os ângulos antes de decidir se o 3D compensa na sua loja.
+cta: Experimenta com uma poltrona ou um aparador. Revê as vistas geradas antes de decidires se o modelo 3D compensa para a tua loja.
 ---
 
 Um modelo 3D para ecommerce é um ficheiro, em geral GLB ou USDZ, que o cliente roda no ecrã e, no telemóvel, coloca na sala com realidade aumentada. As lojas obtêm-no de quatro formas: com um artista 3D, com os ficheiros CAD do fabricante, com uma digitalização do produto ou com IA a partir de uma só fotografia.

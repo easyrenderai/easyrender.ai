@@ -59,7 +59,7 @@ L’image vers 3D part d’une seule photo et estime les faces que l’appareil 
 
 easyrender fonctionne ainsi, en deux temps. Il dessine d’abord une planche de vues gratuite : neuf vues de l’objet, huit autour par intervalles de 45 degrés et une de dessus. Tu contrôles cette planche, et tu ne dépenses des crédits que si elle est juste.
 
-L’outil utilise ensuite ces neuf vues et produit un seul modèle texturé, téléchargé en GLB et en USDZ. Un modèle coûte {{renderCredits}} crédits, soit {{renderPrice}}, et la [page des tarifs](/fr/tarifs) liste les packs. [Envoie une photo](/fr) pour voir la planche de vues gratuitement.
+L’outil utilise ensuite ces neuf vues et produit un seul modèle texturé, téléchargé en GLB et en USDZ. Un modèle coûte {{renderCredits}} crédits, soit {{renderPrice}}, et la [page des tarifs](/fr/tarifs) liste les packs. [Envoie une photo](/fr#try) pour voir la planche de vues gratuitement.
 
 ## Que cherches-tu à obtenir, et comment le mesurer ?
 

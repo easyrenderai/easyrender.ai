@@ -1,6 +1,6 @@
 import { mkdir } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
-import { HTML_LANG, LOCALES } from '../i18n/config';
+import { HTML_LANG, intlLocale, LOCALES } from '../i18n/config';
 import { ROUTES } from '../lib/seo/routes';
 import de from '../messages/de.json' with { type: 'json' };
 import en from '../messages/en.json' with { type: 'json' };
@@ -31,7 +31,7 @@ test('home redirect refreshes nav and every section to the same locale', async (
 }) => {
   await context.addCookies([{ name: 'er_home_locale', value: 'es', url: base }]);
   await page.goto(`${base}/hub`);
-  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
   await page.locator('header a').first().click();
   await page.waitForURL(`${base}/es`);
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
@@ -40,8 +40,8 @@ test('home redirect refreshes nav and every section to the same locale', async (
   await expect(page.locator('#spec a')).toHaveText(es.Studio.tools.link);
   await page.locator('#spec a').click();
   await page.waitForURL(`${base}/hub`);
-  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page.locator('header')).toContainText(en.Header.nav.pricing);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await expect(page.locator('header')).toContainText(es.Header.nav.pricing);
 });
 
 for (const locale of LOCALES) {
@@ -116,13 +116,15 @@ test('monthly subscriber buys a top-up without changing Pro', async ({ page, con
   await expect(page.getByText('Top-ups at your Pro rate', { exact: true })).toBeVisible();
   const preset = page.getByRole('button', { name: '1,000', exact: true });
   await preset.focus();
-  await preset.press('Enter');
-  await expect(preset).toHaveAttribute('aria-pressed', 'true');
+  await expect(async () => {
+    await preset.press('Enter');
+    await expect(preset).toHaveAttribute('aria-pressed', 'true', { timeout: 1000 });
+  }).toPass({ timeout: 15000 });
   await expect(preset).toHaveAccessibleDescription('$8.91');
   await page.getByLabel('Or enter an amount').fill('499');
   await expect(page.getByRole('button', { name: 'Buy credits', exact: true })).toBeDisabled();
   await page.getByLabel('Or enter an amount').fill('1000');
-  await expect(page.getByText('$8.91 for about 15 renders', { exact: true })).toBeVisible();
+  await expect(page.getByText('$8.91 for about 15 models', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Buy 1,000 credits', exact: true }).click();
   await expect(
     page.getByText('You have 6,500 credits and you are on Pro.', { exact: true }),
@@ -159,10 +161,11 @@ test('subscriber pricing pages show localized pack prices in every locale', asyn
     await expect(
       page.getByText(copy.PaygPicker.planRate.replace('{plan}', 'Pro'), { exact: true }),
     ).toBeVisible();
-    const amount = new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }).format(
-      8.91,
-    );
-    const credits = new Intl.NumberFormat(locale).format(1000);
+    const amount = new Intl.NumberFormat(intlLocale(locale), {
+      style: 'currency',
+      currency: 'USD',
+    }).format(8.91);
+    const credits = new Intl.NumberFormat(intlLocale(locale)).format(1000);
     const preset = page.getByRole('button', { name: credits, exact: true });
     await expect(preset).toContainText(amount);
     await preset.click();

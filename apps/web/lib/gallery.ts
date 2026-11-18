@@ -1,6 +1,7 @@
 import 'server-only';
 import { listPublicRenders } from '@easyrender/core';
 import { getTranslations } from 'next-intl/server';
+import { TABLE_EXAMPLE } from './marketing-examples';
 import { SHOWCASE } from './showcase';
 
 export type GalleryItem = {
@@ -12,7 +13,7 @@ export type GalleryItem = {
   label: string;
 };
 
-// Public renders first, topped up with the demo set so the gallery is never empty.
+// Lead with a curated example, then show public gallery uploads.
 export async function getGallery(size = 8): Promise<GalleryItem[]> {
   const renders = await (async () => listPublicRenders(size))().catch((error) => {
     console.error('gallery: could not list public renders', error);
@@ -22,21 +23,22 @@ export async function getGallery(size = 8): Promise<GalleryItem[]> {
   const items: GalleryItem[] = renders.map((render) => ({
     id: render.id,
     href: `/r/${render.id}`,
-    title: render.prompt || t('untitled'),
+    title:
+      render.id === TABLE_EXAMPLE.id
+        ? t('items.table.title')
+        : render.name?.trim() || render.prompt?.trim() || t('untitled'),
     photo: `/api/renders/${render.id}/source`,
     model: `/api/renders/${render.id}/model`,
     label: t('model3d'),
   }));
-  for (const demo of SHOWCASE) {
-    if (items.length >= size) break;
-    items.push({
-      id: demo.id,
-      href: `/r/${demo.id}`,
-      title: t(`items.${demo.slug}.title`),
-      photo: demo.photo,
-      model: demo.model,
-      label: t(`categories.${demo.category}`),
-    });
-  }
-  return items;
+  const demos = SHOWCASE.map((demo) => ({
+    id: demo.id,
+    href: `/r/${demo.id}`,
+    title: t(`items.${demo.slug}.title`),
+    photo: demo.photo,
+    model: demo.model,
+    label: t(`categories.${demo.category}`),
+  }));
+  const [lead, ...moreExamples] = demos;
+  return [...(lead ? [lead] : []), ...items, ...moreExamples].slice(0, size);
 }

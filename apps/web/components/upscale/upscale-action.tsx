@@ -44,17 +44,26 @@ export function UpscaleAction({
       </Button>
     );
   }
-  if (balance < credits) {
-    return (
+  const action =
+    balance < credits ? (
       <Button variant="outline" size="sm" className="w-full" asChild>
         <Link href={buyHref}>{t('buy')}</Link>
       </Button>
+    ) : (
+      <Button variant="outline" size="sm" className="w-full" onClick={onStart}>
+        <Maximize2 />
+        {t('action', { credits: format.number(credits) })}
+      </Button>
     );
-  }
-  return (
-    <Button variant="outline" size="sm" className="w-full" onClick={onStart}>
-      <Maximize2 />
-      {t('action', { credits: format.number(credits) })}
-    </Button>
+
+  return row?.status === 'failed' ? (
+    <div className="space-y-2">
+      <p role="alert" className="text-sm text-destructive">
+        {t('refunded')}
+      </p>
+      {action}
+    </div>
+  ) : (
+    action
   );
 }

@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import type { Locale } from '@/i18n/config';
 import { currentUser } from '@/lib/actor';
+import { localizedAuthPath } from '@/lib/app-locale';
 
 const CLIENTS = ['Claude', 'Claude Code', 'Claude Desktop', 'Cursor', 'VS Code'];
 const USE_CASES = [
@@ -37,7 +38,10 @@ export async function McpView({ locale }: { locale: Locale }) {
     currentUser().catch(() => null),
     mcpFaqItems(locale),
   ]);
-  const accountHref = user ? '/connectors' : '/sign-up?next=%2Fconnectors';
+  const accountHref = user
+    ? '/connectors'
+    : `${localizedAuthPath(locale, '/sign-up')}?next=%2Fconnectors`;
+  const accountLabel = t(user ? 'connect.cta' : 'connect.signup');
   const mcpUrl = `${config.appUrl()}/api/mcp`;
 
   return (
@@ -132,7 +136,7 @@ export async function McpView({ locale }: { locale: Locale }) {
             </p>
             <Button asChild size="lg">
               <IntegrationLink channel="mcp" action="setup" href={accountHref}>
-                {t('connect.cta')} <ArrowRight aria-hidden="true" />
+                {accountLabel} <ArrowRight aria-hidden="true" />
               </IntegrationLink>
             </Button>
             <div>
@@ -173,7 +177,7 @@ export async function McpView({ locale }: { locale: Locale }) {
         </div>
       </Section>
       <ResourceLinks locale={locale} context="mcp" />
-      <StudioClosing title={t('closing.title')} label={t('closing.cta')} href={accountHref} />
+      <StudioClosing title={t('closing.title')} label={accountLabel} href={accountHref} />
     </StudioShell>
   );
 }

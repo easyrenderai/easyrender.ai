@@ -8,6 +8,7 @@ import { SiteMenu } from '@/components/site-menu';
 import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
 import { currentUser } from '@/lib/actor';
+import { localizedAuthPath } from '@/lib/app-locale';
 import { isPublished, ROUTES } from '@/lib/seo/routes';
 import { siteNavigation } from '@/lib/site-navigation';
 
@@ -21,6 +22,7 @@ export async function SiteHeader() {
     getTranslations('ApiLanding'),
   ]);
   const home = ROUTES.home.paths[locale as Locale];
+  const signIn = localizedAuthPath(locale, '/sign-in');
   const nav = siteNavigation(locale as Locale);
   // Pricing falls back to the home anchor; unpublished integration pages are filtered above.
   const navHref = (item: (typeof nav)[number]) => {
@@ -61,7 +63,7 @@ export async function SiteHeader() {
         <div className="flex shrink-0 items-center gap-1">
           <LocaleSwitcher />
           <Button variant="ghost" size="sm" className={user ? undefined : 'max-sm:hidden'} asChild>
-            <Link href={user ? '/dashboard' : '/sign-in'}>{t(user ? 'dashboard' : 'signIn')}</Link>
+            <Link href={user ? '/dashboard' : signIn}>{t(user ? 'dashboard' : 'signIn')}</Link>
           </Button>
           <HeaderConnect
             locale={locale as Locale}
@@ -88,7 +90,7 @@ export async function SiteHeader() {
             {/* Members already have Dashboard in the phone's visible header row. */}
             {!user ? (
               <Button variant="outline" className="mt-2 sm:hidden" asChild>
-                <Link href="/sign-in">{t('signIn')}</Link>
+                <Link href={signIn}>{t('signIn')}</Link>
               </Button>
             ) : null}
           </SiteMenu>

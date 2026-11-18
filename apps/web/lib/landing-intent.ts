@@ -7,7 +7,7 @@ const GROUPS = {
   'sell-vintage-furniture-online': 'commerce',
   'product-photography-for-ecommerce': 'commerce',
   'glb-file': 'format',
-  'usdz-file': 'format',
+  'usdz-file': 'usdz',
   'compare-meshy': 'tools',
   'compare-tripo': 'tools',
   'compare-polycam': 'scan',
@@ -19,10 +19,9 @@ const GROUPS = {
 /** Stable editorial group IDs work across translations; unknown guides keep the photo path. */
 export function landingIntent(group: string, locale: Locale) {
   const key = Object.hasOwn(GROUPS, group) ? GROUPS[group as keyof typeof GROUPS] : 'photo';
-  const isInspection = key === 'format' || key === 'interactive';
-  return {
-    key,
-    href: isInspection ? `/r/${TABLE_EXAMPLE.id}` : `${ROUTES.home.paths[locale]}#try`,
-    action: isInspection ? 'inspect' : 'upload',
-  } as const;
+  const uploadHref = `${ROUTES.home.paths[locale]}#try`;
+  if (key === 'format' || key === 'usdz' || key === 'interactive') {
+    return { key, href: `/r/${TABLE_EXAMPLE.id}`, action: 'inspect', uploadHref } as const;
+  }
+  return { key, href: uploadHref, action: 'upload' } as const;
 }

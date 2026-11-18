@@ -16,6 +16,7 @@ import Link from 'next/link';
 import { useFormatter, useTranslations } from 'next-intl';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useActivationError } from '@/lib/activation-errors';
 import {
   attribution,
   attributionHeaders,
@@ -83,6 +84,7 @@ export function CatalogLibrary({
   sheetCredits: number;
 }) {
   const t = useTranslations('Library');
+  const localizedError = useActivationError();
   const format = useFormatter();
   const [items, setItems] = useState(initial);
   const [balance, setBalance] = useState(initialBalance);
@@ -171,7 +173,12 @@ export function CatalogLibrary({
     try {
       const body = new FormData();
       body.append('attribution', JSON.stringify(attribution()));
-      body.append('image', await prepare(upload.file, t('errors.unreadable')), 'source.jpg');
+      const photo = await prepare(upload.file).catch(() => null);
+      if (!photo) {
+        markFailed(upload.key, t('errors.unreadable'));
+        return true;
+      }
+      body.append('image', photo, 'source.jpg');
       body.append('name', upload.name);
       if (upload.prompt) body.append('prompt', upload.prompt);
       const response = await fetch('/api/renders', {
@@ -181,9 +188,9 @@ export function CatalogLibrary({
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        markFailed(upload.key, data.error ?? t('errors.upload'));
+        markFailed(upload.key, localizedError(data, t('errors.upload')));
         if (data.code === 'preview_limit') {
-          setNotice(data.error);
+          setNotice(t('errors.dailyLimit'));
           return false;
         }
         return true;
@@ -194,8 +201,8 @@ export function CatalogLibrary({
         has_prompt: Boolean(upload.prompt),
       });
       dismiss(upload.key);
-    } catch (error) {
-      markFailed(upload.key, error instanceof Error ? error.message : t('errors.upload'));
+    } catch {
+      markFailed(upload.key, t('errors.upload'));
     }
     return true;
   }
@@ -331,7 +338,7 @@ export function CatalogLibrary({
             stoppedFor = t('errors.outOfCredits');
             return false;
           }
-          setNotice(data.error ?? t('errors.someFailed'));
+          setNotice(localizedError(data, t('errors.someFailed')));
         } catch {
           setNotice(t('errors.connection'));
         }
@@ -360,7 +367,11 @@ export function CatalogLibrary({
         setBalance((current) => Math.max(0, current - sheetCredits));
         return;
       }
-      setNotice(data.code === 'insufficient_credits' ? t('errors.sheetOutOfCredits') : data.error);
+      setNotice(
+        data.code === 'insufficient_credits'
+          ? t('errors.sheetOutOfCredits')
+          : localizedError(data, t('errors.someFailed')),
+      );
     } catch {
       setNotice(t('errors.connection'));
     }

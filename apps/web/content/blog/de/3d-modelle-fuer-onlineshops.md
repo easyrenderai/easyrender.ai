@@ -1,7 +1,7 @@
 ---
 
 group: 3d-models-for-ecommerce
-title: "3D-Modell für den Onlineshop: so kommen Shops an 3D"
+title: "3D-Modelle für Onlineshops: So erstellst du sie"
 description: "Was ein 3D-Produktmodell bringt, welche Dateien ein Shop braucht (GLB und USDZ), vier Wege zum Modell und die Grenzen, die du vorher kennen solltest."
 date: 2026-11-15
 updated: 2026-11-15
@@ -103,7 +103,7 @@ Fang mit den fünf an, die am besten abschneiden. Meist sind das ein Sessel, ein
 
 Teste die Wege, bevor du dich festlegst. Schick ein Produkt durch zwei davon, etwa einen Handyscan und ein Bild-zu-3D-Modell derselben Tischlampe, und vergleich beide auf dem Handy. Das sagt mehr als jede Funktionsliste.
 
-Bei einem großen Katalog schaust du auf Sammel-Uploads und den Preis pro Modell. Bei easyrender legst du eine Reihe Katalogfotos in deiner Bibliothek ab, prüfst für jedes eine kostenlose Vorschau und lässt nur die Modelle bauen, die stimmen.
+Vergleiche bei einem großen Katalog die Möglichkeiten zur Stapelverarbeitung und den Preis pro Modell. Starte in Easy Render mit einem Produkt. Die Vorschau ist im Rahmen deines Tageslimits kostenlos. Erstelle das 3D-Modell, wenn dich die Ansichten überzeugen.
 
 ## Wie bringst du 3D Schritt für Schritt in den Shop?
 

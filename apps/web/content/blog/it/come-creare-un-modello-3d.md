@@ -62,7 +62,7 @@ Il metodo è lo stesso in ogni strumento: una foto nitida dell'oggetto intero su
 
 ![Nove viste di una poltrona lounge in bouclé con struttura in acciaio: fronte, fianchi, retro e alto](/showcase/armchair-angles.jpg "Un'anteprima gratuita con più angolazioni che easyrender ha disegnato da una sola foto di catalogo di questa poltrona, senza ritocchi. Controlla il retro e la vista dall'alto prima di generare il modello.")
 
-easyrender è uno di questi strumenti. Mostra un'anteprima gratis di ogni angolazione, e un modello finito costa {{renderCredits}} crediti ({{renderPrice}}). Modella oggetti singoli, come mobili, complementi d'arredo e facciate di edifici, non stanze intere, e i loghi piccoli risultano poco nitidi. [Carica una foto](/it)
+easyrender è uno di questi strumenti. Mostra un'anteprima gratis di ogni angolazione, e un modello finito costa {{renderCredits}} crediti ({{renderPrice}}). Modella oggetti singoli, come mobili, complementi d'arredo e facciate di edifici, non stanze intere, e i loghi piccoli risultano poco nitidi. [Carica una foto](/it#try)
 
 Anche Meshy e Tripo trasformano immagini in modelli 3D e aggiungono il text-to-3D, ognuno con i suoi prezzi. Prova la stessa foto in due strumenti prima di sceglierne uno per un catalogo.
 
