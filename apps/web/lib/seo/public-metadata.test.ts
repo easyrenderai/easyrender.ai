@@ -46,6 +46,14 @@ describe('public pricing copy', () => {
     expect(html).not.toContain('href="#try"');
     state.locale = 'en';
   });
+  it('shows €0.35 for a pay-as-you-go model on the shared pricing card', async () => {
+    const { PlanCards } = await vi.importActual<typeof import('@/components/pricing/plan-cards')>(
+      '@/components/pricing/plan-cards',
+    );
+    const html = renderToStaticMarkup(await PlanCards());
+    expect(html).toContain('€0.35');
+  });
+
   it('structured offers match the EUR price shown on the pricing page', () => {
     const app = softwareApplication('es', 'Modelo 3D', 'control', 'eur');
     const offers = app.offers as { price: string; priceCurrency: string; url: string }[];
@@ -82,7 +90,7 @@ describe('public pricing copy', () => {
     expect(html).not.toContain('€0.12');
     expect(html).not.toContain('€0.20');
     expect(html).toContain('€0.00');
-    expect(html).toContain('€0.32');
+    expect(html).toContain('€0.35');
   });
 
   it('the footer does not contradict EUR checkout prices', async () => {

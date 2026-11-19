@@ -20,7 +20,7 @@ export const SHEET_CREDITS = creditsFor(SHEET_COST_USD);
 // about $0.039 for a typical run. The figure is the measured average, not the list price.
 export const BUILD_COST_USD = 0.095;
 export const RENDER_COST_USD = BUILD_COST_USD;
-export const RENDER_CREDITS = creditsFor(RENDER_COST_USD);
+export const RENDER_CREDITS = Math.max(35, creditsFor(RENDER_COST_USD));
 
 // The 2K sheet of a product views set (nine packshots are cut from it).
 export const FINAL_SHEET_COST_USD = 0.0504;

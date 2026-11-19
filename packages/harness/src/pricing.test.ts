@@ -13,8 +13,8 @@ import {
 } from './pricing';
 
 describe('pricing experiment catalogue', () => {
-  it('preserves control and the purchasing power of every existing credit', () => {
-    expect(RENDER_CREDITS).toBe(32);
+  it('prices a model at $0.35 on the control credit rate', () => {
+    expect(paygPriceCents(RENDER_CREDITS)).toBe(35);
     expect(CREDIT_USD).toBe(0.01);
     expect(pricingFor().creditUsd).toBe(0.01);
     expect(paygPriceCents(500)).toBe(500);
@@ -22,10 +22,10 @@ describe('pricing experiment catalogue', () => {
     expect(PLAN_IDS.map((id) => pricingFor().plans[id].monthlyCredits)).toEqual([
       2000, 5500, 18000,
     ]);
-    expect(rendersFor(640)).toBe(20);
+    expect(rendersFor(640)).toBe(18);
   });
-  it('charges $0.64 per model and at least $10 for newly bought test credits', () => {
-    expect(paygPriceCents(RENDER_CREDITS, 'test')).toBe(64);
+  it('prices a model at $0.70 and newly bought test credits at $10 minimum', () => {
+    expect(paygPriceCents(RENDER_CREDITS, 'test')).toBe(70);
     expect(paygPriceCents(pricingFor('test').payg.min, 'test')).toBe(1000);
     expect(isValidPaygCredits(499, 'test')).toBe(false);
     expect(isValidPaygCredits(500, 'test')).toBe(true);
@@ -41,9 +41,9 @@ describe('pricing experiment catalogue', () => {
       const plan = pricingFor('test').plans[id];
       return (plan.priceCents / 100 / plan.monthlyCredits) * RENDER_CREDITS;
     });
-    expect(rates[0]).toBeCloseTo(0.58);
-    expect(rates[1]).toBeCloseTo(0.56178);
-    expect(rates[2]).toBeCloseTo(0.530665);
+    expect(rates[0]).toBeCloseTo(0.63438);
+    expect(rates[1]).toBeCloseTo(0.61444);
+    expect(rates[2]).toBeCloseTo(0.58042);
   });
 });
 
