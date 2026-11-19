@@ -32,3 +32,13 @@ add visible detail, so v1 stays as is and detail goes to the TRELLIS.2 tier. Its
 and the per-texel correction often skips, so `matchColorToPhoto` runs as a fallback.
 **Why:** colour drift is a model habit that a cheap texture scale fixes; detail is a model limit.
 **How to apply:** do not spend on v1 setting sweeps again; judge new detail work on TRELLIS.2.
+
+**TRELLIS.2 as a High tier (2026-11-19):** it beats v1 on colour and shape on five of six showcase photos
+and finishes reliably when two runs go at once. It breaks on a plain box seen from the front (the
+bedside table) at every setting, and nothing we run detects that. Decision: release without a High
+tier first; build it later as an opt-in choice with a free rebuild in Standard that refunds the
+difference, not as an automatic fallback.
+**Why:** a tier that sometimes charges for a see-through model is worse than none, and an automatic
+check does not exist yet.
+**How to apply:** do not put TRELLIS.2 on the default path. Before building the tier, look for a check
+that catches the bedside-table case (or a way to feed TRELLIS.2 the sheet views).

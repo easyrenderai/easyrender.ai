@@ -105,6 +105,16 @@ the input, as in the other runs. Results: [data](data/2026-11-18-trellis1-settin
   [whole chair](images/2026-11-18-trellis1-settings/armchair-trellis2-whole.png),
   [data](data/2026-11-18-trellis2-armchair.json)). One photo and one run each, so reliability and
   the other products are still not measured.
+- **TRELLIS.2 on the other five photos (1024 cascade):** all five finished in 1 to 4.5 minutes of GPU,
+  with 6 to 10 MB GLBs ([six photos](images/2026-11-18-trellis1-settings/trellis2-six-photos.png),
+  [data](data/2026-11-18-trellis2-1024-five-photos.json)). Colour is closer to the photo than v1 on the
+  swivel chair, coffee table and clay vase. The vase notch is a chip in the photo, not a defect. The
+  bedside table, a plain box seen from the front only, comes out mostly see-through.
+- **Settings do not fix the bedside table:** the 512 pipeline and the 1536 cascade are broken too, in
+  different places ([grid](images/2026-11-18-trellis1-settings/trellis2-settings-bedside-vase.png),
+  [data](data/2026-11-18-trellis2-settings-bedside-vase.json)). One seed per setting. The geometry
+  check, the fidelity QA and a mesh boundary count all pass the broken model, so nothing in the
+  pipeline detects it yet.
 - **Detail needs another model:** TRELLIS.2 is the only candidate that could add texture detail, and
   it needs a host that finishes (see above).
 
