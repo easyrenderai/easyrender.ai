@@ -6,6 +6,7 @@ import { isPublished, ROUTES } from '@/lib/seo/routes';
 const NAV = [
   { hash: '#how-it-works', key: 'howItWorks' },
   { href: '/hub', key: 'hub' },
+  { route: 'ecommerce', key: 'ecommerce' },
   { hash: '#connect', key: 'connect' },
   { route: 'mcp', key: 'mcp' },
   { route: 'api', key: 'api' },

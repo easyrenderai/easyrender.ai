@@ -101,7 +101,9 @@ describe('public pricing copy', () => {
 it('emits the requested English home title, description and shared social brand', async () => {
   const metadata = await pages.homeMetadata('en');
   expect(metadata.title).toBe('Easy Render | Photo to 3D');
-  expect(metadata.description).toBe('Turn any Product Photo into a 3D model');
+  expect(metadata.description).toBe(
+    'Turn a product photo into a 3D model for your store, your renders or your game. Free preview, no account or card. Download as GLB and USDZ.',
+  );
   expect(metadata.openGraph).toMatchObject({
     title: metadata.title,
     description: metadata.description,

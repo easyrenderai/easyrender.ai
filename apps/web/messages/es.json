@@ -1,7 +1,7 @@
 {
   "Metadata": {
     "title": "Easy Render | De foto a 3D",
-    "description": "Convierte cualquier foto de producto en un modelo 3D"
+    "description": "Convierte una foto de producto en un modelo 3D para tu tienda, tus renders o tu juego. Vista previa gratis, sin cuenta ni tarjeta. Descarga en GLB y USDZ."
   },
   "LocaleSwitcher": {
     "switchTo": "Cambiar a {language}",
@@ -11,6 +11,7 @@
     "nav": {
       "howItWorks": "Cómo funciona",
       "hub": "Centro",
+      "ecommerce": "Tiendas",
       "connect": "Conectar",
       "mcp": "MCP",
       "api": "API",
@@ -89,7 +90,7 @@
     },
     "meta": {
       "title": "Easy Render | De foto a 3D",
-      "description": "Convierte cualquier foto de producto en un modelo 3D"
+      "description": "Convierte una foto de producto en un modelo 3D para tu tienda, tus renders o tu juego. Vista previa gratis, sin cuenta ni tarjeta. Descarga en GLB y USDZ."
     },
     "intro": {
       "eyebrow": "De una imagen a 3D",
