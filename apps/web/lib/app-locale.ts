@@ -1,3 +1,4 @@
+import { isCreditInviteId } from '@easyrender/core/credit-gift-policy';
 import { DEFAULT_LOCALE, isRoutableLocale, type Locale } from '@/i18n/config';
 
 export const APP_LOCALE_COOKIE = 'er_app_locale';
@@ -22,6 +23,7 @@ const APP_SECTIONS = new Set([
   'forgot-password',
   'reset-password',
   'verify-email',
+  'invite',
 ]);
 
 export const isAppLocalePath = (pathname: string) => APP_SECTIONS.has(pathname.split('/')[1] ?? '');
@@ -48,6 +50,8 @@ export function localizedSignInPath(locale: string, next: string) {
 
 /** Verification and recovery can resume a project, never an arbitrary action endpoint. */
 export function authProjectPath(raw: unknown): string | null {
+  if (typeof raw === 'string' && raw.startsWith('/invite/') && isCreditInviteId(raw.slice(8)))
+    return raw;
   return typeof raw === 'string' && /^\/(?:r\/[A-Za-z0-9_-]+|views(?:\/[A-Za-z0-9_-]+)?)$/.test(raw)
     ? raw
     : null;
