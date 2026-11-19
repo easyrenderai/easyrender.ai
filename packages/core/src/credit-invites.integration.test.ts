@@ -65,7 +65,8 @@ describe.skipIf(!scratch)('outreach credit invites with scratch Postgres', () =>
       await db().creditLedger.count({ where: { idempotencyKey: `credit-invite:${id}` } }),
     ).toBe(1);
     const remaining = await db().creditInvite.findUniqueOrThrow({ where: { id } });
-    expect(remaining.recipientEmail).toBeNull();
+    const listed = (await listCreditInvites()).find((record) => record.id === id);
+    expect([one.email, two.email]).toContain(listed?.recipientEmail);
     expect([one.id, two.id]).toContain(remaining.redeemedById);
   });
 
