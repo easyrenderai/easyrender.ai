@@ -371,38 +371,11 @@ body:has(.er-studio) {
     max-width: 410px;
     scroll-margin-top: 90px;
   }
-  .home-hero__motion {
+  /* The stack sizes itself from the viewport height; its wrapper only centres it in the column. */
+  .hero-stack {
+    display: grid;
+    justify-items: center;
     min-width: 0;
-  }
-  .home-hero__motion > div {
-    border-radius: 20px;
-    border: 1px solid var(--line);
-  }
-  .home-hero__motion ol {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    margin-top: 20px;
-    font-size: 13px;
-  }
-  .home-hero__motion li {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 8px;
-  }
-  .home-hero__motion li span {
-    color: var(--ash);
-    font-family: var(--mono);
-    font-size: 11px;
-  }
-  .home-hero__example {
-    display: inline-block;
-    margin-top: 16px;
-    font-size: 12px;
-    color: var(--ash);
-    text-decoration: underline;
-    text-underline-offset: 4px;
   }
   @media (max-width: 760px) {
     .home-hero {
@@ -416,9 +389,64 @@ body:has(.er-studio) {
     .home-hero__upload {
       max-width: none;
     }
-    .home-hero__motion {
-      width: min(100%, 560px);
-      justify-self: center;
+    .home-hero .stack {
+      width: min(100%, 440px);
+    }
+  }
+
+  /* One object turning behind a page's heading (ambient-object.tsx). It fills the first screen
+     only, so it stays put when the content under the heading grows. */
+  .ambient {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: -1;
+    height: calc(100svh - var(--nav-h));
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .ambient.is-in {
+    opacity: 1;
+  }
+  .ambient__view {
+    position: absolute;
+    top: 50%;
+    left: var(--ambient-x, 50%);
+    width: min(86svh, 820px);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .ambient__view--wire {
+    opacity: 0.3;
+  }
+  .ambient__view--beauty {
+    opacity: 0;
+  }
+  .ambient.is-solid .ambient__view--wire {
+    opacity: 0;
+  }
+  .ambient.is-solid .ambient__view--beauty {
+    opacity: var(--ambient-solid, 0.9);
+  }
+  @media (max-width: 1080px) {
+    /* The object is behind the text here, so it stays faint in both readings. */
+    .ambient__view {
+      left: 50%;
+      width: min(100vw, 70svh);
+    }
+    .ambient__view--wire {
+      opacity: 0.2;
+    }
+    .ambient.is-solid .ambient__view--beauty {
+      opacity: 0.28;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ambient,
+    .ambient__view {
+      transition: none;
     }
   }
 

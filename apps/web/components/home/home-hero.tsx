@@ -1,9 +1,9 @@
 import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
-import { PromoVideo } from '@/components/blog/promo-video';
-import { SiteLink as Link } from '@/components/site-link';
-import { TABLE_EXAMPLE } from '@/lib/marketing-examples';
+import { HeroStack } from '@/components/studio/hero-stack';
 
+// The top of the home: what the product does and the upload, next to one object read five ways
+// (photo, mesh, depth, normals, render) that turns and can be dragged.
 export async function HomeHero({ upload }: { upload: ReactNode }) {
   const t = await getTranslations('Home.motionHero');
   const hero = await getTranslations('Studio.hero');
@@ -19,30 +19,7 @@ export async function HomeHero({ upload }: { upload: ReactNode }) {
           {upload}
         </div>
       </div>
-      <figure className="home-hero__motion">
-        <PromoVideo
-          src="/motion/hero.mp4"
-          poster="/motion/hero.jpg"
-          width={1000}
-          height={800}
-          label={t('label')}
-          play={t('play')}
-          pause={t('pause')}
-        />
-        <figcaption>
-          <ol>
-            {(['photo', 'angles', 'model'] as const).map((step, index) => (
-              <li key={step}>
-                <span>{String(index + 1).padStart(2, '0')}</span>
-                {t(step)}
-              </li>
-            ))}
-          </ol>
-          <Link href={`/r/${TABLE_EXAMPLE.id}`} className="home-hero__example">
-            {t('example')}
-          </Link>
-        </figcaption>
-      </figure>
+      <HeroStack />
     </section>
   );
 }

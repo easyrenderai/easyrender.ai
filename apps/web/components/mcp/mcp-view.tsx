@@ -1,28 +1,18 @@
 import { config } from '@easyrender/core';
-import { ArrowRight, Box, ChevronDownIcon, Code2, Repeat2 } from 'lucide-react';
+import { ChevronDownIcon } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { IntegrationCosts } from '@/components/integrations/costs';
-import { IntegrationLink } from '@/components/integrations/link';
-import { IntegrationResult } from '@/components/integrations/result';
 import { Section } from '@/components/landing';
+import { McpConnect } from '@/components/mcp/mcp-connect';
 import { McpSkill } from '@/components/mcp/mcp-skill';
-import { McpSetup } from '@/components/mcp-setup';
 import { ResourceLinks } from '@/components/resource-links';
-import { StudioHero } from '@/components/studio/hero';
-import { StudioClosing, StudioCompatibility } from '@/components/studio/proof';
+import { StudioClosing } from '@/components/studio/proof';
 import { StudioShell } from '@/components/studio/shell';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import type { Locale } from '@/i18n/config';
 import { currentUser } from '@/lib/actor';
 import { localizedAuthPath } from '@/lib/app-locale';
 
-const CLIENTS = ['Claude', 'Claude Code', 'Claude Desktop', 'Cursor', 'VS Code'];
-const USE_CASES = [
-  { key: 'catalog', icon: Box },
-  { key: 'web', icon: Code2 },
-  { key: 'workflow', icon: Repeat2 },
-] as const;
 const STEPS = ['photo', 'review', 'download'] as const;
 const TOOLS = ['create_render', 'get_render', 'get_credits', 'render_3d'] as const;
 const FAQ_KEYS = ['account', 'input', 'payment', 'output', 'scope', 'api'] as const;
@@ -46,38 +36,32 @@ export async function McpView({ locale }: { locale: Locale }) {
 
   return (
     <StudioShell>
-      <StudioHero
-        ctaHref="#connect"
-        copy={{
-          title: t('hero.title'),
-          subtitle: t('hero.subtitle'),
-          cta: t('hero.cta'),
-          note: t('hero.note'),
-        }}
-      />
-      <StudioCompatibility />
-      <IntegrationResult locale={locale} kind="mcp" />
-      <Section title={t('intro.title')} description={t('intro.description')}>
-        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 pb-8 text-sm">
-          <p className="text-muted-foreground">{t('clientsLabel')}</p>
-          <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-            {CLIENTS.map((client) => (
-              <li key={client}>{client}</li>
-            ))}
-          </ul>
+      {/* The page answers one question: how do I give my agent this. The answer is the first
+          thing on it: pick the agent, copy its snippet. */}
+      <section
+        id="connect"
+        aria-labelledby="mcp-hero-title"
+        className="relative isolate flex min-h-[calc(100svh-3.5rem)] w-full scroll-mt-20 flex-col items-center justify-center px-4 py-14 text-center sm:px-6"
+      >
+        <div className="flex w-full max-w-3xl flex-col items-center gap-8">
+          <div className="space-y-4">
+            <h1
+              id="mcp-hero-title"
+              className="text-4xl font-medium tracking-tight text-balance sm:text-6xl"
+            >
+              {t('hero.title')}
+            </h1>
+            <p className="hero__lead mx-auto">{t('hero.subtitle')}</p>
+          </div>
+          <McpConnect
+            url={mcpUrl}
+            label={t('connect.guide')}
+            accountHref={accountHref}
+            accountLabel={accountLabel}
+            keyNote={t('connect.security')}
+          />
         </div>
-        <div className="grid gap-8 md:grid-cols-3">
-          {USE_CASES.map(({ key, icon: Icon }) => (
-            <div key={key} className="space-y-3 border-t pt-6">
-              <Icon className="size-5 text-muted-foreground" aria-hidden="true" />
-              <h3 className="text-xl font-medium">{t(`intro.${key}.title`)}</h3>
-              <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-                {t(`intro.${key}.body`)}
-              </p>
-            </div>
-          ))}
-        </div>
-      </Section>
+      </section>
 
       <IntegrationCosts locale={locale} kind="mcp" />
       <Section
@@ -125,38 +109,6 @@ export async function McpView({ locale }: { locale: Locale }) {
         <p className="mt-8 max-w-3xl text-sm leading-relaxed text-muted-foreground">
           {t('workflow.limit')}
         </p>
-      </Section>
-
-      <Section id="connect" title={t('connect.title')} description={t('connect.description')}>
-        <div className="grid items-start gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="min-w-0 space-y-5">
-            <h3 className="text-xl font-medium">{t('connect.accountTitle')}</h3>
-            <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-              {t('connect.accountBody')}
-            </p>
-            <Button asChild size="lg">
-              <IntegrationLink channel="mcp" action="setup" href={accountHref}>
-                {accountLabel} <ArrowRight aria-hidden="true" />
-              </IntegrationLink>
-            </Button>
-            <div>
-              <Button variant="outline" asChild>
-                <a href="#agent-skill">{t('skill.cta')}</a>
-              </Button>
-            </div>
-            <dl className="space-y-2 pt-3 text-sm">
-              <dt className="text-muted-foreground">{t('connect.endpoint')}</dt>
-              <dd className="break-all font-mono text-xs">{mcpUrl}</dd>
-            </dl>
-            <p className="max-w-md text-xs leading-relaxed text-muted-foreground">
-              {t('connect.security')}
-            </p>
-          </div>
-          <Card className="min-w-0 gap-5 rounded-xl p-5 sm:p-7">
-            <h3 className="text-sm font-medium">{t('connect.guide')}</h3>
-            <McpSetup url={mcpUrl} />
-          </Card>
-        </div>
       </Section>
 
       <McpSkill locale={locale} />
