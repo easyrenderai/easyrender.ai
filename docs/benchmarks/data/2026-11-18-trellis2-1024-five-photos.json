@@ -1,0 +1,47 @@
+[
+  {
+    "photo": "bedside-table",
+    "candidate": "t2-mid",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 269.492162318,
+    "costUsd": 0.37728902724519997,
+    "bytes": 10124512
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "t2-mid",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 144.480996627,
+    "costUsd": 0.2022733952778,
+    "bytes": 6440704
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "t2-mid",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 206.000360722,
+    "costUsd": 0.2884005050108,
+    "bytes": 6398436
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "t2-mid",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 254.816462938,
+    "costUsd": 0.3567430481132,
+    "bytes": 7840672
+  },
+  {
+    "photo": "vase",
+    "candidate": "t2-mid",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 72.666895733,
+    "costUsd": 0.10173365402620001,
+    "bytes": 6190704
+  }
+]
