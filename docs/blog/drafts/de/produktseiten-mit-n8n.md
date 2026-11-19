@@ -2,14 +2,14 @@
 
 group: "n8n-product-pages-images-3d"
 title: "Produktseiten mit n8n: Texte, Bilder und 3D"
-description: "Erstelle einen Produktseiten-Workflow in n8n: überprüfte Fakten, Bildgenerierung, ein überprüfter 3D-Modell und ein CMS-Vorab mit Genehmigung vor der…"
+description: "Erstelle mit n8n Produktseiten als Shop-Entwurf. Führe Produktdaten, Bilder und ein 3D-Modell zusammen und gib die Veröffentlichung separat frei."
 date: 2026-11-18
-updated: 2026-11-18
+updated: 2026-11-19
 keyword: "Produktseiten mit n8n"
 cta: "Prüfe deine Produktansichten in der kostenlosen Vorschau."
 ---
 
-Erstelle mit n8n eine Produktseite, deren Texte, Bilder und 3D-Modell zum selben Artikel gehören. Führe die Dateien über die SKU und die Version der Vorlage zusammen und speichere die Produktseite als Entwurf im Shop. Halte die Freigaben für Kosten und Veröffentlichung als eigene Schritte im Ablauf fest.
+Erstelle mit n8n eine Produktseite, deren Texte, Bilder und 3D-Modell zum selben Artikel gehören. Führe die Ergebnisse anhand der SKU und der Version der Quelldaten zusammen. Speichere die Produktseite dann als Entwurf im Shop und halte die Freigaben für Ausgaben und Veröffentlichung getrennt fest.
 
 ![Darstellung: Tischlampe, halb mit Oberfläche, halb als Drahtgitter](../covers/n8n-product-pages-images-3d.webp "Redaktionelle Illustration aus Blender.")
 
@@ -25,7 +25,7 @@ Für eine keramische Tischlampe ist die Ausgabe ein überprüfbares Paket: genau
 | ---------------------- | ------------------------------------------- | -------------------------------------------------------------- |
 | Titel und Beschreibung | Lieferantenfakten plus redaktionelle Regeln | Keine erfundene Materialien, Abmessungen oder Zertifizierungen |
 | Produktbilder          | Akzeptierte visuelle Ansicht                | Gleiches Produkt, Finish und Variante überall                  |
-| Interaktives 3D-Datei  | Genehmigter Build                           | Die Datei öffnet, dreht sich und passt dem akzeptierten Stück  |
+| Interaktive 3D-Datei   | Genehmigter Build                           | Die Datei öffnet, dreht sich und passt dem akzeptierten Stück  |
 | CMS-Draft              | SKU-zu-Produkt-Abbildung                    | Richtiges Produkt und Variante, noch nicht veröffentlicht      |
 | Verarbeitungsprotokoll | Gespeicherte IDs und Genehmigungsvermerk    | Ein weiterer Ablauf kann die Arbeit wieder aufnehmen           |
 
@@ -33,9 +33,9 @@ Das [Bild-zu-Shopify-Vorlage](https://n8n.io/workflows/11695-generate-product-de
 
 ## Wie sollte das Produktangebot aussehen?
 
-Beginne mit einem bekannten Objekt, um zu überprüfen, welche Art von Datei jede Stufe liefern soll. Dieser Vase aus der easyrender Galerie zeigt das Originalbild, die generierte Ansichtsmappe und das exportierte Modell. Verwende diese Dateien als Referenz, wenn du den Workflow einrichtest.
+Beginne mit einem bekannten Objekt, um zu überprüfen, welche Art von Datei jede Stufe liefern soll. Diese Vase aus der easyrender Galerie zeigt das Originalbild, die generierte Ansichtsmappe und das exportierte Modell. Verwende diese Dateien als Referenz, wenn du den Workflow einrichtest.
 
-![Original-Produktfoto, generierte Ansichtsmappe und ein Blick auf das gleiche Vase-Modell](../evidence/n8n-ficha-foto-vistas-modelo.jpg "Bestehende easyrender-Beispielfile. Im Zentrum die generierten Ansichten, rechts ein Still des Modells.")
+![Original-Produktfoto, generierte Ansichtsmappe und ein Blick auf das gleiche Vase-Modell](../evidence/n8n-ficha-foto-vistas-modelo.jpg "Bestehende easyrender-Beispieldatei. Im Zentrum die generierten Ansichten, rechts ein Still des Modells.")
 
 | Feld zur Prüfung           | Beispiel-Eingabe                                                |
 | -------------------------- | --------------------------------------------------------------- |
@@ -61,7 +61,7 @@ Der Test umfasst das Zusammenführen und Prüfen vorhandener Dateien. Bilderzeug
 
 ## Welche Informationen müssen aus dem Katalog stammen?
 
-Erstelle ein Eingaberecord mit `sku`, `source_version`, `name`, `material`, `dimensions`, `image_url` und `locale`. Lasse unbekannte Fakten leer. Füge separate Genehmigungsfelder für Bilder, 3D-Ausgaben und Publikation hinzu. Ein einzelnes `approved`-Feld ist zu ungenau, wenn mehrere Aktionen laufen können.
+Lege einen Datensatz mit SKU, Quellversion und geprüften Produktdaten an. Lass unbekannte Angaben leer und erfasse getrennt, ob die Bilder freigegeben sind, ob die 3D-Kosten genehmigt wurden und ob die Seite veröffentlicht werden darf. Verwende diese Felder: `sku`, `source_version`, `name`, `material`, `dimensions`, `image_url` und `locale`.
 
 | Feld                 | Beispielwert                       | Warum es wichtig ist                                        |
 | -------------------- | ---------------------------------- | ----------------------------------------------------------- |
@@ -75,9 +75,9 @@ Für den Text-Branch fragt deine gewählte Sprachmodell-Anwendung nach Titel, Be
 
 ### Was sollte der Text-Aufforderung und der Ausgabe enthalten?
 
-Leite das überprüfte Datum an dein gewähltes Textgenerations-Node weiter, mit der folgenden Anweisung. Halte die API-Authentifizierung des Nodes getrennt von der Authentifizierung des visuellen Dienstes. Falls das Ergebnis nicht parsbar ist oder die erforderlichen Felder nicht erfüllt, leite es an eine Bearbeitungsstufe weiter, bevor es an das CMS gelangt.
+Übergib die geprüften Produktdaten an den n8n-Knoten für die Textgenerierung. Halte die API-Authentifizierung des Nodes getrennt von der Authentifizierung des visuellen Dienstes. Falls das Ergebnis nicht parsbar ist oder die erforderlichen Felder nicht erfüllt, leite es an eine Bearbeitungsstufe weiter, bevor es an das CMS gelangt.
 
-> Erstelle einen Produktseitenentwurf in der gewünschten Sprache mit ausschließlich den bereitgestellten Fakten. Gib Titel, Beschreibung, Aufzählungen, Alt-Text und fehlende_Fakten zurück. Vermeide jegene Vermutungen über Material, Maße, Kompatibilität oder Zertifikate aus dem Foto. Lasse fehlende Spezifikationen aus der Textversion und füge sie in fehlende_Fakten ein. Veröffentliche nichts.
+> Schreibe einen Entwurf für eine Produktseite in der gewünschten Sprache. Verwende dafür nur die bereitgestellten Angaben. Gib die Felder title, description, bullets, alt_text und missing_facts zurück. Leite aus dem Foto keine Materialien, Maße, Kompatibilitäten oder Zertifizierungen ab. Lass unbekannte Angaben aus dem Text weg und führe sie unter missing_facts auf. Veröffentliche nichts.
 
 | Ausgabefeld     | Typ              | Beispiel aus dem Lampen-Record                               |
 | --------------- | ---------------- | ------------------------------------------------------------ |
@@ -87,7 +87,7 @@ Leite das überprüfte Datum an dein gewähltes Textgenerations-Node weiter, mit
 | `alt_text`      | Text             | Vorderansicht der keramischen Tischleuchte                   |
 | `missing_facts` | Liste der Felder | `dimensions`, `bulb_compatibility` falls nicht vorhanden     |
 
-Behandeln Sie dies als Schema zur Validierung, nicht als Versprechen, dass das Modell immer konform ist. Für diesen illustrativen Eingang bleibt die Kompatibilität unbekannter Glühbirnen außer Betracht. Alle fünf Felder, Arrays für die beiden Listen und ein unverändertes Quell-SKU müssen vor dem Zusammenführen des Textzweiges mit visuellen Ergebnissen vorhanden sein.
+Behandle dies als Schema zur Validierung, nicht als Versprechen, dass das Modell immer konform ist. Für diesen illustrativen Eingang bleibt die Kompatibilität unbekannter Glühbirnen außer Betracht. Alle fünf Felder, Arrays für die beiden Listen und ein unverändertes Quell-SKU müssen vor dem Zusammenführen des Textzweiges mit visuellen Ergebnissen vorhanden sein.
 
 ## Wie erzeugst du Bilder und 3D aus demselben Produkt?
 
@@ -98,12 +98,12 @@ Nutze den integrierten [HTTP Request Node](https://docs.n8n.io/integrations/buil
 3. Polliere `GET /api/product-views/{id}` mit dem gespeicherten Identifikator. Eine Startkonfiguration ist ein Warten von 15 Sekunden mit fester Frist. Respektiere Antworten mit Rate-Limit. Beende bei `failed` und überprüfe die einzelnen Ansichten vor der Akzeptierung der Menge.
 4. Lade die angenommenen Bilder von `GET /api/product-views/{id}/views/{view}` herunter, wobei jeweils die zurückgegebene Ansichts-ID verwendet wird. Nutze das gleiche API-Kennwort und speichere die Antworten als Dateien.
 5. Rufe `POST /api/product-views/{id}/render` nur nach der Bereitschaft und Akzeptierung der Menge auf. Speichere dessen `renderId`. Dadurch wird ein Entwurf erstellt oder wiederverwendet. Die Erstellung des kostenpflichtigen 3D-Builds wird nicht gestartet.
-6. Lies den Render durch und bestätige die verbleibende Belastung, berechnet als `max(0, renderCredits - credits)`. Übermittele `POST /api/renders/{id}/render` mit der bestätigten Ganzzahl in `maxCredits`.
+6. Rufe den Renderstatus ab und prüfe, wie viele Credits noch abzubuchen sind. Der Betrag ist `max(0, renderCredits - credits)`. Sende `POST /api/renders/{id}/render` mit dem genehmigten ganzzahligen Betrag in `maxCredits`.
 7. Polliere, bis `status` `ready` ist und `hasModel` `true` ist, dann lade `GET /api/renders/{id}/model?download=1` als Datei herunter.
 
-Diese Pfade und Felder sind im [bereitgestellten API-Schema](https://easyrender.ai/api/openapi.json). Der aktuelle REST-Bildsatz-Anfordern zeigt das Build-Endpunkt-Feld `maxCredits` nicht. Stelle die Authorisierung für dieses Feld im Workflow sicher und verwende einen dedizierten Schlüssel mit begrenztem Kreditrahmen. Verlasse dich nicht darauf, dass ein zusätzlicher JSON-Feld eine Serverseite-Grenze schafft.
+Das [API-Schema](https://easyrender.ai/api/openapi.json) dokumentiert die Pfade und Felder. Die REST-Anfrage für Produktansichten hat kein eigenes Feld `maxCredits`. Prüfe im Workflow, ob die Ausgabe genehmigt ist, und verwende einen separaten API-Schlüssel mit einem Credit-Limit.
 
-Für einen ersten Test ohne bezahlten Bildsatz verwende den [Vorschau-erst n8n-Workflow](/de/ratgeber/bild-zu-3d-n8n). Er beginnt bei `POST /api/renders`, pausiert zur Prüfung und behält den späteren Build getrennt. Wähl diesen Weg, wenn du nur eine Produktversion überprüfen möchtest, bevor du den vollständigen Produktlistenpaket planst.
+Wenn du zunächst ein Produkt ohne kostenpflichtigen Bildsatz prüfen möchtest, starte mit der kostenlosen Vorschau aus der [API-Dokumentation](https://easyrender.ai/api/openapi.json). Der Workflow ruft `POST /api/renders` auf, wartet auf die Prüfung und trennt die spätere 3D-Erstellung davon.
 
 <!-- IMAGE PENDING: unique real screenshot of product-view review and generated files, captured without credentials or customer data. -->
 
@@ -115,7 +115,7 @@ Nutze die gleichen `sku` und `source_version` in beiden Zweigen. Speichere `view
 | --------------------------------- | --------------------- | -------------------------------------------------------- |
 | Bereit                            | Noch verarbeitet      | Speichere die Kopie und warte auf die bestehende Aufgabe |
 | Fehlende Lieferanteninformationen | Bereit                | Bitte die Informationen erfragen. Behalte die Dateien    |
-| Genehmigt                         | Genehmigt             | Erstelle einen CMS-Vorab                                 |
+| Genehmigt                         | Genehmigt             | Erstelle einen CMS-Entwurf                               |
 | Genehmigt                         | Abgelehnt             | Halte den Text. Ändere nur die visuelle Aufgabe          |
 | Vorherige Quellversion            | Aktuelle Quellversion | Prüfe den Missmatch vor der Kombination                  |
 
@@ -131,38 +131,38 @@ Beginne mit einem Entwurf oder einer nicht veröffentlichten Änderung. Prüfe d
 
 ## Was bricht diese Automatisierung normalerweise?
 
-| Symptom                                       | Wahrscheinlicher Grund                                                    | Lösung                                                              |
-| --------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Kopie erfindet ein Material                   | Vision-Ausgabe behandelt als Lieferanten-Daten                            | Beschränke Spezifikationen auf überprüfte Felder                    |
-| Bildmenge beginnt zweimal                     | Bezahlter POST wird nach einem verlorenen Antwortversuch erneut versendet | Speichere das Ergebnis als ungewiss und vereinbare vor Wiederabgabe |
-| Falsches Modell auf einem Produkt             | Zweige werden durch Listenposition verbunden                              | Verbinde durch SKU und Quellversion                                 |
-| Shopify kann das Modell nicht abrufen         | Privater Endpunkt als öffentlicher Medieninhalt angegeben                 | Datei mit Authentifizierung herunterladen und dann hochladen        |
-| Build startet nie                             | View-Set Draft wird als abgeschlossener Build verwechselt                 | Genehmigen und die separate Build-Aktion aufrufen                   |
-| Polling stoppt, aber die Aufgabe läuft weiter | Workflow-Frist wird als Aufgabenfehler verstanden                         | Speichere die ID und führe später Statusabfragen fort               |
-| Ein altes Bild überlebt einen Neulauf         | Kein Medienrevisionstracking                                              | Speichere die Zielmedien-ID und Quellversion                        |
+| Symptom                                       | Wahrscheinlicher Grund                                                    | Lösung                                                                                      |
+| --------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Kopie erfindet ein Material                   | Vision-Ausgabe behandelt als Lieferanten-Daten                            | Beschränke Spezifikationen auf überprüfte Felder                                            |
+| Bildmenge beginnt zweimal                     | Bezahlter POST wird nach einem verlorenen Antwortversuch erneut versendet | Prüfe, ob der Auftrag bereits besteht, bevor du die kostenpflichtige Anfrage erneut sendest |
+| Falsches Modell auf einem Produkt             | Zweige werden durch Listenposition verbunden                              | Verbinde durch SKU und Quellversion                                                         |
+| Shopify kann das Modell nicht abrufen         | Privater Endpunkt als öffentlicher Medieninhalt angegeben                 | Datei mit Authentifizierung herunterladen und dann hochladen                                |
+| Build startet nie                             | View-Set Draft wird als abgeschlossener Build verwechselt                 | Genehmigen und die separate Build-Aktion aufrufen                                           |
+| Polling stoppt, aber die Aufgabe läuft weiter | Workflow-Frist wird als Aufgabenfehler verstanden                         | Speichere die ID und führe später Statusabfragen fort                                       |
+| Ein altes Bild überlebt einen Neulauf         | Kein Medienrevisionstracking                                              | Speichere die Zielmedien-ID und Quellversion                                                |
 
 ## Wie weiß man, dass der Workflow ausgeweitet werden sollte?
 
-Führe ein einzelnes Lampenmodell durch alle Branchen und vergleiche das finale Draft mit dem Eingangsrecord. Notiere die Zeit für die Prüfung, die Anzahl der manuellen Korrekturen und den Netto-Kreditverbrauch. Danach verarbeite eine kleine Menge verschiedener Produkte, bevor ein Plan das Workflow-System ohne menschliche Eingriffe übernimmt.
+Führe ein einzelnes Lampenmodell durch beide Workflow-Zweige und vergleiche das finale Draft mit dem Eingangsrecord. Notiere die Zeit für die Prüfung, die Anzahl der manuellen Korrekturen und den Netto-Kreditverbrauch. Danach verarbeite eine kleine Menge verschiedener Produkte, bevor ein Plan das Workflow-System ohne menschliche Eingriffe übernimmt.
 
 Unsere Umsetzung trennt die View-Set-ID, die Render-ID und die endgültige Modellverfügbarkeit. Damit bietet dieses Rezept drei Kontrollpunkte anstatt eines allgemeinen Erfolgszeichens. Die angesprochene Anzahl der überprüften, gelieferten Produktpakete ist das Ergebnis. Ein grüner HTTP-Node ist lediglich ein intermedieller Hinweis.
 
-Für eine umfassendere Produktionsmethode siehe das [3D-Erstellungsguide](/de/ratgeber/3d-modell-erstellen). Für viele Artikelnummern bietet das [Batch-Katalog-Workflow](/de/ratgeber/produktkatalog-automatisieren-n8n) Wiederherstellung und Budgetverfolgung um die einzelnen Produktschritte herum.
+Für eine umfassendere Produktionsmethode siehe das [3D-Erstellungsguide](/de/ratgeber/3d-modell-erstellen). Speichere bei größeren Katalogen die Vorgangs-ID und den genehmigten Betrag je SKU, damit ein neuer Durchlauf den Auftrag fortsetzen kann.
 
 ## Häufige Fragen
 
 ### Kann n8n aus einem einzigen Foto eine vollständige Produktseite erstellen?
 
-Es kann die Arbeit koordinieren, aber das Foto allein reicht nicht aus, um Produktmerkmale zu überprüfen. Stelle zuverlässige Katalogfakten bereit, wähle deine Text- und Visual-Dienste, überprüfe die Ausgaben und erstelle einen CMS-Vorab. Halte Maße, Materialien und die Publikationsgenehmigung getrennt von allem, was ein Bildmodell über das Objekt errät.
+Es kann die Arbeit koordinieren, aber das Foto allein reicht nicht aus, um Produktmerkmale zu überprüfen. Stelle zuverlässige Katalogfakten bereit, wähle deine Text- und Visual-Dienste, überprüfe die Ausgaben und erstelle einen CMS-Entwurf. Halte Maße, Materialien und die Publikationsgenehmigung getrennt von allem, was ein Bildmodell über das Objekt errät.
 
 ### Sind die Bilder und das 3D-Modell kostenlos?
 
-Ja, Bilder und 3D-Modelle sind kostenlos, solange sie aus dem akzeptierten Pool stammen. Lade die GLB-Datei im Workflow direkt aus dem n8n-Input-Modul herunter. Falsche 3D-Dateien führen zu Fehlern – überprüfe, ob die Datei ein gültiges GLB-Modell aus der Khronos glTF-Dokumentation ist.
+Die Vorschau ist kostenlos. Für einen Satz Produktansichten fallen Credits an, und die anschließende 3D-Erstellung kostet weitere Credits. Prüfe den für dein Konto berechneten Betrag vor jeder Freigabe und berücksichtige auch die Kosten für das Sprachmodell und den Betrieb von n8n.
 
-### Brauchst du einen native EasyRender-Node in n8n?
+### Brauchst du einen eigenen EasyRender-Knoten in n8n?
 
-Nein, du brauchst keinen native EasyRender-Node in n8n. Der HTTP Request-Node nutzt die integrierte Funktionalität und den veröffentlichten REST-Vertrag. Beginne mit dem integrierten Node, dann überprüfe einen dedizierten EasyRender-Node für deine genauen Operationen und die aktuelle Installation.
+Nein, du brauchst keinen nativen EasyRender-Node in n8n. Der HTTP Request-Node nutzt die integrierte Funktionalität und den veröffentlichten REST-Vertrag. Beginne mit dem integrierten Node, dann überprüfe einen dedizierten EasyRender-Node für deine genauen Operationen und die aktuelle Installation.
 
 ### Wird der Workflow Produkte automatisch veröffentlichen?
 
-Nur, wenn du diesen Schritt hinzufügst und authorisiert. Dieses Rezept endet mit einem überprüften CMS-Vorab und gespeicherten Medien-Identifikatoren. Die Trennung der Publikation ermöglicht, die Produktvariation, den Text und die Dateien zusammen zu überprüfen, bevor ein Live-Listings geändert wird, und ermöglicht es, die Versendung zu wiederholen, ohne das visuelle Werk neu zu generieren.
+Nur, wenn du diesen Schritt hinzufügst und authorisiert. Dieses Rezept endet mit einem überprüften CMS-Entwurf und gespeicherten Medien-Identifikatoren. Die Trennung der Publikation ermöglicht, die Produktvariation, den Text und die Dateien zusammen zu überprüfen, bevor ein Live-Listings geändert wird, und ermöglicht es, die Versendung zu wiederholen, ohne das visuelle Werk neu zu generieren.

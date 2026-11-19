@@ -2,9 +2,9 @@
 
 group: "n8n-product-pages-images-3d"
 title: "Schede prodotto con n8n: testi, immagini e 3D"
-description: "Crea un workflow per la pagina prodotto in n8n: dati verificati, generazione immagini, modello 3D revisionato e bozzetto CMS, con approvazione prima…"
+description: "Crea schede prodotto con n8n a partire dai dati del catalogo. Prepara testi, immagini e modello 3D e salva una bozza nel CMS dopo aver approvato i costi."
 date: 2026-11-18
-updated: 2026-11-18
+updated: 2026-11-19
 keyword: "schede prodotto n8n"
 cta: "Controlla le diverse viste del tuo prodotto nell’anteprima gratuita."
 ---
@@ -19,17 +19,17 @@ Per creare una scheda prodotto con n8n, parti dai dati verificati e prepara test
 
 ## Cosa deve fornire questo flusso?
 
-Per una lampada da tavolo in ceramica, l'output è un pacchetto da valutare: copy accurato, viste selezionate del prodotto, un file GLB e l'identificativo di un bozzetto nel CMS. GLB è un contenitore binario per un modello 3D, descritto nella [documentazione Khronos glTF](https://www.khronos.org/gltf/). Un video rotante è un altro tipo di deliverable.
+Per una lampada da tavolo in ceramica, l'output è un pacchetto da valutare: copy accurato, viste selezionate del prodotto, un file GLB e l'identificativo di una bozza nel CMS. GLB è un contenitore binario per un modello 3D, descritto nella [documentazione Khronos glTF](https://www.khronos.org/gltf/). Un video rotante è un altro tipo di deliverable.
 
 | Deliverable                | Fonte di verità                           | Controllo di accettazione                                 |
 | -------------------------- | ----------------------------------------- | --------------------------------------------------------- |
 | Titolo e descrizione       | Fatti del fornitore più regole editoriali | Nessun materiale, dimensioni o certificazione inventato   |
 | Immagini del prodotto      | Set visivo accettato                      | Lo stesso prodotto, finitura e varianti in tutto          |
 | File interattivo 3D        | Costruzione approvata                     | Il file si apre, si gira e corrisponde al pezzo accettato |
-| Bozzetto nel CMS           | Mappatura SKU-prodotto                    | Prodotto e varianti corretti, ancora non pubblicati       |
+| Bozza nel CMS              | Mappatura SKU-prodotto                    | Prodotto e varianti corretti, ancora non pubblicati       |
 | Registrazione del processo | ID salvati e approvazione                 | Un'altra esecuzione può riprendere il lavoro              |
 
-L'[immagine n8n a Shopify template](https://n8n.io/workflows/11695-generate-product-descriptions-from-images-and-publish-to-shopify-using-ai/) illustra la parte del copia. Aggiungere 3D richiede uno stato specifico, una revisione e la consegna del file. Questa ricetta descrive quell'architettura. Non è un rapporto su un'implementazione del negozio eseguita.
+Il [modello n8n per Shopify](https://n8n.io/workflows/11695-generate-product-descriptions-from-images-and-publish-to-shopify-using-ai/) mostra come generare le descrizioni a partire dalle immagini. Aggiungere 3D richiede uno stato specifico, una revisione e la consegna del file. Questa ricetta descrive quell'architettura. Non è un rapporto su un'implementazione del negozio eseguita.
 
 ## Come dovrebbe apparire il pacchetto di listing?
 
@@ -61,7 +61,7 @@ La prova copre l’unione e la validazione di file esistenti. La generazione del
 
 ## Quali informazioni devono provenire dal tuo catalogo?
 
-Crea un record di input con `sku`, `source_version`, `name`, `material`, `dimensions`, `image_url` e `locale`. Lascia i dati sconosciuti vuoti. Aggiungi campi separati di approvazione per le immagini, 3D e il budget, e la singola bandiera `approved` è troppo vaga quando più azioni possono eseguirsi.
+Crea un record di partenza con lo SKU, la versione dei dati originali e le informazioni verificate. Lascia vuoti i campi sconosciuti. Prevedi tre approvazioni separate per le immagini, il costo del modello 3D e la pubblicazione. Usa questi campi: `sku`, `source_version`, `name`, `material`, `dimensions`, `image_url` e `locale`.
 
 | Campo                | Valore esempio                    | Perché conta                                         |
 | -------------------- | --------------------------------- | ---------------------------------------------------- |
@@ -77,7 +77,7 @@ Per la ramificazione testo, chiedi al tuo modello selezionato di restituire tito
 
 Passa il record verificato al nodo di generazione del testo selezionato, seguendo l'istruzione qui sotto. Mantieni la credenziale API separata da quella del servizio visivo. Se l'output non può essere analizzato o non corrisponde ai campi richiesti, invialo a un passaggio di editing prima che raggiunga il CMS.
 
-> Scrivi un bozzetto di pagina prodotto nella lingua richiesta usando solamente i dati forniti. Restituisci titolo, descrizione, punti, alt_text e missing_facts. Non inferire materiale, misure, compatibilità o certificazioni dall'immagine. Escludi le specifiche mancanti dal testo e elenca quelle in missing_facts. Non pubblica nulla.
+> Scrivi una bozza di scheda prodotto nella lingua richiesta usando solo i dati forniti. Restituisci title, description, bullets, alt_text e missing_facts. Non dedurre dalla foto il materiale, le misure, le compatibilità o le certificazioni. Ometti dal testo i dati sconosciuti ed elencali in missing_facts. Non pubblicare nulla.
 
 | Campo di output | Tipo                      | Esempio dal record della lampada                                   |
 | --------------- | ------------------------- | ------------------------------------------------------------------ |
@@ -87,7 +87,7 @@ Passa il record verificato al nodo di generazione del testo selezionato, seguend
 | `alt_text`      | Testo                     | Vista anteriore della lampada da tavolo in ceramica                |
 | `missing_facts` | Elenco dei nomi dei campi | `dimensions`, `bulb_compatibility` in caso di assenza              |
 
-Trattale questo come uno schema per la validazione, non come una promessa che il modello rispetterà sempre. Per questo input illustrativo, la compatibilità con lampadine sconosciute non è inclusa. Richiedi tutti e cinque i campi, array per le due liste e un SKU di origine invariato prima di unire il ramo testo con i risultati visivi.
+Verifica che la risposta contenga tutti e cinque i campi e che lo SKU sia rimasto invariato. Per questo input illustrativo, la compatibilità con lampadine sconosciute non è inclusa. Richiedi tutti e cinque i campi, array per le due liste e un SKU di origine invariato prima di unire il ramo testo con i risultati visivi.
 
 ## Come generi immagini e 3D da lo stesso prodotto?
 
@@ -96,30 +96,30 @@ Usa il nodo [Richiesta HTTP](https://docs.n8n.io/integrations/builtin/core-nodes
 1. Leggi `GET https://easyrender.ai/api/credits`. Mostra il costo attuale dell'insieme immagini, il saldo conto e il prodotto richiesto prima dell'approvazione. La creazione dell'insieme immagini è a pagamento. È separata dalla visualizzazione gratuita.
 2. Dopo l'approvazione, chiama `POST /api/product-views` con JSON contenente `image_url`, `name` e un'eventuale `prompt`. Salva il valore restituito `id` come `view_set_id` immediatamente.
 3. Effettua un polling su `GET /api/product-views/{id}` utilizzando l'identificativo salvato. Una configurazione iniziale è un attesa di 15 secondi con scadenza fissa. Rispetta le risposte relative al limite di velocità. Ferma l'operazione su `failed`, e analizza le viste individuali prima di accettare l'insieme.
-4. Scarica le immagini accettate da `GET /api/product-views/{id}/views/{view}`, utilizzando ciascun identificativo della vista restituita. Usa lo stesso credenziale API e salva le risposte come file.
-5. Chiama `POST /api/product-views/{id}/render` soltanto dopo che l'insieme è pronto e accettato. Salva il suo `renderId`. Questo crea o riutilizza un bozze. Non avvia la costruzione a pagamento 3D.
-6. Leggi il render e approva il suo saldo residuo, calcolato come `max(0, renderCredits - credits)`. Invia `POST /api/renders/{id}/render` con l'intero approvato in `maxCredits`.
+4. Scarica le immagini accettate da `GET /api/product-views/{id}/views/{view}`, utilizzando ciascun identificativo della vista restituita. Usa la stessa credenziale API e salva le risposte come file.
+5. Chiama `POST /api/product-views/{id}/render` soltanto dopo che l'insieme è pronto e accettato. Salva il suo `renderId`. Questo crea o riutilizza una bozza. Non avvia la costruzione a pagamento 3D.
+6. Verifica quanti crediti restano da addebitare per il modello e approva l’importo, calcolato con `max(0, renderCredits - credits)`. Invia `POST /api/renders/{id}/render` con l’importo intero autorizzato in `maxCredits`.
 7. Polla fino a che `status` è `ready` e `hasModel` è `true`, poi scarica `GET /api/renders/{id}/model?download=1` come file.
 
-Questi percorsi e campi sono presenti nel [schema API deployato](https://easyrender.ai/api/openapi.json). La richiesta attuale per l'insieme immagini REST non espose il campo `maxCredits` dell'endpoint build. Imposta l'autorizzazione su questo campo nel flusso e usa una chiave dedicata con un limite di credito massimo. Non assumere che l'aggiunta di un campo JSON crei un limite server-side.
+I percorsi e i campi sono descritti nello [schema dell’API](https://easyrender.ai/api/openapi.json). La richiesta REST per creare una serie di immagini non ha il campo `maxCredits`. Verifica l’autorizzazione alla spesa nel flusso e usa una chiave dedicata con un limite di crediti.
 
-Per un test iniziale senza insieme immagini pagato, usa il [flusso n8n preview-first](/it/guide/immagine-in-3d-n8n). Parte da `POST /api/renders`, si ferma per la revisione e mantiene il costrutto successivo separato. Scegli questa strada quando hai bisogno di valutare un solo prodotto prima di pianificare il pacchetto completo.
+Per provare un prodotto senza pagare una serie di viste, usa l’[API di anteprima gratuita](https://easyrender.ai/api/openapi.json). Il flusso chiama `POST /api/renders`, si ferma per la revisione e tiene separata la generazione 3D.
 
 <!-- IMAGE PENDING: unique real screenshot of product-view review and generated files, captured without credentials or customer data. -->
 
 ## Come mantieni allineate le versioni testo e visive?
 
-Porta lo stesso `sku` e `source_version` nei due rami. Salva `view_set_id`, `render_id` e la revisione testuale insieme a loro. Fai il merge tramite tali identificatori, non per posizione in una lista: un singolo richiesta lenta per immagini deve non assegnare un modello di lampada al testo del prodotto successivo.
+Porta lo stesso `sku` e `source_version` nei due rami. Salva `view_set_id`, `render_id` e la revisione testuale insieme a loro. Unisci i risultati per SKU e versione: anche se una richiesta impiega più tempo, il modello resterà associato al prodotto giusto.
 
 | Stato della copia                | Stato visivo                 | Azione successiva                                |
 | -------------------------------- | ---------------------------- | ------------------------------------------------ |
 | Pronto                           | In elaborazione              | Salva la copia e aspetta il lavoro esistente     |
 | Manca informazione del fornitore | Pronto                       | Richiedi le informazioni. Conserva i file        |
-| Approvato                        | Approvato                    | Crea un bozzetto per il CMS                      |
+| Approvato                        | Approvato                    | Crea una bozza per il CMS                        |
 | Approvato                        | Rifiutato                    | Mantieni il testo. Modifica solo la parte visiva |
 | Versione precedente della fonte  | Versione attuale della fonte | Verifica il disallineamento prima di combinare   |
 
-Non descrivi le visualizzazioni generate come fotografie aggiuntive della lampada fisica. Mantieni disponibili le fotografie originali per il revisore e scrivi didascalie adeguate per ogni asset. Per preparare la fonte stessa, segui il [guida foto-a-3D](/it/guide/creare-un-modello-3d-da-foto).
+Non descrivi le visualizzazioni generate come fotografie aggiuntive della lampada fisica. Mantieni disponibili le fotografie originali per il revisore e scrivi didascalie adeguate per ogni asset. Per preparare la fonte stessa, segui la [guida foto-a-3D](/it/guide/creare-un-modello-3d-da-foto).
 
 ## Come i file raggiungono Shopify o un altro CMS?
 
@@ -135,7 +135,7 @@ Inizia con un prodotto in bozza o con una modifica non pubblicata. Verifica le i
 | ---------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------- |
 | Il testo crea un materiale                     | L'output visivo viene trattato come dato del fornitore                 | Limita le specifiche ai campi verificati                      |
 | L'insieme delle immagini viene ripetuto        | POST pagato ripetuto dopo risposta persa                               | Salva l'output come incerto e riconcilia prima di reinviare   |
-| Modello errato su un prodotto                  | Branchi uniti per posizione nella lista                                | Unisci per SKU e versione della fonte                         |
+| Modello errato su un prodotto                  | Rami uniti per posizione nella lista                                   | Unisci per SKU e versione della fonte                         |
 | Shopify non riesce a recuperare il modello     | Punto finale privato fornito come media pubblica                       | Scarica con autenticazione, poi carica il file                |
 | L'esecuzione non avvia mai                     | Il draft visualizzato viene confuso con un build completato            | Approva e avvia l'operazione separata per il build            |
 | Il polling si interrompe ma il lavoro continua | Il termine del workflow viene mal interpretato come fallimento del job | Salva l'ID e riprendi i controlli in seguito                  |
@@ -143,21 +143,21 @@ Inizia con un prodotto in bozza o con una modifica non pubblicata. Verifica le i
 
 ## Come sai che il workflow merita di essere esteso?
 
-Esegui un lampo attraverso tutti i rami e confronta il draft finale con il record di input. Registrare il tempo trascorso nel revisione, il numero di correzioni manuali e i crediti netti utilizzati. Poi elabora un piccolo insieme di prodotti distinti prima di lasciare il workflow al feed programmato senza intervento umano.
+Prova il flusso con una lampada da tavolo e confronta la bozza con i dati di partenza. Registrare il tempo trascorso nel revisione, il numero di correzioni manuali e i crediti netti utilizzati. Poi elabora un piccolo insieme di prodotti distinti prima di lasciare il workflow al feed programmato senza intervento umano.
 
 La nostra implementazione separa l'ID del view-set, l'ID del render e la disponibilità del modello finale. Questo fornisce a questa ricetta tre punti di controllo invece che un singolo segnale di successo generico. Il numero di pacchetti di prodotti esaminati e consegnati è l'output. Un nodo HTTP verde rappresenta soltanto un segnale intermedio.
 
-Per un metodo di produzione più ampio, usa il [guida alla creazione 3D](/it/guide/come-creare-un-modello-3d). Per molti SKUs, il [workflow del catalogo batch](/it/guide/automatizzare-catalogo-prodotti-n8n) aggiunge recupero e gestione del budget intorno ai passi singoli per prodotto.
+Per un metodo di produzione più ampio, usa la [guida alla creazione 3D](/it/guide/come-creare-un-modello-3d). Per un catalogo più ampio, salva gli ID e gli importi approvati per ogni SKU, così puoi riprendere il lavoro senza ripetere la spesa.
 
 ## Domande frequenti
 
 ### Può n8n creare una pagina di prodotto completa a partire da una sola foto?
 
-Può coordinare il lavoro, ma la foto non è sufficiente per verificare le specifiche dei prodotti. Fornisci dati certificati dal catalogo, scegli i servizi di testo e visuali, verifica gli output e crea un bozzetto per il CMS. Mantieni misure, materiali e approvazione di pubblicazione separati da quanto inferito da un modello visivo.
+Può coordinare il lavoro, ma la foto non è sufficiente per verificare le specifiche dei prodotti. Fornisci dati certificati dal catalogo, scegli i servizi di testo e visuali, verifica gli output e crea una bozza per il CMS. Mantieni misure, materiali e approvazione di pubblicazione separati da quanto inferito da un modello visivo.
 
-### Gli immagini e il modello 3D sono gratuiti?
+### Le immagini e il modello 3D sono gratuiti?
 
-Il percorso di anteprima gratuita e il percorso con insieme immagini pagato sono diversi. Un set di visualizzazione prodotto consuma crediti, mentre la costruzione successiva del modello 3D ha i propri costi residui. Leggi la quotazione dell'account prima di approvare ogni operazione, e inclusa qualsiasi spesa per modelli linguistici o hosting n8n nel tuo budget del workflow.
+L’anteprima è gratuita. La serie di viste del prodotto consuma crediti e la generazione successiva del modello 3D ha un costo separato. Controlla quanto verrà addebitato al tuo account prima di approvare ogni operazione. Considera anche i costi del modello linguistico e dell’hosting di n8n.
 
 ### Ho bisogno di un nodo nativo EasyRender in n8n?
 
@@ -165,4 +165,4 @@ No, non hai bisogno di un nodo EasyRender nativo in n8n. Il nodo Richiesta HTTP 
 
 ### Il workflow pubblicherà automaticamente i prodotti?
 
-Solo se aggiungi e autorizzi quel passaggio. Questa ricetta termina con un bozzetto del CMS revisionato e identificatori medi salvati. Mantenendo la pubblicazione separata, puoi verificare insieme varianti, testi e file prima di modificare un listing in vivo, e riprovare il delivery senza rigenerare il lavoro visivo.
+Solo se aggiungi e autorizzi quel passaggio. Questa ricetta termina con una bozza verificata nel CMS e gli ID dei file multimediali. Mantenendo la pubblicazione separata, puoi verificare insieme varianti, testi e file prima di modificare un listing in vivo, e riprovare il delivery senza rigenerare il lavoro visivo.
