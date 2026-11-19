@@ -36,15 +36,15 @@ Rules set by Jorge on 10-nov-2026 that every stage serves:
 
 ## Roles
 
-| Role                       | Who                                                                         | Owns                                      |
-| -------------------------- | --------------------------------------------------------------------------- | ----------------------------------------- |
-| Researcher and writer      | Claude (one session per post)                                               | Stages 1 and 2                            |
-| Depth editor               | A second Claude session with a fresh context, which did not write the draft | Stage 3 verdict                           |
-| Final editorial say        | Jorge (or Ale, who has the same rights)                                     | Overrides any verdict; approves the merge |
-| Illustrations              | Juanito, with Higgsfield, from the prompt in the brief                      | Stage 4 hero illustration                 |
-| Diagrams, crops, posters   | Claude                                                                      | Stage 4 everything else                   |
-| Translator and language QA | Claude, one session per language                                            | Stage 6                                   |
-| Native reviewer            | A human per language (ES: Jorge; DE, FR, IT, pt-PT: named by Jorge)         | Stage 6 sign-off                          |
+| Role                       | Who                                                                                | Owns                                      |
+| -------------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------- |
+| Researcher and writer      | Claude (one session per post)                                                      | Stages 1 and 2                            |
+| Depth editor               | A second Claude session with a fresh context, which did not write the draft        | Stage 3 verdict                           |
+| Final editorial say        | Jorge (or Ale, who has the same rights)                                            | Overrides any verdict; approves the merge |
+| Illustrations              | Juanito, with Higgsfield, from the prompt in the brief                             | Stage 4 hero illustration                 |
+| Diagrams, crops, posters   | Claude                                                                             | Stage 4 everything else                   |
+| Translator and language QA | Claude, one session per language                                                   | Stage 6                                   |
+| Language reviewer          | An independent subagent specialising in the target locale, using an advanced model | Stage 6b verdict                          |
 
 ## The stages
 
@@ -152,7 +152,7 @@ number is real, whether a paragraph says anything. Also check the page itself: `
 the HTML), and the accordion and the figures at 375 px and on desktop in light and dark. Say which
 of these were not run.
 
-### 6. Translation, language QA and native review
+### 6. Translation, language QA and independent language review
 
 With [`prompts/06-translation.md`](prompts/06-translation.md), once the English guide has passed
 stages 3 to 5:
@@ -163,11 +163,19 @@ stages 3 to 5:
 2. **Localise every creative.** The same hero file, with alt text and caption in the language. A
    block of words for the language in every diagram the guide uses
    (`components/blog/diagrams/*.tsx`). Localised FAQ, still 3 to 5 questions.
-3. **Language QA**, a second Claude pass per language, with the checklist in the same prompt:
+3. **Language QA**, a second pass per language, with the checklist in the same prompt:
    claims translated too ("à l'échelle réelle", "in Originalgröße" and so on are banned), no
    machine-translation tells, numbers and units, links pointing at the same-language guides.
-4. **Native review**, with [`prompts/07-native-review.md`](prompts/07-native-review.md). No DE, FR,
-   IT or pt-PT text is published without the native reviewer's sign-off, recorded on the PR.
+4. **Independent language review.** Start a separate subagent for each locale (es-ES, de-DE,
+   fr-FR, it-IT and pt-PT), with a fresh context and an explicit assignment for that market. Use
+   the strongest available model suited to editorial review, with high reasoning when available.
+   Give it the final English source, the translated article, the relevant visuals and
+   [`prompts/07-native-review.md`](prompts/07-native-review.md). The reviewer checks the translation
+   with the vocabulary, register and expectations of a reader from that market.
+5. **Review loop.** The reviewer gives a `PASS` or identifies blocking edits. The writer fixes the
+   blockers and sends the revised text and visuals back for independent review. Record the
+   locale, model, revision and final verdict on the PR. A translation can go live after its
+   own `PASS`. The subagent's recorded verdict is the language sign-off.
 
 A language only serves pages once it is in `ROUTABLE_LOCALES` (see the content README).
 
@@ -177,7 +185,8 @@ A language only serves pages once it is in `ROUTABLE_LOCALES` (see the content R
   15:50). A week of posts can be committed at once with seven dates.
 - Every change goes through a draft PR into `main`. **No merge without Jorge's explicit yes**, even
   when CI is green; this overrides the general rule in `AGENTS.md` for blog content.
-- After the merge, check the live page of the day: 200, JSON-LD, the hero, the accordion.
+- After the merge and the production [release](../../RELEASING.md), check each published locale:
+  HTTP 200, JSON-LD, hero, FAQ accordion, sitemap and matching hreflang links.
 
 ## Definition of done for one guide
 
@@ -186,5 +195,5 @@ A language only serves pages once it is in `ROUTABLE_LOCALES` (see the content R
 - [ ] Hero illustration in place, registered, captioned as an illustration.
 - [ ] `bun run preflight` green.
 - [ ] Rendered page checked without JavaScript; browser checks done or listed as not run.
-- [ ] Translations: each one through language QA and native review, or listed as pending.
+- [ ] Each translation has passed language QA and has an independent locale review recorded on the PR, or is listed as pending.
 - [ ] Jorge's yes on the PR.

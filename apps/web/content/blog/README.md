@@ -120,10 +120,10 @@ seven different dates.
 
 ## What stops a language from going live
 
-A language only serves pages once it is in `ROUTABLE_LOCALES` in `i18n/config.ts`, which means
-`messages/{locale}.json` exists and a native speaker has reviewed it. Until then its content
-files are parsed but never served, never linked and never listed, and the other languages'
-hreflang blocks do not mention it. Nothing here is ever machine translated.
+A language only serves pages once it is in `ROUTABLE_LOCALES` in `i18n/config.ts`. A guide
+translation also needs the independent per-locale review described in the
+[`blog pipeline`](../../../../docs/blog/PIPELINE.md). Unroutable files are parsed but never
+served, linked or listed in other languages' hreflang metadata.
 
 A malformed file is skipped with a warning in the server log rather than breaking the hub, so
 check the log after adding one.
