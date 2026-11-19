@@ -1,11 +1,17 @@
+export const PRIVATE_TOKEN_PAGE_HEADER = 'x-easyrender-private-token-page';
+
+const isInvitePath = (path: string) => /^\/invite\/[^/]+\/?$/.test(path);
+
 /** Token links are private actions, not analytics landing pages. */
 export function isMailingTokenLocation(value: string): boolean {
   try {
-    const path = new URL(
+    const { pathname: path, searchParams } = new URL(
       value.replace(/^(?:GET|POST|HEAD|OPTIONS)\s+/i, ''),
       'https://easyrender.invalid',
-    ).pathname;
+    );
     return (
+      isInvitePath(path) ||
+      isInvitePath(searchParams.get('next') ?? '') ||
       /^\/(?:api\/)?email\/(?:confirm|unsubscribe)(?:\/|$)/.test(path) ||
       /^\/api\/email\/verify-account(?:\/|$)/.test(path) ||
       /^\/(?:api\/auth\/)?(?:verify-email|reset-password)(?:\/|$)/.test(path)
@@ -22,6 +28,7 @@ export function redactMailingTokens<T>(value: T): T {
     if (typeof item === 'string')
       return item
         .replace(/(^|[?&])token=[^&#\s]*/gi, '$1token=[Filtered]')
+        .replace(/((?:\/|%2f)invite(?:\/|%2f))[0-9a-f-]{36}\b/gi, '$1[Filtered]')
         .replace(/("token"\s*:\s*")[^"]*(")/gi, '$1[Filtered]$2');
     if (!item || typeof item !== 'object') return item;
     if (seen.has(item)) return '[Circular]';

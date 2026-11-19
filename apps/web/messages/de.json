@@ -1765,16 +1765,14 @@
     "error": "Der Shop konnte nicht verbunden werden."
   },
   "CreditInvite": {
-    "email": "E-Mail-Adresse",
-    "invalid_email": "Gib eine gültige E-Mail-Adresse ein.",
     "invalid_amount": "Gib zwischen 1 und {max, number} Credits ein.",
     "invalid_key": "Lade die Seite neu und versuche, den Link erneut zu erstellen.",
     "adminTitle": "Einladungen mit Guthaben",
-    "adminDescription": "Erstelle einen einmalig nutzbaren Link für jemanden ohne Konto. Er ist 30 Tage gültig und setzt die Bestätigung der eingeladenen E-Mail-Adresse voraus.",
+    "adminDescription": "Erstelle einen einmaligen Link für einen neuen Kunden. Das erste neue Konto, das seine E-Mail-Adresse bestätigt und den Link einlöst, erhält die Credits. Der Link läuft nach 30 Tagen ab.",
     "campaign": "Kampagne",
     "credits": "Credits",
     "create": "Link erstellen",
-    "recipient": "Empfänger",
+    "recipient": "Konto",
     "status": "Status",
     "firstModel": "Erstes 3D-Modell",
     "actions": "Aktionen",
@@ -1790,9 +1788,8 @@
     "copied": "Kopiert",
     "copyError": "Wähle den Link aus und kopiere ihn manuell.",
     "invalid_campaign": "Gib einen Kampagnennamen mit höchstens 120 Zeichen ein.",
-    "existing_account": "Für diese E-Mail-Adresse gibt es bereits ein Konto. Vergib die Credits direkt über das Formular unten.",
     "offer": "Du hast {credits, number} Credits, um EasyRender auszuprobieren",
-    "offerDescription": "Verwende die E-Mail-Adresse, an die die Einladung geschickt wurde. Bestätige sie, um deine Credits einzulösen.",
+    "offerDescription": "Erstelle ein Konto mit der E-Mail-Adresse deiner Wahl. Bestätige sie, um deine Credits einzulösen.",
     "signUp": "Konto erstellen",
     "signIn": "Anmelden",
     "redeem": "Credits einlösen",
@@ -1800,7 +1797,8 @@
     "redeemedDescription": "Mit deinen Credits kannst du jetzt ein 3D-Modell erstellen.",
     "createModel": "Mein erstes Modell erstellen",
     "unavailableTitle": "Einladung nicht verfügbar",
-    "unavailableDescription": "Der Link ist möglicherweise abgelaufen oder wurde bereits verwendet. Wenn du ein anderes Konto hast, öffne ihn mit der eingeladenen E-Mail-Adresse."
+    "unavailableDescription": "Der Link ist möglicherweise abgelaufen, wurde bereits verwendet oder erfordert ein anderes Konto. Das Guthaben ist für neue bestätigte Konten bestimmt.",
+    "legacyOfferDescription": "Verwende die E-Mail-Adresse, an die die Einladung geschickt wurde. Bestätige sie, um deine Credits einzulösen."
   },
   "AdminGift": {
     "title": "Regalar créditos",

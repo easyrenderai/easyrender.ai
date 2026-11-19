@@ -1765,16 +1765,14 @@
     "error": "Não foi possível ligar a loja."
   },
   "CreditInvite": {
-    "email": "Endereço de email",
-    "invalid_email": "Introduz um endereço de email válido.",
     "invalid_amount": "Introduz entre 1 e {max, number} créditos.",
     "invalid_key": "Atualiza a página e tenta criar a ligação novamente.",
     "adminTitle": "Convites com créditos",
-    "adminDescription": "Cria uma ligação de utilização única para quem ainda não tem conta. Expira ao fim de 30 dias e exige a confirmação do endereço de email do convite.",
+    "adminDescription": "Cria uma ligação única para um novo cliente. A primeira conta nova a confirmar o email e a usar a ligação recebe os créditos. A ligação expira ao fim de 30 dias.",
     "campaign": "Campanha",
     "credits": "Créditos",
     "create": "Criar ligação",
-    "recipient": "Destinatário",
+    "recipient": "Conta",
     "status": "Estado",
     "firstModel": "Primeiro modelo 3D",
     "actions": "Ações",
@@ -1790,9 +1788,8 @@
     "copied": "Copiada",
     "copyError": "Seleciona a ligação e copia-a manualmente.",
     "invalid_campaign": "Introduz um nome de campanha com até 120 caracteres.",
-    "existing_account": "Este endereço já tem uma conta. Usa o formulário abaixo para oferecer os créditos diretamente.",
     "offer": "Tens {credits, number} créditos para experimentar o EasyRender",
-    "offerDescription": "Usa o endereço de email que recebeu o convite. Confirma-o para receberes os créditos.",
+    "offerDescription": "Cria uma conta com o endereço de email que preferires. Confirma-o para receberes os créditos.",
     "signUp": "Criar conta",
     "signIn": "Iniciar sessão",
     "redeem": "Receber créditos",
@@ -1800,7 +1797,8 @@
     "redeemedDescription": "Já podes usar os teus créditos para criar um modelo 3D.",
     "createModel": "Criar o meu primeiro modelo",
     "unavailableTitle": "Convite indisponível",
-    "unavailableDescription": "A ligação pode ter expirado ou já ter sido usada. Se tiveres outra conta, volta a abri-la com o endereço de email que recebeu o convite."
+    "unavailableDescription": "A ligação pode ter expirado, já ter sido usada ou exigir outra conta. O crédito destina-se a contas novas verificadas.",
+    "legacyOfferDescription": "Usa o endereço de email que recebeu o convite. Confirma-o para receberes os créditos."
   },
   "AdminGift": {
     "title": "Regalar créditos",

@@ -1765,16 +1765,14 @@
     "error": "Impossibile collegare il negozio."
   },
   "CreditInvite": {
-    "email": "Indirizzo email",
-    "invalid_email": "Inserisci un indirizzo email valido.",
     "invalid_amount": "Inserisci da 1 a {max, number} crediti.",
     "invalid_key": "Ricarica la pagina e prova a creare di nuovo il link.",
     "adminTitle": "Inviti con crediti",
-    "adminDescription": "Crea un link monouso per chi non ha ancora un account. Scade dopo 30 giorni e richiede la verifica dell’indirizzo email invitato.",
+    "adminDescription": "Crea un link univoco per un nuovo cliente. I crediti vanno al primo nuovo account che verifica il proprio indirizzo email e riscatta il link. Il link scade dopo 30 giorni.",
     "campaign": "Campagna",
     "credits": "Crediti",
     "create": "Crea link",
-    "recipient": "Destinatario",
+    "recipient": "Account",
     "status": "Stato",
     "firstModel": "Primo modello 3D",
     "actions": "Azioni",
@@ -1790,9 +1788,8 @@
     "copied": "Copiato",
     "copyError": "Seleziona il link e copialo manualmente.",
     "invalid_campaign": "Inserisci un nome di campagna di massimo 120 caratteri.",
-    "existing_account": "A questo indirizzo è già associato un account. Usa il modulo qui sotto per assegnare i crediti direttamente.",
     "offer": "Hai {credits, number} crediti per provare EasyRender",
-    "offerDescription": "Usa l’indirizzo email che ha ricevuto l’invito. Verificalo per riscattare i crediti.",
+    "offerDescription": "Crea un account con l’indirizzo email che preferisci. Verificalo per riscattare i crediti.",
     "signUp": "Crea un account",
     "signIn": "Accedi",
     "redeem": "Riscatta i crediti",
@@ -1800,7 +1797,8 @@
     "redeemedDescription": "Ora puoi usare i crediti per creare un modello 3D.",
     "createModel": "Crea il mio primo modello",
     "unavailableTitle": "Invito non disponibile",
-    "unavailableDescription": "Il link potrebbe essere scaduto o già utilizzato. Se hai un altro account, riaprilo con l’indirizzo email che ha ricevuto l’invito."
+    "unavailableDescription": "Il link potrebbe essere scaduto, già utilizzato o richiedere un altro account. Il credito è riservato ai nuovi account verificati.",
+    "legacyOfferDescription": "Usa l’indirizzo email che ha ricevuto l’invito. Verificalo per riscattare i crediti."
   },
   "AdminGift": {
     "title": "Regalar créditos",

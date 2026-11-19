@@ -3,6 +3,8 @@ import { isCreditInviteId, MAX_GIFT_CREDITS, normalizedGiftEmail } from './credi
 import { grantCreditsInTransaction } from './credits';
 
 const INVITE_LIFETIME_MS = 30 * 86_400_000;
+// Previously issued invitations always stored a valid email. Empty is an unbound code.
+const UNBOUND_RECIPIENT_EMAIL = '';
 const inviteDetails = {
   id: true,
   recipientEmail: true,
@@ -26,12 +28,9 @@ function inviteState(invite: Invite, now: Date): InviteState {
 export async function issueCreditInvite(input: {
   id: string;
   issuerId: string;
-  email: string;
   amount: number;
   campaign: string;
 }) {
-  const email = normalizedGiftEmail(input.email);
-  if (!email) return { status: 'invalid_email' as const };
   if (!isCreditInviteId(input.id)) return { status: 'invalid_key' as const };
   if (!Number.isInteger(input.amount) || input.amount < 1 || input.amount > MAX_GIFT_CREDITS)
     return { status: 'invalid_amount' as const };
@@ -39,32 +38,21 @@ export async function issueCreditInvite(input: {
   if (!campaign || campaign.length > 120) return { status: 'invalid_campaign' as const };
 
   const id = input.id.toLowerCase();
-  const existing = await db().creditInvite.findUnique({ where: { id } });
-  if (
-    !existing &&
-    (await db().user.findFirst({
-      where: { email: { equals: email, mode: 'insensitive' } },
-      select: { id: true },
-    }))
-  )
-    return { status: 'existing_account' as const };
-  if (!existing) {
-    await db().creditInvite.createMany({
-      data: {
-        id,
-        issuerId: input.issuerId,
-        recipientEmail: email,
-        amount: input.amount,
-        campaign,
-        expiresAt: new Date(Date.now() + INVITE_LIFETIME_MS),
-      },
-      skipDuplicates: true,
-    });
-  }
-  const invite = existing ?? (await db().creditInvite.findUniqueOrThrow({ where: { id } }));
+  await db().creditInvite.createMany({
+    data: {
+      id,
+      issuerId: input.issuerId,
+      recipientEmail: UNBOUND_RECIPIENT_EMAIL,
+      amount: input.amount,
+      campaign,
+      expiresAt: new Date(Date.now() + INVITE_LIFETIME_MS),
+    },
+    skipDuplicates: true,
+  });
+  const invite = await db().creditInvite.findUniqueOrThrow({ where: { id } });
   if (
     invite.issuerId !== input.issuerId ||
-    invite.recipientEmail !== email ||
+    invite.recipientEmail !== UNBOUND_RECIPIENT_EMAIL ||
     invite.amount !== input.amount ||
     invite.campaign !== campaign
   )
@@ -72,17 +60,20 @@ export async function issueCreditInvite(input: {
   return { status: 'issued' as const, id };
 }
 
-export async function publicCreditInvite(id: string): Promise<{ amount: number } | null> {
+export async function publicCreditInvite(id: string) {
   if (!isCreditInviteId(id)) return null;
-  return db().creditInvite.findFirst({
+  const invite = await db().creditInvite.findFirst({
     where: {
       id: id.toLowerCase(),
       expiresAt: { gt: new Date() },
       revokedAt: null,
       redeemedAt: null,
     },
-    select: { amount: true },
+    select: { amount: true, recipientEmail: true },
   });
+  return invite
+    ? { amount: invite.amount, isEmailBound: invite.recipientEmail !== UNBOUND_RECIPIENT_EMAIL }
+    : null;
 }
 
 async function intendedInvite(tx: Prisma.TransactionClient, id: string, userId: string) {
@@ -91,14 +82,16 @@ async function intendedInvite(tx: Prisma.TransactionClient, id: string, userId: 
     select: { email: true, emailVerified: true, createdAt: true },
   });
   if (!user) return null;
+  const email = normalizedGiftEmail(user.email);
+  if (!email) return null;
   const invite = await tx.creditInvite.findFirst({
     where: {
       id: id.toLowerCase(),
       OR: [
         { redeemedById: userId },
         {
-          recipientEmail: normalizedGiftEmail(user.email) ?? '',
           createdAt: { lte: user.createdAt },
+          OR: [{ recipientEmail: UNBOUND_RECIPIENT_EMAIL }, { recipientEmail: email }],
         },
       ],
     },
@@ -112,12 +105,18 @@ export async function creditInviteForUser(id: string, userId: string) {
   const result = await intendedInvite(db(), id, userId);
   if (!result) return null;
   const { invite, isVerified } = result;
-  if (invite.redeemedById === userId) return { amount: invite.amount, state: 'used' as const };
+  if (invite.redeemedById === userId)
+    return {
+      amount: invite.amount,
+      state: 'used' as const,
+      isEmailBound: invite.recipientEmail !== UNBOUND_RECIPIENT_EMAIL,
+    };
   if (inviteState(invite, new Date()) !== 'pending') return null;
   const previous = await db().creditInvite.findUnique({ where: { redeemedById: userId } });
   if (previous) return null;
   return {
     amount: invite.amount,
+    isEmailBound: invite.recipientEmail !== UNBOUND_RECIPIENT_EMAIL,
     state: isVerified ? ('ready' as const) : ('unverified' as const),
   };
 }
@@ -166,7 +165,7 @@ export async function listCreditInvites() {
   const invites = await db().creditInvite.findMany({
     orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
     take: 50,
-    select: { ...inviteDetails, campaign: true },
+    select: { ...inviteDetails, campaign: true, redeemedBy: { select: { email: true } } },
   });
   const claimed = invites.flatMap(({ redeemedAt, redeemedById }) =>
     redeemedAt && redeemedById ? [{ userId: redeemedById, completedAt: { gte: redeemedAt } }] : [],
@@ -180,8 +179,9 @@ export async function listCreditInvites() {
     : [];
   const firstModel = new Map(models.map((row) => [row.userId, row._min.completedAt]));
   const now = new Date();
-  return invites.map(({ redeemedById, ...invite }) => ({
+  return invites.map(({ redeemedBy, redeemedById, ...invite }) => ({
     ...invite,
+    recipientEmail: redeemedBy?.email ?? (invite.recipientEmail || null),
     status: inviteState({ ...invite, redeemedById }, now),
     firstModelAt: firstModel.get(redeemedById) ?? null,
   }));
