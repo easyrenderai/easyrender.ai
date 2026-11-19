@@ -45,8 +45,9 @@ export function ModelViewer({ id, version }: { id: string; version: string }) {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
   const [viewerLoaded, setViewerLoaded] = useState(false);
 
+  // use-effect-audit: ignore downloads the GLB to the cache and aborts on cleanup; the mobile app has no query library
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
     setPhase('downloading');
     (async () => {
       try {
@@ -56,19 +57,18 @@ export function ModelViewer({ id, version }: { id: string; version: string }) {
           idempotent: true,
         });
         const base64 = await saved.base64();
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setDataUrl(`data:model/gltf-binary;base64,${base64}`);
           setPhase('rendering');
         }
       } catch {
-        if (!cancelled) setPhase('error');
+        if (!controller.signal.aborted) setPhase('error');
       }
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => controller.abort();
   }, [id, version]);
 
+  // use-effect-audit: ignore injects the model into the WebView, a widget outside React
   useEffect(() => {
     if (dataUrl && viewerLoaded) {
       web.current?.injectJavaScript(`window.setModel(${JSON.stringify(dataUrl)}); true;`);

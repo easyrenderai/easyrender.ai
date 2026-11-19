@@ -1,0 +1,618 @@
+[
+  {
+    "photo": "armchair",
+    "candidate": "lite-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.034,
+      "seconds": 8.636989,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 73.732716962,
+      "costUsd": 0.1032258037468,
+      "glbBytes": 3559264
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "armchair",
+    "candidate": "nb2-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.101,
+      "seconds": 17.702433,
+      "width": 2048,
+      "height": 2048,
+      "warnings": ["similar_views"]
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 63.468520525,
+      "costUsd": 0.088855928735,
+      "glbBytes": 5226204
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "armchair",
+    "candidate": "nb21-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.0336,
+      "seconds": 32.179235,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 89.825967028,
+      "costUsd": 0.1257563538392,
+      "glbBytes": 5182476
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "armchair",
+    "candidate": "nb21-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.0504,
+      "seconds": 22.094444,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 63.130260364,
+      "costUsd": 0.0883823645096,
+      "glbBytes": 5198440
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "lite-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.034,
+      "seconds": 5.850987,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 61.396766657,
+      "costUsd": 0.0859554733198,
+      "glbBytes": 4229656
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "nb2-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.101,
+      "seconds": 15.682137,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 69.500436723,
+      "costUsd": 0.0973006114122,
+      "glbBytes": 4195220
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "nb21-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.0336,
+      "seconds": 25.33276,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 67.971437266,
+      "costUsd": 0.0951600121724,
+      "glbBytes": 4276352
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "nb21-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.0504,
+      "seconds": 28.096368,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 68.044988705,
+      "costUsd": 0.095262984187,
+      "glbBytes": 4155860
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "lite-1k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 5 of 8 cells.",
+      "costUsd": 0.034,
+      "seconds": 5.193182,
+      "width": 1024,
+      "height": 1024
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "nb2-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.101,
+      "seconds": 15.690417,
+      "width": 2048,
+      "height": 2048,
+      "warnings": ["similar_views"]
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 60.026387723,
+      "costUsd": 0.08403694281219999,
+      "glbBytes": 4987348
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "nb21-1k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 4 of 8 cells.",
+      "costUsd": 0.0336,
+      "seconds": 17.339025,
+      "width": 1024,
+      "height": 1024
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "nb21-2k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 4 of 8 cells.",
+      "costUsd": 0.0504,
+      "seconds": 34.89742,
+      "width": 2048,
+      "height": 2048
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "lite-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.034,
+      "seconds": 5.105071,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 50.891780492,
+      "costUsd": 0.0712484926888,
+      "glbBytes": 2694072
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "nb2-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.101,
+      "seconds": 16.380895,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 60.72760299,
+      "costUsd": 0.085018644186,
+      "glbBytes": 4766768
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "nb21-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.0336,
+      "seconds": 29.279528,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 57.011422254,
+      "costUsd": 0.07981599115560001,
+      "glbBytes": 3621372
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "nb21-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.0504,
+      "seconds": 37.081226,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 62.023270597,
+      "costUsd": 0.08683257883579999,
+      "glbBytes": 4683012
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "lite-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.034,
+      "seconds": 6.277457,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 64.345851099,
+      "costUsd": 0.0900841915386,
+      "glbBytes": 5653840
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "nb2-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.101,
+      "seconds": 18.628922,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 83.589906232,
+      "costUsd": 0.1170258687248,
+      "glbBytes": 5535460
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "nb21-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.0336,
+      "seconds": 20.565668,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 67.984805139,
+      "costUsd": 0.09517872719460001,
+      "glbBytes": 5473340
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "nb21-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.0504,
+      "seconds": 27.684982,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 68.502504615,
+      "costUsd": 0.095903506461,
+      "glbBytes": 6226776
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "vase",
+    "candidate": "lite-1k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 8 of 8 cells.",
+      "costUsd": 0.034,
+      "seconds": 4.822386,
+      "width": 1024,
+      "height": 1024
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "vase",
+    "candidate": "nb2-2k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 8 of 8 cells.",
+      "costUsd": 0.101,
+      "seconds": 15.73967,
+      "width": 2048,
+      "height": 2048
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "vase",
+    "candidate": "nb21-1k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 8 of 8 cells.",
+      "costUsd": 0.0336,
+      "seconds": 200.133417,
+      "width": 1024,
+      "height": 1024
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "vase",
+    "candidate": "nb21-2k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 8 of 8 cells.",
+      "costUsd": 0.0504,
+      "seconds": 33.238602,
+      "width": 2048,
+      "height": 2048
+    },
+    "run": 44185260066
+  },
+  {
+    "photo": "armchair",
+    "candidate": "gpt26-flare",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.047,
+      "seconds": 10.78343988,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 86.015840136,
+      "costUsd": 0.1204221761904,
+      "glbBytes": 5328680
+    },
+    "run": 44185266465
+  },
+  {
+    "photo": "armchair",
+    "candidate": "gpt26-sunburst",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.047,
+      "seconds": 26.695981314,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 82.244238568,
+      "costUsd": 0.1151419339952,
+      "glbBytes": 5199268
+    },
+    "run": 44185266465
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "gpt26-flare",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.047,
+      "seconds": 9.462836946,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 67.173762858,
+      "costUsd": 0.0940432680012,
+      "glbBytes": 4507872
+    },
+    "run": 44185266465
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "gpt26-sunburst",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.047,
+      "seconds": 25.209152244,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 70.49717429,
+      "costUsd": 0.098696044006,
+      "glbBytes": 4328452
+    },
+    "run": 44185266465
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "gpt26-flare",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.047,
+      "seconds": 7.254639146,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 51.552408155,
+      "costUsd": 0.072173371417,
+      "glbBytes": 4533952
+    },
+    "run": 44185266465
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "gpt26-sunburst",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.047,
+      "seconds": 23.032858086,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 55.526738084,
+      "costUsd": 0.0777374333176,
+      "glbBytes": 5011456
+    },
+    "run": 44185266465
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "gpt26-flare",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.047,
+      "seconds": 9.659567841,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 90.051909773,
+      "costUsd": 0.12607267368220001,
+      "glbBytes": 5352228
+    },
+    "run": 44185266465
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "gpt26-sunburst",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.047,
+      "seconds": 21.905600115,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 85.231564804,
+      "costUsd": 0.11932419072560001,
+      "glbBytes": 5547628
+    },
+    "run": 44185266465
+  }
+]

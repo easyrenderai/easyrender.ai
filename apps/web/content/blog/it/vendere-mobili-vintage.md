@@ -129,9 +129,7 @@ I marketplace hanno regole proprie per i file 3D, quindi in pratica mandi un lin
 
 Se conviene incaricare un modellatore o partire da una foto è il tema di [modellatore 3D o IA](/it/confronti/modellatore-3d-o-ai).
 
-easyrender dà a ogni modello finito presente nella sua galleria pubblica una pagina che puoi condividere con un link. I modelli sono pubblici per impostazione predefinita.
-
-Oggi il link funziona solo finché il modello resta nella galleria pubblica: nasconderlo interrompe il collegamento. Mettilo nella risposta a chi compra, accanto ai primi piani e alle misure prese con il metro, che restano nell'annuncio.
+I modelli sono privati per impostazione predefinita. Se pubblichi un modello completato nella galleria di Easy Render, puoi condividere il link alla sua pagina. Mettilo nella risposta a chi compra, accanto ai primi piani e alle misure prese con il metro, che restano nell'annuncio.
 
 ## Come capisci se un annuncio funziona?
 

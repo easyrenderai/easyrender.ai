@@ -61,6 +61,7 @@ export function attributionHeaders(): Record<string, string> {
 }
 export function beforeSend<T extends { properties: Record<string, unknown> }>(event: T): T {
   const properties = sanitizeProperties({
+    ui_locale: typeof document === 'undefined' ? undefined : document.documentElement?.lang,
     pricing_subject: browserPricingSubject(),
     pricing_variant: browserPricingVariant(),
     [`$feature/${PRICING_FLAG}`]: browserPricingVariant(),
@@ -131,6 +132,7 @@ export function gaEvent(
   if (key && conversions.has(key)) return;
   if (key) conversions.add(key);
   window.gtag('event', event, {
+    ui_locale: document.documentElement?.lang,
     pricing_variant: browserPricingVariant(),
     ...properties,
     send_to: gaId,

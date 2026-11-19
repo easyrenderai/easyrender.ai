@@ -1,9 +1,11 @@
 import {
   assessFidelity,
+  type ColorMatchReport,
   type CorrectionReport,
   correctFidelity,
   type FidelityReport,
   improveMaterials,
+  matchColorToPhoto,
   reportHtml,
   unavailableReport,
 } from '@easyrender/harness/fidelity';
@@ -46,8 +48,21 @@ export async function finishMaterialFidelity(
       warnings.push('correction_unavailable_original_preserved');
       reportError(error, { renderId: render.id, stage: 'fidelity_correction' });
     }
+    // The per-texel pass often skips (no camera that lines up, too few safe texels). A generated
+    // texture is then usually darker and flatter than the photo, so match the object's colour.
+    let colorMatch: ColorMatchReport | undefined;
+    if (correction?.status !== 'accepted') {
+      try {
+        const matched = await matchColorToPhoto(bytes, source);
+        bytes = matched.bytes;
+        colorMatch = matched.report;
+      } catch (error) {
+        reportError(error, { renderId: render.id, stage: 'color_match' });
+      }
+    }
     const artifacts = await assessFidelity(bytes, source, { context, ...correction?.camera });
     artifacts.report.correction = correction;
+    artifacts.report.colorMatch = colorMatch;
     artifacts.report.warnings.push(...warnings);
     artifacts.report.isFlagged ||= warnings.length > 0;
     const fidelity: StoredFidelity = { report: artifacts.report };

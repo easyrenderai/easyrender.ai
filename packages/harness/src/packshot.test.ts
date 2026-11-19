@@ -16,7 +16,6 @@ import {
 import {
   BUILD_FROM_VIEWS_CREDITS,
   creditsFor,
-  FINAL_SHEET_CREDITS,
   PRODUCT_VIEW_COUNT,
   PRODUCT_VIEWS_COST_USD,
   PRODUCT_VIEWS_CREDITS,
@@ -220,8 +219,8 @@ describe('product views pricing', () => {
     expect(VIEW_POLISH_CREDITS * 0.01 * 0.3).toBeGreaterThanOrEqual(VIEW_REDRAW_COST_USD - 1e-9);
   });
 
-  it('charges a 3D build from a finished set for the 3D step only', () => {
-    expect(FINAL_SHEET_CREDITS + BUILD_FROM_VIEWS_CREDITS).toBe(RENDER_CREDITS);
+  it('charges a 3D build from a finished set the same as any other 3D build', () => {
+    expect(BUILD_FROM_VIEWS_CREDITS).toBe(RENDER_CREDITS);
     expect(BUILD_FROM_VIEWS_CREDITS).toBeGreaterThan(0);
   });
 });

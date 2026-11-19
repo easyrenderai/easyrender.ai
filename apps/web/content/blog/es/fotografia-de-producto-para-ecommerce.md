@@ -7,7 +7,7 @@ date: 2026-11-15
 keyword: fotografia de producto para ecommerce
 author: Jorge Rodríguez
 authorType: person
-cta: Cuando tengas lista tu próxima foto principal de tres cuartos, pásala por imagen a 3D y revisa gratis los lados que no se ven.
+cta: Sube la foto principal de tu producto y revisa gratis las vistas generadas desde otros ángulos.
 ---
 
 La buena fotografía de producto para ecommerce sale de un montaje que puedes repetir: una luz grande y suave, un fondo liso, la cámara en un trípode a media altura del producto y la misma lista de tomas para cada artículo. No hacen falta flashes de estudio.
@@ -136,7 +136,7 @@ Un giro 360 es otra cosa: una serie de fotos hechas sobre una base giratoria, qu
 
 Un modelo 3D es un solo archivo que el comprador gira libremente y, en el móvil, puede ver en su casa con realidad aumentada. [Fotografía de producto 360 o 3D](/es/comparativas/360-vs-3d) explica cómo se hace cada uno, cuánto cuesta y cuándo elegirlo.
 
-easyrender construye un modelo a partir de una de esas fotos y antes te enseña gratis todos los ángulos. Funciona con piezas sueltas, como una lámpara de pie o un sillón, así que dale la pieza sola y no un salón decorado. [Sube una foto](/es)
+easyrender construye un modelo a partir de una de esas fotos y antes te enseña gratis todos los ángulos. Funciona con piezas sueltas, como una lámpara de pie o un sillón, así que dale la pieza sola y no un salón decorado. [Sube una foto](/es#try)
 
 ## ¿Cuáles son los errores más habituales?
 

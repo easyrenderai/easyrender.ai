@@ -55,7 +55,9 @@ export function buildHogql(kind: HogqlKind, range: AnalyticsRange, timezone = 'E
   const counts =
     "countIf(event = 'landing_view') AS visits, countIf(event = '$pageview') AS pageviews";
   if (kind === 'series') {
-    return `SELECT toString(toDate(timestamp, '${timezone}')) AS date, ${counts}, uniqIf(distinct_id, event = '$pageview') AS uniqueVisitors ${web} GROUP BY date ORDER BY date LIMIT ${MAX_ROWS}`;
+    // HogQL's toDate accepts one argument, unlike ClickHouse's optional timezone argument.
+    // Convert the timestamp first so midnight/DST boundaries use the requested local day.
+    return `SELECT toString(toDate(toTimeZone(timestamp, '${timezone}'))) AS date, ${counts}, uniqIf(distinct_id, event = '$pageview') AS uniqueVisitors ${web} GROUP BY date ORDER BY date LIMIT ${MAX_ROWS}`;
   }
   if (kind === 'events') {
     return `SELECT event, count() AS count FROM events WHERE ${dates} AND event IN (${FUNNEL_EVENTS.map((name) => `'${name}'`).join(', ')}) GROUP BY event ORDER BY event LIMIT ${MAX_ROWS}`;

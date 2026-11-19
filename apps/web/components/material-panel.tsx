@@ -6,10 +6,11 @@ import {
   type GlbMaterial,
   type MaterialEdit,
 } from '@easyrender/harness/glb';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, RotateCcw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -86,44 +87,41 @@ function toEdits(materials: GlbMaterial[], draft: Look[]): MaterialEdit[] {
 export function MaterialPanel({ renderId, viewer }: Props) {
   const t = useTranslations('Render.materials');
   const router = useRouter();
-  const [loaded, setLoaded] = useState<Loaded | null>(null);
-  const [draft, setDraft] = useState<Look[]>([]);
-  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const client = useQueryClient();
+  const queryKey = ['materials', renderId];
+  const query = useQuery({
+    queryKey,
+    // The panel owns its copy: it is read again whenever the panel opens.
+    gcTime: 0,
+    queryFn: async ({ signal }) => {
+      const response = await fetch(`/api/renders/${renderId}/materials`, {
+        cache: 'no-store',
+        signal,
+      });
+      if (!response.ok) throw new Error(String(response.status));
+      return (await response.json()) as Loaded;
+    },
+  });
+  const loaded = query.data ?? null;
+  // Only what the owner has changed since the last save; until then the draft is the saved look.
+  const [changed, setChanged] = useState<Look[] | null>(null);
+  let status: 'loading' | 'ready' | 'error' = 'loading';
+  if (loaded) status = 'ready';
+  else if (query.isError) status = 'error';
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ tone: 'error' | 'saved'; text: string } | null>(null);
 
-  const adopt = useCallback((data: Loaded) => {
-    setLoaded(data);
-    setDraft(data.materials.map((material) => lookOf(material, data.edits)));
-  }, []);
-
-  useEffect(() => {
-    let alive = true;
-    fetch(`/api/renders/${renderId}/materials`, { cache: 'no-store' })
-      .then(async (response) => {
-        if (!response.ok) throw new Error(String(response.status));
-        return (await response.json()) as Loaded;
-      })
-      .then((data) => {
-        if (!alive) return;
-        adopt(data);
-        setStatus('ready');
-      })
-      .catch(() => alive && setStatus('error'));
-    return () => {
-      alive = false;
-    };
-  }, [renderId, adopt]);
-
-  const materials = loaded?.materials ?? [];
+  const materials = useMemo(() => loaded?.materials ?? [], [loaded]);
   const saved = useMemo(
     () => (loaded ? loaded.materials.map((material) => lookOf(material, loaded.edits)) : []),
     [loaded],
   );
+  const draft = changed ?? saved;
   const isDirty = draft.some((look, index) => saved[index] && !sameLook(look, saved[index]));
   const isEdited = (loaded?.edits.length ?? 0) > 0;
 
   // Mirror the draft on the live model, so every slider move is visible at once.
+  // use-effect-audit: ignore writes the draft into the <model-viewer> element, a widget outside React
   useEffect(() => {
     const model = (viewer as ViewerElement | null)?.model;
     if (!model) return;
@@ -138,7 +136,9 @@ export function MaterialPanel({ renderId, viewer }: Props) {
 
   function change(index: number, patch: Partial<Look>) {
     setMessage(null);
-    setDraft((current) => current.map((look, i) => (i === index ? { ...look, ...patch } : look)));
+    setChanged((current) =>
+      (current ?? saved).map((look, i) => (i === index ? { ...look, ...patch } : look)),
+    );
   }
 
   async function send(edits: MaterialEdit[]) {
@@ -150,7 +150,8 @@ export function MaterialPanel({ renderId, viewer }: Props) {
       body: JSON.stringify({ edits }),
     }).catch(() => null);
     if (response?.ok) {
-      adopt((await response.json()) as Loaded);
+      client.setQueryData(queryKey, (await response.json()) as Loaded);
+      setChanged(null);
       captureBrowser(edits.length ? 'material_edits_saved' : 'material_edits_reset', {
         material_count: edits.length,
       });

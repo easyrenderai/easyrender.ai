@@ -1,8 +1,9 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { ExternalLink, Loader2 } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -63,39 +64,31 @@ async function api<T>(path: string, body?: unknown): Promise<T> {
 export function ShopifyApp() {
   const t = useTranslations('ShopifyApp');
   const format = useFormatter();
-  const [overview, setOverview] = useState<Overview | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isNotInShopify, setIsNotInShopify] = useState(false);
+  const [generateError, setGenerateError] = useState<string | null>(null);
   const [sent, setSent] = useState<number | null>(null);
 
-  const load = useCallback(async () => {
-    try {
-      setOverview(await api<Overview>('/api/shopify/overview'));
-      setError(null);
-    } catch (caught) {
-      if (caught instanceof Error && caught.message === 'NOT_IN_SHOPIFY') setIsNotInShopify(true);
-      else setError(caught instanceof Error ? caught.message : String(caught));
-    }
-  }, []);
-
-  const summary = overview?.isLinked ? overview.summary : null;
-  const isBusy = Boolean(summary && summary.queued + summary.drafting + summary.building > 0);
-  const isWaitingForLink = overview?.isLinked === false;
-
-  useEffect(() => {
-    load();
-  }, [load]);
-  // Keeps checking while models are being made, or while the merchant connects in another tab.
-  useEffect(() => {
-    if (!isBusy && !isWaitingForLink) return;
-    const id = setInterval(load, isWaitingForLink ? 5000 : 10_000);
-    return () => clearInterval(id);
-  }, [isBusy, isWaitingForLink, load]);
+  // The overview is kept current while models are being made, or while the merchant connects in
+  // another tab.
+  const query = useQuery({
+    queryKey: ['shopify-overview'],
+    queryFn: () => api<Overview>('/api/shopify/overview'),
+    refetchInterval: (current) => {
+      const data = current.state.data;
+      if (data?.isLinked === false) return 5000;
+      if (data?.isLinked && data.summary.queued + data.summary.drafting + data.summary.building > 0)
+        return 10_000;
+      return false;
+    },
+  });
+  const overview = query.data ?? null;
+  const isNotInShopify = query.error?.message === 'NOT_IN_SHOPIFY';
+  const error = generateError ?? (query.error && !isNotInShopify ? query.error.message : null);
 
   async function generate() {
     if (!overview?.isLinked || !overview.quote) return;
     const approvedCredits = overview.quote.totalCredits;
     setSent(0);
+    setGenerateError(null);
     try {
       let total = 0;
       for (let isFirst = true; ; isFirst = false) {
@@ -113,10 +106,10 @@ export function ShopifyApp() {
           credits: approvedCredits,
         });
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : String(caught));
+      setGenerateError(caught instanceof Error ? caught.message : String(caught));
     }
     setSent(null);
-    await load();
+    await query.refetch();
   }
 
   if (isNotInShopify) {

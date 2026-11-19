@@ -2,13 +2,13 @@
 
 Expo (React Native) app for easyrender. Photograph a product, get the free preview, build the 3D model, rotate it in the app and open it in AR. It talks to the same API, accounts and credits as the web app; it adds no backend of its own.
 
-| Tab / screen      | What it does                                                                                                            | API                                                                                         |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Sign in / sign up | Email and password (Better Auth). The session cookie is kept in the device keychain.                                    | `POST /api/auth/sign-in/email`, `/sign-up/email`, `GET /api/auth/get-session`               |
-| Library           | Your catalog and credit balance, polled while anything is building.                                                     | `GET /api/renders`                                                                          |
-| Capture           | Camera or photo library, downscaled to under 4 MB, uploaded for the free preview.                                       | `POST /api/renders`                                                                         |
-| Product           | Free preview, build 3D (64 credits), angle sheet (12, counts toward the 3D price), 3D viewer, AR, share, public toggle. | `GET /api/renders/:id`, `/render`, `/sheet`, `/model`, `/preview`, `PATCH /api/renders/:id` |
-| Account           | Credits, link out to buy more, sign out.                                                                                |                                                                                             |
+| Tab / screen      | What it does                                                                                                                  | API                                                                                         |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Sign in / sign up | Email and password (Better Auth). The session cookie is kept in the device keychain.                                          | `POST /api/auth/sign-in/email`, `/sign-up/email`, `GET /api/auth/get-session`               |
+| Library           | Your catalog and credit balance, polled while anything is building.                                                           | `GET /api/renders`                                                                          |
+| Capture           | Camera or photo library, downscaled to under 4 MB, uploaded for the free preview.                                             | `POST /api/renders`                                                                         |
+| Product           | Free preview, build 3D (price from the quote), angle sheet (counts toward the 3D price), 3D viewer, AR, share, public toggle. | `GET /api/renders/:id`, `/render`, `/sheet`, `/model`, `/preview`, `PATCH /api/renders/:id` |
+| Account           | Credits, link out to buy more, sign out.                                                                                      |                                                                                             |
 
 The 3D viewer is Google's `<model-viewer>` (same version as the web app) in a WebView. The app downloads the GLB with the session cookie and hands it to the viewer, so private models are never exposed by URL. AR opens Android Scene Viewer or the web page on iOS, and needs a public link, so the app asks before making a model public.
 

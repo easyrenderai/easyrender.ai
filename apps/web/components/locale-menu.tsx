@@ -55,6 +55,7 @@ export function LocaleMenu({
     if (returnFocus) buttonRef.current?.focus();
   };
 
+  // use-effect-audit: ignore document pointerdown listener that closes the menu on an outside click
   useEffect(() => {
     if (!isOpen) return;
     const onPointer = (event: PointerEvent) => {

@@ -217,9 +217,10 @@ const reportCached = unstable_cache(
       });
       const within = (d: Date | string) =>
         +new Date(d) >= Date.parse(range.start) && +new Date(d) < Date.parse(range.end);
-      const counts: Record<string, number> = {
+      const counts: Record<string, number | null> = {
         signup: s.users.filter((u) => within(u.createdAt)).length,
-        preview_start: s.renders.filter((r) => within(r.createdAt)).length,
+        // Starts include regenerations; Render.createdAt is not an immutable event history.
+        preview_start: null,
         preview_ready: s.renders.filter((r) => {
           const completed = sheetCompletedAt(r);
           return completed !== null && within(completed);
@@ -242,7 +243,12 @@ const reportCached = unstable_cache(
           const ph = hasTraffic
             ? (posthog.events.find((r) => r.event === event)?.count ?? 0)
             : null;
-          return { event, database, posthog: ph, difference: ph === null ? null : ph - database };
+          return {
+            event,
+            database,
+            posthog: ph,
+            difference: ph === null || database === null ? null : ph - database,
+          };
         }),
         source: 'mixed',
         quality: 'proxy',

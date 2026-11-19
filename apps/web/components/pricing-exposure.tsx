@@ -11,6 +11,7 @@ export function PricingExposure({
   subject: string | null;
 }) {
   const marker = useRef<HTMLSpanElement>(null);
+  // use-effect-audit: ignore IntersectionObserver that reports when the pricing block is seen
   useEffect(() => {
     const element = marker.current;
     if (!element) return;

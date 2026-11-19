@@ -4,8 +4,10 @@ import {
   bearerToken,
   createDraft,
   getBalance,
+  listFolders,
   listLibrary,
   listRenderPage,
+  toLibraryView,
   toView,
 } from '@easyrender/core';
 import { normalizeAttribution } from '@easyrender/core/attribution';
@@ -74,11 +76,12 @@ export const GET = (request: Request) =>
         nextCursor: page.nextCursor,
       });
     }
-    const [renders, balance] = await Promise.all([
+    const [renders, balance, folders] = await Promise.all([
       listLibrary(actor.userId),
       getBalance(actor.userId),
+      listFolders(actor.userId),
     ]);
-    return NextResponse.json({ renders: renders.map(toView), balance });
+    return NextResponse.json({ renders: renders.map(toLibraryView), balance, folders });
   });
 
 export const OPTIONS = apiOptions;

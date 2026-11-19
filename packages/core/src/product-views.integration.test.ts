@@ -52,8 +52,12 @@ vi.mock('@easyrender/harness', async (importOriginal) => ({
     start: async (path: string, body: { input?: Record<string, unknown>; version?: string }) => {
       fake.starts.push({ path, body });
       const id = `pred_${crypto.randomUUID()}`;
-      const kind: Plan['kind'] = path.includes('nano-banana-2/')
-        ? 'sheet'
+      // Nano Banana 2.1 draws both the 2K set sheet and the 1K single-view redraws; Lite is the
+      // redraw's fallback.
+      const kind: Plan['kind'] = path.includes('nano-banana-2.1')
+        ? body.input?.resolution === '2K'
+          ? 'sheet'
+          : 'redraw'
         : path.includes('nano-banana-2-lite')
           ? 'redraw'
           : path === ENLARGE_MODEL.path
@@ -467,7 +471,8 @@ run('product views (real database, scripted models)', { timeout: 15_000 }, () =>
     const set = await create(userId);
     expect(set.status).toBe('drafting');
     expect(await balance(userId)).toBe(10);
-    expect(fake.starts[0]?.path).toContain('nano-banana-2/');
+    expect(fake.starts[0]?.path).toContain('nano-banana-2.1/');
+    expect(fake.starts[0]?.body.input?.resolution).toBe('2K');
 
     const done = await settle(set.id, userId);
     expect(done.status).toBe('ready');
@@ -490,7 +495,7 @@ run('product views (real database, scripted models)', { timeout: 15_000 }, () =>
     const set = await create(userId);
     const done = await settle(set.id, userId);
 
-    const redraws = fake.starts.filter((s) => s.path.includes('nano-banana-2-lite'));
+    const redraws = fake.starts.filter((s) => s.body.input?.resolution === '1K');
     expect(redraws).toHaveLength(1);
     expect(String(redraws[0]?.body.input?.prompt)).toContain('back-right three-quarter view');
     expect(String(redraws[0]?.body.input?.prompt)).toContain('pure white');
@@ -531,7 +536,7 @@ run('product views (real database, scripted models)', { timeout: 15_000 }, () =>
     const set = await create(userId);
     const failed = await settle(set.id, userId);
     expect(failed.status).toBe('failed');
-    expect(fake.starts.filter((s) => s.path.includes('nano-banana-2/'))).toHaveLength(2);
+    expect(fake.starts.filter((s) => s.body.input?.resolution === '2K')).toHaveLength(2);
     expect(await balance(userId)).toBe(PRODUCT_VIEWS_CREDITS);
   });
 
@@ -559,7 +564,8 @@ run('product views (real database, scripted models)', { timeout: 15_000 }, () =>
     expect(await balance(userId)).toBe(0);
     expect(polishing.status).toBe('processing');
     const request = fake.starts.at(-1);
-    expect(request?.path).toContain('nano-banana-2-lite');
+    expect(request?.path).toContain('nano-banana-2.1/');
+    expect(request?.body.input?.resolution).toBe('1K');
     expect(request?.body.input?.image_input).toHaveLength(2);
     expect(String(request?.body.input?.prompt)).toContain('make the legs thinner');
 
@@ -621,6 +627,15 @@ run('product views (real database, scripted models)', { timeout: 15_000 }, () =>
   it('builds 3D from the finished views for the 3D step only, without drawing the sheet again', async () => {
     const { views, renders } = await load();
     const userId = await newUser(PRODUCT_VIEWS_CREDITS + BUILD_FROM_VIEWS_CREDITS);
+    // The default upscale mock repeats one picture nine times. A reusable 3D sheet must
+    // retain distinct views, including after normalization, so script distinct outputs here.
+    const upscaled = await Promise.all(
+      VIEWS.map((_, index) =>
+        picture(2046, 900, [80 + index * 20, 40 + index * 15, 20 + index * 10]),
+      ),
+    );
+    let upscaleIndex = 0;
+    fake.makeUpscale = () => upscaled[upscaleIndex++] as Uint8Array;
     const set = await settle((await create(userId)).id, userId);
 
     const renderId = await views.createRenderFromViews(set.id, {

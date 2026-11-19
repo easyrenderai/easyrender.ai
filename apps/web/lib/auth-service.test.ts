@@ -5,6 +5,8 @@ const mocks = vi.hoisted(() => ({
   available: true,
   hasQueueFailure: false,
   report: vi.fn(),
+  recorded: [] as Array<{ userId: string; code: unknown }>,
+  rewarded: [] as string[],
   queued: [] as Array<{
     purpose: string;
     userId: string;
@@ -27,6 +29,13 @@ vi.mock('better-auth/adapters/prisma', () => ({
 }));
 vi.mock('@easyrender/core', () => ({
   signupAttribution: async () => {},
+  REFERRAL_COOKIE: 'er_ref',
+  recordReferral: async (input: { userId: string; code: unknown }) => {
+    mocks.recorded.push(input);
+  },
+  rewardReferral: async (userId: string) => {
+    mocks.rewarded.push(userId);
+  },
   serviceEmailAvailable: () => mocks.available,
   queueServiceEmail: async (mail: (typeof mocks.queued)[number]) => {
     if (mocks.hasQueueFailure) throw new Error('SENSITIVE queue detail must not be reported');
@@ -66,10 +75,13 @@ describe('service email integration with real Better Auth handlers', () => {
     const response = await request(
       'sign-up/email',
       { email: 'local-auth@example.invalid', name: 'Test', password: 'local-password-123' },
-      { 'x-easyrender-email-locale': 'es' },
+      { 'x-easyrender-email-locale': 'es', cookie: 'er_anon=a; er_ref=K7M2PX9Q' },
     );
     expect(response.status).toBe(200);
     expect((await response.json()).user.emailVerified).toBe(false);
+    // The referral code comes from the cookie a share link set, and nothing is paid yet.
+    expect(mocks.recorded).toMatchObject([{ code: 'K7M2PX9Q' }]);
+    expect(mocks.rewarded).toEqual([]);
     expect(response.headers.get('set-cookie')).toContain('session_token');
     expect(mocks.queued).toHaveLength(1);
     expect(mocks.queued[0]).toMatchObject({ purpose: 'verify_email', locale: 'es' });
@@ -86,10 +98,17 @@ describe('service email integration with real Better Auth handlers', () => {
   });
   it('returns the same recovery response for existing and unknown accounts, with durable enqueue only for existing', async () => {
     const count = mocks.queued.length;
-    const existing = await request('request-password-reset', {
-      email: 'local-auth@example.invalid',
-      redirectTo: 'http://localhost:3100/reset-password',
-    });
+    const existing = await request(
+      'request-password-reset',
+      {
+        email: 'local-auth@example.invalid',
+        redirectTo: 'http://localhost:3100/reset-password',
+      },
+      {
+        'x-easyrender-email-locale': 'fr',
+        'x-easyrender-project-return': '/r/local-project',
+      },
+    );
     const unknown = await request('request-password-reset', {
       email: 'missing@example.invalid',
       redirectTo: 'http://localhost:3100/reset-password',
@@ -99,7 +118,10 @@ describe('service email integration with real Better Auth handlers', () => {
     expect(await existing.json()).toEqual(await unknown.json());
     expect(mocks.queued).toHaveLength(count + 1);
     expect(mocks.queued.at(-1)?.purpose).toBe('reset_password');
-    expect(new URL(mocks.queued.at(-1)?.url ?? '').pathname).toBe('/reset-password');
+    const reset = new URL(mocks.queued.at(-1)?.url ?? '');
+    expect(reset.pathname).toBe('/reset-password');
+    expect(reset.searchParams.get('locale')).toBe('fr');
+    expect(reset.searchParams.get('next')).toBe('/r/local-project');
   });
   it('rejects external recovery redirects and makes disabled delivery truthful for every address', async () => {
     const external = await request('request-password-reset', {
@@ -126,6 +148,9 @@ describe('service email integration with real Better Auth handlers', () => {
       mocks.database.user.find((u) => u.email === 'local-auth@example.invalid')?.emailVerified,
     ).toBe(true);
     expect(result.headers.get('set-cookie') ?? '').not.toContain('session_token');
+    // Verifying the email is what releases a pending referral reward.
+    const verified = mocks.database.user.find((u) => u.email === 'local-auth@example.invalid');
+    expect(mocks.rewarded).toEqual([verified?.id]);
     expect(
       (
         await auth().handler(

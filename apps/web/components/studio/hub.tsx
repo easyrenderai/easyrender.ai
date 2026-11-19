@@ -81,15 +81,24 @@ export function Hub({
   );
   const shown = new Set(visible.map((item) => item.id));
 
-  // Keep the filters in the address, so a view can be shared, without a navigation.
-  useEffect(() => {
+  // Keep the filters in the address, so a view can be shared, without a navigation. It is written
+  // by the handlers that change a filter, not after the render.
+  const writeFilters = (nextFilter: Filter, nextQuery: string) => {
     const url = new URL(window.location.href);
-    if (filter === 'all') url.searchParams.delete('category');
-    else url.searchParams.set('category', filter);
-    if (query.trim()) url.searchParams.set('q', query.trim());
+    if (nextFilter === 'all') url.searchParams.delete('category');
+    else url.searchParams.set('category', nextFilter);
+    if (nextQuery.trim()) url.searchParams.set('q', nextQuery.trim());
     else url.searchParams.delete('q');
     if (url.href !== window.location.href) window.history.replaceState(null, '', url);
-  }, [filter, query]);
+  };
+  const chooseFilter = (next: Filter) => {
+    setFilter(next);
+    writeFilters(next, query);
+  };
+  const changeQuery = (next: string) => {
+    setQuery(next);
+    writeFilters(filter, next);
+  };
 
   // The open sheet lives in the hash: /hub#lamp. Opening and closing write it; arriving with
   // one, or changing it by hand, opens that sheet.
@@ -99,6 +108,7 @@ export function Hub({
     url.hash = id ?? '';
     window.history.replaceState(null, '', url);
   };
+  // use-effect-audit: ignore subscribes to the window hashchange event and reads the hash on arrival
   useEffect(() => {
     const fromHash = () => {
       const id = window.location.hash.slice(1);
@@ -122,7 +132,7 @@ export function Hub({
       <div className="hubbar">
         {/* biome-ignore lint/a11y/useSemanticElements: a group of toggle buttons, not a form fieldset */}
         <div className="chips" role="group" aria-label={t('categoryLabel')}>
-          <button type="button" aria-pressed={filter === 'all'} onClick={() => setFilter('all')}>
+          <button type="button" aria-pressed={filter === 'all'} onClick={() => chooseFilter('all')}>
             {t('all')}
             <sup>{ITEMS.length}</sup>
           </button>
@@ -131,7 +141,7 @@ export function Hub({
               key={category}
               type="button"
               aria-pressed={filter === category}
-              onClick={() => setFilter(category)}
+              onClick={() => chooseFilter(category)}
             >
               {catalog(`categories.${category}`)}
               <sup>{ITEMS.filter((item) => item.category === category).length}</sup>
@@ -146,7 +156,7 @@ export function Hub({
               type="search"
               name="q"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => changeQuery(event.target.value)}
               placeholder={t('search')}
               autoComplete="off"
               spellCheck={false}
@@ -216,24 +226,28 @@ function HubCard({
   const [ready, setReady] = useState(false);
   const name = catalog(`items.${item.id}.name`);
 
+  // use-effect-audit: ignore mounts the 3D card into its host element and disposes it, a widget outside React
   useEffect(() => {
     const element = host.current;
     if (!element) return;
     const scope = new Scope();
+    const controller = new AbortController();
     import('@/lib/studio/sections/hub')
       .then((hub) => {
-        if (!scope.alive) return;
+        if (controller.signal.aborted) return;
         card.current = hub.mountCard(element, item.id, scope, () => setReady(true));
         card.current.setMode(wanted.current);
       })
       .catch((error) => console.warn('hub: card failed to start', item.id, error));
     return () => {
+      controller.abort();
       scope.dispose();
       card.current = null;
       setReady(false);
     };
   }, [item.id]);
 
+  // use-effect-audit: ignore pushes the mode into the mounted 3D card, a widget outside React
   useEffect(() => {
     wanted.current = mode;
     card.current?.setMode(mode);
@@ -287,6 +301,7 @@ function HubSheet({ id, fmt, onClose }: { id: string | null; fmt: Format; onClos
   const item = id ? findItem(id) : null;
 
   // One inspector for the page; it is built the first time a sheet opens.
+  // use-effect-audit: ignore owns the lifetime of the inspector scope that tears down the 3D sheet
   useEffect(() => {
     const created = new Scope();
     scope.current = created;
@@ -297,6 +312,7 @@ function HubSheet({ id, fmt, onClose }: { id: string | null; fmt: Format; onClos
     };
   }, []);
 
+  // use-effect-audit: ignore syncs the native dialog and the 3D sheet with the open id
   useEffect(() => {
     const element = dialog.current;
     if (!element) return;
@@ -310,18 +326,16 @@ function HubSheet({ id, fmt, onClose }: { id: string | null; fmt: Format; onClos
     closer.current?.focus({ preventScroll: true });
     setPass('beauty');
     setCopy('idle');
-    let cancelled = false;
+    const controller = new AbortController();
     (async () => {
       if (!sheet.current) {
         const hub = await import('@/lib/studio/sections/hub');
-        if (cancelled || !stage.current || !scope.current?.alive) return;
+        if (controller.signal.aborted || !stage.current || !scope.current?.alive) return;
         sheet.current = hub.mountSheet(stage.current, scope.current);
       }
       await sheet.current.show(id);
     })().catch((error) => console.warn('hub: sheet failed to open', id, error));
-    return () => {
-      cancelled = true;
-    };
+    return () => controller.abort();
   }, [id]);
 
   const choose = (next: HubPass) => {
@@ -482,7 +496,7 @@ function HubSheet({ id, fmt, onClose }: { id: string | null; fmt: Format; onClos
                 </div>
                 <div>
                   <dt>{t('formats')}</dt>
-                  <dd>{item.formats.join(' · ')}</dd>
+                  <dd>GLB</dd>
                 </div>
               </dl>
 

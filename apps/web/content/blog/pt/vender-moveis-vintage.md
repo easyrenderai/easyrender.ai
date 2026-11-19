@@ -8,7 +8,7 @@ updated: 2026-11-15
 keyword: vender móveis vintage
 author: Jorge Rodríguez
 authorType: person
-cta: Tire uma fotografia da peça à luz do dia, a três quartos, e veja como se transforma num modelo que o comprador pode rodar.
+cta: Fotografa a peça à luz do dia, de frente e ligeiramente de lado. Experimenta a pré-visualização gratuita para veres como o produto fica em 3D.
 ---
 
 Para vender móveis vintage online, escolha a plataforma pelo valor da peça, fixe o preço com vendas reais, fotografe-a de dia de todos os lados, defeitos incluídos, e indique fabricante, época, material e medidas. O 1stDibs serve peças de design assinadas; o OLX e o Facebook Marketplace servem vendas locais e preços mais baixos.
@@ -129,7 +129,7 @@ Os marketplaces têm regras próprias para ficheiros 3D, por isso, na prática, 
 
 Contratar um modelador ou partir de uma fotografia compara-se em [contratar um modelador 3D ou usar IA](/pt/comparacoes/modelador-3d-ou-ia).
 
-No easyrender, os modelos são públicos por predefinição. Cada modelo na galeria pública tem uma página que pode partilhar com uma ligação; se o ocultar, a ligação pode deixar de funcionar. Envie-a ao comprador juntamente com as fotografias de pormenor e mantenha no anúncio as medidas tiradas com fita métrica.
+Os teus modelos são privados por predefinição. Se publicares um modelo concluído na galeria Easy Render, podes partilhar a ligação para a respetiva página. Envia-a ao comprador junto com as fotografias de pormenor e mantém no anúncio as medidas que tiraste.
 
 ## Como sabe se um anúncio está a resultar?
 

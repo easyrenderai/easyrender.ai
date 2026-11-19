@@ -23,14 +23,23 @@ const AuthContext = createContext<AuthState | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null | undefined>(undefined);
 
+  // use-effect-audit: ignore restores the session on launch and subscribes to the unauthorized handler of the API client
   useEffect(() => {
+    const controller = new AbortController();
     api
       .currentUser()
-      .then(setUser)
+      .then((current) => {
+        if (!controller.signal.aborted) setUser(current);
+      })
       // Offline at launch: stay signed out of the UI rather than hang on the splash screen.
-      .catch(() => setUser(null));
+      .catch(() => {
+        if (!controller.signal.aborted) setUser(null);
+      });
     api.setUnauthorizedHandler(() => setUser(null));
-    return () => api.setUnauthorizedHandler(null);
+    return () => {
+      controller.abort();
+      api.setUnauthorizedHandler(null);
+    };
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {

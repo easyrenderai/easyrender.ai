@@ -94,30 +94,32 @@ function ModelViewerInstance({
   // Read through a ref so a new callback on every render does not re-attach the listener.
   const onLoadRef = useRef(onLoad);
   onLoadRef.current = onLoad;
+  // use-effect-audit: ignore loads the model-viewer web component when the box nears the viewport (IntersectionObserver)
   useEffect(() => {
     const element = box.current;
     if (!element) return;
-    let alive = true;
+    const controller = new AbortController();
     const observer = new IntersectionObserver(
       (entries) => {
         if (!entries.some((entry) => entry.isIntersecting)) return;
         observer.disconnect();
         loadModelViewer()
           .then(() => {
-            if (alive) setReady(true);
+            if (!controller.signal.aborted) setReady(true);
           })
           .catch(() => {
-            if (alive) setStatus('error');
+            if (!controller.signal.aborted) setStatus('error');
           });
       },
       { rootMargin: '300px 0px' },
     );
     observer.observe(element);
     return () => {
-      alive = false;
+      controller.abort();
       observer.disconnect();
     };
   }, []);
+  // use-effect-audit: ignore listens to events on the model-viewer element, a widget outside React
   useEffect(() => {
     const element = viewer.current;
     if (!ready || !element) return;

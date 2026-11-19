@@ -8,7 +8,7 @@ updated: 2026-11-15
 keyword: criar modelo 3d
 author: Jorge Rodríguez
 authorType: person
-cta: Se tiver uma fotografia nítida de uma cadeira, de um candeeiro ou de um aparador, pode vê-la de todos os ângulos antes de decidir se vale a pena fazer um modelo.
+cta: Carrega uma fotografia nítida de uma peça e vê as vistas geradas antes de decidires se queres criar o modelo 3D.
 ---
 
 Pode criar um modelo 3D de cinco formas: construí-lo num programa como o Blender, digitalizar o objeto com fotogrametria, digitalizá-lo com o sensor LiDAR do telemóvel, gerá-lo com IA a partir de uma fotografia ou encomendá-lo a um artista 3D. A escolha depende de o objeto existir, de o ter à mão e do tempo de que dispõe.
@@ -63,7 +63,7 @@ O método é o mesmo em todas as ferramentas: uma fotografia nítida do objeto i
 
 ![Nove vistas de uma poltrona em bouclé com estrutura de aço: frente, lados, costas e topo](/showcase/armchair-angles.jpg "Uma folha de ângulos grátis que o easyrender desenhou a partir de uma fotografia de catálogo desta poltrona, sem retoques. Confira as costas e o topo antes de gerar o modelo.")
 
-O easyrender é uma destas ferramentas. Mostra uma pré-visualização grátis de todos os ângulos, e um modelo pronto custa {{renderCredits}} créditos ({{renderPrice}}). Modela objetos isolados, como mobiliário, decoração e fachadas de edifícios, não divisões inteiras, e os logótipos pequenos podem ficar pouco nítidos. [Carregar uma fotografia](/pt)
+O easyrender é uma destas ferramentas. Mostra uma pré-visualização grátis de todos os ângulos, e um modelo pronto custa {{renderCredits}} créditos ({{renderPrice}}). Modela objetos isolados, como mobiliário, decoração e fachadas de edifícios, não divisões inteiras, e os logótipos pequenos podem ficar pouco nítidos. [Carregar uma fotografia](/pt#try)
 
 O Meshy e o Tripo também transformam imagens em modelos 3D e incluem a geração a partir de texto, ou text-to-3D, cada um com os seus preços. Experimente a mesma fotografia em duas ferramentas antes de escolher uma para um catálogo.
 

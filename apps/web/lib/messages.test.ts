@@ -9,18 +9,12 @@ import itMessages from '@/messages/it.json';
 import pt from '@/messages/pt.json';
 
 // Every app language answers for the same keys with the same ICU arguments.
-// Email-only copy is deliberately limited to the two explicitly selectable email languages;
-// it is passed as props from en/es rather than requested from the active app locale.
+// Marketing emails are limited to the two selectable subscription languages.
+// Account and project service emails follow the six interface languages.
 
 const MESSAGES = { en, es, de, fr, it: itMessages, pt };
 const EMAIL_LOCALES: ReadonlySet<string> = new Set(['en', 'es']);
-const EMAIL_ONLY_NAMESPACES = new Set([
-  'MailingEmails',
-  'MailingSystem',
-  'MailingUI',
-  'AuthService',
-  'ServiceEmails',
-]);
+const EMAIL_ONLY_NAMESPACES = new Set(['MailingEmails', 'MailingSystem', 'MailingUI']);
 
 type Tree = { [key: string]: string | Tree };
 

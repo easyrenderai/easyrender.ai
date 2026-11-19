@@ -103,7 +103,7 @@ Counting is the check that needs a person. Count the doors, drawers and legs in 
 
 easyrender takes a short note with each photo, for facts the photo hides: "four doors", "open back", "brass handles". The sheet above is real easyrender output from the photo in step 1, the preview is free, two a day without credits, and you only spend credits if you build the model.
 
-The free preview carries an "easyrender.ai preview" watermark that the sheet above does not. [Upload a photo](/)
+The sheet above is a finished example. Free previews have a watermark. [Upload a photo](/#try)
 
 ## Step 4: Build the model and download the files
 
@@ -172,7 +172,7 @@ No, photogrammetry measures the object from many real photos, so every surface i
 
 ### Is it free to turn a photo into a 3D model?
 
-Trying usually is; the final file usually is not. Most tools offer a free tier or a free preview, then charge per model or by subscription. On easyrender the angle preview is free, two a day without credits, and a finished model costs {{renderCredits}} credits, which is {{renderPrice}} at {{creditPrice}} per credit, as the pricing page lists.
+Trying usually is; the final file usually is not. Most tools offer a free tier or a free preview, then charge per model or by subscription. On easyrender the angle preview is free within your daily limit, and a finished model costs {{renderCredits}} credits, which is {{renderPrice}} at {{creditPrice}} per credit, as the pricing page lists.
 
 ### Can you 3D print a model made from a photo?
 

@@ -1,9 +1,10 @@
 'use client';
 
-import type { RenderView } from '@easyrender/core';
+import type { LibraryFolderView, LibraryItemView, RenderView } from '@easyrender/core';
 import {
   AlertCircle,
   Box,
+  FolderInput,
   Grid3x3,
   ImageUp,
   Loader2,
@@ -13,9 +14,19 @@ import {
   X,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useFormatter, useTranslations } from 'next-intl';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ShellPanel } from '@/components/app-shell/shell-context';
+import {
+  DeleteFolderDialog,
+  FolderNameDialog,
+  MoveDialog,
+} from '@/components/library-folder-dialogs';
+import { type FolderScope, LibraryPanel } from '@/components/library-panel';
 import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { useActivationError } from '@/lib/activation-errors';
 import {
   attribution,
   attributionHeaders,
@@ -38,7 +49,7 @@ type QueuedUpload = {
   prompt?: string;
   error: string | null;
 };
-type View = 'photo' | '3d' | 'both';
+type View = 'photo' | '3d' | 'compare';
 type Filter = 'all' | 'needs' | 'working' | 'done' | 'failed';
 
 const FILTERS: { id: Filter; match: (item: RenderView) => boolean }[] = [
@@ -52,7 +63,7 @@ const FILTERS: { id: Filter; match: (item: RenderView) => boolean }[] = [
   { id: 'failed', match: (item) => item.status === 'failed' },
 ];
 
-const VIEWS: View[] = ['photo', '3d', 'both'];
+const VIEWS: View[] = ['photo', '3d', 'compare'];
 
 const baseName = (file: File) => file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
 
@@ -73,21 +84,33 @@ async function pool<T>(items: T[], limit: number, task: (item: T) => Promise<boo
 
 export function CatalogLibrary({
   initial,
+  initialFolders,
   initialBalance,
   renderCredits,
   sheetCredits,
 }: {
-  initial: RenderView[];
+  initial: LibraryItemView[];
+  initialFolders: LibraryFolderView[];
   initialBalance: number;
   renderCredits: number;
   sheetCredits: number;
 }) {
   const t = useTranslations('Library');
+  const localizedError = useActivationError();
   const format = useFormatter();
+  const router = useRouter();
   const [items, setItems] = useState(initial);
+  const [folders, setFolders] = useState(initialFolders);
+  const [scope, setScope] = useState<FolderScope>('all');
+  const [nameDialog, setNameDialog] = useState<{
+    mode: 'create' | 'rename';
+    folder?: LibraryFolderView;
+  } | null>(null);
+  const [deleting, setDeleting] = useState<LibraryFolderView | null>(null);
+  const [moving, setMoving] = useState<LibraryItemView | null>(null);
   const [balance, setBalance] = useState(initialBalance);
   const [uploads, setUploads] = useState<QueuedUpload[]>([]);
-  const [view, setView] = useState<View>('both');
+  const [view, setView] = useState<View>('compare');
   const [filter, setFilter] = useState<Filter>('all');
   const [building, setBuilding] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -96,12 +119,18 @@ export function CatalogLibrary({
   const [viewerReady, setViewerReady] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
+  // use-effect-audit: ignore reports the renders in view to analytics, an external system
   useEffect(() => {
     items.forEach(observeRender);
   }, [items]);
 
+  // use-effect-audit: ignore registers the model-viewer web component, a widget outside React
   useEffect(() => {
-    import('@google/model-viewer').then(() => setViewerReady(true));
+    const controller = new AbortController();
+    import('@google/model-viewer').then(() => {
+      if (!controller.signal.aborted) setViewerReady(true);
+    });
+    return () => controller.abort();
   }, []);
 
   // One poll at a time. A poll that started before a local change (an upload or a build
@@ -118,10 +147,15 @@ export function CatalogLibrary({
       try {
         const response = await fetch('/api/renders', { cache: 'no-store' });
         if (!response.ok) return;
-        const data = (await response.json()) as { renders: RenderView[]; balance: number };
+        const data = (await response.json()) as {
+          renders: LibraryItemView[];
+          balance: number;
+          folders: LibraryFolderView[];
+        };
         if (localVersion.current !== startedAt) return;
         data.renders.forEach(observeRender);
         setItems(data.renders);
+        setFolders(data.folders);
         setBalance(data.balance);
       } catch {
         // The next poll retries.
@@ -133,6 +167,7 @@ export function CatalogLibrary({
   }, []);
 
   const inFlight = items.some((item) => item.status === 'drafting' || item.status === 'rendering');
+  // use-effect-audit: ignore polls the list while a render is in flight; the refresh keeps a local-version guard against stale responses
   useEffect(() => {
     if (!inFlight && !building) return;
     const timer = setInterval(() => refresh(), POLL_MS);
@@ -142,10 +177,13 @@ export function CatalogLibrary({
   const upsert = (next: RenderView) => {
     observeRender(next);
     localVersion.current += 1;
+    // A response describes the render, not where it is filed: keep the folder it already has.
     setItems((current) => {
       const index = current.findIndex((item) => item.id === next.id);
-      if (index === -1) return [next, ...current];
-      return current.map((item) => (item.id === next.id ? next : item));
+      if (index === -1) return [{ ...next, folderId: null }, ...current];
+      return current.map((item) =>
+        item.id === next.id ? { ...next, folderId: item.folderId } : item,
+      );
     });
   };
 
@@ -164,7 +202,12 @@ export function CatalogLibrary({
     try {
       const body = new FormData();
       body.append('attribution', JSON.stringify(attribution()));
-      body.append('image', await prepare(upload.file, t('errors.unreadable')), 'source.jpg');
+      const photo = await prepare(upload.file).catch(() => null);
+      if (!photo) {
+        markFailed(upload.key, t('errors.unreadable'));
+        return true;
+      }
+      body.append('image', photo, 'source.jpg');
       body.append('name', upload.name);
       if (upload.prompt) body.append('prompt', upload.prompt);
       const response = await fetch('/api/renders', {
@@ -174,9 +217,9 @@ export function CatalogLibrary({
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        markFailed(upload.key, data.error ?? t('errors.upload'));
+        markFailed(upload.key, localizedError(data, t('errors.upload')));
         if (data.code === 'preview_limit') {
-          setNotice(data.error);
+          setNotice(t('errors.dailyLimit'));
           return false;
         }
         return true;
@@ -187,8 +230,8 @@ export function CatalogLibrary({
         has_prompt: Boolean(upload.prompt),
       });
       dismiss(upload.key);
-    } catch (error) {
-      markFailed(upload.key, error instanceof Error ? error.message : t('errors.upload'));
+    } catch {
+      markFailed(upload.key, t('errors.upload'));
     }
     return true;
   }
@@ -226,6 +269,7 @@ export function CatalogLibrary({
   // below always call the latest closure.
   const addFilesRef = useRef(addFiles);
   addFilesRef.current = addFiles;
+  // use-effect-audit: ignore subscribes to window drag and drop events
   useEffect(() => {
     const hasFiles = (event: DragEvent) => event.dataTransfer?.types.includes('Files') ?? false;
     const enter = (event: DragEvent) => {
@@ -262,16 +306,22 @@ export function CatalogLibrary({
   }, []);
 
   // A photo attached on the home page before signing up is uploaded here, once, for this account.
-  const claimed = useRef(false);
+  // The handoff from the home composer is claimed once. Each effect run (Strict Mode runs two)
+  // only reports it while it is still mounted.
+  const handoff = useRef<Promise<boolean> | null>(null);
+  // use-effect-audit: ignore claims the photo the home composer handed over, once on mount
   // biome-ignore lint/correctness/useExhaustiveDependencies: runs once on mount
   useEffect(() => {
-    if (claimed.current) return;
-    claimed.current = true;
-    void takePending().then(async (saved) => {
-      if (!saved) return;
+    const controller = new AbortController();
+    handoff.current ??= takePending().then(async (saved) => {
+      if (!saved) return false;
       await addFiles([saved.file], saved.prompt);
-      setNotice(t('fromHome'));
+      return true;
     });
+    void handoff.current.then((isAdded) => {
+      if (isAdded && !controller.signal.aborted) setNotice(t('fromHome'));
+    });
+    return () => controller.abort();
   }, []);
 
   const pending = items.filter((item) => item.status === 'preview_ready');
@@ -317,7 +367,7 @@ export function CatalogLibrary({
             stoppedFor = t('errors.outOfCredits');
             return false;
           }
-          setNotice(data.error ?? t('errors.someFailed'));
+          setNotice(localizedError(data, t('errors.someFailed')));
         } catch {
           setNotice(t('errors.connection'));
         }
@@ -329,6 +379,9 @@ export function CatalogLibrary({
       await refresh(true);
     } finally {
       setBuilding(false);
+      // The header balance is a server read. Refresh it after a build, including on phones where
+      // the renders drawer (and its poll) is not mounted.
+      router.refresh();
     }
   }
 
@@ -344,23 +397,137 @@ export function CatalogLibrary({
           credits: sheetCredits,
         });
         setBalance((current) => Math.max(0, current - sheetCredits));
-        return;
+      } else {
+        setNotice(
+          data.code === 'insufficient_credits'
+            ? t('errors.sheetOutOfCredits')
+            : localizedError(data, t('errors.someFailed')),
+        );
       }
-      setNotice(data.code === 'insufficient_credits' ? t('errors.sheetOutOfCredits') : data.error);
+      router.refresh();
     } catch {
       setNotice(t('errors.connection'));
     }
   }
 
+  // A folder deleted elsewhere falls back to the whole library.
+  const activeScope =
+    scope === 'all' || scope === 'none' || folders.some((f) => f.id === scope) ? scope : 'all';
+  const scoped = useMemo(
+    () =>
+      items.filter((item) =>
+        activeScope === 'all'
+          ? true
+          : activeScope === 'none'
+            ? item.folderId === null
+            : item.folderId === activeScope,
+      ),
+    [items, activeScope],
+  );
   const counts = useMemo(
-    () => Object.fromEntries(FILTERS.map((f) => [f.id, items.filter(f.match).length])),
-    [items],
+    () => Object.fromEntries(FILTERS.map((f) => [f.id, scoped.filter(f.match).length])),
+    [scoped],
   ) as Record<Filter, number>;
-  const visible = items.filter(FILTERS.find((f) => f.id === filter)?.match ?? (() => true));
+  const folderCounts = useMemo(() => {
+    const byFolder: Record<string, number> = {};
+    for (const item of items)
+      if (item.folderId) byFolder[item.folderId] = (byFolder[item.folderId] ?? 0) + 1;
+    return byFolder;
+  }, [items]);
+  const noneCount = items.filter((item) => item.folderId === null).length;
+  const visible = scoped.filter(FILTERS.find((f) => f.id === filter)?.match ?? (() => true));
+  const isShowingUploads = filter === 'all' && (activeScope === 'all' || activeScope === 'none');
+
+  // Folder calls resolve with the message to show, or null when the change was saved.
+  const folderError = (code: unknown) =>
+    code === 'folder_exists'
+      ? t('folders.errors.exists')
+      : code === 'bad_folder_name'
+        ? t('folders.errors.name')
+        : code === 'folder_limit'
+          ? t('folders.errors.limit')
+          : t('folders.errors.generic');
+  async function sendFolder(path: string, method: string, body?: unknown) {
+    try {
+      const response = await fetch(path, {
+        method,
+        headers: body === undefined ? undefined : { 'content-type': 'application/json' },
+        body: body === undefined ? undefined : JSON.stringify(body),
+      });
+      const data = response.status === 204 ? null : await response.json().catch(() => null);
+      return { isOk: response.ok, data };
+    } catch {
+      return { isOk: false, data: null };
+    }
+  }
+  const sortFolders = (list: LibraryFolderView[]) =>
+    [...list].sort((a, b) => a.name.localeCompare(b.name));
+  async function saveFolder(name: string) {
+    const target = nameDialog?.folder;
+    const result = target
+      ? await sendFolder(`/api/folders/${target.id}`, 'PATCH', { name })
+      : await sendFolder('/api/folders', 'POST', { name });
+    if (!result.isOk) return folderError((result.data as { code?: string } | null)?.code);
+    const saved = result.data as LibraryFolderView;
+    localVersion.current += 1;
+    setFolders((current) => sortFolders([...current.filter((f) => f.id !== saved.id), saved]));
+    if (!target) setScope(saved.id);
+    setNameDialog(null);
+    return null;
+  }
+  async function removeFolder(folder: LibraryFolderView) {
+    const result = await sendFolder(`/api/folders/${folder.id}`, 'DELETE');
+    if (!result.isOk) return folderError((result.data as { code?: string } | null)?.code);
+    localVersion.current += 1;
+    setFolders((current) => current.filter((f) => f.id !== folder.id));
+    setItems((current) =>
+      current.map((item) => (item.folderId === folder.id ? { ...item, folderId: null } : item)),
+    );
+    if (scope === folder.id) setScope('all');
+    setDeleting(null);
+    return null;
+  }
+  async function moveItem(item: LibraryItemView, folderId: string | null) {
+    const result = await sendFolder('/api/library/folder', 'POST', {
+      renderIds: [item.id],
+      folderId,
+    });
+    if (!result.isOk) return t('folders.errors.move');
+    localVersion.current += 1;
+    setItems((current) => current.map((i) => (i.id === item.id ? { ...i, folderId } : i)));
+    setMoving(null);
+    return null;
+  }
   const total = items.length + uploads.length;
+
+  const filterOptions = FILTERS.map((f) => ({
+    id: f.id,
+    label: t(`filters.${f.id}`),
+    count: counts[f.id],
+  }));
+  const viewOptions = VIEWS.map((id) => ({ id, label: t(`views.${id}`) }));
 
   return (
     <div className="space-y-6">
+      <ShellPanel side="left" isInline={false}>
+        <LibraryPanel
+          filters={filterOptions}
+          filter={filter}
+          onFilter={setFilter}
+          views={viewOptions}
+          view={view}
+          onView={setView}
+          folders={folders}
+          folderCounts={folderCounts}
+          allCount={items.length}
+          noneCount={noneCount}
+          scope={activeScope}
+          onScope={setScope}
+          onCreate={() => setNameDialog({ mode: 'create' })}
+          onRename={(folder) => setNameDialog({ mode: 'rename', folder })}
+          onDelete={setDeleting}
+        />
+      </ShellPanel>
       {dragging && (
         <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-6 backdrop-blur-sm">
           <div className="flex size-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-foreground/40 text-center">
@@ -465,27 +632,38 @@ export function CatalogLibrary({
             )}
           </p>
 
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <Segmented
-              value={filter}
-              onChange={setFilter}
-              options={FILTERS.map((f) => ({
-                id: f.id,
-                label: `${t(`filters.${f.id}`)} ${counts[f.id]}`,
-              }))}
-            />
-            <Segmented
-              value={view}
-              onChange={setView}
-              options={VIEWS.map((id) => ({ id, label: t(`views.${id}`) }))}
-            />
+          {/* Wide screens have these in the side panel. */}
+          <div className="flex flex-col gap-3 md:hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <Segmented
+                value={filter}
+                onChange={setFilter}
+                options={filterOptions.map((o) => ({ id: o.id, label: `${o.label} ${o.count}` }))}
+              />
+              <Segmented value={view} onChange={setView} options={viewOptions} />
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <Segmented
+                value={activeScope}
+                onChange={setScope}
+                options={[
+                  { id: 'all', label: t('folders.all') },
+                  { id: 'none', label: t('folders.unfiled') },
+                  ...folders.map((folder) => ({ id: folder.id, label: folder.name })),
+                ]}
+              />
+              <Button variant="outline" size="sm" onClick={() => setNameDialog({ mode: 'create' })}>
+                <FolderInput className="size-4" />
+                {t('folders.new')}
+              </Button>
+            </div>
           </div>
 
           <div
             className={cn(
               'gap-4',
-              view === 'both'
-                ? 'columns-1 md:columns-2 xl:columns-3'
+              view === 'compare'
+                ? 'columns-2 md:columns-3 xl:columns-4'
                 : 'columns-2 md:columns-3 xl:columns-4',
             )}
           >
@@ -499,7 +677,7 @@ export function CatalogLibrary({
               <span className="font-medium text-foreground">{t('addMore.title')}</span>
               <span className="text-xs font-normal">{t('addMore.body')}</span>
             </Button>
-            {filter === 'all' &&
+            {isShowingUploads &&
               uploads.map((upload) => (
                 <Tile
                   key={upload.key}
@@ -539,6 +717,7 @@ export function CatalogLibrary({
                 photo={`/api/renders/${item.id}/source`}
                 title={item.name || item.prompt || t('untitled')}
                 status={t(`status.${item.status}`)}
+                onMove={() => setMoving(item)}
                 pane={
                   <ModelPane
                     item={item}
@@ -554,10 +733,36 @@ export function CatalogLibrary({
               />
             ))}
           </div>
-          {visible.length === 0 && uploads.length === 0 && (
+          {visible.length === 0 && !(isShowingUploads && uploads.length > 0) && (
             <p className="py-12 text-center text-sm text-muted-foreground">{t('emptyView')}</p>
           )}
         </>
+      )}
+      {nameDialog && (
+        <FolderNameDialog
+          key={nameDialog.folder?.id ?? 'new'}
+          mode={nameDialog.mode}
+          initialName={nameDialog.folder?.name ?? ''}
+          onSubmit={saveFolder}
+          onClose={() => setNameDialog(null)}
+        />
+      )}
+      {deleting && (
+        <DeleteFolderDialog
+          folder={deleting}
+          count={folderCounts[deleting.id] ?? 0}
+          onConfirm={() => removeFolder(deleting)}
+          onClose={() => setDeleting(null)}
+        />
+      )}
+      {moving && (
+        <MoveDialog
+          itemName={moving.name || moving.prompt || t('untitled')}
+          folders={folders}
+          currentId={moving.folderId}
+          onPick={(folderId) => moveItem(moving, folderId)}
+          onClose={() => setMoving(null)}
+        />
       )}
     </div>
   );
@@ -603,6 +808,7 @@ function Tile({
   status,
   pane,
   href,
+  onMove,
   alwaysPane = false,
 }: {
   view: View;
@@ -611,15 +817,20 @@ function Tile({
   status: string;
   pane: ReactNode;
   href?: string;
+  // Opens the folder picker for this item.
+  onMove?: () => void;
   alwaysPane?: boolean;
 }) {
+  const t = useTranslations('Library');
+  // How much of the photo shows, in percent. The 3D pane covers the rest, from the right.
+  const [split, setSplit] = useState(50);
   const image = (
     // biome-ignore lint/performance/noImgElement: authenticated API image, not optimizable
     <img src={photo} alt={title} loading="lazy" className="block h-auto w-full" />
   );
   return (
     <figure className="mb-4 break-inside-avoid overflow-hidden rounded-lg border bg-card shadow-xs">
-      {view === 'both' || alwaysPane ? (
+      {alwaysPane ? (
         <div className="grid grid-cols-2 gap-px bg-border">
           <div className="bg-muted/40">{image}</div>
           <div className="relative bg-muted/40">{pane}</div>
@@ -631,6 +842,35 @@ function Tile({
           {view === '3d' && (
             <div className="absolute inset-0 bg-muted/85 backdrop-blur-sm">{pane}</div>
           )}
+          {view === 'compare' && (
+            <>
+              <div
+                className="absolute inset-0 bg-muted"
+                style={{ clipPath: `inset(0 0 0 ${split}%)` }}
+              >
+                {pane}
+              </div>
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 w-px bg-foreground/60"
+                style={{ left: `${split}%` }}
+              />
+            </>
+          )}
+        </div>
+      )}
+      {view === 'compare' && !alwaysPane && (
+        <div className="flex items-center gap-2 border-t px-3 py-2 text-xs text-muted-foreground">
+          <span>{t('views.photo')}</span>
+          <Slider
+            value={[split]}
+            onValueChange={(next) => setSplit(next[0] ?? 50)}
+            min={0}
+            max={100}
+            step={1}
+            aria-label={t('compareLabel')}
+          />
+          <span>{t('views.3d')}</span>
         </div>
       )}
       <figcaption className="flex items-center justify-between gap-2 px-3 py-2 text-sm">
@@ -641,7 +881,22 @@ function Tile({
         ) : (
           <span className="truncate font-medium capitalize">{title}</span>
         )}
-        <span className="shrink-0 text-xs text-muted-foreground">{status}</span>
+        <span className="flex shrink-0 items-center gap-1">
+          <span className="text-xs text-muted-foreground">{status}</span>
+          {onMove && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              onClick={onMove}
+              aria-label={t('folders.moveAria', { name: title })}
+              title={t('folders.move')}
+              className="-my-1 -mr-2"
+            >
+              <FolderInput />
+            </Button>
+          )}
+        </span>
       </figcaption>
     </figure>
   );

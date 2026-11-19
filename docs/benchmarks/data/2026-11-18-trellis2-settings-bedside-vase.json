@@ -1,0 +1,38 @@
+[
+  {
+    "photo": "bedside-table",
+    "candidate": "t2-high",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 371.266375337,
+    "costUsd": 0.5197729254718,
+    "bytes": 22945396
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "t2-low",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 154.523542758,
+    "costUsd": 0.2163329598612,
+    "bytes": 5223864
+  },
+  {
+    "photo": "vase",
+    "candidate": "t2-high",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 268.866945925,
+    "costUsd": 0.376413724295,
+    "bytes": 18280856
+  },
+  {
+    "photo": "vase",
+    "candidate": "t2-low",
+    "ok": true,
+    "note": "valid GLB",
+    "seconds": 87.642943826,
+    "costUsd": 0.1227001213564,
+    "bytes": 3195048
+  }
+]

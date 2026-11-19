@@ -42,6 +42,7 @@ model User {
   accounts  Account[]
   renders   Render[]
   ledger    CreditLedger[]
+  redeemedCreditInvite CreditInvite?
   purchases Purchase[]
   googleCheckouts GoogleCheckout[]
   posthogDeliveries PosthogDelivery[]
@@ -49,10 +50,41 @@ model User {
   catalogItems CatalogItem[]
   shopifyShops ShopifyShop[]
   viewSets  ViewSet[]
+  libraryFolders LibraryFolder[]
   upscales  Upscale[]
   firstModelEnrollment FirstModelEnrollment?
 
+  // Referral program: a lazily issued share code, and the referral that brought this user in.
+  referralCode      String?    @unique
+  referralsMade     Referral[] @relation("ReferralReferrer")
+  referralReceived  Referral?  @relation("ReferralReferred")
+
   @@map("user")
+}
+
+// One row per new account that signed up through a referral link. referredUserId is unique, so a
+// new account can bring in at most one reward. Credits move through the ledger, keyed by this id.
+model Referral {
+  id             String    @id @default(cuid())
+  code           String
+  referrerId     String
+  referrer       User      @relation("ReferralReferrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referredUserId String    @unique
+  referred       User      @relation("ReferralReferred", fields: [referredUserId], references: [id], onDelete: Cascade)
+  // pending: waiting for the new user's email. rewarded: credits granted. rejected: abuse check.
+  status         String    @default("pending")
+  rejectReason   String?
+  // Kickback paid to the referrer so far (net of reversals), and what the friend has spent (net of
+  // refunds). The kickback is the friend's net spend divided by the rate, rounded down.
+  referrerCredits Int      @default(0)
+  referredCredits Int      @default(0)
+  referredSpent   Int      @default(0)
+  kickbackSeq     Int      @default(0)
+  isKickbackActive Boolean  @default(true)
+  createdAt      DateTime  @default(now())
+  rewardedAt     DateTime?
+
+  @@index([referrerId, status])
 }
 
 model Session {
@@ -164,6 +196,8 @@ model Render {
   // Visitors get a free preview before signing up; the anon cookie ties it to them.
   anonId            String?
   ipHash            String?
+  // Language chosen in the product, independent of attribution consent.
+  notificationLocale String?
   prompt            String?
   // Display name for catalog items, usually the uploaded file name.
   name              String?
@@ -213,14 +247,32 @@ model Render {
   completedAt       DateTime?
   previewCompletedAt DateTime?
   edits             RenderEdit[]
+  // The library folder the owner filed this render in. Null is unfiled; deleting a folder unfiles.
+  folderId          String?
+  folder            LibraryFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
 
   @@unique([requestScope, requestKey])
   @@index([userId, createdAt])
+  @@index([userId, folderId])
   @@index([anonId, createdAt])
   @@index([ipHash, createdAt])
   @@index([isPublic, status, createdAt])
   @@index([completedAt, id])
   @@index([previewCompletedAt, id])
+}
+
+// A flat folder in a person's library. Names are unique per owner. Deleting a folder keeps its
+// renders and unfiles them.
+model LibraryFolder {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime @default(now())
+  renders   Render[]
+
+  @@unique([userId, name])
+  @@index([userId])
 }
 
 // What the owner did to a render after the free preview, newest last: the angle sheet drawn, a
@@ -348,6 +400,22 @@ model Upscale {
   @@index([userId, createdAt])
   @@index([renderId])
   @@index([viewSetId, view])
+}
+
+model CreditInvite {
+  id             String   @id
+  issuerId       String
+  recipientEmail String
+  amount         Int
+  campaign       String
+  createdAt      DateTime @default(now())
+  expiresAt      DateTime
+  revokedAt      DateTime?
+  redeemedAt     DateTime?
+  redeemedById   String?  @unique
+  redeemedBy     User?    @relation(fields: [redeemedById], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
 }
 
 model CreditLedger {

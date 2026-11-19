@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
+import { QueryProvider } from '@/components/query-provider';
 import { RenderView } from '@/components/render-view';
 import en from '@/messages/en.json';
 
@@ -35,14 +36,18 @@ it.each([false, true])('shows stored isPublic=%s without changing existing rende
       messages: en,
       timeZone: 'UTC',
       // biome-ignore lint/correctness/noChildrenProp: next-intl requires children in the typed provider props
-      children: createElement(RenderView, {
-        initial,
-        edits: [],
-        now: Date.parse(initial.createdAt),
-        signedIn: true,
-        balance: 0,
-        owner: true,
-      }),
+      children: createElement(
+        QueryProvider,
+        null,
+        createElement(RenderView, {
+          initial,
+          edits: [],
+          now: Date.parse(initial.createdAt),
+          signedIn: true,
+          balance: 0,
+          owner: true,
+        }),
+      ),
     }),
   );
   expect(html).toMatch(new RegExp(`role="switch"[^>]*aria-checked="${isPublic}"`));

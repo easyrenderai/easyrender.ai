@@ -4,8 +4,9 @@ import { PanelLeft, PanelRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { type ReactNode, useCallback, useEffect, useState } from 'react';
+import { type ReactNode, Suspense, useCallback, useEffect, useState } from 'react';
 import { useDefaultLayout, usePanelRef } from 'react-resizable-panels';
+import { AppLocalePicker } from '@/components/app-locale-picker';
 import { BrandMark } from '@/components/brand-mark';
 import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
@@ -30,6 +31,13 @@ const LAYOUT_KEY = 'er-shell';
 const LEFT = { initial: 288, min: 220, max: 480 };
 const RIGHT = { initial: 360, min: 280, max: 560 };
 const MAIN_MIN = 360;
+// Opening or closing a drawer slides it over 250ms with the studio easing. Only motion-safe users
+// get the transition; with reduced motion the drawers snap as before.
+const PANEL_TRANSITION =
+  'motion-safe:data-[toggling]:[&>[data-panel]]:transition-[flex-grow] motion-safe:data-[toggling]:[&>[data-panel]]:duration-250 motion-safe:data-[toggling]:[&>[data-panel]]:ease-[cubic-bezier(0.2,0.7,0.2,1)]';
+// While a drawer narrows, its content is clipped at the drawer's minimum width instead of
+// re-wrapping on every frame. The panel's own scroll container is hidden so no scrollbar flashes.
+const CLIP = { overflow: 'hidden' } as const;
 
 // Drawer widths are remembered per browser. Storage can be missing (server render) or blocked
 // (private windows), and then the drawers simply start at their default width.
@@ -62,7 +70,16 @@ const RAIL_KINDS: Record<string, RailKind> = {
 // context (a render's parts). Both drawers resize by dragging, remember their width, and collapse.
 // Settings pages (Account, Credits, Connectors) are full pages with no drawers. Below `md` the
 // rail becomes a bottom bar and the drawers are hidden.
-export function AppShell({ data, children }: { data: ShellData; children: ReactNode }) {
+export function AppShell({
+  data,
+  account = null,
+  children,
+}: {
+  data: ShellData;
+  // The signed-in account control, rendered by the server frame so the balance stays a server read.
+  account?: ReactNode;
+  children: ReactNode;
+}) {
   const t = useTranslations('AppShell');
   const nav = useTranslations('DashboardNav');
   const pathname = usePathname();
@@ -70,6 +87,7 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
   const isXl = useMediaQuery(XL_QUERY);
   const { setLeftNode, setRightNode, hasLeftContext, hasRightContext, slot } = usePanelSlotState();
   const isAdmin = isAdminPath(pathname);
+  const isLibrary = pathname === '/library' || pathname.startsWith('/library/');
   // Settings and admin are full pages: no drawers.
   const isFullPage = isSettingsPath(pathname) || isAdmin;
   const hasLeft = isMd && !isFullPage;
@@ -88,13 +106,19 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
     storage: layoutStorage,
   });
 
+  // The drawers only animate when a toggle opens or closes them. Dragging the handle stays 1:1 with
+  // the pointer, so the flag is cleared when the animation ends or a drag starts.
+  const [isToggling, setIsToggling] = useState(false);
+
   const toggle = useCallback((panel: typeof leftRef) => {
     const handle = panel.current;
     if (!handle) return;
+    setIsToggling(true);
     if (handle.isCollapsed()) handle.expand();
     else handle.collapse();
   }, []);
 
+  // use-effect-audit: ignore subscribes to the window keydown event for the toggle shortcut
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'b') {
@@ -107,7 +131,7 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
   }, [toggle, leftRef]);
 
   const inFlight = data.renders.filter((render) => isInFlight(render.status)).length;
-  const account = ACCOUNT_NAV;
+  const accountNav = ACCOUNT_NAV;
 
   // `w-full`: settings, admin and phone pages sit in a plain flex row, not a resizable panel. Without
   // it the scroll container shrinks to the content column and its scrollbar floats mid-page.
@@ -137,9 +161,9 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
             <BrandMark className="size-[1.375rem]" />
           </Link>
         </Button>
-        {[...APP_NAV, account].map((item) => {
+        {[...APP_NAV, accountNav].map((item) => {
           const isActive = isActivePath(pathname, item.href);
-          const isBottom = item.href === account.href;
+          const isBottom = item.href === accountNav.href;
           return (
             <RailItem
               key={item.href}
@@ -204,9 +228,19 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
           >
             <BrandMark className="size-[1.375rem]" />
           </Link>
-          <AppBreadcrumb />
-          {hasRight && (
-            <div className="ml-auto flex items-center gap-1">
+          <div className="min-w-0 flex-1">
+            <AppBreadcrumb />
+          </div>
+          <div className="flex shrink-0 items-center gap-1">
+            {account}
+            {!isAdmin && (
+              <div className="relative">
+                <Suspense>
+                  <AppLocalePicker />
+                </Suspense>
+              </div>
+            )}
+            {hasRight && (
               <Button
                 variant="ghost"
                 size="icon-sm"
@@ -217,8 +251,8 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
               >
                 <PanelRight />
               </Button>
-            </div>
-          )}
+            )}
+          </div>
         </header>
 
         <div className="flex min-h-0 flex-1 overflow-hidden border-t bg-background md:mr-2 md:mb-2 md:rounded-lg md:border">
@@ -229,6 +263,12 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
                 id={LAYOUT_KEY}
                 defaultLayout={defaultLayout}
                 onLayoutChanged={onLayoutChanged}
+                data-toggling={isToggling || undefined}
+                className={PANEL_TRANSITION}
+                onPointerDownCapture={() => setIsToggling(false)}
+                onTransitionEnd={(event) => {
+                  if (event.propertyName === 'flex-grow') setIsToggling(false);
+                }}
               >
                 <ResizablePanel
                   id="left"
@@ -239,14 +279,18 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
                   collapsible
                   collapsedSize={0}
                   groupResizeBehavior="preserve-pixel-size"
+                  style={CLIP}
                   onResize={(size) => setIsLeftOpen(size.inPixels > 0)}
                 >
                   <aside
                     aria-label={t('panel.title')}
                     inert={!isLeftOpen}
-                    className="h-full overflow-hidden"
+                    className="h-full min-w-55 overflow-hidden"
                   >
-                    {hasLeftContext ? (
+                    {isLibrary ? (
+                      // The library draws its own filters and folders here.
+                      <div ref={setLeftNode} className="h-full overflow-y-auto" />
+                    ) : hasLeftContext ? (
                       <Tabs value={leftTab} onValueChange={setLeftTab} className="h-full gap-0">
                         <TabsList className="m-2 grid grid-cols-2">
                           <TabsTrigger value="renders">{t('panel.title')}</TabsTrigger>
@@ -285,13 +329,14 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
                       collapsible
                       collapsedSize={0}
                       groupResizeBehavior="preserve-pixel-size"
+                      style={CLIP}
                       onResize={(size) => setIsRightOpen(size.inPixels > 0)}
                     >
                       <aside
                         aria-label={t('context.title')}
                         inert={!isRightOpen}
                         ref={setRightNode}
-                        className="h-full overflow-y-auto"
+                        className="h-full min-w-70 overflow-y-auto"
                       />
                     </ResizablePanel>
                   </>
@@ -309,7 +354,7 @@ export function AppShell({ data, children }: { data: ShellData; children: ReactN
         aria-label={t('navLabel')}
         className="flex shrink-0 justify-around border-t bg-muted/40 px-2 pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] md:hidden"
       >
-        {[...APP_NAV, account].map((item) => (
+        {[...APP_NAV, accountNav].map((item) => (
           <Link
             key={item.href}
             href={item.href}

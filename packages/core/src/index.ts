@@ -6,12 +6,14 @@ export * from './api-limits';
 export * from './billing';
 export * from './catalog';
 export * from './config';
+export * from './credit-invites';
 export * from './credit-quote';
 export * from './credits';
 export * from './errors';
 export * from './first-model-experiment';
 export * from './google-measurement';
 export * from './google-outbox';
+export * from './library-folders';
 export type { MailingCatalog, MailingCopy, MailingLocale, MailingRoute } from './mailing/policy';
 export {
   confirmMailing,
@@ -30,6 +32,8 @@ export * from './oauth';
 export { flushPosthogEvents } from './posthog-outbox';
 export * from './pricing-experiment';
 export * from './product-views';
+export * from './referral-code';
+export * from './referrals';
 export * from './remote-image';
 export * from './render-edits';
 export * from './render-materials';

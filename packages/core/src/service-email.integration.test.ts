@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { db, type Prisma } from '@easyrender/db';
+import sharp from 'sharp';
 import { Webhook } from 'svix';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
@@ -11,7 +12,11 @@ import {
   serviceEmailAvailable,
 } from './service-email';
 
-const provider = vi.hoisted(() => ({ get: vi.fn(), hasQueueFailure: false }));
+const provider = vi.hoisted(() => ({
+  get: vi.fn(),
+  getFileStream: vi.fn(),
+  hasQueueFailure: false,
+}));
 vi.mock('./service-email', async (original) => {
   const real = await original<typeof import('./service-email')>();
   return {
@@ -30,6 +35,7 @@ vi.mock('@easyrender/harness', async (original) => ({
 }));
 vi.mock('./storage', () => ({
   putFile: async () => 'private/model.glb',
+  getFileStream: provider.getFileStream,
   getFile: async () => new Uint8Array([1]),
 }));
 vi.mock('./analytics', () => ({ captureRender: vi.fn() }));
@@ -124,6 +130,7 @@ describe.skipIf(!url)('service email outbox: scratch DB and fake transport only'
   });
   afterEach(async () => {
     provider.hasQueueFailure = false;
+    provider.getFileStream.mockReset();
     vi.restoreAllMocks();
     await db().emailProviderEvent.deleteMany({ where: { id: { in: receipts.splice(0) } } });
     await db().serviceEmailSuppression.deleteMany({
@@ -226,7 +233,7 @@ describe.skipIf(!url)('service email outbox: scratch DB and fake transport only'
     await runServiceEmails(texts, fake);
     expect(fake).toHaveBeenCalledTimes(1);
     const body = String(vi.mocked(fake).mock.calls[0][1]?.body);
-    expect(body).toContain(`/r/${render.id}`);
+    expect(body).toContain(`next=${encodeURIComponent(`/r/${render.id}`)}`);
     expect(body).not.toContain('private/model');
     const unverified = await users(false);
     const other = await db().render.create({
@@ -312,6 +319,7 @@ describe.skipIf(!url)('service email outbox: scratch DB and fake transport only'
       'rendering',
     );
     provider.hasQueueFailure = false;
+    provider.getFileStream.mockReset();
     await advance(render.id);
     expect((await db().render.findUniqueOrThrow({ where: { id: render.id } })).status).toBe(
       'ready',
@@ -394,6 +402,43 @@ describe.skipIf(!url)('service email outbox: scratch DB and fake transport only'
       }),
     ).toBe(1);
   });
+  it('uses the model’s recorded interface language for a transactional email and its return', async () => {
+    const u = await users();
+    const render = await db().render.create({
+      data: {
+        userId: u.id,
+        status: 'ready',
+        glbKey: 'fixture.glb',
+        sourceKey: 'fixture.jpg',
+        landing_path: '/es',
+        notificationLocale: 'fr',
+      },
+    });
+    await db().$transaction((tx) => queueRenderServiceEmail(render.id, tx));
+    const delivery = await db().serviceEmailDelivery.findFirstOrThrow({
+      where: { renderId: render.id },
+    });
+    expect(delivery.locale).toBe('fr');
+    await runServiceEmails(
+      {
+        ...texts,
+        fr: {
+          render_ready: { ...copy, lang: 'fr', subject: 'Votre modèle est prêt' },
+          render_failed: copy,
+        },
+      },
+      fake,
+      { userId: u.id },
+    );
+    const payload = JSON.parse(String(vi.mocked(fake).mock.calls[0][1]?.body));
+    expect(payload.subject).toBe('Votre modèle est prêt');
+    expect(payload.html).toContain('lang="fr"');
+    const url = new URL(String(payload.text).match(/https?:\/\/[^\s]+/)?.[0] ?? '');
+    expect(url.pathname).toBe('/account');
+    expect(url.searchParams.get('next')).toBe(`/r/${render.id}`);
+    expect(url.searchParams.get('locale')).toBe('fr');
+    await db().render.delete({ where: { id: render.id } });
+  });
   it('does not backfill past renders, anonymous work or events that occurred while disabled', async () => {
     const u = await users();
     const render = await db().render.create({
@@ -443,11 +488,137 @@ describe.skipIf(!url)('service email outbox: scratch DB and fake transport only'
       ).status,
     ).toBe('suppressed');
   });
+  it('embeds only the finished model from the quality comparison for the owner and preserves it unchanged on retry', async () => {
+    const u = await users();
+    const comparisonKey = 'https://assets.example.com/renders/quality/comparison-result.png';
+    vi.stubEnv('ASSETS_CDN_URL', 'https://assets.example.com');
+    const comparison = await sharp({
+      create: { width: 384, height: 192, channels: 3, background: '#0060d0' },
+    })
+      .composite([
+        {
+          input: { create: { width: 192, height: 192, channels: 3, background: '#00aa40' } },
+          left: 192,
+          top: 0,
+        },
+      ])
+      .png()
+      .toBuffer();
+    provider.getFileStream.mockImplementationOnce(async () =>
+      new Blob([new Uint8Array(comparison)]).stream(),
+    );
+    const render = await db().render.create({
+      data: {
+        userId: u.id,
+        status: 'ready',
+        sourceKey: 'private/source.jpg',
+        glbKey: 'private/model.glb',
+        quality: { fidelity: { comparisonKey } },
+        notificationLocale: 'es',
+      },
+    });
+    await db().$transaction((tx) => queueRenderServiceEmail(render.id, tx));
+    const messages: ServiceEmailTexts = {
+      ...texts,
+      es: {
+        render_ready: {
+          ...copy,
+          action: 'Ver mi modelo 3D',
+          previewAlt: 'Vista previa de tu modelo 3D',
+        },
+        render_failed: copy,
+      },
+    };
+    vi.mocked(fake).mockImplementationOnce(async () => new Response(null, { status: 503 }));
+    await runServiceEmails(messages, fake, { userId: u.id });
+    const request = String(vi.mocked(fake).mock.calls[0][1]?.body);
+    const mail = JSON.parse(request);
+    expect(mail.to).toEqual([u.email]);
+    expect(mail.attachments).toHaveLength(1);
+    const [image] = mail.attachments;
+    expect(image.content_type).toBe('image/jpeg');
+    expect(mail.html).toContain(`src="cid:${image.content_id}"`);
+    expect(mail.html).toContain('alt="Vista previa de tu modelo 3D"');
+    expect(mail.html).toContain(`next=%2Fr%2F${render.id}&amp;locale=es`);
+    const thumbnail = sharp(Buffer.from(image.content, 'base64'));
+    const { width, height, format } = await thumbnail.metadata();
+    expect(format).toBe('jpeg');
+    expect(width).toBe(height);
+    expect(width).toBe(192);
+    const [red, green, blue] = (await thumbnail.stats()).channels;
+    expect(green.mean).toBeGreaterThan(red.mean + 100);
+    expect(green.mean).toBeGreaterThan(blue.mean + 100);
+    expect(request).not.toContain(comparisonKey);
+    expect(request).not.toContain('private/source.jpg');
+    expect(request).not.toContain('private/model.glb');
+    const delivery = await db().serviceEmailDelivery.findFirstOrThrow({
+      where: { renderId: render.id },
+    });
+    expect(delivery.payloadEncrypted).toBeTruthy();
+    expect(delivery.payloadEncrypted).not.toContain(image.content);
+    vi.setSystemTime(new Date(+delivery.nextAttemptAt + 1));
+    await runServiceEmails(messages, fake, { userId: u.id });
+    expect(String(vi.mocked(fake).mock.calls[1][1]?.body)).toBe(request);
+    expect(provider.getFileStream).toHaveBeenCalledTimes(1);
+  });
+
+  it('sends the model link if its preview asset is unavailable', async () => {
+    const u = await users();
+    vi.stubEnv('ASSETS_CDN_URL', 'https://assets.example.com');
+    provider.getFileStream.mockRejectedValueOnce(new Error('Storage unavailable'));
+    const render = await db().render.create({
+      data: {
+        userId: u.id,
+        status: 'ready',
+        sourceKey: 'private/source.jpg',
+        glbKey: 'private/model.glb',
+        quality: {
+          fidelity: {
+            comparisonKey: 'https://assets.example.com/renders/quality/comparison-missing.png',
+          },
+        },
+      },
+    });
+    await db().$transaction((tx) => queueRenderServiceEmail(render.id, tx));
+    await runServiceEmails(
+      {
+        en: {
+          render_ready: { ...copy, previewAlt: 'Preview of your 3D model' },
+          render_failed: copy,
+        },
+      },
+      fake,
+      { userId: u.id },
+    );
+    const mail = JSON.parse(String(vi.mocked(fake).mock.calls[0][1]?.body));
+    expect(provider.getFileStream).toHaveBeenCalledTimes(1);
+    expect(mail.attachments).toBeUndefined();
+    expect(mail.html).not.toContain('src="cid:');
+    expect(mail.text).toContain(`next=%2Fr%2F${render.id}`);
+  });
+
   it('cancels render messages if ownership, status or verification changes before delivery', async () => {
+    vi.stubEnv('ASSETS_CDN_URL', 'https://assets.example.com');
+    const messages: ServiceEmailTexts = {
+      en: {
+        render_ready: { ...copy, previewAlt: 'Preview of your 3D model' },
+        render_failed: copy,
+      },
+    };
     for (const mode of ['ownership', 'status', 'verification']) {
       const u = await users();
       const r = await db().render.create({
-        data: { userId: u.id, status: 'ready', sourceKey: 'x', glbKey: 'y' },
+        data: {
+          userId: u.id,
+          status: 'ready',
+          sourceKey: 'x',
+          glbKey: 'y',
+          quality: {
+            fidelity: {
+              comparisonKey: 'https://assets.example.com/renders/quality/comparison-ready.png',
+            },
+          },
+        },
       });
       await db().$transaction((tx) => queueRenderServiceEmail(r.id, tx));
       if (mode === 'ownership')
@@ -456,13 +627,14 @@ describe.skipIf(!url)('service email outbox: scratch DB and fake transport only'
         await db().render.update({ where: { id: r.id }, data: { status: 'failed' } });
       if (mode === 'verification')
         await db().user.update({ where: { id: u.id }, data: { emailVerified: false } });
-      await runServiceEmails(texts, fake);
+      await runServiceEmails(messages, fake);
       expect(
         (await db().serviceEmailDelivery.findFirstOrThrow({ where: { userId: u.id } })).status,
       ).toBe('cancelled');
       await db().render.delete({ where: { id: r.id } });
     }
     expect(fake).not.toHaveBeenCalled();
+    expect(provider.getFileStream).not.toHaveBeenCalled();
   });
   it('sends requested service mail despite educational unsubscribe, age and sequence caps', async () => {
     const u = await users();

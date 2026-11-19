@@ -38,5 +38,7 @@ the content README, and `apps/web/components/blog/diagrams/` for every diagram t
 - [ ] `cd apps/web && bunx vitest run lib/blog` passes for this locale (the hero rules apply to a
   translation as soon as it carries its illustration).
 
-Hand the file to the native reviewer with [`07-native-review.md`](07-native-review.md). It is
-not published until the reviewer signs off on the PR, and the language is in `ROUTABLE_LOCALES`.
+Hand the file to an independent subagent specialising in the target locale. Use an advanced
+model and [`07-native-review.md`](07-native-review.md). Apply any blocking fixes and hand the
+revision back for review. The PR must record the reviewer's `PASS`, and the language must be
+in `ROUTABLE_LOCALES`, before publication.

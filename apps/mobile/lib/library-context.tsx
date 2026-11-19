@@ -49,6 +49,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // use-effect-audit: ignore loads the library when the signed-in user changes; the mobile app has no query library
   useEffect(() => {
     if (!user) {
       setRenders([]);
@@ -60,6 +61,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
   }, [user, refresh]);
 
   const inFlight = renders.some(isInFlight);
+  // use-effect-audit: ignore timer that polls the library while a render is in flight
   useEffect(() => {
     if (!user || !inFlight) return;
     const timer = setInterval(() => void refresh(), POLL_MS);

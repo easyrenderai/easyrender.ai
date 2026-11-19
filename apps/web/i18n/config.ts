@@ -80,8 +80,7 @@ export const isLocale = (value: unknown): value is Locale =>
 export const isRoutableLocale = (value: unknown): value is RoutableLocale =>
   typeof value === 'string' && (ROUTABLE_LOCALES as readonly string[]).includes(value);
 
-// Set by proxy.ts from the URL, so the root layout and i18n/request.ts agree on the language
-// without a cookie and without sniffing Accept-Language. The path travels the same way, which
+// Set by proxy.ts so the root layout and i18n/request.ts agree on the language. The path travels the same way, which
 // lets the language picker render on the server with no client JavaScript.
 export const LOCALE_HEADER = 'x-easyrender-locale';
 export const PATH_HEADER = 'x-easyrender-path';

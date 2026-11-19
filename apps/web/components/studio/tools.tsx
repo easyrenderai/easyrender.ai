@@ -6,6 +6,7 @@ import { SiteLink as Link } from '@/components/site-link';
 import { itemOf } from '@/lib/studio/catalog';
 import { createFormat } from '@/lib/studio/format';
 import type { ToolName } from '@/lib/studio/sections/tools';
+import { WebGLUnavailableError } from '@/lib/webgl';
 import { DemoCursor } from './icons';
 import { useSection } from './use-section';
 
@@ -36,8 +37,10 @@ export function StudioTools() {
     if (!scope.alive) return;
     const format = createFormat(locale);
     const tile = (name: string) => grid.querySelector<HTMLElement>(`[data-tool="${name}"]`);
-    const report = (name: string) => (error: unknown) =>
+    const report = (name: string) => (error: unknown) => {
+      if (error instanceof WebGLUnavailableError) return;
       console.warn(`studio: the ${name} tile failed to start`, error);
+    };
     const context = {
       scope,
       fmt: format,

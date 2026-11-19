@@ -21,7 +21,7 @@ afterEach(() => {
 
 describe('HogQL query construction', () => {
   it('uses exact server events, bounded results, half-open dates and Madrid bucketing', () => {
-    expect(buildHogql('series', range)).toContain("toDate(timestamp, 'Europe/Madrid')");
+    expect(buildHogql('series', range)).toContain("toDate(toTimeZone(timestamp, 'Europe/Madrid'))");
     expect(buildHogql('series', range)).toContain(
       "timestamp < toDateTime('2026-11-01 00:00:00', 'UTC')",
     );
@@ -31,7 +31,9 @@ describe('HogQL query construction', () => {
     expect(buildHogql('landing', range)).toContain('properties.$pathname');
     expect(buildHogql('referrer', range)).toContain('properties.referrer_host');
     expect(buildHogql('acquisition', range)).toContain('GROUP BY source, medium, referrer');
-    expect(buildHogql('series', range, 'Etc/GMT+1')).toContain("toDate(timestamp, 'Etc/GMT+1')");
+    expect(buildHogql('series', range, 'Etc/GMT+1')).toContain(
+      "toDate(toTimeZone(timestamp, 'Etc/GMT+1'))",
+    );
   });
   it('rejects dimension, date and timezone injection without escaping arbitrary input into queries', () => {
     expect(() => buildHogql('source); DROP TABLE events' as HogqlKind, range)).toThrow(

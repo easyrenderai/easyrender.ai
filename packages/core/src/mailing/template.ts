@@ -1,4 +1,7 @@
+import { isServiceEmailLocale } from '../service-email-locale';
 import { escapeMailHtml as htmlEscape } from './security';
+
+export const RESULT_PREVIEW_CID = 'render-preview';
 
 export type EmailAction = { url: string; label: string };
 export type BrandedEmail = {
@@ -8,6 +11,7 @@ export type BrandedEmail = {
   preheader: string;
   body: string;
   action?: EmailAction;
+  previewAlt?: string;
   notice?: string;
   signature?: string;
   footerReason?: string;
@@ -20,6 +24,7 @@ export type BrandedEmail = {
 const color = {
   background: '#F4F4F5',
   card: '#FFFFFF',
+  previewBackground: '#EEEEEE',
   foreground: '#18181B',
   muted: '#52525B',
   border: '#E4E4E7',
@@ -42,6 +47,7 @@ function paragraphs(value: string, style: string): string {
 /** Static HTML and inline styles work without JavaScript, web fonts or image loading. */
 export function renderBrandedEmail(mail: BrandedEmail): string {
   const origin = new URL(mail.appUrl).origin;
+  const lang = mail.lang === 'pt-PT' || isServiceEmailLocale(mail.lang) ? mail.lang : 'en';
   const home = destination(mail.appUrl, origin);
   const logo = destination(`${origin}/email/brand-mark.png`, origin);
   const bodyStyle = `font-size:16px;line-height:1.65;color:${color.foreground};overflow-wrap:anywhere;word-break:break-word`;
@@ -49,6 +55,10 @@ export function renderBrandedEmail(mail: BrandedEmail): string {
   const action = mail.action
     ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 28px"><tr><td bgcolor="${color.primary}" style="border-radius:8px;text-align:center"><a href="${destination(mail.action.url, origin)}" style="display:inline-block;background-color:${color.primary};color:${color.onPrimary};border:1px solid ${color.primary};border-radius:8px;padding:15px 24px;font-size:16px;line-height:1.5;font-weight:bold;text-decoration:none;mso-padding-alt:0;text-underline-color:${color.primary}"><!--[if mso]><i style="mso-font-width:150%;mso-text-raise:22pt" hidden>&emsp;</i><![endif]-->${htmlEscape(mail.action.label)}<!--[if mso]><i style="mso-font-width:150%" hidden>&emsp;&#8203;</i><![endif]--></a></td></tr></table>`
     : '';
+  const preview =
+    mail.previewAlt && mail.action
+      ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px"><tr><td align="center" bgcolor="${color.previewBackground}" style="border:1px solid ${color.border};border-radius:8px"><a href="${destination(mail.action.url, origin)}" style="display:block;color:${color.foreground};text-decoration:none"><img src="cid:${RESULT_PREVIEW_CID}" width="320" alt="${htmlEscape(mail.previewAlt)}" style="display:block;margin:0 auto;width:100%;max-width:320px;height:auto;border:0"></a></td></tr></table>`
+      : '';
   const links = (mail.footerLinks ?? [])
     .map(
       (link) =>
@@ -56,7 +66,7 @@ export function renderBrandedEmail(mail: BrandedEmail): string {
     )
     .join(' &nbsp;·&nbsp; ');
   return `<!doctype html>
-<html lang="${mail.lang === 'es' ? 'es' : 'en'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>${htmlEscape(mail.title)}</title></head>
+<html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>${htmlEscape(mail.title)}</title></head>
 <body style="margin:0;padding:0;background-color:${color.background};color:${color.foreground};font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%">
 <div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all">${htmlEscape(mail.preheader)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${color.background}"><tr><td align="center" style="padding:24px 12px">
@@ -67,6 +77,7 @@ export function renderBrandedEmail(mail: BrandedEmail): string {
 ${paragraphs(mail.body, bodyStyle)}
 ${mail.signature ? paragraphs(mail.signature, bodyStyle) : ''}
 ${action}
+${preview}
 ${mail.notice ? paragraphs(mail.notice, mutedStyle) : ''}
 </td></tr>
 <tr><td style="padding:24px;border-top:1px solid ${color.border}">

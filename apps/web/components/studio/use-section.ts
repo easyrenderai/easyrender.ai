@@ -2,6 +2,7 @@
 
 import { useEffect, useEffectEvent, useRef } from 'react';
 import { Scope } from '@/lib/studio/scope';
+import { WebGLUnavailableError } from '@/lib/webgl';
 
 // Runs `setup` once the element scrolls near the viewport and tears everything down on unmount.
 // `setup` loads its 3D code with a dynamic import, so three.js stays out of the first bundle.
@@ -17,6 +18,7 @@ export function useSection<T extends HTMLElement>(
   const ref = useRef<T>(null);
   const run = useEffectEvent(setup);
 
+  // use-effect-audit: ignore observes the element with an IntersectionObserver and starts the 3D section, outside React
   // biome-ignore lint/correctness/useExhaustiveDependencies: `key` is the caller's signal to set the section up again
   useEffect(() => {
     const root = ref.current;
@@ -29,6 +31,7 @@ export function useSection<T extends HTMLElement>(
         const start = () => {
           if (!scope.alive) return;
           Promise.resolve(run(root, scope)).catch((error) => {
+            if (error instanceof WebGLUnavailableError) return;
             console.warn('studio: section failed to start', error);
           });
         };

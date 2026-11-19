@@ -1,5 +1,6 @@
 import { db } from '@easyrender/db';
-import { captureRender } from './analytics';
+import { captureRender, captureServer } from './analytics';
+import { pickAttribution } from './attribution';
 import { capturePurchase } from './billing';
 import { isGoogleMeasurementConfigured } from './google-measurement';
 import { enqueueGooglePurchase } from './google-outbox';
@@ -13,6 +14,31 @@ export async function reconcileBusinessAnalytics() {
   const googleSince = new Date(Date.now() - 72 * 3600000);
   let examined = 0;
   if (hasPosthog) {
+    // Leave in-flight signup hooks time to finish. Repair committed accounts only, using
+    // their immutable creation date; do not rerun attribution, aliases or account hooks.
+    const signupCutoff = new Date(Date.now() - 5 * 60000);
+    const signups = await db().$queryRaw<{ id: string }[]>`
+      SELECT u.id FROM "user" u WHERE u."createdAt" >= ${since} AND u."createdAt" < ${signupCutoff}
+      AND NOT EXISTS (SELECT 1 FROM "PosthogDelivery" e WHERE e.event = 'signup' AND e."subjectId" = u.id)
+      ORDER BY u."createdAt", u.id LIMIT 50`;
+    const users = await db().user.findMany({ where: { id: { in: signups.map((row) => row.id) } } });
+    for (const user of users) {
+      await captureServer(
+        'signup',
+        user.id,
+        {
+          userId: user.id,
+          previewId: null,
+          source: 'web',
+          attribution: pickAttribution(user),
+          hasDeferredDelivery: true,
+        },
+        { method: 'otro' },
+        undefined,
+        user.createdAt,
+      );
+      examined++;
+    }
     // Indexed anti-joins avoid repeatedly scanning the already-enqueued first page.
     const models = await db().$queryRaw<{ id: string }[]>`
       SELECT r.id FROM "Render" r WHERE r."completedAt" >= ${since} AND (r."userId" IS NOT NULL OR r."anonId" IS NOT NULL)

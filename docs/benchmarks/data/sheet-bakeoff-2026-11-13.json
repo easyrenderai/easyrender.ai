@@ -1,0 +1,633 @@
+[
+  {
+    "photo": "armchair",
+    "candidate": "gpt-high",
+    "sheet": {
+      "ok": false,
+      "note": "Prediction failed: Async prediction failed: ValueError: Failed to generate: {\n  \"error\": {\n    \"message\": \"Your API key has been invalidated.\",\n    \"type\": null,\n    \"code\": \"token_invalidated\",\n    \"param\": null\n  },\n  \"status\": 401\n}",
+      "costUsd": 0.128,
+      "seconds": 0.43802824
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "armchair",
+    "candidate": "gpt-low",
+    "sheet": {
+      "ok": false,
+      "note": "Prediction failed: Async prediction failed: ValueError: Failed to generate: {\n  \"error\": {\n    \"message\": \"Your API key has been invalidated.\",\n    \"type\": null,\n    \"code\": \"token_invalidated\",\n    \"param\": null\n  },\n  \"status\": 401\n}",
+      "costUsd": 0.012,
+      "seconds": 0.41787736
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "armchair",
+    "candidate": "gpt-medium",
+    "sheet": {
+      "ok": false,
+      "note": "Prediction failed: Async prediction failed: ValueError: Failed to generate: {\n  \"error\": {\n    \"message\": \"Your API key has been invalidated.\",\n    \"type\": null,\n    \"code\": \"token_invalidated\",\n    \"param\": null\n  },\n  \"status\": 401\n}",
+      "costUsd": 0.047,
+      "seconds": 0.449145775
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "armchair",
+    "candidate": "lite-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.034,
+      "seconds": 5.551942809,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 87.16681358,
+      "costUsd": 0.122033539012,
+      "glbBytes": 5598520
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "armchair",
+    "candidate": "nb2-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.067,
+      "seconds": 11.314786891,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 59.86849107,
+      "costUsd": 0.083815887498,
+      "glbBytes": 3809088
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "armchair",
+    "candidate": "nb2-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.101,
+      "seconds": 18.037242971,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 71.74325828,
+      "costUsd": 0.100440561592,
+      "glbBytes": 5964324
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "armchair",
+    "candidate": "pro-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.15,
+      "seconds": 23.488656886,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 70.946621507,
+      "costUsd": 0.09932527010980001,
+      "glbBytes": 5819640
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "gpt-high",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.128
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "gpt-low",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.012
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "gpt-medium",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.047
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "lite-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.034,
+      "seconds": 6.713586566,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 71.688992876,
+      "costUsd": 0.1003645900264,
+      "glbBytes": 4112396
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "nb2-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.067,
+      "seconds": 11.146531492,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 93.416878261,
+      "costUsd": 0.1307836295654,
+      "glbBytes": 4290644
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "nb2-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.101,
+      "seconds": 16.739899908,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 73.224894239,
+      "costUsd": 0.10251485193459998,
+      "glbBytes": 4207268
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "bedside-table",
+    "candidate": "pro-2k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 4 of 8 cells.",
+      "costUsd": 0.15,
+      "seconds": 25.05826464,
+      "width": 2048,
+      "height": 2048
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "gpt-high",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.128
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "gpt-low",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.012
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "gpt-medium",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.047
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "lite-1k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 4 of 8 cells.",
+      "costUsd": 0.034,
+      "seconds": 5.507172988,
+      "width": 1024,
+      "height": 1024
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "nb2-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.067,
+      "seconds": 10.640732229,
+      "width": 1024,
+      "height": 1024,
+      "warnings": ["similar_views"]
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 58.884414725,
+      "costUsd": 0.082438180615,
+      "glbBytes": 4224568
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "nb2-2k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 6 of 8 cells.",
+      "costUsd": 0.101,
+      "seconds": 19.635447784,
+      "width": 2048,
+      "height": 2048
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "clay-vase",
+    "candidate": "pro-2k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 8 of 8 cells.",
+      "costUsd": 0.15,
+      "seconds": 24.443618346,
+      "width": 2048,
+      "height": 2048
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "gpt-high",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.128
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "gpt-low",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.012
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "gpt-medium",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.047
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "lite-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.034,
+      "seconds": 5.472394018,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 56.042053554,
+      "costUsd": 0.0784588749756,
+      "glbBytes": 3584072
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "nb2-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.067,
+      "seconds": 10.217571017,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 58.529993877,
+      "costUsd": 0.08194199142780001,
+      "glbBytes": 3115948
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "nb2-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.101,
+      "seconds": 17.62165088,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 68.99467151,
+      "costUsd": 0.09659254011400001,
+      "glbBytes": 4614632
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "coffee-table",
+    "candidate": "pro-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.15,
+      "seconds": 24.683747807,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 66.128429156,
+      "costUsd": 0.09257980081839999,
+      "glbBytes": 4718744
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "gpt-high",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.128
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "gpt-low",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.012
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "gpt-medium",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.047
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "lite-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.034,
+      "seconds": 5.05403385,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 69.372428762,
+      "costUsd": 0.0971214002668,
+      "glbBytes": 5499236
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "nb2-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.067,
+      "seconds": 33.965836802,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 93.933309039,
+      "costUsd": 0.1315066326546,
+      "glbBytes": 5673944
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "nb2-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.101,
+      "seconds": 37.038157668,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 75.695747542,
+      "costUsd": 0.10597404655880001,
+      "glbBytes": 6024100
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "swivel-chair",
+    "candidate": "pro-2k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.15,
+      "seconds": 25.607035846,
+      "width": 2048,
+      "height": 2048,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 73.12954928,
+      "costUsd": 0.10238136899200001,
+      "glbBytes": 6202956
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "vase",
+    "candidate": "gpt-high",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.128
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "vase",
+    "candidate": "gpt-low",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.012
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "vase",
+    "candidate": "gpt-medium",
+    "sheet": {
+      "ok": false,
+      "note": "Replicate POST /models/openai/gpt-image-2/predictions: 500 {\"detail\":\"An unexpected error ocurred\"}",
+      "costUsd": 0.047
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "vase",
+    "candidate": "lite-1k",
+    "sheet": {
+      "ok": true,
+      "note": "passes the guardrails",
+      "costUsd": 0.034,
+      "seconds": 5.472367528,
+      "width": 1024,
+      "height": 1024,
+      "warnings": []
+    },
+    "build": {
+      "ok": true,
+      "note": "valid GLB",
+      "seconds": 63.506767243,
+      "costUsd": 0.08890947414019999,
+      "glbBytes": 4646848
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "vase",
+    "candidate": "nb2-1k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 8 of 8 cells.",
+      "costUsd": 0.067,
+      "seconds": 93.543299749,
+      "width": 1024,
+      "height": 1024
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "vase",
+    "candidate": "nb2-2k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 8 of 8 cells.",
+      "costUsd": 0.101,
+      "seconds": 41.768611876,
+      "width": 2048,
+      "height": 2048
+    },
+    "run": 43478844970
+  },
+  {
+    "photo": "vase",
+    "candidate": "pro-2k",
+    "sheet": {
+      "ok": false,
+      "note": "sheet_repeated_views: The angle sheet repeats the same view in 8 of 8 cells.",
+      "costUsd": 0.15,
+      "seconds": 24.725416876,
+      "width": 2048,
+      "height": 2048
+    },
+    "run": 43478844970
+  }
+]

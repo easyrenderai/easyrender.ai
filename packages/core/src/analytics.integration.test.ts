@@ -178,8 +178,7 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
       utm_campaign: 'req02-t1',
       geo_country: 'DE',
     });
-    await startBuild(preview.id, { userId });
-    await advance(preview.id); // final sheet -> 3D
+    await startBuild(preview.id, { userId }); // straight to 3D, on the preview sheet
     provider.get.mockResolvedValue({
       status: 'succeeded',
       output: 'https://provider.invalid/model.glb',
@@ -213,8 +212,6 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
     ).toMatchObject({
       photo: { width: 1000 },
       draftSheet: { side: 2048 },
-      finalSheet: { side: 2048 },
-      isDraftUsed: false,
       glb: { bytes: 50000 },
     });
     expect(selected(preview.id, 'preview_')).toEqual(['preview_ready', 'preview_start']);
@@ -233,7 +230,7 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
       events.some((e) => e.event === '$create_alias' && e.properties.alias === `pv_${preview.id}`),
     ).toBe(true);
   });
-  it('retains quality and emits one render completion when the final sheet falls back to the draft', async () => {
+  it('retains quality and emits one render completion when the build runs on the preview sheet', async () => {
     provider.hasFailure = false;
     const userId = await newUser();
     const render = await createDraft({
@@ -248,27 +245,19 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
     });
     await advance(render.id);
     await startBuild(render.id, { userId });
-    provider.get.mockResolvedValue({ status: 'failed', error: 'forced final sheet failure' });
-    await Promise.all([advance(render.id), advance(render.id)]);
-    expect(await db().render.findUniqueOrThrow({ where: { id: render.id } })).toMatchObject({
-      status: 'rendering',
-      quality: {
-        isDraftUsed: true,
-        finalSheetProblem: 'redraw_failed',
-        photo: { width: 1000 },
-        draftSheet: { side: 2048 },
-      },
-    });
     provider.get.mockResolvedValue({
       status: 'succeeded',
       output: 'https://provider.invalid/model.glb',
     });
     await Promise.all([advance(render.id), advance(render.id)]);
     await drain();
-    expect(await db().render.findUniqueOrThrow({ where: { id: render.id } })).toMatchObject({
+    const done = await db().render.findUniqueOrThrow({ where: { id: render.id } });
+    expect(done).toMatchObject({
       status: 'ready',
-      quality: { isDraftUsed: true, glb: { bytes: 50000 } },
+      quality: { photo: { width: 1000 }, draftSheet: { side: 2048 }, glb: { bytes: 50000 } },
     });
+    // No second sheet was drawn, so none is recorded.
+    expect(done.quality).not.toHaveProperty('finalSheet');
     expect(selected(render.id, 'render_')).toEqual(['render_ready', 'render_start']);
     expect((await db().user.findUniqueOrThrow({ where: { id: userId } })).credits).toBe(
       RENDER_CREDITS * 2,

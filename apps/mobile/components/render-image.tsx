@@ -17,8 +17,13 @@ export function RenderImage({
 }) {
   const t = useTheme();
   const [headers, setHeaders] = useState<Record<string, string> | null>(null);
+  // use-effect-audit: ignore reads the async auth headers once for the image requests
   useEffect(() => {
-    authHeaders().then(setHeaders);
+    const controller = new AbortController();
+    authHeaders().then((next) => {
+      if (!controller.signal.aborted) setHeaders(next);
+    });
+    return () => controller.abort();
   }, []);
   const version = `${render.credits > 0 ? 'paid' : 'free'}-${render.hasSheet ? 'sheet' : 'photo'}`;
   return (

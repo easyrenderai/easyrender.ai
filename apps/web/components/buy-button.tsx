@@ -2,7 +2,7 @@
 
 import type { PricingVariant } from '@easyrender/harness/pricing';
 import { Loader2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { captureBrowser, gaEvent, googleCheckoutContext } from '@/lib/analytics/browser';
@@ -24,6 +24,7 @@ export function BuyButton({
   pricingVariant?: PricingVariant;
 }) {
   const t = useTranslations('BuyButton');
+  const locale = useLocale();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   return (
@@ -35,29 +36,32 @@ export function BuyButton({
         onClick={async () => {
           setBusy(true);
           setError(null);
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'content-type': 'application/json', 'x-pricing-variant': pricingVariant },
-            body: JSON.stringify({
-              ...body,
-              ...(endpoint === '/api/checkout'
-                ? { googleAnalytics: await googleCheckoutContext() }
-                : {}),
-            }),
-          });
-          const data = await response.json().catch(() => ({}));
-          if (response.ok && data.url) {
-            if (endpoint === '/api/checkout' && data.analytics) {
-              const properties = data.analytics;
-              captureBrowser('checkout_started', properties);
-              gaEvent('begin_checkout', properties);
+          try {
+            const response = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'content-type': 'application/json', 'x-pricing-variant': pricingVariant },
+              body: JSON.stringify({
+                ...body,
+                locale,
+                ...(endpoint === '/api/checkout'
+                  ? { googleAnalytics: await googleCheckoutContext() }
+                  : {}),
+              }),
+            });
+            const data = await response.json().catch(() => ({}));
+            if (response.ok && data.url) {
+              if (endpoint === '/api/checkout' && data.analytics) {
+                const properties = data.analytics;
+                captureBrowser('checkout_started', properties);
+                gaEvent('begin_checkout', properties);
+              }
+              window.location.href = data.url;
+              return;
             }
-            window.location.href = data.url;
-            return;
+            setError(data.code === 'pricing_changed' ? t('pricingChanged') : t('failed'));
+          } catch {
+            setError(t('failed'));
           }
-          setError(
-            data.code === 'pricing_changed' ? t('pricingChanged') : (data.error ?? t('failed')),
-          );
           setBusy(false);
         }}
       >

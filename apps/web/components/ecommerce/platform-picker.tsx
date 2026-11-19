@@ -24,6 +24,7 @@ export function PlatformPicker<Id extends string>({
   const [value, setValue] = useState<string>(platforms[0].id);
   const panelsRef = useRef<HTMLDivElement>(null);
 
+  // use-effect-audit: ignore reads the browser URL after hydration so the server and first client render match
   useEffect(() => {
     const wanted = new URLSearchParams(window.location.search).get(PARAM);
     if (wanted && platforms.some((platform) => platform.id === wanted)) setValue(wanted);

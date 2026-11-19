@@ -12,10 +12,8 @@ import {
   cleanNote,
   createReplicate,
   cutCells,
-  DEFAULT_FINAL_SHEET_SETTINGS,
   download,
   FALLBACK_SHEET_SETTINGS,
-  FINAL_SHEET_CREDITS,
   FINAL_SHEET_MODEL,
   findGlbUrl,
   isSettled,
@@ -40,9 +38,10 @@ import { AppError, notFound } from './errors';
 import { grantFirstModelInTransaction } from './first-model-experiment';
 import { type RenderEditView, toEditView } from './render-edits';
 import { finishMaterialFidelity } from './render-fidelity';
-import { type RenderQuality, withQuality } from './render-quality';
+import { type RenderQuality, storedQuality, withQuality } from './render-quality';
 import { reportError } from './report';
 import { queueRenderServiceEmail } from './service-email';
+import type { ServiceEmailLocale } from './service-email-locale';
 import { getFile, putFile } from './storage';
 
 // Who is asking: a signed-in user, an anonymous visitor (cookie), or both.
@@ -51,6 +50,7 @@ export type Actor = {
   anonId?: string | null;
   ipHash?: string | null;
   geoCountry?: string | null;
+  locale?: ServiceEmailLocale;
   apiKeyId?: string;
   apiKeyScopes?: string[];
   maxCredits?: number;
@@ -283,6 +283,7 @@ export async function createDraft(input: {
         userId: input.actor.userId ?? null,
         anonId: input.actor.anonId ?? null,
         ipHash: input.actor.ipHash ?? null,
+        notificationLocale: input.actor.locale,
         prompt,
         name,
         source,
@@ -437,6 +438,8 @@ async function fail(id: string, error: unknown, expected?: Pick<Render, 'status'
   // render remains in flight and a webhook, polling request or recovery worker can retry.
   const changed = await db().$transaction(async (tx) => {
     const isRedraw = render.status === 'drafting' && Boolean(render.sheetKey);
+    const amount = isRedraw ? SHEET_CREDITS : render.credits;
+    const refundedCredits = render.userId ? amount : 0;
     const { count } = await tx.render.updateMany({
       where: {
         id,
@@ -444,12 +447,21 @@ async function fail(id: string, error: unknown, expected?: Pick<Render, 'status'
         updatedAt: expected?.updatedAt ?? render.updatedAt,
       },
       data: isRedraw
-        ? { status: 'preview_ready', error: null }
-        : { status: 'failed', error: message.slice(0, 500) },
+        ? {
+            status: 'preview_ready',
+            error: null,
+            quality: withQuality(render, { refundedCorrectionCredits: refundedCredits }),
+          }
+        : {
+            status: 'failed',
+            error: message.slice(0, 500),
+            quality: withQuality(render, {
+              failedStep: render.status === 'rendering' ? 'model' : 'preview',
+            }),
+          },
     });
     if (!count) return false;
-    const amount = isRedraw ? SHEET_CREDITS : render.credits;
-    if (render.userId && amount > 0) {
+    if (render.userId && refundedCredits > 0) {
       await grantCreditsInTransaction(tx, {
         userId: render.userId,
         amount,
@@ -457,6 +469,11 @@ async function fail(id: string, error: unknown, expected?: Pick<Render, 'status'
         reason: isRedraw ? 'sheet_redraw_failed' : 'render_failed',
         renderId: id,
       });
+      if (isRedraw) {
+        await tx.renderEdit.create({
+          data: { renderId: id, kind: 'sheet_redraw_refund', credits: refundedCredits },
+        });
+      }
     }
     if (!isRedraw) await queueRenderServiceEmail(id, tx);
     return true;
@@ -536,6 +553,36 @@ export async function advance(id: string): Promise<Render | null> {
       if (!url) throw new TerminalRenderError(prediction.error ?? `sheet ${prediction.status}`);
       const sheet = await download(url);
       const quality = await checkSheet(sheet, (await harness()).limits);
+      if (
+        !quality.ok &&
+        ['sheet_repeated_views', 'sheet_inconsistent_structure'].includes(quality.code) &&
+        !render.sheetKey &&
+        !storedQuality(render).sheetRecoveryAttempts
+      ) {
+        // Claim before any provider call: polling/webhooks cannot both retry the same sheet.
+        // A cleared prediction with no saved replacement is recovered by the normal timeout;
+        // an ambiguous start must never cause another provider request.
+        const { count } = await db().render.updateMany({
+          where: renderStage(render),
+          data: {
+            sheetPredictionId: null,
+            quality: withQuality(render, { sheetRecoveryAttempts: 1 }),
+            costUsd: { increment: SHEET_MODEL.costUsd },
+          },
+        });
+        if (!count) return db().render.findUnique({ where: { id } });
+        const claimed = await db().render.findUniqueOrThrow({ where: { id } });
+        try {
+          return await startSheetPrediction(claimed);
+        } catch (error) {
+          if (isUncertainStart(error)) {
+            reportError(error, { renderId: id, stage: 'sheet_recovery_start_uncertain' });
+          } else {
+            await fail(id, error, claimed);
+          }
+          return db().render.findUnique({ where: { id } });
+        }
+      }
       if (!quality.ok)
         throw new TerminalRenderError(`sheet rejected (${quality.code}): ${quality.message}`);
       const sheetKey = await putFile('sheets/sheet.png', sheet, 'image/png');
@@ -594,8 +641,8 @@ export async function advance(id: string): Promise<Render | null> {
         if (stale) throw new TerminalRenderError('final angle sheet timed out');
         return render;
       }
-      // A final sheet that failed or was rejected never fails the build: it carries on from the
-      // draft the visitor already saw, and the problem is reported.
+      // A rejected final sheet can fall back to the draft, provided that draft still passes
+      // today's guardrails. Old previews may predate the structural checks.
       let finalSheet: Uint8Array | null = null;
       let finalMeasures: RenderQuality['finalSheet'];
       let finalProblem = 'redraw_failed';
@@ -618,6 +665,7 @@ export async function advance(id: string): Promise<Render | null> {
       const finalKey = finalSheet
         ? await putFile('sheets/sheet.png', finalSheet, 'image/png')
         : null;
+      const sheetForBuild = finalSheet ?? (await checkedBuildSheet(render.sheetKey));
       // Only the call that wins this claim starts the build, so webhook and polling cannot both.
       const claimedAt = new Date();
       const { count } = await db().render.updateMany({
@@ -636,7 +684,6 @@ export async function advance(id: string): Promise<Render | null> {
         },
       });
       if (count === 0) return db().render.findUnique({ where: { id } });
-      const sheetForBuild = finalSheet ?? (render.sheetKey ? await getFile(render.sheetKey) : null);
       const started = await startThreeD(id, render.sourceKey, sheetForBuild);
       return persistStartedPrediction(
         { ...render, buildClaimedAt: claimedAt },
@@ -740,7 +787,7 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
   // An angle sheet bought earlier already counts toward the price, and so does the final sheet
   // of a product views set, which the build then reuses instead of drawing again.
   let alreadyPaid = render.credits;
-  let owed = Math.max(0, buildTotal(render) - alreadyPaid);
+  let owed = Math.max(0, RENDER_CREDITS - alreadyPaid);
 
   const claimed = await db().$transaction(async (tx) => {
     await lockRenderActor(tx, actor);
@@ -749,7 +796,7 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
     if (current?.status !== 'preview_ready') return false;
     render = current;
     alreadyPaid = current.credits;
-    owed = Math.max(0, buildTotal(current) - alreadyPaid);
+    owed = Math.max(0, RENDER_CREDITS - alreadyPaid);
     await assertGenerationConcurrency(actor, tx);
     if (actor.isUsingFreeModel) {
       const isGranted = await grantFirstModelInTransaction(tx, id, actor, owed);
@@ -763,7 +810,12 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
     assertAuthorizedCredits(actor.isUsingFreeModel ? 0 : owed, actor);
     const { count } = await tx.render.updateMany({
       where: { id, status: 'preview_ready' },
-      data: { status: 'rendering', userId: actor.userId, credits: alreadyPaid + owed },
+      data: {
+        status: 'rendering',
+        userId: actor.userId,
+        credits: alreadyPaid + owed,
+        ...(actor.locale ? { notificationLocale: actor.locale } : {}),
+      },
     });
     if (!count) {
       if (actor.isUsingFreeModel)
@@ -790,39 +842,9 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
     { model_id: id, credits_spent: owed },
   );
   try {
-    // A paid build draws the final sheet first (the visitor saw a cheaper draft); the 3D build
-    // starts when it is done, in advance(). Without a draft the build runs from the photo alone.
-    if (render.sheetKey && !render.hasFinalSheet) {
-      const client = replicate();
-      const source = await getFile(render.sourceKey);
-      const sourceUrl = await client.upload(source, 'source.jpg', 'image/jpeg');
-      const recipe = await harness();
-      const notes = sheetNotes(render);
-      const request = sheetRequest(
-        sourceUrl,
-        notes,
-        selectSkillFrom(recipe.skills, render.name, notes),
-        DEFAULT_FINAL_SHEET_SETTINGS,
-        recipe.sheetPrompt,
-        selectMaterialsFrom(recipe.materials, render.name, notes),
-      );
-      let prediction: Prediction | null = null;
-      try {
-        prediction = await client.start(
-          request.path,
-          request.body,
-          config.webhookUrl(`/api/webhooks/replicate?render=${id}`),
-        );
-      } catch (error) {
-        if (isUncertainStart(error)) throw error;
-        // Only a definite rejection permits falling back to the draft.
-        reportError(error, { renderId: id, stage: 'final_sheet_start' });
-      }
-      if (prediction) {
-        return await persistStartedPrediction(render, { finalSheetPredictionId: prediction.id });
-      }
-    }
-    const sheet = render.sheetKey ? await getFile(render.sheetKey) : null;
+    // The 3D build runs on the sheet the visitor already saw (the stored one, never the watermarked
+    // copy): there is no second draw. Without a sheet it runs from the photo alone.
+    const sheet = await checkedBuildSheet(render.sheetKey);
     const prediction = await startThreeD(id, render.sourceKey, sheet);
     return await persistStartedPrediction(render, {
       buildPredictionId: prediction.id,
@@ -842,7 +864,19 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
   }
 }
 
-// Starts the 3D build from the photo and, when there is one, the sheet's nine views.
+// Revalidate stored sheets before reusing them. A rejected sheet must never reach the 3D
+// provider; both callers handle this as a terminal failure with an atomic credit refund.
+async function checkedBuildSheet(key: string | null): Promise<Uint8Array | null> {
+  if (!key) return null;
+  const sheet = await getFile(key);
+  const quality = await checkSheet(sheet, (await harness()).limits);
+  if (!quality.ok) {
+    throw new TerminalRenderError(`sheet rejected (${quality.code}): ${quality.message}`);
+  }
+  return sheet;
+}
+
+// Starts the 3D build from the photo and, when there is one, the checked sheet's nine views.
 async function startThreeD(id: string, sourceKey: string, sheet: Uint8Array | null) {
   const client = replicate();
   const source = await getFile(sourceKey);
@@ -1009,6 +1043,7 @@ export async function redrawSheet(id: string, actor: Actor, note: string): Promi
         sheetNote: fix,
         sheetPredictionId: null,
         hasFinalSheet: false,
+        quality: withQuality(current, { refundedCorrectionCredits: 0 }),
       },
     });
     if (!count) return null;
@@ -1044,16 +1079,16 @@ export async function redrawSheet(id: string, actor: Actor, note: string): Promi
   }
 }
 
-// What a full build costs this render: a sheet that is already the final one is not drawn again.
-const buildTotal = (render: Pick<Render, 'hasFinalSheet'>) =>
-  render.hasFinalSheet ? RENDER_CREDITS - FINAL_SHEET_CREDITS : RENDER_CREDITS;
-
 export type RenderView = {
   id: string;
   status: Render['status'];
   prompt: string | null;
   name: string | null;
   error: string | null;
+  failureReason?: 'repeated_views' | 'inconsistent_structure';
+  failedStep?: 'preview' | 'model';
+  refundedCredits?: number;
+  refundedCorrectionCredits?: number;
   hasPreview: boolean;
   // True once the 3x3 angle sheet exists. Without it the preview is the plain photo.
   hasSheet: boolean;
@@ -1075,12 +1110,36 @@ export type RenderView = {
 };
 
 export function toView(render: Render): RenderView {
+  const failureReason =
+    render.status === 'failed'
+      ? render.error?.includes('sheet_repeated_views')
+        ? 'repeated_views'
+        : render.error?.includes('sheet_inconsistent_structure')
+          ? 'inconsistent_structure'
+          : undefined
+      : undefined;
+  const quality = storedQuality(render);
+  const refundedCorrectionCredits =
+    render.status === 'preview_ready' ? quality.refundedCorrectionCredits : 0;
   return {
     id: render.id,
     status: render.status,
     prompt: render.prompt,
     name: render.name,
-    error: render.status === 'failed' ? 'Generation failed. Credits, if any, were refunded.' : null,
+    error:
+      render.status === 'failed'
+        ? failureReason === 'inconsistent_structure'
+          ? 'The generated angles changed the object structure. Try another photo. Credits, if any, were refunded.'
+          : failureReason === 'repeated_views'
+            ? 'We could not generate distinct angles. Try another photo. Credits, if any, were refunded.'
+            : 'Generation failed. Credits, if any, were refunded.'
+        : null,
+    ...(failureReason ? { failureReason } : {}),
+    ...(render.status === 'failed' && quality.failedStep ? { failedStep: quality.failedStep } : {}),
+    ...(render.status === 'failed' && render.userId && render.credits > 0
+      ? { refundedCredits: render.credits }
+      : {}),
+    ...(refundedCorrectionCredits ? { refundedCorrectionCredits } : {}),
     hasPreview: render.status !== 'drafting' && render.status !== 'failed',
     hasSheet: Boolean(render.sheetKey),
     sheetNote: render.sheetNote,
@@ -1088,7 +1147,7 @@ export function toView(render: Render): RenderView {
     modelVersion: render.updatedAt.getTime(),
     // A failed render was refunded in full, so nothing counts as spent on it.
     credits: render.status === 'failed' ? 0 : render.credits,
-    renderCredits: buildTotal(render),
+    renderCredits: RENDER_CREDITS,
     sheetCredits: SHEET_CREDITS,
     upscaleCredits: UPSCALE_CREDITS,
     canUpscale: Boolean(render.sheetKey) && (render.status === 'ready' || render.hasFinalSheet),
@@ -1111,6 +1170,24 @@ export async function listEdits(id: string, actor: Actor): Promise<RenderEditVie
     take: 100,
   });
   return rows.map(toEditView).filter((edit): edit is RenderEditView => edit !== null);
+}
+
+// Diagnostic read-back for the owner. Public/link sharing never exposes QA artifacts, and
+// this read cannot advance a generation or start provider work.
+export async function getRenderQuality(id: string, actor: Actor): Promise<RenderQuality> {
+  const render = await db().render.findUnique({ where: { id } });
+  if (!render || !canAccess(render, actor)) throw notFound();
+  const quality = storedQuality(render);
+  return {
+    photo: quality.photo,
+    draftSheet: quality.draftSheet,
+    sheetRecoveryAttempts: quality.sheetRecoveryAttempts,
+    finalSheet: quality.finalSheet,
+    isDraftUsed: quality.isDraftUsed,
+    finalSheetProblem: quality.finalSheetProblem,
+    glb: quality.glb,
+    fidelity: quality.fidelity ? { report: quality.fidelity.report } : undefined,
+  };
 }
 
 export async function getRender(id: string, actor: Actor): Promise<Render> {

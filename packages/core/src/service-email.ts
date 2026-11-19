@@ -2,6 +2,7 @@ import { createCipheriv, createDecipheriv, createHash, randomBytes, randomUUID }
 import { db, type Prisma, type ServiceEmailDelivery } from '@easyrender/db';
 import { Webhook } from 'svix';
 import { AppError } from './errors';
+import { renderEmailPreview } from './mailing/result-preview';
 import { buildServiceMailPayload, type ServiceEmailCopy } from './mailing/service-template';
 import {
   type MailPayload,
@@ -9,11 +10,14 @@ import {
   resendRecipientAllowed,
   sendResendMail,
 } from './mailing/transport';
+import { storedQuality } from './render-quality';
+import { isServiceEmailLocale, type ServiceEmailLocale } from './service-email-locale';
 
 export type { ServiceEmailCopy } from './mailing/service-template';
-export type ServiceEmailTexts = Record<
-  'en' | 'es',
-  Record<'render_ready' | 'render_failed', ServiceEmailCopy>
+
+type RenderEmailCopy = Record<'render_ready' | 'render_failed', ServiceEmailCopy>;
+export type ServiceEmailTexts = { en: RenderEmailCopy } & Partial<
+  Record<Exclude<ServiceEmailLocale, 'en'>, RenderEmailCopy>
 >;
 export type ServiceEmailInput = {
   purpose: 'verify_email' | 'reset_password';
@@ -21,7 +25,7 @@ export type ServiceEmailInput = {
   email: string;
   url: string;
   expiresAt: Date;
-  locale?: 'en' | 'es';
+  locale?: ServiceEmailLocale;
   copy: ServiceEmailCopy;
 };
 const HOUR = 3600000;
@@ -178,9 +182,12 @@ export async function queueRenderServiceEmail(
     return;
   if (await isSuppressed(tx, render.user.email)) return;
   const purpose = render.status === 'ready' ? 'render_ready' : 'render_failed';
-  const locale = /^\/es(?:\/|$)/.test(render.landing_path ?? render.user.landing_path ?? '')
-    ? 'es'
-    : 'en';
+  const fromLanding = (render.landing_path ?? render.user.landing_path ?? '').split('/')[1];
+  const locale = isServiceEmailLocale(render.notificationLocale)
+    ? render.notificationLocale
+    : isServiceEmailLocale(fromLanding)
+      ? fromLanding
+      : 'en';
   const dedupeKey = `render:${render.id}:${purpose}`;
   await tx.serviceEmailDelivery.upsert({
     where: { dedupeKey },
@@ -200,21 +207,23 @@ export async function queueRenderServiceEmail(
 async function eligible(
   tx: Prisma.TransactionClient,
   entry: ServiceEmailDelivery,
-): Promise<boolean> {
+): Promise<{ comparisonKey?: string } | null> {
   if (!serviceConfig() || !resendRecipientAllowed(entry.email) || +entry.expiresAt <= Date.now())
-    return false;
+    return null;
   const user = await tx.user.findUnique({ where: { id: entry.userId } });
-  if (!user || user.email !== entry.email || (await isSuppressed(tx, entry.email))) return false;
-  if (entry.purpose === 'verify_email') return !user.emailVerified;
-  if (entry.purpose === 'reset_password') return true;
-  if (!user.emailVerified || !entry.renderId) return false;
-  const render = await tx.render.findFirst({ where: { id: entry.renderId, userId: user.id } });
-  return Boolean(
-    render &&
-      (entry.purpose === 'render_ready'
-        ? render.status === 'ready' && render.glbKey
-        : entry.purpose === 'render_failed' && render.status === 'failed'),
-  );
+  if (!user || user.email !== entry.email || (await isSuppressed(tx, entry.email))) return null;
+  if (entry.purpose === 'verify_email') return user.emailVerified ? null : {};
+  if (entry.purpose === 'reset_password') return {};
+  if (!user.emailVerified || !entry.renderId) return null;
+  const render = await tx.render.findFirst({
+    where: { id: entry.renderId, userId: user.id },
+    select: { status: true, glbKey: true, quality: true },
+  });
+  if (entry.purpose === 'render_ready' && render?.status === 'ready' && render.glbKey) {
+    const comparisonKey = storedQuality(render).fidelity?.comparisonKey;
+    return typeof comparisonKey === 'string' ? { comparisonKey } : {};
+  }
+  return entry.purpose === 'render_failed' && render?.status === 'failed' ? {} : null;
 }
 async function reconcile(tx: Prisma.TransactionClient, id: string): Promise<void> {
   const entry = await tx.serviceEmailDelivery.findUnique({ where: { id } });
@@ -318,7 +327,20 @@ export async function handleServiceEmailWebhook(
     }
   }
 }
-async function claim(id: string, texts: ServiceEmailTexts): Promise<ServiceEmailDelivery | null> {
+async function claim(
+  row: ServiceEmailDelivery,
+  texts: ServiceEmailTexts,
+): Promise<ServiceEmailDelivery | null> {
+  const { id } = row;
+  const locale = isServiceEmailLocale(row.locale) ? row.locale : 'en';
+  const copy = texts[locale] ?? texts.en;
+  // Read and resize outside the DB transaction. The locked claim rechecks ownership and the key.
+  const comparisonKey =
+    row.purpose === 'render_ready' && !row.payloadEncrypted && copy.render_ready.previewAlt
+      ? (await eligible(db(), row))?.comparisonKey
+      : null;
+  const preview = comparisonKey ? await renderEmailPreview(comparisonKey) : null;
+
   return db().$transaction(async (tx) => {
     await tx.$queryRaw`SELECT id FROM "ServiceEmailDelivery" WHERE id = ${id} FOR UPDATE`;
     const entry = await tx.serviceEmailDelivery.findUnique({ where: { id } });
@@ -345,7 +367,8 @@ async function claim(id: string, texts: ServiceEmailTexts): Promise<ServiceEmail
       });
       return null;
     }
-    if (!(await eligible(tx, entry))) {
+    const current = await eligible(tx, entry);
+    if (!current) {
       await tx.serviceEmailDelivery.update({
         where: { id },
         data: { status: 'cancelled', payloadEncrypted: null, leaseToken: null, leaseUntil: null },
@@ -366,11 +389,18 @@ async function claim(id: string, texts: ServiceEmailTexts): Promise<ServiceEmail
         });
         return null;
       }
+      const url = new URL('/account', config.appUrl);
+      url.searchParams.set('next', `/r/${entry.renderId}`);
+      url.searchParams.set('locale', locale);
       payloadEncrypted = seal(
-        buildPayload(
+        buildServiceMailPayload(
           entry.email,
-          `${config.appUrl}/r/${encodeURIComponent(entry.renderId)}`,
-          texts[entry.locale === 'es' ? 'es' : 'en'][entry.purpose],
+          url.href,
+          copy[entry.purpose],
+          config,
+          entry.purpose === 'render_ready' && preview && comparisonKey === current.comparisonKey
+            ? preview
+            : undefined,
         ),
         config.secret,
         aad(entry),
@@ -468,7 +498,7 @@ export async function runServiceEmails(
   let examined = 0;
   for (const row of [...auth, ...renders]) {
     if (Date.now() - start > 25000) break;
-    const entry = await claim(row.id, texts);
+    const entry = await claim(row, texts);
     examined++;
     if (entry) await dispatch(entry, fetcher);
   }

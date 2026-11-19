@@ -1,7 +1,13 @@
 import { adminDecision } from '@easyrender/core/admin-analytics/helpers';
+import {
+  normalizeReferralCode,
+  REFERRAL_COOKIE,
+  REFERRAL_COOKIE_MAX_AGE,
+} from '@easyrender/core/referral-code';
 import { type NextRequest, NextResponse } from 'next/server';
 import { isRoutableLocale, LOCALE_HEADER, PATH_HEADER } from './i18n/config';
 import { adminVerificationPath } from './lib/admin-analytics/navigation';
+import { APP_LOCALE_COOKIE, isAppLocalePath, requestLocale } from './lib/app-locale';
 import { canonicalHostTarget } from './lib/canonical-host';
 import {
   COUNTRY_HEADER,
@@ -77,12 +83,6 @@ function homeRedirect(request: NextRequest) {
   return varyHome(response);
 }
 
-/** The locale the URL asks for: /es/... is Spanish, everything else is the English root. */
-function localeOf(pathname: string): string {
-  const first = pathname.split('/')[1];
-  return isRoutableLocale(first) ? first : 'en';
-}
-
 // Canonical host first, then the first-visit language of the root, then an anonymous id for every
 // visitor so a free preview can be tied to them before sign up, then the locale of the URL for
 // the layout and next-intl to read.
@@ -97,10 +97,45 @@ export function proxy(request: NextRequest) {
   if (home instanceof NextResponse) return home;
 
   const headers = new Headers(request.headers);
-  headers.set(LOCALE_HEADER, localeOf(request.nextUrl.pathname));
-  headers.set(PATH_HEADER, request.nextUrl.pathname);
+  const { pathname, searchParams } = request.nextUrl;
+  const isApp = isAppLocalePath(pathname);
+  const saved = request.cookies.get(APP_LOCALE_COOKIE)?.value;
+  const locale = requestLocale(
+    pathname,
+    searchParams.get('locale'),
+    saved ?? request.cookies.get(HOME_LOCALE_COOKIE)?.value,
+  );
+  headers.set(LOCALE_HEADER, locale);
+  headers.set(PATH_HEADER, pathname);
 
   const response = withAnonymousId(request, headers);
+  // A share link (?ref=CODE) is remembered, so the code survives navigation and Google sign in.
+  const referral = normalizeReferralCode(searchParams.get('ref'));
+  if (referral && request.method === 'GET')
+    response.cookies.set(REFERRAL_COOKIE, referral, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: request.nextUrl.protocol === 'https:',
+      path: '/',
+      maxAge: REFERRAL_COOKIE_MAX_AGE,
+    });
+  const destination = request.headers.get('sec-fetch-dest');
+  const isDocument =
+    request.method === 'GET' &&
+    (destination === 'document' ||
+      (!destination && request.headers.get('accept')?.includes('text/html')));
+  // App pages can depend on a browser preference. Indexable pages always use their URL.
+  if (isApp) response.headers.set('Cache-Control', 'private, no-store');
+  if (
+    isDocument &&
+    saved !== locale &&
+    (isApp ||
+      isRoutableLocale(pathname.split('/')[1]) ||
+      (!/^\/(?:api|_next)(?:\/|$)/.test(pathname) && !pathname.includes('.')))
+  ) {
+    response.cookies.set(APP_LOCALE_COOKIE, locale, { ...homeCookie(request), httpOnly: true });
+    response.headers.set('Cache-Control', 'private, no-store');
+  }
   // The English root after an explicit choice of English. Its Vary is the page's own: Next.js
   // replaces it, and the dynamic page is served private, no-store, so no shared cache keeps it.
   if (home.kind === 'stay' && home.cookie) {

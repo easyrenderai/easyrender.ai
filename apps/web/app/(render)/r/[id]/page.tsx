@@ -12,14 +12,17 @@ import { Globe, Sparkles } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getFormatter, getTranslations } from 'next-intl/server';
+import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { AngleSheet } from '@/components/angle-sheet';
 import { ModelView } from '@/components/model-view';
 import { DATE_FORMAT, RenderDetail } from '@/components/render-detail';
 import { RenderView } from '@/components/render-view';
 import { Button } from '@/components/ui/button';
+import type { Locale } from '@/i18n/config';
 import { currentUser, resolveViewerActor } from '@/lib/actor';
+import { TABLE_EXAMPLE } from '@/lib/marketing-examples';
 import { noindexMetadata } from '@/lib/seo/metadata';
+import { ROUTES } from '@/lib/seo/routes';
 import { absoluteUrl, SITE_NAME } from '@/lib/seo/site';
 import { findShowcase } from '@/lib/showcase';
 
@@ -43,7 +46,10 @@ export async function generateMetadata({ params }: PageProps<'/r/[id]'>): Promis
     // Only gallery-public, finished models have social cards. Even an owner or a
     // link-sharing recipient must not turn a private name/image into public metadata.
     if (!isListed(render)) return noindexMetadata(`${t('Render.untitled')} · ${SITE_NAME}`);
-    name = render.name?.trim() || t('Render.untitled');
+    name =
+      id === TABLE_EXAMPLE.id
+        ? t('Showcase.items.table.title')
+        : render.name?.trim() || t('Render.untitled');
     const previewKey = render.sheetKey || render.sourceKey;
     if (previewKey && !previewKey.startsWith('pending:')) {
       image = absoluteUrl(`/api/renders/${encodeURIComponent(id)}/preview`);
@@ -72,10 +78,11 @@ export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
   const { id } = await params;
   const demo = findShowcase(id);
   if (demo) {
-    const [t, format, user] = await Promise.all([
+    const [t, format, user, locale] = await Promise.all([
       getTranslations(),
       getFormatter(),
       currentUser().catch(() => null),
+      getLocale(),
     ]);
     return (
       <RenderDetail
@@ -97,7 +104,7 @@ export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
         meta={[
           { label: t('Render.meta.status'), value: t('Render.status.ready') },
           { label: t('Render.meta.dimensions'), value: demo.dimensions },
-          { label: t('Render.meta.formats'), value: 'GLB · USDZ' },
+          { label: t('Render.meta.formats'), value: 'GLB' },
           {
             label: t('Render.meta.visibility'),
             value: (
@@ -114,7 +121,7 @@ export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
         ]}
         actions={
           <Button className="w-full" asChild>
-            <Link href="/#try">
+            <Link href={`${ROUTES.home.paths[locale as Locale]}#try`}>
               <Sparkles />
               {t('Render.makeYourOwn')}
             </Link>
@@ -131,11 +138,18 @@ export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
   });
   const balance = actor.userId ? await getBalance(actor.userId) : 0;
   const isOwner = canAccess(render, actor);
+  const isTableExample = id === TABLE_EXAMPLE.id && isListed(render);
+  const initial = toView(render);
+  if (isTableExample && !isOwner) {
+    const t = await getTranslations('Showcase');
+    initial.name = t('items.table.title');
+  }
   // The history is the owner's to read; a failed read leaves the tab empty rather than the page broken.
   const edits = isOwner && actor.userId ? await listEdits(id, actor).catch(() => []) : [];
   return (
     <RenderView
-      initial={toView(render)}
+      initial={initial}
+      sampleDownload={isTableExample ? TABLE_EXAMPLE.model : undefined}
       edits={edits}
       now={Date.now()}
       signedIn={Boolean(actor.userId)}

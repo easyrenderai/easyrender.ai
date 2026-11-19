@@ -59,7 +59,7 @@ Image-to-3D starts from a single photo and predicts the sides the camera did not
 
 easyrender works this way in two stages. It first draws a free angle sheet: nine views of the object, eight round it in 45-degree steps and one from above. You check that sheet, and you only spend credits when it looks right.
 
-The build then reads those nine views and makes one textured model, downloaded as GLB and USDZ. A model costs {{renderCredits}} credits, which is {{renderPrice}}, and the [pricing page](/credits) lists the packs. [Upload a photo](/) to see the angle sheet for free.
+The build then reads those nine views and makes one textured model, downloaded as GLB and USDZ. A model costs {{renderCredits}} credits, which is {{renderPrice}}, and the [pricing page](/credits) lists the packs. [Upload a photo](/#try) to see the angle sheet for free.
 
 ## What are you trying to get, and how do you measure it?
 

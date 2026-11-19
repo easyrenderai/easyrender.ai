@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useActivationError } from '@/lib/activation-errors';
 import { attribution, attributionHeaders, observeRender } from '@/lib/analytics/browser';
 import { prepare } from '@/lib/prepare-image';
 import { cn } from '@/lib/utils';
@@ -19,6 +20,7 @@ const TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 // optional. Dragging a file anywhere over the page lights the bar up.
 export function HomeComposer() {
   const t = useTranslations('AppHome');
+  const localizedError = useActivationError();
   const router = useRouter();
   const picker = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -28,6 +30,7 @@ export function HomeComposer() {
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // use-effect-audit: ignore releases the blob URL of the thumbnail when it is replaced or the page unmounts
   useEffect(() => () => void (thumb && URL.revokeObjectURL(thumb)), [thumb]);
 
   const pick = useCallback(
@@ -53,6 +56,7 @@ export function HomeComposer() {
 
   // Page-wide drag and paste. A depth counter, because dragenter and dragleave fire for every
   // child the pointer crosses.
+  // use-effect-audit: ignore subscribes to window drag, drop and paste events
   useEffect(() => {
     let depth = 0;
     const hasFiles = (event: DragEvent) => event.dataTransfer?.types.includes('Files') === true;
@@ -103,7 +107,13 @@ export function HomeComposer() {
     try {
       const body = new FormData();
       body.append('attribution', JSON.stringify(attribution()));
-      body.append('image', await prepare(file, t('errors.unreadable')), 'source.jpg');
+      const photo = await prepare(file).catch(() => null);
+      if (!photo) {
+        setError(t('errors.unreadable'));
+        setIsBusy(false);
+        return;
+      }
+      body.append('image', photo, 'source.jpg');
       body.append('prompt', prompt);
       const response = await fetch('/api/renders', {
         method: 'POST',
@@ -111,13 +121,18 @@ export function HomeComposer() {
         headers: attributionHeaders(),
       });
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error ?? t('errors.upload'));
+      if (!response.ok || typeof data.id !== 'string') {
+        setError(localizedError(data, t('errors.upload')));
+        setIsBusy(false);
+        return;
+      }
       observeRender(data);
       router.push(`/r/${data.id}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t('errors.upload'));
-      setIsBusy(false);
+      return;
+    } catch {
+      setError(t('errors.upload'));
     }
+    setIsBusy(false);
   }
 
   return (
@@ -187,7 +202,8 @@ export function HomeComposer() {
             onChange={(event) => pick(event.target.files?.[0])}
           />
         </div>
-        <div className="mt-3 flex items-center justify-end gap-3">
+        <div className="mt-3 flex flex-wrap items-center justify-end gap-3">
+          <p className="mr-auto text-xs text-muted-foreground">{t('costNote')}</p>
           <Button type="submit" disabled={!file || isBusy}>
             {isBusy && <Loader2 className="animate-spin" />}
             {isBusy ? t('uploading') : t('create')}

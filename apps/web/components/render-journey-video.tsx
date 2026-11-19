@@ -10,6 +10,7 @@ export function RenderJourneyVideo({ journey }: { journey: 'web' | 'shop' | 'des
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasError, setHasError] = useState(false);
 
+  // use-effect-audit: ignore drives the video element from visibility, reduced motion and tab visibility events
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;

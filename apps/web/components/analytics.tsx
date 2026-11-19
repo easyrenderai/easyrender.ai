@@ -59,6 +59,7 @@ function EnabledAnalytics() {
   const [region, setRegion] = useState<PrivacyRegion>(fallback);
   const [isResolved, setResolved] = useState(false);
   const [choice, setChoice] = useState<ConsentChoice>({ accepted: null, advertising: false });
+  // use-effect-audit: ignore initialises GA, subscribes to the consent event and fetches the privacy region on mount
   useEffect(() => {
     attribution();
     initializeGa(gaId);
@@ -95,6 +96,7 @@ function EnabledAnalytics() {
       window.removeEventListener('er-consent', changed);
     };
   }, []);
+  // use-effect-audit: ignore loads or unloads the third-party analytics tools to match consent
   useEffect(() => {
     // Always after paint, outside the critical rendering path. Cancel pending imports on rejection.
     // PostHog starts on load: it does not wait for the privacy region or a consent choice.
@@ -118,11 +120,20 @@ function EnabledAnalytics() {
     }, 100);
     return () => clearTimeout(timer);
   }, [region, choice, isResolved]);
+  // use-effect-audit: ignore sends a GA pageview, an external system, when the route changes
   useEffect(() => {
     if (pathname) gaPageview();
   }, [pathname]);
-  // Advertising always needs an explicit choice, including regions with opt-out GA policy.
-  if (!isResolved || region.gpc || choice.accepted !== null || !gaId) return null;
+  // Standard regions keep opt-out GA and cookie-page controls without an unsolicited prompt.
+  // Hiding the banner never grants advertising consent; that remains an explicit choice.
+  if (
+    !isResolved ||
+    region.consent_region !== 'strict' ||
+    region.gpc ||
+    choice.accepted !== null ||
+    !gaId
+  )
+    return null;
   return (
     <aside
       aria-label={t('title')}

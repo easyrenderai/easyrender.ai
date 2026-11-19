@@ -27,6 +27,7 @@ export function PromoVideo({
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasError, setHasError] = useState(false);
 
+  // use-effect-audit: ignore drives the video element from visibility, reduced motion and tab visibility events
   useEffect(() => {
     const video = videoRef.current;
     if (!video || hasError) return;

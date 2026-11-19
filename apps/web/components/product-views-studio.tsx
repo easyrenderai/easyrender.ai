@@ -12,6 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useActivationError } from '@/lib/activation-errors';
 import { prepare } from '@/lib/prepare-image';
 
 // Mirrors MAX_NOTE_LENGTH in the harness, which a client component cannot import (it pulls in sharp).
@@ -27,6 +28,7 @@ export function ProductViewsStudio({
   credits: number;
 }) {
   const t = useTranslations('ProductViews');
+  const localizedError = useActivationError();
   const format = useFormatter();
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
@@ -37,23 +39,29 @@ export function ProductViewsStudio({
   const canAfford = balance >= credits;
 
   async function create() {
-    if (!file) return;
+    if (!file || isBusy) return;
     setIsBusy(true);
     setError(null);
     try {
       const form = new FormData();
-      form.append('image', await prepare(file, t('errors.unreadable')), 'photo.jpg');
+      const photo = await prepare(file).catch(() => null);
+      if (!photo) {
+        setError(t('errors.unreadable'));
+        setIsBusy(false);
+        return;
+      }
+      form.append('image', photo, 'photo.jpg');
       form.append('name', file.name.replace(/\.[^.]+$/, ''));
       if (note.trim()) form.append('prompt', note.trim());
       const response = await fetch('/api/product-views', { method: 'POST', body: form });
       const data = await response.json().catch(() => ({}));
-      if (response.ok) {
+      if (response.ok && typeof data.id === 'string') {
         router.push(`/views/${data.id}`);
         return;
       }
-      setError(data.error ?? t('errors.create'));
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : t('errors.create'));
+      setError(localizedError(data, t('errors.create')));
+    } catch {
+      setError(t('errors.create'));
     }
     setIsBusy(false);
   }
@@ -101,9 +109,17 @@ export function ProductViewsStudio({
               {t('create', { credits: format.number(credits) })}
             </Button>
           ) : (
-            <Button size="lg" className="w-full" asChild>
-              <Link href="/credits?next=/views">{t('buyCredits')}</Link>
-            </Button>
+            <>
+              <p className="text-sm text-muted-foreground">
+                {t('creditBalance', {
+                  credits: format.number(credits),
+                  balance: format.number(balance),
+                })}
+              </p>
+              <Button size="lg" className="w-full whitespace-normal" asChild>
+                <Link href="/credits?next=/views">{t('buyCredits')}</Link>
+              </Button>
+            </>
           )}
           <p className="text-xs text-muted-foreground">{t('aiNote')}</p>
           {error && (

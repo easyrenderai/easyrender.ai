@@ -8,7 +8,7 @@ updated: 2026-11-15
 author: Jorge Rodríguez
 authorType: person
 keyword: produktfotografie
-cta: Wenn dein nächstes Hauptbild in Drei-Viertel-Ansicht fertig ist, lass Bild-zu-3D darüberlaufen und prüf die verdeckten Seiten kostenlos.
+cta: Lade das Hauptfoto deines Produkts hoch und prüfe die erzeugten Ansichten in der kostenlosen Vorschau.
 ---
 
 Gute Produktfotografie für den Onlineshop entsteht mit einem Aufbau, den du wiederholen kannst: eine große, weiche Lichtquelle, ein schlichter Hintergrund, die Kamera auf einem Stativ auf halber Produkthöhe und dieselbe Aufnahmeliste für jedes Stück. Studioblitze brauchst du nicht. Ein Fenster, eine weiße Styroporplatte und ein Handy reichen für die meisten kleinen Shops.
@@ -134,7 +134,7 @@ Der Export mit 2048 Pixeln von oben reicht dafür aus. easyrender lehnt Fotos un
 
 Ein 360-Grad-Spin ist etwas anderes: eine Fotoserie vom Drehteller, durch die der Käufer klickt oder wischt. Ein 3D-Modell ist eine einzige Datei, die der Käufer frei drehen und am Handy in den Raum stellen kann. [360-Grad-Produktfotografie oder 3D-Modell](/de/vergleich/vergleich-360-vs-3d) zeigt, wie beides entsteht, was es kostet und wann sich was lohnt.
 
-easyrender baut aus einem dieser Fotos ein Modell und zeigt dir vorher kostenlos eine Vorschau aller Ansichten. Das funktioniert mit einzelnen Stücken wie einer Stehlampe oder einem Sessel. Gib ihm also das Stück allein, keinen gestylten Raum. [Foto hochladen](/de)
+easyrender baut aus einem dieser Fotos ein Modell und zeigt dir vorher kostenlos eine Vorschau aller Ansichten. Das funktioniert mit einzelnen Stücken wie einer Stehlampe oder einem Sessel. Gib ihm also das Stück allein, keinen gestylten Raum. [Foto hochladen](/de#try)
 
 ## Welche Fehler passieren am häufigsten?
 

@@ -131,7 +131,7 @@ Les places de marché ont leurs propres règles pour les fichiers 3D. En pratiqu
 
 Le choix entre un modeleur et une seule photo est traité dans [modeleur 3D ou IA](/fr/comparatifs/modeleur-3d-ou-ia).
 
-easyrender donne à chaque modèle terminé de sa galerie publique une page que tu peux partager par lien. Les modèles sont publics par défaut. Le lien ne fonctionne que tant que le modèle reste dans la galerie publique ; le masquer peut casser ce lien. Mets-le dans ta réponse à l’acheteur, à côté des gros plans et de tes mesures au mètre ruban, qui restent dans l’annonce.
+Vos modèles sont privés par défaut. Si vous publiez un modèle terminé dans la galerie Easy Render, vous pouvez partager le lien vers sa page. Ajoutez-le dans ta réponse à l’acheteur, à côté des gros plans et de tes mesures au mètre ruban, qui restent dans l’annonce.
 
 ## Comment savoir si une annonce fonctionne ?
 

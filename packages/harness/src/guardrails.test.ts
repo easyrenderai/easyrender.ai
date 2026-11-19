@@ -131,6 +131,17 @@ describe('sheet guardrail', () => {
     expect(check.ok && check.warnings).toEqual([]);
   });
 
+  it('rejects invented panels that close the open space in the opposite view', async () => {
+    // Production regression: the reference table has four legs, but the generated back is solid.
+    const bytes = readFileSync(new URL('./fixtures/inconsistent-table.webp', import.meta.url));
+    const check = await checkSheet(bytes);
+    expect(!check.ok && check.code).toBe('sheet_inconsistent_structure');
+  });
+
+  it('keeps a real open-legged table whose opposite views preserve its openings', async () => {
+    expect((await checkSheet(showcase('table-angles.png'))).ok).toBe(true);
+  });
+
   it('measures the sheet it checked, so renders can be compared', async () => {
     const armchair = await checkSheet(showcase('armchair-angles.jpg'));
     expect(armchair.ok && armchair.measures.emptyCells).toBe(0);

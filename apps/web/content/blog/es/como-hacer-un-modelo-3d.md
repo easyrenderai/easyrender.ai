@@ -65,7 +65,7 @@ El método es el mismo en todas las herramientas: una foto nítida del objeto en
 
 easyrender es una de estas herramientas. Muestra una previsualización gratis de todos los ángulos, y un modelo terminado cuesta {{renderCredits}} créditos ({{renderPrice}}), según la [página de precios](/es/precios). Modela objetos sueltos, como muebles, decoración y fachadas, no habitaciones enteras, y los logos pequeños pierden definición.
 
-[Sube una foto](/es)
+[Sube una foto](/es#try)
 
 Meshy y Tripo también convierten imágenes en modelos 3D y añaden texto a 3D, cada una con sus propios precios; las comparamos en [Meshy](/es/comparativas/meshy) y [Tripo](/es/comparativas/tripo). Prueba la misma foto en dos herramientas antes de elegir una para un catálogo.
 

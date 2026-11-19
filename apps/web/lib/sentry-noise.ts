@@ -11,6 +11,9 @@ export const EXPECTED_SERVER_ERRORS: RegExp[] = [
   // The SDK's 406 for a client whose Accept header lacks application/json or text/event-stream.
   // The client gets a JSON-RPC error that names the fix.
   /^(?:Error: )?Not Acceptable: /,
+  // The sheet quality gate in packages/core refusing a bad generation (repeated views, inconsistent
+  // structure). The render fails and is refunded by design, with no retry, so it is not a bug.
+  /^(?:Error: )?sheet rejected \(/,
 ];
 
 // Wallet and address-autofill extensions patch the page and throw from their own injected script.
@@ -18,3 +21,14 @@ export const BROWSER_EXTENSION_ERRORS: RegExp[] = [
   /'set' on proxy: trap returned falsish for property 'defaultAddress'/,
 ];
 export const BROWSER_EXTENSION_URLS: RegExp[] = [/\/injected\/injected\.js/];
+
+// A browser with no WebGL (a headless crawler, a blocklisted GPU) cannot start the 3D sections. They
+// stay as the page's still images, so three.js throwing at startup is the environment, not a bug.
+export const WEBGL_UNAVAILABLE_ERRORS: RegExp[] = [
+  /Error creating WebGL context/,
+  /WebGL is not available/,
+];
+
+// The 3D viewer reads its embedded textures back through in-memory blob: URLs. They are not network
+// requests, but Sentry's N+1 detector counted five of them on /image-to-3d-api as repeated calls.
+export const BLOB_URL_SPANS: RegExp[] = [/^GET blob:/];

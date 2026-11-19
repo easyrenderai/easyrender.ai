@@ -34,7 +34,11 @@ export function sheetPrompt(
   materials: MaterialProfile[] = [],
 ): string {
   const note = cleanNote(userPrompt);
-  const parts = [template, `Product guidance: ${skill.guidance}`];
+  const parts = [
+    template,
+    `Product guidance: ${skill.guidance}`,
+    'Structural consistency: preserve the exact number, placement and thickness of legs, supports and panels in the reference. Empty space between parts must remain empty in every view. Never fill the space under an open-legged table or invent solid side panels, backs, doors or walls on unseen faces. Use orthographic front, back, left and right views at the same elevation and scale; opposite views must describe the same physical structure.',
+  ];
   const rules = materialRules(materials);
   if (rules) parts.push(rules);
   if (note) parts.push(`Additional notes about the object: ${note}`);
