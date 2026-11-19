@@ -21,10 +21,15 @@ module.exports = {
   ],
   test: async (z, bundle) => {
     const label = bundle.authData.accountLabel?.trim() || '';
-    const isUrl = /[a-z][a-z\d+.-]*:\/\/|^\/\//i.test(label);
-    const isDomain = /(?:[\p{L}\d-]+\.)+[\p{L}]{2,}|\b(?:\d{1,3}\.){3}\d{1,3}\b/u.test(label);
+    const isUrl = label.includes('://') || label.startsWith('//');
+    const hasDomain = label
+      .split(/[^\p{L}\d.-]+/u)
+      .some((token) =>
+        token.split('.').some((part, index, parts) => parts[index - 1] && /^\p{L}{2}/u.test(part)),
+      );
+    const hasAddress = /\b(?:\d{1,3}\.){3}\d{1,3}\b/.test(label);
     const hasApiKey = /\ber_/i.test(label);
-    if (!label || isUrl || isDomain || hasApiKey)
+    if (!label || isUrl || hasDomain || hasAddress || hasApiKey)
       throw new z.errors.Error(
         'Use a short display name, not a domain, URL or API key.',
         'InvalidAccountLabel',
