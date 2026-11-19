@@ -28,26 +28,30 @@ export async function convertFile(
 ): Promise<ExportedFile> {
   onStage('reading');
   const renderer = probeRenderer();
-  const loaded = await loadModel(files, main, from, renderer);
   try {
-    // Textures are part of what GLB, GLTF, USDZ and OBJ carry over: without them the result
-    // would silently lose its colours, so stop and name the files instead.
-    if (loaded.missing.length > 0) throw new MissingFilesError(loaded.missing);
-    onStage('converting');
-    // Stand a Z-up source upright, then lay the result back down for a Z-up target.
-    const pivot = new THREE.Group();
-    pivot.rotation.x = (isZUpFormat(from) ? -Math.PI / 2 : 0) + (isZUpFormat(to) ? Math.PI / 2 : 0);
-    pivot.add(loaded.object);
-    pivot.updateMatrixWorld(true);
-    return await exportModel(pivot, loaded.animations, to, name);
+    const loaded = await loadModel(files, main, from, renderer);
+    try {
+      // Textures are part of what GLB, GLTF, USDZ and OBJ carry over: without them the result
+      // would silently lose its colours, so stop and name the files instead.
+      if (loaded.missing.length > 0) throw new MissingFilesError(loaded.missing);
+      onStage('converting');
+      // Stand a Z-up source upright, then lay the result back down for a Z-up target.
+      const pivot = new THREE.Group();
+      pivot.rotation.x =
+        (isZUpFormat(from) ? -Math.PI / 2 : 0) + (isZUpFormat(to) ? Math.PI / 2 : 0);
+      pivot.add(loaded.object);
+      pivot.updateMatrixWorld(true);
+      return await exportModel(pivot, loaded.animations, to, name);
+    } finally {
+      const materials = materialsOf(loaded.object);
+      for (const texture of texturesOf(materials)) texture.dispose();
+      for (const material of materials) material.dispose();
+      loaded.object.traverse((node) => {
+        (node as THREE.Mesh).geometry?.dispose();
+      });
+      loaded.release();
+    }
   } finally {
-    const materials = materialsOf(loaded.object);
-    for (const texture of texturesOf(materials)) texture.dispose();
-    for (const material of materials) material.dispose();
-    loaded.object.traverse((node) => {
-      (node as THREE.Mesh).geometry?.dispose();
-    });
-    loaded.release();
     renderer?.dispose();
     renderer?.forceContextLoss();
   }
