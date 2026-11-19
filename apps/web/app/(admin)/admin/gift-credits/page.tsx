@@ -1,6 +1,7 @@
 import { getMessages, getTranslations } from 'next-intl/server';
 import { AdminNavigation } from '@/components/admin-analytics/dashboard';
 import { GiftCreditsPanel } from '@/components/admin-gifts/gift-credits-panel';
+import { OutreachInvites } from '@/components/admin-gifts/outreach-invites';
 import { requireAdmin } from '@/lib/admin-analytics/auth';
 
 export async function generateMetadata() {
@@ -28,6 +29,7 @@ export default async function GiftCreditsPage() {
         </span>
       </header>
       <AdminNavigation labels={labels} section="giftCredits" />
+      <OutreachInvites />
       <GiftCreditsPanel />
     </div>
   );

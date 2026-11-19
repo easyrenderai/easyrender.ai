@@ -14,6 +14,7 @@
       "default": "./src/admin-analytics/helpers.ts"
     },
     "./attribution": "./src/attribution.ts",
+    "./credit-gift-policy": "./src/credit-gift-policy.ts",
     "./referral-code": "./src/referral-code.ts"
   },
   "scripts": {

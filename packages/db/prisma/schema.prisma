@@ -42,6 +42,7 @@ model User {
   accounts  Account[]
   renders   Render[]
   ledger    CreditLedger[]
+  redeemedCreditInvite CreditInvite?
   purchases Purchase[]
   googleCheckouts GoogleCheckout[]
   posthogDeliveries PosthogDelivery[]
@@ -399,6 +400,22 @@ model Upscale {
   @@index([userId, createdAt])
   @@index([renderId])
   @@index([viewSetId, view])
+}
+
+model CreditInvite {
+  id             String   @id
+  issuerId       String
+  recipientEmail String
+  amount         Int
+  campaign       String
+  createdAt      DateTime @default(now())
+  expiresAt      DateTime
+  revokedAt      DateTime?
+  redeemedAt     DateTime?
+  redeemedById   String?  @unique
+  redeemedBy     User?    @relation(fields: [redeemedById], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
 }
 
 model CreditLedger {

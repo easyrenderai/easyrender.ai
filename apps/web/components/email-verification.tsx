@@ -13,12 +13,14 @@ export function EmailVerification({
   isAvailable,
   copy,
   locale,
+  project,
 }: {
   email: string;
   isVerified: boolean;
   isAvailable: boolean;
   copy: typeof en.AuthService;
   locale: Locale;
+  project?: string;
 }) {
   const [isBusy, setIsBusy] = useState(false);
   const [isRequested, setIsRequested] = useState(false);
@@ -29,7 +31,12 @@ export function EmailVerification({
     try {
       const result = await authClient.sendVerificationEmail({
         email,
-        fetchOptions: { headers: { 'x-easyrender-email-locale': locale } },
+        fetchOptions: {
+          headers: {
+            'x-easyrender-email-locale': locale,
+            ...(project ? { 'x-easyrender-project-return': project } : {}),
+          },
+        },
       });
       if (result.error) {
         setError(
