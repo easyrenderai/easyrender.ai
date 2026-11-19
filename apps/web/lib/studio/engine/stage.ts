@@ -4,7 +4,7 @@
 // dozens of live viewports on a page without hitting the browser's WebGL context limit.
 
 import * as THREE from 'three';
-import { hasWebGL, WebGLUnavailableError } from '@/lib/webgl';
+import { WebGLUnavailableError } from '@/lib/webgl';
 import { createStudioEnvironment, disposeStudioEnvironment } from './environment';
 import { disposeTree } from './resources';
 
@@ -28,12 +28,7 @@ export class Stage {
 
   constructor() {
     const canvas = document.createElement('canvas');
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: true,
-      alpha: true,
-      powerPreference: 'high-performance',
-    });
+    const renderer = createRenderer(canvas);
     renderer.setPixelRatio(1);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     // Khronos PBR Neutral keeps a product's base colour true, which is what a store needs.
@@ -189,10 +184,10 @@ export class View {
       width: '100%',
       height: '100%',
     });
-    el.prepend(this.canvas);
     const ctx = this.canvas.getContext('2d');
     if (!ctx) throw new Error('2D canvas is not available');
     this.ctx = ctx;
+    el.prepend(this.canvas);
 
     this.scene.environment = stage.env;
     this.scene.environmentIntensity = options.envIntensity ?? 0.3;
@@ -248,12 +243,36 @@ export class View {
   }
 }
 
-let stage: Stage | null = null;
+function createRenderer(canvas: HTMLCanvasElement) {
+  let context: WebGL2RenderingContext | null;
+  try {
+    context = canvas.getContext('webgl2', {
+      antialias: true,
+      alpha: true,
+      powerPreference: 'high-performance',
+    });
+  } catch {
+    throw new WebGLUnavailableError();
+  }
+  if (!context) throw new WebGLUnavailableError();
 
-// Throws WebGLUnavailableError when the browser has no WebGL. Probing first keeps three.js from
-// logging its own error and rethrowing "Error creating WebGL context." from the constructor.
+  try {
+    return new THREE.WebGLRenderer({ canvas, context });
+  } catch (error) {
+    context.getExtension('WEBGL_lose_context')?.loseContext();
+    throw error;
+  }
+}
+
+let stage: Stage | 'unavailable' | null = null;
+
 export function getStage() {
-  if (!stage && !hasWebGL()) throw new WebGLUnavailableError();
-  stage ??= new Stage();
-  return stage;
+  if (stage === 'unavailable') throw new WebGLUnavailableError();
+  try {
+    stage ??= new Stage();
+    return stage;
+  } catch (error) {
+    if (error instanceof WebGLUnavailableError) stage = 'unavailable';
+    throw error;
+  }
 }
