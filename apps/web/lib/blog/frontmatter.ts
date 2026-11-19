@@ -32,3 +32,8 @@ function unquote(value: string): string {
   const quoted = /^(["'])(.*)\1$/.exec(value);
   return quoted ? (quoted[2] as string) : value;
 }
+
+export const parseContentDate = (value: string): string | null => {
+  const date = new Date(/^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00Z` : value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+};

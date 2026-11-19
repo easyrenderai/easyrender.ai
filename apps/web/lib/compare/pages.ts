@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { LOCALES, type Locale } from '@/i18n/config';
-import { parseFrontMatter } from '@/lib/blog/frontmatter';
+import { parseContentDate, parseFrontMatter } from '@/lib/blog/frontmatter';
 import {
   type BlogAuthor,
   type FaqItem,
@@ -20,6 +20,7 @@ import { isInReview, isPublished, ROUTES } from '@/lib/seo/routes';
 //   title: Meshy alternative …  the <h1> and the <title>
 //   description: One sentence.  the meta description
 //   keyword: meshy alternative  the target query, for the record
+//   publishAt: 2026-11-23     optional publication date (00:00 UTC) or full ISO instant
 //   updated: 2026-11-11         the last real change
 //   author: Jorge Rodríguez     optional; guides and the reviewed translations name him
 //   authorType: person          optional, with author
@@ -36,6 +37,7 @@ export type ComparePage = {
   title: string;
   description: string;
   keyword?: string;
+  publishAt?: string;
   updated?: string;
   /** Set when the file names an author. English pages written before the byline omit it. */
   author?: BlogAuthor;
@@ -128,6 +130,10 @@ export function parseComparePage(
   for (const field of ['group', 'title', 'description'] as const) {
     if (!data[field]) return { error: `missing ${field}` };
   }
+  const publishAt = data.publishAt !== undefined ? parseContentDate(data.publishAt) : null;
+  if (data.publishAt !== undefined && !publishAt) {
+    return { error: `invalid publishAt "${data.publishAt}"` };
+  }
   const text = fillPrices(stripComments(body));
   if (!text) return { error: 'empty body' };
   let author: BlogAuthor | undefined;
@@ -152,6 +158,7 @@ export function parseComparePage(
       title: fillPrices(data.title as string),
       description: fillPrices(data.description as string),
       ...(data.keyword ? { keyword: data.keyword } : {}),
+      ...(publishAt ? { publishAt } : {}),
       ...(data.updated ? { updated: data.updated } : {}),
       ...(author ? { author } : {}),
       ...(data.cta ? { cta: fillPrices(data.cta) } : {}),
@@ -191,26 +198,34 @@ export function readComparePages(locale: Locale = 'en'): ComparePage[] {
 const isOpen = (locale: Locale): boolean => isCompareInReview(locale) || isComparePublished(locale);
 
 /** The page to serve at the locale's /compare/{slug}, or null (a 404) when it is not open. */
-export function getComparePage(slug: string, locale: Locale = 'en'): ComparePage | null {
-  if (!isOpen(locale)) return null;
-  return readComparePages(locale).find((page) => page.slug === slug) ?? null;
+export function getComparePage(
+  slug: string,
+  locale: Locale = 'en',
+  now: Date = new Date(),
+): ComparePage | null {
+  return listComparePages(locale, now).find((page) => page.slug === slug) ?? null;
 }
 
 /** Every comparison page of a locale, or an empty list when that locale is not open. */
-export function listComparePages(locale: Locale = 'en'): ComparePage[] {
+export function listComparePages(locale: Locale = 'en', now: Date = new Date()): ComparePage[] {
   if (!isOpen(locale)) return [];
-  return readComparePages(locale);
+  return readComparePages(locale).filter(
+    (page) => !page.publishAt || Date.parse(page.publishAt) <= now.getTime(),
+  );
 }
 
 /**
  * The live URL of one comparison in each language. A locale is included only when its file
  * exists and the hub is published, so hreflang never points at a 404.
  */
-export function compareLivePaths(group: string): Partial<Record<Locale, string>> {
+export function compareLivePaths(
+  group: string,
+  now: Date = new Date(),
+): Partial<Record<Locale, string>> {
   const paths: Partial<Record<Locale, string>> = {};
   for (const locale of LOCALES) {
     if (!isComparePublished(locale)) continue;
-    const match = readComparePages(locale).find((page) => page.group === group);
+    const match = listComparePages(locale, now).find((page) => page.group === group);
     if (match) paths[locale] = match.path;
   }
   return paths;

@@ -1,0 +1,26 @@
+{
+  "blender": "5.2.3 LTS",
+  "gltf": {
+    "vase.gltf": 2124,
+    "vase.glb": 1732772,
+    "Image_0.webp": 28466,
+    "vase.bin": 1702680
+  },
+  "tableBefore": {
+    "triangles": 16228,
+    "materials": 1
+  },
+  "tableAfter": {
+    "triangles": 8114,
+    "materials": 1
+  },
+  "tableFiles": {
+    "coffee-baseline.glb": 1687180,
+    "coffee-decimated.glb": 863068
+  },
+  "objFbx": {
+    "bedside.fbx": 2835228,
+    "bedside.obj": 7638334,
+    "bedside.mtl": 237
+  }
+}

@@ -57,7 +57,7 @@ export function localeEntries(locale: Locale, now: Date = new Date()): SitemapEn
     const entry = ROUTES[key];
     const posts = key === 'blog' ? listPosts(locale, now) : [];
     const comparisons =
-      key === 'compare' && isComparePublished(locale) ? listComparePages(locale) : [];
+      key === 'compare' && isComparePublished(locale) ? listComparePages(locale, now) : [];
     // Publication order is not update order: editing an older guide changes the hub too.
     const lastModified = [
       ...posts.map(modifiedDate),
@@ -81,7 +81,7 @@ export function localeEntries(locale: Locale, now: Date = new Date()): SitemapEn
           path: page.path,
           changeFrequency: 'monthly',
           priority: 0.6,
-          alternates: compareLivePaths(page.group),
+          alternates: compareLivePaths(page.group, now),
           images: contentImages(page.body),
           ...(page.updated ? { lastModified: page.updated } : {}),
         });

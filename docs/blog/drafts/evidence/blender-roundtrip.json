@@ -1,0 +1,62 @@
+{
+  "full": {
+    "status": "ok",
+    "images": [
+      {
+        "name": "Image_0",
+        "size": [1024, 1024]
+      }
+    ],
+    "meshes": [
+      {
+        "triangles": 16708,
+        "materials": ["Material_0"]
+      }
+    ]
+  },
+  "missing-texture": {
+    "status": "ok",
+    "images": [
+      {
+        "name": "Image_0",
+        "size": [0, 0]
+      }
+    ],
+    "meshes": [
+      {
+        "triangles": 16708,
+        "materials": ["Material_0"]
+      }
+    ]
+  },
+  "missing-buffer": {
+    "status": "Error: Error: Missing resource, 'vase.bin'.\n",
+    "images": [],
+    "meshes": []
+  },
+  "obj": {
+    "status": "ok",
+    "images": [],
+    "meshes": [
+      {
+        "triangles": 69910,
+        "materials": ["Material_0"]
+      }
+    ]
+  },
+  "fbx": {
+    "status": "ok",
+    "images": [
+      {
+        "name": "Image_0",
+        "size": [1024, 1024]
+      }
+    ],
+    "meshes": [
+      {
+        "triangles": 69910,
+        "materials": ["Material_0"]
+      }
+    ]
+  }
+}
