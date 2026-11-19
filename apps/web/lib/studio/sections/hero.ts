@@ -1,6 +1,7 @@
 // Hero: one object, five readings kept in sync (photo, mesh, normals, depth, render).
 
 import * as THREE from 'three';
+import { WebGLUnavailableError } from '@/lib/webgl';
 import { itemOf, photoUrl } from '../catalog';
 import { part } from '../dom';
 import { preload } from '../engine/assets';
@@ -18,7 +19,7 @@ import {
   normalized,
 } from '../engine/studio';
 import type { Format } from '../format';
-import type { Scope } from '../scope';
+import { Scope } from '../scope';
 
 const ORDER = [
   'swivel-chair',
@@ -39,7 +40,27 @@ const SPIN = 0.24; // rad/s
 
 export type HeroContext = { scope: Scope; fmt: Format; names: Record<string, string> };
 
-export async function initHero(root: HTMLElement, { scope, fmt, names }: HeroContext) {
+export async function initHero(root: HTMLElement, context: HeroContext) {
+  const scope = new Scope();
+  context.scope.add(() => scope.dispose());
+  try {
+    await startHero(root, { ...context, scope });
+  } catch (error) {
+    if (!scope.alive) return;
+    scope.dispose();
+    const stack = part(root, 'stack');
+    const photo = part<HTMLImageElement>(root, 'photo');
+    photo.src = photoUrl(ORDER[0]);
+    stack.classList.add('is-in', 'is-fallback');
+    context.scope.add(() => stack.classList.remove('is-in', 'is-fallback'));
+    if (!(error instanceof WebGLUnavailableError)) {
+      console.warn('studio hero: 3D is not available', error);
+    }
+  }
+}
+
+async function startHero(root: HTMLElement, { scope, fmt, names }: HeroContext) {
+  if (!scope.alive) return;
   const stack = part(root, 'stack');
   const stage = getStage();
   const ui = {
@@ -125,18 +146,9 @@ export async function initHero(root: HTMLElement, { scope, fmt, names }: HeroCon
   }
 
   let index = 0;
-  try {
-    const first = await build(ORDER[0]);
-    if (!scope.alive) return;
-    show(ORDER[0], first);
-  } catch (error) {
-    // No WebGL: the cards still appear, with the input photo and the copy. The markup ships
-    // without the photo (the stack is hidden until now), so it is set here or by show().
-    console.warn('studio hero: 3D is not available', error);
-    ui.photo.src = photoUrl(ORDER[0]);
-    stack.classList.add('is-in');
-    return;
-  }
+  const first = await build(ORDER[0]);
+  if (!scope.alive) return;
+  show(ORDER[0], first);
 
   let clock = 0;
   let swapping = false;

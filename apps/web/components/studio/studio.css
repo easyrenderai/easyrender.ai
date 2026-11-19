@@ -481,6 +481,16 @@ body:has(.er-studio) {
     opacity: 1;
     transform: none;
   }
+  .stack.is-fallback .card:not(.card--photo),
+  .stack.is-fallback .stack__hint {
+    display: none;
+  }
+  .stack.is-fallback .card--photo {
+    inset: 0;
+    width: min(85%, 22rem);
+    margin: auto;
+    aspect-ratio: 1;
+  }
   .card--photo {
     left: 1%;
     top: 5%;
