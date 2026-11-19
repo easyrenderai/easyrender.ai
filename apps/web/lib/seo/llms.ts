@@ -98,6 +98,24 @@ const PAGE_LABELS: Record<string, { title: string; note: string }> = {
     title: 'Modelos',
     note: 'Los tres modelos detrás de cada render, sus ajustes y el coste de cada paso en créditos.',
   },
+  // Written here, not read from the page copy: this file describes what Easy Render makes, and the
+  // viewer opens formats (see lib/viewer/formats.ts) that the product does not export.
+  [ROUTES.viewer.paths.en]: {
+    title: '3D viewer',
+    note: 'A free viewer for 3D files such as GLB, glTF and USDZ. The file is read in the browser and is not uploaded.',
+  },
+  [ROUTES.viewer.paths.es]: {
+    title: 'Visor 3D',
+    note: 'Un visor gratuito de archivos 3D como GLB, glTF y USDZ. El archivo se lee en el navegador y no se sube.',
+  },
+  [ROUTES.converter.paths.en]: {
+    title: '3D converter',
+    note: 'A free converter between 3D file formats, GLB, glTF and USDZ among them. The file is converted in the browser and is not uploaded.',
+  },
+  [ROUTES.converter.paths.es]: {
+    title: 'Convertidor 3D',
+    note: 'Un convertidor gratuito entre formatos de archivos 3D, entre ellos GLB, glTF y USDZ. El archivo se convierte en el navegador y no se sube.',
+  },
   [ROUTES.evals.paths.en]: {
     title: 'Evals',
     note: 'How renders are checked and the results of each published eval run.',

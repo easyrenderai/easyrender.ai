@@ -55,6 +55,8 @@ describe('the route registry', () => {
       });
     }
     expect(livePaths('models')).toEqual({ en: '/models', es: '/es/modelos' });
+    expect(livePaths('viewer')).toEqual({ en: '/3d-viewer', es: '/es/visor-3d' });
+    expect(livePaths('converter')).toEqual({ en: '/3d-converter', es: '/es/convertidor-3d' });
     expect(livePaths('evals')).toEqual({ en: '/evals', es: '/es/evaluaciones' });
   });
 

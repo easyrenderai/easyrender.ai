@@ -121,6 +121,36 @@ export const ROUTES = {
     priority: 0.8,
     changeFrequency: 'monthly',
   },
+  // The free tool: drop a 3D file and look at it in the browser. Nothing is uploaded, so it needs
+  // no account and no credits. Open in English and Spanish; the other four wait for reviewed copy.
+  viewer: {
+    paths: {
+      en: '/3d-viewer',
+      es: '/es/visor-3d',
+      de: '/de/3d-viewer',
+      fr: '/fr/visionneuse-3d',
+      it: '/it/visualizzatore-3d',
+      pt: '/pt/visualizador-3d',
+    },
+    published: ['en', 'es'],
+    priority: 0.8,
+    changeFrequency: 'monthly',
+  },
+  // The viewer's sibling: the same stage, read as a converter. It writes the open model as GLB,
+  // GLTF, OBJ, STL, PLY or USDZ in the browser.
+  converter: {
+    paths: {
+      en: '/3d-converter',
+      es: '/es/convertidor-3d',
+      de: '/de/3d-konverter',
+      fr: '/fr/convertisseur-3d',
+      it: '/it/convertitore-3d',
+      pt: '/pt/conversor-3d',
+    },
+    published: ['en', 'es'],
+    priority: 0.8,
+    changeFrequency: 'monthly',
+  },
   // What runs under the product, and how it is checked. Open in English and Spanish like the
   // pricing and guides; the other four wait for reviewed copy. /evals stays out of the sitemap
   // until a run is published (see lib/evals.ts), so a page with nothing to measure is never

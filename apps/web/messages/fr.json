@@ -57,7 +57,9 @@
       "terms": "Conditions d’utilisation",
       "editorial": "Équipe éditoriale",
       "comparisons": "Comparatifs",
-      "ecommerce": "E-commerce plugins"
+      "ecommerce": "E-commerce plugins",
+      "viewer": "Visionneuse 3D",
+      "converter": "Convertisseur 3D"
     },
     "copyright": "© 2026 Easy Render. Avec la technologie de Genfeed.",
     "pricesNote": "Vérifie la devise et le total avant de payer. Les crédits n’expirent pas."
@@ -3001,5 +3003,228 @@
     "offerUnavailable": "Le modèle gratuit n’est plus disponible pour cet aperçu. Consultez les options ci-dessous.",
     "staleState": "Ce projet a changé. Actualisez la page, puis réessayez.",
     "rateLimit": "Trop de demandes. Attendez une minute et réessayez."
+  },
+  "Viewer": {
+    "metaTitle": "Visionneuse 3D en ligne : ouvrez des fichiers GLB, OBJ, FBX et STL · Easy Render",
+    "metaDescription": "Visionneuse de modèles 3D en ligne et gratuite. Déposez un fichier GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ ou 3DS pour le faire pivoter, zoomer et l'examiner dans votre navigateur. Sans envoi, sans compte.",
+    "breadcrumb": "Visionneuse 3D",
+    "home": "Accueil",
+    "eyebrow": "Outil gratuit",
+    "title": "Visionneuse 3D en ligne",
+    "description": "Déposez un fichier 3D et regardez-le sous tous les angles. Cette visionneuse de modèles 3D ouvre GLB, GLTF, OBJ, FBX, STL et cinq autres formats dans votre navigateur, sans rien installer.",
+    "formats": {
+      "title": "Une visionneuse GLB qui ouvre aussi neuf autres formats",
+      "description": "Votre navigateur lit lui-même le fichier : il s'ouvre en quelques secondes, sur ordinateur comme sur téléphone.",
+      "items": {
+        "glb": "glTF binaire : forme, matériaux, textures et animation dans un seul fichier. Le format qu'attendent les visionneuses web et RA.",
+        "gltf": "glTF en JSON. Déposez-le avec son fichier .bin et ses textures.",
+        "obj": "Wavefront OBJ. Déposez aussi le fichier .mtl et les textures pour voir ses matériaux.",
+        "fbx": "Autodesk FBX, courant dans les moteurs de jeu et les outils d'animation. Les animations sont lues.",
+        "stl": "Le format de l'impression 3D. La forme seule, affichée dans un matériau neutre.",
+        "ply": "Scans et nuages de points, avec les couleurs par sommet quand le fichier en contient.",
+        "threeMf": "3D Manufacturing Format, le format d'impression 3D plus récent, avec couleurs et matériaux.",
+        "dae": "Collada, un format d'échange plus ancien que SketchUp et Blender exportent encore.",
+        "usdz": "Le format d'Apple pour AR Quick Look sur iPhone et iPad.",
+        "threeDs": "L'ancien format 3D Studio, encore présent dans les bibliothèques de modèles plus anciennes."
+      }
+    },
+    "steps": {
+      "title": "Comment ça marche",
+      "drop": {
+        "title": "Déposez le fichier",
+        "body": "Faites-le glisser sur la visionneuse ou choisissez-le sur votre appareil. Vous pouvez déposer plusieurs fichiers à la fois pour un modèle aux textures séparées."
+      },
+      "inspect": {
+        "title": "Regardez-le sous tous les angles",
+        "body": "Faites glisser pour pivoter, utilisez la molette pour zoomer et le clic droit pour déplacer. Activez le fil de fer, la grille ou un fond clair."
+      },
+      "share": {
+        "title": "Vérifiez ce qu'il contient",
+        "body": "Triangles, sommets, matériaux, textures et dimensions s'affichent sous le modèle. Enregistrez un PNG de n'importe quelle vue."
+      }
+    },
+    "cta": {
+      "title": "Pas encore de fichier 3D ?",
+      "body": "Easy Render transforme une photo de produit en modèle 3D à télécharger en GLB et USDZ. L'aperçu est gratuit.",
+      "action": "Créer un modèle 3D à partir d'une photo"
+    },
+    "faq": {
+      "title": "Questions sur la visionneuse 3D",
+      "items": {
+        "formats": {
+          "q": "Quels fichiers 3D puis-je ouvrir ?",
+          "a": "GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ et 3DS. Les fichiers GLB compressés (Draco, Meshopt et textures KTX2) s'ouvrent aussi."
+        },
+        "privacy": {
+          "q": "Mes fichiers sont-ils envoyés sur un serveur ?",
+          "a": "Non. Votre navigateur lit et affiche le fichier sur votre appareil. Il n'est pas envoyé à nos serveurs et disparaît quand vous fermez l'onglet."
+        },
+        "textures": {
+          "q": "Pourquoi mon modèle apparaît-il gris ou sans textures ?",
+          "a": "Les fichiers OBJ et GLTF gardent leurs matériaux et textures dans des fichiers séparés. Déposez le modèle avec son fichier .mtl ou .bin et ses images ; la visionneuse indique ceux qui manquent. Les fichiers STL ne contiennent aucune couleur."
+        },
+        "glb": {
+          "q": "Qu'est-ce qu'un fichier GLB ?",
+          "a": "GLB est la version binaire de glTF, un standard ouvert pour les modèles 3D. Un seul fichier contient la forme, les matériaux, les textures et les animations ; c'est pourquoi les boutiques en ligne, les visionneuses RA et les moteurs de jeu l'utilisent."
+        },
+        "free": {
+          "q": "La visionneuse 3D est-elle gratuite ?",
+          "a": "Oui. Pas de compte, pas de filigrane et aucune limite au nombre de fichiers. Les fichiers jusqu'à 300 Mo s'ouvrent, selon la mémoire de votre appareil."
+        }
+      }
+    },
+    "app": {
+      "label": "Visionneuse de fichiers 3D",
+      "dropTitle": "Déposez un fichier 3D ici",
+      "dropActive": "Relâchez pour ouvrir",
+      "browse": "Choisir un fichier",
+      "sample": "Essayer avec un modèle d'exemple",
+      "privacy": "Votre fichier reste sur votre appareil. Rien n'est envoyé.",
+      "loading": "Ouverture de {name}",
+      "openAnother": "Ouvrir un autre",
+      "canvasAlt": "Vue 3D de {name}",
+      "controls": "Glissez pour pivoter · Molette ou pincement pour zoomer · Clic droit ou deux doigts pour déplacer",
+      "missing": "Introuvable parmi les fichiers déposés : {files}. Déposez-les avec le modèle pour le voir en entier.",
+      "toolbar": {
+        "label": "Options d'affichage",
+        "reset": "Réinitialiser la vue",
+        "rotate": "Rotation automatique",
+        "wireframe": "Fil de fer",
+        "grid": "Grille",
+        "background": "Fond clair",
+        "flip": "Changer l'axe vertical (Y / Z)",
+        "play": "Lire l'animation",
+        "pause": "Mettre l'animation en pause",
+        "screenshot": "Enregistrer l'image (PNG)",
+        "fullscreen": "Plein écran"
+      },
+      "stats": {
+        "format": "Format",
+        "fileSize": "Taille du fichier",
+        "megabytes": "{size} Mo",
+        "triangles": "Triangles",
+        "vertices": "Sommets",
+        "meshes": "Maillages",
+        "materials": "Matériaux",
+        "textures": "Textures",
+        "animations": "Animations",
+        "dimensions": "Dimensions (L × H × P)",
+        "metres": "{size} m",
+        "kilobytes": "{size} Ko"
+      },
+      "errors": {
+        "unsupported": "Nous ne pouvons pas ouvrir les fichiers .{extension}. Essayez GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ ou 3DS.",
+        "tooLarge": "Ce fichier dépasse {megabytes} Mo, trop volumineux pour s'ouvrir dans un navigateur.",
+        "webgl": "Les graphismes 3D (WebGL) sont désactivés dans ce navigateur : la visionneuse ne peut rien afficher. Essayez un autre navigateur ou appareil.",
+        "failed": "Nous n'avons pas pu lire ce fichier. Il est peut-être endommagé ou utilise une fonction que cette visionneuse ne prend pas en charge.",
+        "sample": "Le modèle d'exemple n'a pas pu être chargé. Vérifiez votre connexion et réessayez.",
+        "incomplete": "Ce modèle a besoin de fichiers qui n'ont pas été déposés avec lui : {files}. Déposez-les tous ensemble."
+      },
+      "convert": {
+        "label": "Convertir en",
+        "to": "Convertir en {format}",
+        "error": "Nous n'avons pas pu convertir ce modèle dans ce format. Essayez-en un autre."
+      }
+    },
+    "other": {
+      "body": "Besoin du fichier dans un autre format ?",
+      "action": "Ouvrir le convertisseur 3D"
+    }
+  },
+  "Converter": {
+    "metaTitle": "Convertisseur de fichiers 3D en ligne : GLB en OBJ, FBX en GLB, STL et USDZ · Easy Render",
+    "metaDescription": "Convertisseur de fichiers 3D en ligne et gratuit. Déposez un fichier GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ ou 3DS et téléchargez-le en GLB, GLTF, OBJ, STL, PLY ou USDZ. Tout se passe dans votre navigateur : sans envoi, sans compte.",
+    "breadcrumb": "Convertisseur 3D",
+    "home": "Accueil",
+    "eyebrow": "Outil gratuit",
+    "title": "Convertisseur de fichiers 3D en ligne",
+    "description": "Choisissez un fichier 3D, sélectionnez le format voulu et téléchargez-le : GLB en OBJ, FBX en GLB, OBJ en STL, GLB en USDZ et d'autres. Trois étapes, sans compte.",
+    "formats": {
+      "title": "Convertissez vers six formats 3D",
+      "description": "Ouvrez un fichier GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ ou 3DS et enregistrez-le dans l'un de ces formats.",
+      "items": {
+        "glb": "Un seul fichier binaire avec la forme, les matériaux, les textures et l'animation. Le bon choix pour le web, les boutiques en ligne et la RA sur Android.",
+        "gltf": "Le même contenu que GLB dans un seul fichier JSON lisible, données incluses.",
+        "obj": "Un .zip avec le .obj, son .mtl et les textures de couleur. S'ouvre dans presque tous les logiciels 3D.",
+        "stl": "STL binaire pour les slicers et l'impression 3D. La forme seule : STL ne contient ni couleur ni texture.",
+        "ply": "PLY binaire avec les couleurs par sommet quand le modèle en a. Courant pour les scans.",
+        "usdz": "Le format d'Apple : le fichier s'ouvre dans AR Quick Look sur iPhone et iPad."
+      }
+    },
+    "steps": {
+      "title": "Comment ça marche",
+      "drop": {
+        "title": "Déposez le fichier",
+        "body": "Faites-le glisser sur la page ou choisissez-le sur votre appareil. Ajoutez le .mtl, le .bin et les textures dans le même dépôt si le modèle en a."
+      },
+      "choose": {
+        "title": "Choisissez le format",
+        "body": "Sélectionnez le format de sortie sous « Convertir en » et cliquez sur le bouton. La plupart des fichiers prennent quelques secondes."
+      },
+      "download": {
+        "title": "Téléchargez",
+        "body": "Le nouveau fichier se télécharge aussitôt. Vous pouvez ensuite convertir le même modèle dans un autre format ou l'ouvrir dans la visionneuse 3D."
+      }
+    },
+    "other": {
+      "body": "Vous voulez seulement regarder un fichier ?",
+      "action": "Ouvrir la visionneuse 3D"
+    },
+    "cta": {
+      "title": "Pas encore de fichier 3D ?",
+      "body": "Easy Render transforme une photo de produit en modèle 3D à télécharger en GLB et USDZ. L'aperçu est gratuit.",
+      "action": "Créer un modèle 3D à partir d'une photo"
+    },
+    "faq": {
+      "title": "Questions sur le convertisseur 3D",
+      "items": {
+        "formats": {
+          "q": "Quelles conversions puis-je faire ?",
+          "a": "Vous pouvez ouvrir des fichiers GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ et 3DS et les enregistrer en GLB, GLTF, OBJ, STL, PLY ou USDZ. Cela couvre GLB en OBJ, OBJ en GLB, FBX en GLB, GLB en STL, STL en OBJ, GLB en USDZ et toute autre combinaison entre ces deux listes."
+        },
+        "fbx": {
+          "q": "Puis-je convertir en FBX ?",
+          "a": "Pas ici. Les fichiers FBX, 3MF, DAE et 3DS peuvent être ouverts et convertis dans un autre format, mais un navigateur ne peut pas les écrire. Pour un logiciel qui demande du FBX, convertissez en GLB ou en OBJ, que ces logiciels importent aussi."
+        },
+        "textures": {
+          "q": "Les matériaux et les textures sont-ils conservés ?",
+          "a": "GLB, GLTF et USDZ conservent les matériaux et les textures. OBJ conserve la couleur et la texture de couleur, dans un fichier .mtl et des images à l'intérieur du .zip. STL ne garde que la forme et PLY que les couleurs par sommet, car ces formats ne peuvent pas contenir davantage."
+        },
+        "privacy": {
+          "q": "Mes fichiers sont-ils envoyés sur un serveur ?",
+          "a": "Non. Votre navigateur lit et convertit le fichier sur votre appareil. Il n'est pas envoyé à nos serveurs."
+        },
+        "free": {
+          "q": "Le convertisseur est-il gratuit ?",
+          "a": "Oui. Pas de compte, pas de filigrane et aucune limite au nombre de fichiers. Les fichiers jusqu'à 300 Mo s'ouvrent, selon la mémoire de votre appareil."
+        }
+      }
+    },
+    "app": {
+      "label": "Convertisseur de fichiers 3D",
+      "dropTitle": "Déposez votre fichier 3D ici",
+      "dropActive": "Relâchez pour ouvrir",
+      "browse": "Choisir un fichier",
+      "change": "Changer",
+      "privacy": "Votre fichier reste sur votre appareil. Rien n'est envoyé.",
+      "targetLabel": "Convertir en",
+      "convert": "Convertir en {format}",
+      "steps": {
+        "reading": "Lecture du fichier",
+        "converting": "Conversion en {format}"
+      },
+      "done": "Converti en {format}",
+      "download": "Télécharger {name}",
+      "kilobytes": "{size} Ko",
+      "megabytes": "{size} Mo",
+      "otherFormat": "Convertir dans un autre format",
+      "view": "Le voir en 3D",
+      "errors": {
+        "unsupported": "Nous ne pouvons pas ouvrir les fichiers .{extension}. Essayez GLB, GLTF, OBJ, FBX, STL, PLY, 3MF, DAE, USDZ ou 3DS.",
+        "incomplete": "Ce modèle a besoin de fichiers qui n'ont pas été déposés avec lui : {files}. Déposez-les tous ensemble.",
+        "tooLarge": "Ce fichier dépasse {megabytes} Mo, trop volumineux pour s'ouvrir dans un navigateur.",
+        "failed": "Nous n'avons pas pu lire ce fichier. Il est peut-être endommagé ou utilise une fonction que cette visionneuse ne prend pas en charge."
+      }
+    }
   }
 }
