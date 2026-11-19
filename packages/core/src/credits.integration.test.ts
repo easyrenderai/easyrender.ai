@@ -409,19 +409,19 @@ run('credits and generation billing (real database)', () => {
     expect(await balance(userId)).toBe(920);
   });
 
-  it('render_3d / startBuild debits RENDER_CREDITS and starts the build once on a double click', async () => {
+  it('render_3d / startBuild debits 35 credits and starts the build once on a double click', async () => {
     const { renders } = await load();
-    const userId = await newUser(RENDER_CREDITS * 2);
+    const userId = await newUser(70);
     const render = await newRender(userId);
     await Promise.all([
       renders.startBuild(render.id, { userId }),
       renders.startBuild(render.id, { userId }),
     ]);
-    expect(await balance(userId)).toBe(RENDER_CREDITS);
+    expect(await balance(userId)).toBe(35);
     expect(replicate.start).toHaveBeenCalledTimes(1);
     const after = await db().render.findUniqueOrThrow({ where: { id: render.id } });
     expect(after.status).toBe('rendering');
-    expect(after.credits).toBe(RENDER_CREDITS);
+    expect(after.credits).toBe(35);
   });
 
   it('startBuild at zero balance is refused and the render stays buildable', async () => {

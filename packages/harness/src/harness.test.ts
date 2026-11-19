@@ -25,7 +25,7 @@ describe('pricing', () => {
   it('keeps a 70% margin over cost', () => {
     expect(creditsFor(0.3)).toBe(100);
     expect(creditsFor(0.24)).toBe(80);
-    expect(RENDER_CREDITS).toBe(32);
+    expect(RENDER_CREDITS).toBe(35);
     // revenue per render covers cost / (1 - margin)
     expect(RENDER_CREDITS * 0.01 * 0.3).toBeGreaterThanOrEqual(RENDER_COST_USD - 1e-9);
   });
@@ -48,8 +48,8 @@ describe('pricing', () => {
   });
 
   it('counts whole renders per credit amount', () => {
-    expect(rendersFor(1000)).toBe(31);
-    expect(rendersFor(PRO_PLAN.monthlyCredits)).toBe(171);
+    expect(rendersFor(1000)).toBe(28);
+    expect(rendersFor(PRO_PLAN.monthlyCredits)).toBe(157);
   });
 
   it('gives every monthly plan a cheaper credit than pay as you go, and a bigger plan a cheaper one', () => {
