@@ -24,7 +24,7 @@ export const POST = (request: Request) =>
   apiHandle(request, async () => {
     const user = await requireUser();
     const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;
-    if (!body || typeof body !== 'object')
+    if (!body || typeof body !== 'object' || Array.isArray(body))
       throw new AppError('Send a JSON object', 400, 'bad_body');
     const options: ApiKeyOptions = {};
     if (body.scopes !== undefined) {
