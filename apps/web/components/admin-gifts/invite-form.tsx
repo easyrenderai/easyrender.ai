@@ -10,7 +10,6 @@ import { createOutreachInvite, type InviteFormState } from '@/lib/admin-gifts/in
 import { MAX_GIFT_CREDITS } from '@/lib/admin-gifts/limits';
 
 type InviteFormCopy = {
-  email: string;
   campaign: string;
   credits: string;
   create: string;
@@ -34,11 +33,7 @@ export function InviteForm({
 
   return (
     <div className="space-y-4">
-      <form action={action} className="grid items-end gap-3 md:grid-cols-[1.3fr_1fr_7rem_auto]">
-        <div className="space-y-2">
-          <Label htmlFor="invite-email">{copy.email}</Label>
-          <Input id="invite-email" name="email" type="email" required maxLength={254} />
-        </div>
+      <form action={action} className="grid items-end gap-3 sm:grid-cols-[minmax(0,1fr)_7rem_auto]">
         <div className="space-y-2">
           <Label htmlFor="invite-campaign">{copy.campaign}</Label>
           <Input id="invite-campaign" name="campaign" required maxLength={120} />

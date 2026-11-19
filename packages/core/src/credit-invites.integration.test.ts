@@ -25,11 +25,10 @@ async function createUser(email: string, isVerified = true, createdAt = new Date
   });
 }
 
-async function issue(email: string, id: string = randomUUID()) {
+async function issue(id: string = randomUUID()) {
   const invite = await issueCreditInvite({
     id,
     issuerId,
-    email,
     amount: RENDER_CREDITS,
     campaign: 'Product demo',
   });
@@ -44,10 +43,45 @@ describe.skipIf(!scratch)('outreach credit invites with scratch Postgres', () =>
     await db().$disconnect();
   });
 
-  it('issues before signup, preserves an identical retry and grants once to the intended verified user', async () => {
+  it('issues a unique code without an email and only grants it to one new verified account', async () => {
+    const old = await createUser(`old-open@${run}.example.test`, true, new Date(0));
+    const id = randomUUID();
+    const request = { id, issuerId, amount: RENDER_CREDITS, campaign: 'No email needed' };
+    expect(await Promise.all([issueCreditInvite(request), issueCreditInvite(request)])).toEqual([
+      { status: 'issued', id },
+      { status: 'issued', id },
+    ]);
+    expect(await redeemCreditInvite(id, old.id)).toBe('unavailable');
+    const one = await createUser(`choice-one@${run}.example.test`, false);
+    const two = await createUser(`choice-two@${run}.example.test`);
+    expect(await redeemCreditInvite(id, one.id)).toBe('unverified');
+    await db().user.update({ where: { id: one.id }, data: { emailVerified: true } });
+    const results = await Promise.all([
+      redeemCreditInvite(id, one.id),
+      redeemCreditInvite(id, two.id),
+    ]);
+    expect(results.sort()).toEqual(['redeemed', 'unavailable']);
+    expect(
+      await db().creditLedger.count({ where: { idempotencyKey: `credit-invite:${id}` } }),
+    ).toBe(1);
+    const remaining = await db().creditInvite.findUniqueOrThrow({ where: { id } });
+    expect(remaining.recipientEmail).toBeNull();
+    expect([one.id, two.id]).toContain(remaining.redeemedById);
+  });
+
+  it('honors the original recipient on existing email-bound links', async () => {
     const email = `prospect@${run}.example.test`;
     const id = randomUUID();
-    expect(await Promise.all([issue(email, id), issue(email, id)])).toEqual([id, id]);
+    await db().creditInvite.create({
+      data: {
+        id,
+        issuerId,
+        recipientEmail: email,
+        amount: RENDER_CREDITS,
+        campaign: 'Legacy',
+        expiresAt: new Date(Date.now() + 3600_000),
+      },
+    });
     const wrong = await createUser(`wrong@${run}.example.test`);
     const user = await createUser(email, false);
     expect(await creditInviteForUser(id, wrong.id)).toBeNull();
@@ -82,18 +116,10 @@ describe.skipIf(!scratch)('outreach credit invites with scratch Postgres', () =>
 
   it('rejects expired and revoked links and does not mint credits for an existing account', async () => {
     const old = await createUser(`old@${run}.example.test`, true, new Date(0));
-    await expect(
-      issueCreditInvite({
-        id: randomUUID(),
-        issuerId,
-        email: old.email,
-        amount: RENDER_CREDITS,
-        campaign: 'Already known',
-      }),
-    ).resolves.toEqual({ status: 'existing_account' });
     const email = `late@${run}.example.test`;
-    const expired = await issue(email);
-    const revoked = await issue(email);
+    const expired = await issue();
+    const revoked = await issue();
+    expect(await redeemCreditInvite(expired, old.id)).toBe('unavailable');
     await db().creditInvite.update({ where: { id: expired }, data: { expiresAt: new Date(0) } });
     await revokeCreditInvite(revoked);
     const user = await createUser(email);
@@ -104,8 +130,8 @@ describe.skipIf(!scratch)('outreach credit invites with scratch Postgres', () =>
 
   it('honors only one outreach invitation per account, even on parallel claims', async () => {
     const email = `parallel@${run}.example.test`;
-    const a = await issue(email);
-    const b = await issue(email);
+    const a = await issue();
+    const b = await issue();
     const user = await createUser(email);
     const attempts = await Promise.all([
       redeemCreditInvite(a, user.id),

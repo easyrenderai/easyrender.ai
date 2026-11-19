@@ -405,7 +405,7 @@ model Upscale {
 model CreditInvite {
   id             String   @id
   issuerId       String
-  recipientEmail String
+  recipientEmail String?
   amount         Int
   campaign       String
   createdAt      DateTime @default(now())

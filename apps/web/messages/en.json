@@ -2069,16 +2069,14 @@
     }
   },
   "CreditInvite": {
-    "email": "Email address",
-    "invalid_email": "Enter a valid email address.",
     "invalid_amount": "Enter between 1 and {max, number} credits.",
     "invalid_key": "Reload the page and try creating the link again.",
     "adminTitle": "Outreach invitations",
-    "adminDescription": "Create a single-use link for someone without an account. It expires in 30 days and requires verification of the invited email.",
+    "adminDescription": "Create a unique link for a new customer. The first new account to verify its email and claim gets the credits. The link expires in 30 days.",
     "campaign": "Campaign",
     "credits": "Credits",
     "create": "Create link",
-    "recipient": "Recipient",
+    "recipient": "Account",
     "status": "Status",
     "firstModel": "First 3D model",
     "actions": "Actions",
@@ -2094,9 +2092,8 @@
     "copied": "Copied",
     "copyError": "Copy failed. Select the link and copy it manually.",
     "invalid_campaign": "Enter a campaign name of up to 120 characters.",
-    "existing_account": "This email already has an account. Use the direct credit gift below.",
     "offer": "You have {credits, number} credits to try EasyRender",
-    "offerDescription": "Use the email that received the invitation. Verify it to claim your credits.",
+    "offerDescription": "Create an account with the email you prefer. Verify it to claim your credits.",
     "signUp": "Create account",
     "signIn": "Sign in",
     "redeem": "Claim credits",
@@ -2104,7 +2101,8 @@
     "redeemedDescription": "You can now use your credits to create a 3D model.",
     "createModel": "Create my first model",
     "unavailableTitle": "Invitation unavailable",
-    "unavailableDescription": "This link may have expired or been used. If you have another account, reopen the invitation with the email it was sent to."
+    "unavailableDescription": "This link may have expired, been used, or require a different account. It is available to new verified accounts.",
+    "legacyOfferDescription": "Use the email that received the invitation. Verify it to claim your credits."
   },
   "AdminGift": {
     "title": "Regalar créditos",

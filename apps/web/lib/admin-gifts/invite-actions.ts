@@ -18,7 +18,6 @@ export async function createOutreachInvite(
   const result = await issueCreditInvite({
     id: previous.key,
     issuerId: issuer.id,
-    email: String(form.get('email') ?? ''),
     amount: Number(form.get('amount')),
     campaign: String(form.get('campaign') ?? ''),
   });

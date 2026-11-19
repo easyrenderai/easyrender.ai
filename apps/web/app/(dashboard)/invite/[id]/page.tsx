@@ -50,7 +50,13 @@ export default async function CreditInvitePage({ params }: PageProps<'/invite/[i
           <CardTitle>{title}</CardTitle>
           <CardDescription>
             {details
-              ? t(wasUsed ? 'redeemedDescription' : 'offerDescription')
+              ? t(
+                  wasUsed
+                    ? 'redeemedDescription'
+                    : details.isEmailBound
+                      ? 'legacyOfferDescription'
+                      : 'offerDescription',
+                )
               : t('unavailableDescription')}
           </CardDescription>
         </CardHeader>

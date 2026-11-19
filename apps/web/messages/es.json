@@ -2069,16 +2069,14 @@
     }
   },
   "CreditInvite": {
-    "email": "Correo electrónico",
-    "invalid_email": "Introduce un correo electrónico válido.",
     "invalid_amount": "Introduce entre 1 y {max, number} créditos.",
     "invalid_key": "Recarga la página e intenta crear el enlace de nuevo.",
     "adminTitle": "Invitaciones con créditos",
-    "adminDescription": "Crea un enlace de un solo uso para alguien que aún no tiene cuenta. Caduca a los 30 días y solo se puede canjear con el correo invitado verificado.",
+    "adminDescription": "Crea un enlace único para un nuevo cliente. Los créditos se abonan a la primera cuenta nueva que verifique su correo y los canjee. El enlace caduca a los 30 días.",
     "campaign": "Campaña",
     "credits": "Créditos",
     "create": "Crear enlace",
-    "recipient": "Destinatario",
+    "recipient": "Cuenta",
     "status": "Estado",
     "firstModel": "Primer modelo 3D",
     "actions": "Acciones",
@@ -2094,9 +2092,8 @@
     "copied": "Copiado",
     "copyError": "Selecciona el enlace y cópialo manualmente.",
     "invalid_campaign": "Introduce un nombre de campaña de hasta 120 caracteres.",
-    "existing_account": "Ese correo ya tiene una cuenta. Usa el regalo directo de créditos de abajo.",
     "offer": "Tienes {credits, number} créditos para probar EasyRender",
-    "offerDescription": "Usa el correo en el que recibiste la invitación. Verifícalo para canjear los créditos.",
+    "offerDescription": "Crea una cuenta con el correo que prefieras. Verifícalo para canjear tus créditos.",
     "signUp": "Crear cuenta",
     "signIn": "Iniciar sesión",
     "redeem": "Canjear créditos",
@@ -2104,7 +2101,8 @@
     "redeemedDescription": "Ya puedes usar tus créditos para crear un modelo 3D.",
     "createModel": "Crear mi primer modelo",
     "unavailableTitle": "Invitación no disponible",
-    "unavailableDescription": "Es posible que el enlace haya caducado o se haya usado. Si tienes otra cuenta, vuelve a abrirlo con el correo al que enviamos la invitación."
+    "unavailableDescription": "Puede que el enlace haya caducado, ya se haya usado o requiera otra cuenta. El bono es para cuentas nuevas verificadas.",
+    "legacyOfferDescription": "Usa el correo en el que recibiste la invitación. Verifícalo para canjear los créditos."
   },
   "AdminGift": {
     "title": "Regalar créditos",

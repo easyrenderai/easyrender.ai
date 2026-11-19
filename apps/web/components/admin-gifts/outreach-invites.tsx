@@ -37,7 +37,6 @@ export async function OutreachInvites() {
           requestKey={randomUUID()}
           defaultCredits={RENDER_CREDITS}
           copy={{
-            email: t('email'),
             campaign: t('campaign'),
             credits: t('credits'),
             create: t('create'),
@@ -46,11 +45,9 @@ export async function OutreachInvites() {
             copied: t('copied'),
             copyError: t('copyError'),
             errors: {
-              invalid_email: t('invalid_email'),
               invalid_amount: t('invalid_amount', { max: MAX_GIFT_CREDITS }),
               invalid_key: t('invalid_key'),
               invalid_campaign: t('invalid_campaign'),
-              existing_account: t('existing_account'),
             },
           }}
         />
@@ -69,7 +66,7 @@ export async function OutreachInvites() {
             <TableBody>
               {invites.map((invite) => (
                 <TableRow key={invite.id}>
-                  <TableCell>{invite.recipientEmail}</TableCell>
+                  <TableCell>{invite.recipientEmail ?? '—'}</TableCell>
                   <TableCell>{invite.campaign}</TableCell>
                   <TableCell>{formatter.number(invite.amount)}</TableCell>
                   <TableCell>

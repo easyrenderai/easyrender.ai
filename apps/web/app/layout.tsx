@@ -10,7 +10,7 @@ import { HTML_LANG, type Locale, PATH_HEADER } from '@/i18n/config';
 import { pickClientMessages } from '@/lib/client-messages';
 import { geistMono, geistSans } from '@/lib/fonts';
 import { GOOGLE_TAG_BOOTSTRAP } from '@/lib/google-tag';
-import { isMailingTokenLocation } from '@/lib/mailing-privacy';
+import { isMailingTokenLocation, PRIVATE_TOKEN_PAGE_HEADER } from '@/lib/mailing-privacy';
 import { currentPricing } from '@/lib/pricing';
 import { SITE_URL } from '@/lib/seo/site';
 import './globals.css';
@@ -35,7 +35,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // The Shopify app's page runs inside the Shopify admin, which needs App Bridge loaded first in the head.
   const pricing = await currentPricing();
   const isShopifyApp = requestHeaders.get(PATH_HEADER) === '/shopify';
-  const isEmailTokenPage = isMailingTokenLocation(requestHeaders.get(PATH_HEADER) ?? '');
+  const isPrivateTokenPage =
+    requestHeaders.get(PRIVATE_TOKEN_PAGE_HEADER) === '1' ||
+    isMailingTokenLocation(requestHeaders.get(PATH_HEADER) ?? '');
   return (
     <html
       lang={HTML_LANG[locale as Locale]}
@@ -50,7 +52,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js" />
           </>
         )}
-        {!isEmailTokenPage && (
+        {!isPrivateTokenPage && (
           <Script id="easyrender-google-tag" strategy="beforeInteractive">
             {GOOGLE_TAG_BOOTSTRAP}
           </Script>
@@ -59,7 +61,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body className="flex min-h-dvh flex-col font-sans antialiased">
         <NextIntlClientProvider locale={locale} messages={pickClientMessages(messages)}>
           <QueryProvider>{children}</QueryProvider>
-          {!isEmailTokenPage && <Analytics />}
+          {!isPrivateTokenPage && <Analytics />}
         </NextIntlClientProvider>
       </body>
     </html>

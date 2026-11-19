@@ -18,6 +18,8 @@ import {
   homePath,
 } from './lib/home-locale';
 
+import { isMailingTokenLocation, PRIVATE_TOKEN_PAGE_HEADER } from './lib/mailing-privacy';
+
 const ANON_COOKIE = 'er_anon';
 
 /** Sends www, easyrenderai.vercel.app and other aliases of production to https://easyrender.ai. */
@@ -99,6 +101,7 @@ export function proxy(request: NextRequest) {
   const headers = new Headers(request.headers);
   const { pathname, searchParams } = request.nextUrl;
   const isApp = isAppLocalePath(pathname);
+  const isPrivateTokenPage = isMailingTokenLocation(request.nextUrl.href);
   const saved = request.cookies.get(APP_LOCALE_COOKIE)?.value;
   const locale = requestLocale(
     pathname,
@@ -107,6 +110,7 @@ export function proxy(request: NextRequest) {
   );
   headers.set(LOCALE_HEADER, locale);
   headers.set(PATH_HEADER, pathname);
+  headers.set(PRIVATE_TOKEN_PAGE_HEADER, isPrivateTokenPage ? '1' : '0');
 
   const response = withAnonymousId(request, headers);
   // A share link (?ref=CODE) is remembered, so the code survives navigation and Google sign in.
@@ -125,7 +129,8 @@ export function proxy(request: NextRequest) {
     (destination === 'document' ||
       (!destination && request.headers.get('accept')?.includes('text/html')));
   // App pages can depend on a browser preference. Indexable pages always use their URL.
-  if (isApp) response.headers.set('Cache-Control', 'private, no-store');
+  if (isApp || isPrivateTokenPage) response.headers.set('Cache-Control', 'private, no-store');
+  if (isPrivateTokenPage) response.headers.set('Referrer-Policy', 'no-referrer');
   if (
     isDocument &&
     saved !== locale &&
