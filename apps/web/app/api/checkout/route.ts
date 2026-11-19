@@ -19,12 +19,14 @@ export const POST = (request: Request) =>
   handle(async () => {
     const { userId, anonId, geoCountry } = await resolveActor(request.headers);
     if (!userId) throw new AppError('Sign in to buy credits', 401, 'unauthorized');
-    const body = (await request.json().catch(() => ({}))) as {
+    const body = (await request.json().catch(() => null)) as {
       plan?: unknown;
       credits?: unknown;
       locale?: unknown;
       googleAnalytics?: { measurementId?: unknown };
-    };
+    } | null;
+    if (!body || typeof body !== 'object' || Array.isArray(body))
+      throw new AppError('Send a JSON object', 400, 'bad_body');
     const details = await createCheckoutDetails(userId, body, {
       anonId,
       expectedVariant: request.headers.get('x-pricing-variant'),
