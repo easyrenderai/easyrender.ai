@@ -1,0 +1,41 @@
+name: Production smoke
+
+# Read-only check that production answers, every 15 minutes. It makes seven anonymous requests
+# (the public pages, the API and OAuth documents, and one unauthenticated POST to /api/mcp that
+# must answer 401) and never signs in, uploads or pays. Each check is retried once. The run summary
+# counts responses carrying `x-vercel-mitigated`, which is how Vercel's edge marks a request it
+# refused. A red run means production is down or the edge refuses requests; the Rollback workflow
+# is the response if a release caused it (RELEASING.md).
+#
+# GitHub only runs schedules from the default branch. Run it by hand from any branch with
+# workflow_dispatch.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prod-smoke
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Smoke production
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PRODUCTION_URL: ${{ vars.PRODUCTION_URL || 'https://easyrender.ai' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Smoke production
+        run: node scripts/prod-smoke.mjs

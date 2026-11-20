@@ -77,8 +77,8 @@ jobs:
         with:
           node-version: 24
           package-manager-cache: false
-      - name: Release promotion contract
-        run: node --test scripts/promote-vercel.test.mjs
+      - name: Release promotion and production smoke contracts
+        run: node --test scripts/promote-vercel.test.mjs scripts/prod-smoke.test.mjs
       - name: Python and TypeScript API examples
         run: |
           bunx tsc -p examples/rest/tsconfig.json

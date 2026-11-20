@@ -83,6 +83,21 @@ aws cloudformation deploy --region eu-west-1 --stack-name easyrender-github-rele
   --template-file infra/aws/github-deploy-role.yml --capabilities CAPABILITY_NAMED_IAM
 ```
 
+## Production smoke
+
+**Production smoke** (`prod-smoke.yml`) runs every 15 minutes and on demand (Actions, **Production
+smoke**, Run workflow). It is read-only: it reads `/`, `/pricing`, `/3d-viewer`,
+`/api/openapi.json` and the two `/.well-known/oauth-*` documents, and sends one unauthenticated
+`POST /api/mcp` that must answer 401 with the JSON error. It never signs in, uploads or pays. Each
+check is retried once, so a single refused request does not turn the run red.
+
+The run summary shows one line you can read at a glance: the number of responses with the
+`x-vercel-mitigated` header, which is how Vercel's edge marks a request it refused (`deny`).
+A run that is red because of `edge refused` in the failure column is the edge, not the app: check
+Vercel's firewall page before rolling back. A red run with `HTTP 5xx` right after a release is the
+case for the Rollback workflow. The workflow reads `PRODUCTION_URL` like Release does and needs no
+secret. The checks live in `scripts/prod-smoke.mjs`; `scripts/prod-smoke.test.mjs` runs in CI.
+
 ## Not in this workflow
 
 - The mobile app (`apps/mobile`, `mobile-release.yml`) and the desktop shell (`apps/desktop`)
