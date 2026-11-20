@@ -20,6 +20,8 @@
     "check:ui-guards": "bun scripts/check-ui-guards.ts",
     "check:secrets": "bun scripts/check-secrets.ts",
     "check:use-effects": "bun scripts/check-use-effect.ts",
+    "check:knip": "bun scripts/check-knip.ts",
+    "check:env": "bun scripts/check-env.ts",
     "evals:sync": "bun scripts/sync-evals.ts",
     "prepare": "husky || true"
   },
@@ -27,6 +29,7 @@
     "@biomejs/biome": "2.6.4",
     "@easyrender/harness": "workspace:*",
     "husky": "9.1.7",
+    "knip": "6.44.2",
     "lint-staged": "16.2.7",
     "turbo": "2.11.10",
     "typescript": "6.0.3"

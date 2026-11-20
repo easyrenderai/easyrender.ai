@@ -14,7 +14,7 @@ export const GET = (request: Request) =>
     if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`)
       return new Response(null, { status: 401 });
     const [recovered, advanced, , removedUploads, analytics] = await Promise.all([
-      recoverRenders(3),
+      recoverRenders(),
       recoverAdvancedGenerations(3),
       cleanApiRateWindows(),
       cleanExpiredUploads(),
