@@ -195,6 +195,8 @@ describe('sheet guardrail', () => {
     expect(!check.ok && check.code).toBe('sheet_repeated_views');
   });
 
+  // Two real photos, each cut, reassembled and checked. Five seconds is not enough when
+  // the rest of the suite is also in sharp.
   it('rejects one view repeated around a top view that is not round', async () => {
     const armchair = await cellsOf('armchair-angles.jpg');
     const table = await cellsOf('table-angles.png');
@@ -205,7 +207,7 @@ describe('sheet guardrail', () => {
       const check = await checkSheet(await repeatedAround(name, top as Uint8Array));
       expect(!check.ok && check.code).toBe('sheet_repeated_views');
     }
-  });
+  }, 20_000);
 
   it('rejects the vase photo pasted into the top cell too', async () => {
     const cells = await cellsOf('vase-angles.jpg');
