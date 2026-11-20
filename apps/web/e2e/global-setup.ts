@@ -1,3 +1,4 @@
+import { LOCALES } from '../i18n/config';
 import { APP_ORIGIN } from './paid-flow/endpoints';
 
 // `next dev` compiles a route on its first request, which can take longer than a spec's own
@@ -13,6 +14,10 @@ const PUBLIC_ROUTES = [
   '/cookies',
   '/privacy',
   '/terms',
+  ...LOCALES.filter((locale) => locale !== 'en').flatMap((locale) => [
+    `/${locale}/sign-up`,
+    `/${locale}/sign-in`,
+  ]),
 ];
 const SIGNED_IN_ROUTES = ['/dashboard', '/es/dashboard', '/library', '/credits', '/account'];
 

@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { displayPricing } from '@easyrender/harness/pricing';
 import { expect, type Page, test } from '@playwright/test';
 import { APP_ORIGIN, MOCK_ORIGIN } from './endpoints';
 import { productPhoto } from './png';
@@ -61,12 +62,19 @@ test('a visitor signs up, previews, pays, builds and downloads a 3D model', asyn
   // 4. No credits yet: the build button is a link to buy them.
   await page.getByRole('link', { name: 'Buy credits to create the 3D model' }).click();
   await expect(page).toHaveURL(/\/credits\?next=/);
-  const presets = page.getByRole('button', { pressed: false }).filter({ hasText: /\d/ });
-  await presets.last().click();
-  await page.getByRole('button', { name: /^Buy [\d,.]+ credits$/ }).click();
+  // `next dev` paints the picker before it is interactive. Pick the pack until the page shows it
+  // selected, so the one purchase below is the pack this test chose and not the default.
+  const pack = displayPricing('control', 'usd').payg.presets.at(-1) as number;
+  const packText = new Intl.NumberFormat('en-US').format(pack);
+  const preset = page.getByRole('button', { name: packText, exact: true });
+  await expect(async () => {
+    await preset.click();
+    await expect(preset).toHaveAttribute('aria-pressed', 'true', { timeout: 2_000 });
+  }).toPass({ timeout: 30_000 });
+  await page.getByRole('button', { name: `Buy ${packText} credits`, exact: true }).click();
   // The dev checkout grants the credits and returns to the credits page, as Stripe would.
   await page.waitForURL(/\/credits(\?|$)/, { timeout: 30_000 });
-  await expect.poll(() => balanceOf(page), { timeout: 15_000 }).toBeGreaterThan(0);
+  await expect.poll(() => balanceOf(page), { timeout: 15_000 }).toBe(pack);
   const funded = await balanceOf(page);
 
   // 5. Back on the preview the build button states its price. Press it.

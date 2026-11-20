@@ -35,7 +35,8 @@ for (const locale of LOCALES) {
     await expect(page.locator('html')).toHaveAttribute('lang', HTML_LANG[locale]);
     await expect(page.getByRole('heading', { name: t.Credits.title, exact: true })).toBeVisible();
     await page.getByText(t.Credits.signUpToBuy, { exact: true }).first().click();
-    await expect(page).toHaveURL(new RegExp(`${prefix}/sign-up\\?next=`));
+    // A cold `next dev` compiles the localized sign-up page on this click.
+    await expect(page).toHaveURL(new RegExp(`${prefix}/sign-up\\?next=`), { timeout: 30_000 });
     await expect(page.getByRole('button', { name: t.Auth.createAccount, exact: true })).toBeVisible(
       { timeout: routeTimeout },
     );
