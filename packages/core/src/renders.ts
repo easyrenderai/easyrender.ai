@@ -795,7 +795,7 @@ export async function startBuild(id: string, actor: Actor): Promise<Render> {
   if (!actor.userId) throw new AppError('Sign in to render in 3D', 401, 'sign_in');
   let render = await db().render.findUnique({ where: { id } });
   if (!render || !canAccess(render, actor)) throw notFound();
-  if (render.status === 'preview_ready') {
+  if (render.status !== 'preview_ready') {
     if (render.status === 'rendering' || render.status === 'ready') return render;
     throw new AppError('This render cannot be built', 409, 'bad_state');
   }
