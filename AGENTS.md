@@ -70,6 +70,8 @@ bun run format                    # biome check --write .
 bun run check:ui-guards           # no raw HTML controls in apps/web
 bun run check:use-effects         # useEffect ratchet; --prune after removing effects, --report to list
 bun run preflight                 # what CI runs: biome, ui guards, effect ratchet, typecheck, tests
+bun run --cwd apps/web e2e        # browser tests: paid flow + specs, on `next dev`, mock Replicate; needs a
+                                  # scratch Postgres in DATABASE_URL with the schema (db:push) and Chromium
 bun run db:generate               # prisma generate
 cd apps/mobile && bun install && bunx expo export --platform android   # mobile bundle check
 cd apps/desktop && bun install && bun run typecheck && bun run test    # desktop; `bun run dev` opens the window

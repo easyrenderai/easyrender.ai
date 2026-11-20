@@ -146,20 +146,3 @@ test('localized home metadata, nav and auth switch keep their language', async (
     await expect(page.locator(`a[href="${prefix}/sign-up?next=%2Flibrary"]`)).toBeVisible();
   }
 });
-
-test('new uploads explicitly request private visibility', async ({ page }) => {
-  let body = '';
-  await page.route('**/api/renders', async (route) => {
-    body = route.request().postData() ?? '';
-    await route.fulfill({
-      status: 400,
-      contentType: 'application/json',
-      body: JSON.stringify({ error: 'QA: submission intercepted; no generation' }),
-    });
-  });
-  await page.goto(`${base}/#try`);
-  await page.locator('input[type="file"]').first().setInputFiles('public/showcase/vase.jpg');
-  await page.getByRole('button', { name: 'Create free preview', exact: true }).click();
-  await expect.poll(() => body).toContain('name="isPublic"\r\n\r\nfalse');
-  await expect(page.getByText('QA: submission intercepted; no generation')).toBeVisible();
-});

@@ -12,7 +12,7 @@ import pt from '../messages/pt.json' with { type: 'json' };
 const base = process.env.LOCALIZED_E2E_URL || 'http://localhost:3127';
 const messages = { en, es, de, fr, it, pt };
 const routeTimeout = 15000;
-test.setTimeout(45000);
+test.setTimeout(90000);
 test.skip(!process.env.LOCALIZED_E2E_URL, 'Requires an isolated local app');
 if (!['localhost', '127.0.0.1'].includes(new URL(base).hostname)) throw new Error('Local app only');
 
@@ -67,7 +67,11 @@ test('an active session can open the Spanish dashboard and change the product la
   await page.getByRole('link', { name: es.Header.dashboard, exact: true }).first().click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
   await expect(page.getByRole('heading', { name: es.AppHome.heading })).toBeVisible();
-  await page.getByRole('button', { name: /Idioma/ }).click();
+  // `next dev` can paint the page before it is interactive: click again until the menu opens.
+  await expect(async () => {
+    await page.getByRole('button', { name: /Idioma/ }).click();
+    await expect(page.getByRole('menuitem', { name: 'Français' })).toBeVisible({ timeout: 2000 });
+  }).toPass({ timeout: 30_000 });
   await page.getByRole('menuitem', { name: 'Français' }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   await expect(page.getByRole('heading', { name: fr.AppHome.heading })).toBeVisible();
@@ -78,9 +82,13 @@ test('an active session can open the Spanish dashboard and change the product la
 
 test('unconfirmed payment and canceled checkout never report success', async ({ page }) => {
   await page.goto(`${base}/credits?locale=es&status=success`);
-  await expect(page.getByRole('alert')).toContainText(es.Credits.checkoutUnconfirmed);
+  await expect(
+    page.getByRole('alert').filter({ hasText: es.Credits.checkoutUnconfirmed }),
+  ).toBeVisible();
   await page.goto(`${base}/credits?locale=es&status=canceled&next=%2Fviews`);
-  await expect(page.getByRole('alert')).toContainText(es.Credits.checkoutCanceled);
+  await expect(
+    page.getByRole('alert').filter({ hasText: es.Credits.checkoutCanceled }),
+  ).toBeVisible();
   await expect(page.getByRole('link', { name: es.Credits.backToPhotos })).toHaveAttribute(
     'href',
     '/views',
@@ -117,9 +125,11 @@ test('a confirmed fixture payment restores French and returns to the original pr
   });
   await page.goto(`${base}/credits?${params}`);
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-  await expect(page.getByRole('alert')).toContainText(
-    fr.Credits.checkoutConfirmed.replace('{credits}', '500'),
-  );
+  await expect(
+    page
+      .getByRole('alert')
+      .filter({ hasText: fr.Credits.checkoutConfirmed.replace('{credits}', '500') }),
+  ).toBeVisible();
   await page.getByRole('link', { name: fr.Credits.backToProject }).click();
   await expect(page).toHaveURL(`${base}/r/demo-vase`);
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');

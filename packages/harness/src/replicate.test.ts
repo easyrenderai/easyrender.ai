@@ -1,6 +1,6 @@
 import sharp from 'sharp';
-import { afterEach, expect, it, vi } from 'vitest';
-import { createReplicate, download, ProviderRequestError } from './replicate';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { createReplicate, download, ProviderRequestError, replicateBaseUrl } from './replicate';
 
 afterEach(() => vi.useRealTimers());
 
@@ -106,4 +106,61 @@ it('re-encodes a large image to a bounded JPEG before inlining it', async () => 
   const { width, height } = await sharp(out).metadata();
   expect(Math.max(width ?? 0, height ?? 0)).toBeLessThanOrEqual(2048);
   expect(reference.length).toBeLessThan(6 * 1024 * 1024);
+});
+
+describe('REPLICATE_API_BASE_URL', () => {
+  it('defaults to the Replicate API', () => {
+    expect(replicateBaseUrl({})).toBe('https://api.replicate.com/v1');
+    expect(replicateBaseUrl({ REPLICATE_API_BASE_URL: '  ' })).toBe('https://api.replicate.com/v1');
+  });
+
+  it('sends requests to a local mock outside production', async () => {
+    const urls: string[] = [];
+    const fetchImpl = (async (url: string) => {
+      urls.push(url);
+      return Response.json({ id: 'p1', status: 'processing' });
+    }) as unknown as typeof fetch;
+    vi.stubEnv('REPLICATE_API_BASE_URL', 'http://127.0.0.1:4010/v1/');
+    vi.stubEnv('NODE_ENV', 'development');
+    await createReplicate('test', fetchImpl).get('p1');
+    vi.unstubAllEnvs();
+    expect(urls).toEqual(['http://127.0.0.1:4010/v1/predictions/p1']);
+  });
+
+  it('is refused in production, so a stray variable cannot redirect real traffic', () => {
+    const override = { REPLICATE_API_BASE_URL: 'http://127.0.0.1:4010/v1' };
+    expect(() => replicateBaseUrl({ ...override, NODE_ENV: 'production' })).toThrow(/production/);
+    expect(() => replicateBaseUrl({ ...override, VERCEL_ENV: 'production' })).toThrow(/production/);
+    // Even a development-looking runtime is refused when Vercel says production.
+    expect(() =>
+      replicateBaseUrl({ ...override, NODE_ENV: 'development', VERCEL_ENV: 'production' }),
+    ).toThrow(/production/);
+  });
+
+  it('stops createReplicate itself in production, before any request is made', () => {
+    vi.stubEnv('REPLICATE_API_BASE_URL', 'http://127.0.0.1:4010/v1');
+    vi.stubEnv('VERCEL_ENV', 'production');
+    try {
+      expect(() => createReplicate('test')).toThrow(/production/);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
+  it('is allowed on a Vercel preview build, which config.isProduction() also allows', () => {
+    expect(
+      replicateBaseUrl({
+        REPLICATE_API_BASE_URL: 'https://mock.example.test/v1',
+        NODE_ENV: 'production',
+        VERCEL_ENV: 'preview',
+      }),
+    ).toBe('https://mock.example.test/v1');
+  });
+
+  it('refuses a value that is not an http or https URL', () => {
+    expect(() => replicateBaseUrl({ REPLICATE_API_BASE_URL: 'not a url' })).toThrow(/valid URL/);
+    expect(() => replicateBaseUrl({ REPLICATE_API_BASE_URL: 'file:///etc/passwd' })).toThrow(
+      /http or https/,
+    );
+  });
 });

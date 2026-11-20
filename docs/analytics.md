@@ -221,52 +221,11 @@ local failure mechanism; there is no public paid-provider failure switch. Signed
 use synthetic Stripe credentials and make no Stripe API calls. Live Stripe here is live-only;
 never use a live checkout as a supposedly free test.
 
-For browser proof, from the repository root fetch the public vendor runtimes once:
-
-```sh
-mkdir -p .data/analytics-merge2
-curl -fsSL 'https://www.googletagmanager.com/gtm.js?id=AW-18570382360' -o .data/analytics-merge2/google-ads.js
-curl -fsSL 'https://www.googletagmanager.com/gtag/js?id=G-TEST000000' -o .data/analytics-merge2/gtag.js
-EVIDENCE_DIR="$PWD/.data/analytics-merge2" node apps/web/e2e/mock-server.mjs
-```
-
-Build/start on port 3100 with the local DB, an explicitly local test auth secret,
-`BETTER_AUTH_URL=https://easyrender.ai`, `APP_URL=https://easyrender.ai`,
-`NEXT_PUBLIC_POSTHOG_KEY=phc_localtest`, `NEXT_PUBLIC_GA_MEASUREMENT_ID=G-TEST000000`,
-`POSTHOG_HOST=http://127.0.0.1:3901`, `ANALYTICS_LOCAL_TEST=1`. Then:
-
-```sh
-cd apps/web
-EVIDENCE_DIR="$PWD/../../.data/analytics-merge2" node node_modules/@playwright/test/cli.js test --config e2e/playwright.config.ts analytics.spec.ts
-```
-
-`local-browser.ts` intercepts the canonical browser origin and proxies app requests only to
-`127.0.0.1:3100` (or a loopback `ANALYTICS_BASE_URL`). No production app request is made; this
-exercises the exact hostname guard without changing it. Vendor requests are intercepted and
-fulfilled locally, including Ads endpoints; any other external request is aborted. The real
-Ads and GA runtimes and npm PostHog SDK run. Automation detection is suppressed only in the
-test browser. `GTAG_FIXTURE` and `GOOGLE_ADS_FIXTURE` can override the downloaded fixture paths.
-Evidence defaults inside this worktree's ignored `.data/analytics-evidence`; `EVIDENCE_DIR`
-overrides it. Stop the local server, recorder and throwaway Postgres and remove its `/tmp`
-directory when finished.
+The opt-in browser proof for consent and the Google/PostHog runtimes (`analytics.spec.ts` and `unset.spec.ts`, with their mock server and `performance.mjs`) was removed on 2026-11-20: it needed two dedicated builds and vendor scripts downloaded into `.data`, so it never ran in CI. It remains in git history before that change. Consent behaviour keeps its unit regressions.
 
 Vitest's include list excludes Playwright, and database tests skip without `TEST_DATABASE_URL`.
 Turbo's default test environment does not forward the scratch URL: run the per-package commands
 above to exercise integration suites, in addition to `bun run test` for the normal CI gate.
-
-Repeat a **separate build** with all three public analytics variables unset, start it, then run:
-
-```sh
-ANALYTICS_UNSET=1 node node_modules/@playwright/test/cli.js test --config e2e/playwright.config.ts unset.spec.ts
-```
-
-The unset build retains the denied Ads base on the canonical host but has no GA4 config,
-PostHog loader or consent banner. Localhost and preview hostname suppression also have unit
-regressions.
-
-`e2e/performance.mjs` records five fresh-context samples: LCP and sum of long-task time above
-50 ms over five seconds (a Playwright blocking-time approximation, not a Lighthouse audit).
-Set `PERF_URL` and `PERF_LABEL`; use the same host, viewport and intercepted vendor fixtures.
 
 ## Existing cookies and legal gaps
 
