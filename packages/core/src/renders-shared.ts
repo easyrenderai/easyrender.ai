@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { hash } from 'node:crypto';
 import { db, type Prisma, type Render } from '@easyrender/db';
 import {
   type Check,
@@ -87,7 +87,7 @@ export async function lockRenderActor(tx: Prisma.TransactionClient, actor: Actor
     .sort();
   if (!identities.length) throw new AppError('Missing visitor id', 400, 'no_actor');
   for (const identity of identities) {
-    const key = createHash('sha256').update(`render-quota:${identity}`).digest().readBigInt64BE();
+    const key = hash('sha256', `render-quota:${identity}`, 'buffer').readBigInt64BE();
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(${key})`;
   }
 }
