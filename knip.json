@@ -1,0 +1,20 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/*.{ts,mjs}"],
+      "project": ["scripts/**/*.{ts,mjs}"]
+    },
+    "apps/web": {
+      "entry": ["scripts/*.ts", "e2e/*.{ts,mjs}"],
+      "project": ["**/*.{ts,tsx,mjs}", "!public/**"]
+    },
+    "packages/db": {
+      "entry": ["scripts/*.{ts,mjs}"]
+    },
+    "packages/harness": {
+      "entry": ["scripts/*.ts"]
+    },
+    "packages/*": {}
+  }
+}

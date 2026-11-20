@@ -67,6 +67,18 @@ jobs:
         env:
           BASE_REF: ${{ github.base_ref }}
         run: bun run check:use-effects --against "origin/$BASE_REF"
+      - name: Unused code and env variables
+        run: |
+          bun test scripts/name-ratchet.test.ts
+          bun run check:knip
+          bun run check:env
+      - name: Unused code and env baselines may not grow
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          bun run check:knip --against "origin/$BASE_REF"
+          bun run check:env --against "origin/$BASE_REF"
       - name: Typecheck
         run: bun run typecheck
       - name: Tests

@@ -655,7 +655,6 @@
       "connection": "Algunos elementos no se pudieron iniciar. Revisa tu conexión y vuelve a intentarlo.",
       "sheetOutOfCredits": "No tienes créditos suficientes para una hoja de ángulos. Compra más para continuar."
     },
-    "fromHome": "Tu foto de la página de inicio está aquí. Genera su hoja de ángulos o su modelo 3D abajo.",
     "generateSheet": "Ángulos · {credits}",
     "sheetAlt": "Todos los ángulos de {name}",
     "dropOverlay": {
