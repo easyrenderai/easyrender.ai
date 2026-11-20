@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { ApiRateLimitError, AppError, bearerToken } from '@easyrender/core';
+import { ApiRateLimitError, AppError, bearerToken, isRetryable } from '@easyrender/core';
 import { errorResponse } from './http';
 
 const CORS = {
@@ -29,15 +29,7 @@ export async function apiHandle(request: Request, action: () => Promise<Response
   } catch (error) {
     response = errorResponse(error, requestId);
     const body = await response.json();
-    const retryable =
-      error instanceof AppError &&
-      [
-        'rate_limit',
-        'preview_limit',
-        'concurrent_limit',
-        'upstream_timeout',
-        'upstream_unavailable',
-      ].includes(error.code);
+    const retryable = isRetryable(error);
     response = Response.json(
       { ...body, request_id: requestId, retryable },
       { status: response.status },

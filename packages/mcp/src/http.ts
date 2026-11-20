@@ -3,6 +3,7 @@ import {
   type Actor,
   ApiRateLimitError,
   AppError,
+  isRetryable,
   reportError,
   resourceMetadataUrl,
 } from '@easyrender/core';
@@ -54,7 +55,7 @@ function failure(
       error: {
         code: -32000,
         message,
-        data: { code, status, retryable: [429, 502, 503, 504].includes(status) },
+        data: { code, status, retryable: isRetryable(new AppError(message, status, code)) },
       },
     },
     { status, headers: { ...CORS, ...headers } },
