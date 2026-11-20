@@ -40,5 +40,5 @@
   ],
   "packages/harness/src/fidelity/detection.ts": ["type MetalKind"],
   "packages/harness/src/fidelity/glb-document.ts": ["export viewBytes"],
-  "packages/mcp/src/protocol.ts": ["export run", "export toolError"]
+  "packages/mcp/src/protocol.ts": ["export run"]
 }
