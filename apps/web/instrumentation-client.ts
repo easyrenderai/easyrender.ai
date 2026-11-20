@@ -1,25 +1,15 @@
 import * as Sentry from '@sentry/nextjs';
 import {
-  filterMailingTelemetry,
-  isMailingTokenLocation,
-  redactMailingTokens,
-} from './lib/mailing-privacy';
-import {
   BLOB_URL_SPANS,
   BROWSER_EXTENSION_ERRORS,
   BROWSER_EXTENSION_URLS,
   WEBGL_UNAVAILABLE_ERRORS,
 } from './lib/sentry-noise';
+import { browserPrivacyOptions } from './lib/sentry-privacy';
 
 // No session replay: shoppers upload product photos and we do not record the screen.
 Sentry.init({
-  enabled: !isMailingTokenLocation(window.location.href),
-  beforeSend: (event) =>
-    isMailingTokenLocation(window.location.href) ? null : filterMailingTelemetry(event),
-  beforeSendTransaction: (event) =>
-    isMailingTokenLocation(window.location.href) ? null : filterMailingTelemetry(event),
-  beforeBreadcrumb: (crumb) =>
-    isMailingTokenLocation(window.location.href) ? null : redactMailingTokens(crumb),
+  ...browserPrivacyOptions(() => window.location.href),
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
   ignoreErrors: [...BROWSER_EXTENSION_ERRORS, ...WEBGL_UNAVAILABLE_ERRORS],
   ignoreSpans: BLOB_URL_SPANS,
