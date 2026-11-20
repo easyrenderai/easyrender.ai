@@ -1,5 +1,5 @@
 'use client';
-import type { OverviewSeries } from '@easyrender/core/admin-analytics';
+import type { OverviewPoint, OverviewSeries } from '@easyrender/core/admin-analytics';
 import type { Chart } from '@easyrender/core/admin-analytics/helpers';
 import { formatNumber } from '@easyrender/core/admin-analytics/helpers';
 import { useState } from 'react';
@@ -17,6 +17,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { useMediaQuery } from '@/components/app-shell/shell-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -34,6 +35,68 @@ const colors = [
   'var(--chart-5)',
 ];
 const overviewKeys = ['visits', 'payingCustomers', 'uses', 'revenue', 'newSignups'] as const;
+const WIDE_CHART = '(min-width: 640px)';
+
+function OverviewReadout({
+  row,
+  data,
+  hidden,
+  label,
+  seriesLabel,
+  isCompact = false,
+}: {
+  row: OverviewPoint;
+  data: OverviewSeries;
+  hidden: string[];
+  label: (key: string) => string;
+  seriesLabel: (key: string) => string;
+  // The floating tooltip only has the numbers. The phone panel keeps the longer explanations.
+  isCompact?: boolean;
+}) {
+  return (
+    <div
+      className="max-w-full rounded-lg border bg-background p-2.5 text-xs"
+      data-testid="overview-tooltip"
+    >
+      <p className="mb-1.5 font-medium">{row.date}</p>
+      {overviewKeys
+        .filter((key) => key !== 'newSignups' || !hidden.includes(key))
+        .map((key) => (
+          <div key={key} className="mb-1.5 last:mb-0">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3">
+              <span className="min-w-0">{seriesLabel(key)}</span>
+              <span className="font-mono tabular-nums">
+                {formatNumber(row[key], key === 'revenue' ? 'currency' : 'number', data.currency)}
+              </span>
+            </div>
+            {key === 'payingCustomers' && !isCompact && (
+              <p className="text-muted-foreground">
+                {label(
+                  data.heading === 'overviewPerDay'
+                    ? 'payingDayHelp'
+                    : data.heading === 'overviewPerWeek'
+                      ? 'payingWeekHelp'
+                      : 'payingMonthHelp',
+                )}
+              </p>
+            )}
+            {key === 'uses' && (
+              <p className="text-muted-foreground">
+                {formatNumber(row.sheets)} {label('sheetCountUnit')} + {formatNumber(row.models)}{' '}
+                {label('models3d')}
+              </p>
+            )}
+            {key === 'revenue' && !isCompact && (
+              <p className="text-muted-foreground">{label('grossRevenueHelp')}</p>
+            )}
+            {key === 'visits' && !isCompact && data.visitsNote && (
+              <p className="text-muted-foreground">{label(data.visitsNote)}</p>
+            )}
+          </div>
+        ))}
+    </div>
+  );
+}
 
 export function OverviewChart({
   data,
@@ -45,6 +108,9 @@ export function OverviewChart({
   hasMultipleCurrencies: boolean;
 }) {
   const [hidden, setHidden] = useState<string[]>(['newSignups']);
+  const [activeDate, setActiveDate] = useState<string | null>(null);
+  // Below sm the floating tooltip covers the plot. The selected point is written under the chart.
+  const isWideChart = useMediaQuery(WIDE_CHART);
   const label = (key: string) => labels[key] ?? key;
   const seriesLabel = (key: string) =>
     key === 'revenue' ? `${label('grossRevenueSeries')} (${data.currency})` : label(key);
@@ -61,18 +127,29 @@ export function OverviewChart({
   );
   // Explicit square-root ticks keep small counts legible and still display real counts.
   const countTicks = [...new Set([0, 0.25, 0.5, 0.75, 1].map((v) => Math.ceil(countMax * v * v)))];
+  const activeRow =
+    data.rows.find((row) => row.date === activeDate) ?? data.rows[data.rows.length - 1];
+  function selectPoint(state: { activeLabel?: unknown }) {
+    if (typeof state.activeLabel !== 'string' && typeof state.activeLabel !== 'number') return;
+    const next = String(state.activeLabel);
+    setActiveDate((current) => (current === next ? current : next));
+  }
   return (
-    <Card className="h-[560px] min-w-0 sm:h-[460px]" data-testid="overview-timeseries">
-      <CardHeader className="gap-2">
+    <Card className="min-w-0 overflow-hidden sm:h-[460px]" data-testid="overview-timeseries">
+      <CardHeader className="min-w-0 gap-2 px-4 sm:px-6">
         <CardTitle>{label(data.heading)}</CardTitle>
         <CardDescription>{label('overviewScale')}</CardDescription>
         {hasMultipleCurrencies && <CardDescription>{label('multipleCurrencies')}</CardDescription>}
-        <fieldset className="flex flex-wrap items-center gap-2" aria-label={label('seriesToggles')}>
+        <fieldset
+          className="flex w-full min-w-0 max-w-full flex-wrap items-center gap-2 [min-inline-size:0]"
+          aria-label={label('seriesToggles')}
+        >
           {overviewKeys.map((key, i) => (
             <Button
               key={key}
               size="sm"
               variant={hidden.includes(key) ? 'outline' : 'secondary'}
+              className="h-auto max-w-full whitespace-normal py-1 text-left"
               aria-pressed={!hidden.includes(key)}
               disabled={key === 'visits' && Boolean(data.visitsNote)}
               onClick={() =>
@@ -81,7 +158,10 @@ export function OverviewChart({
                 )
               }
             >
-              <span className="size-2 rounded-full" style={{ backgroundColor: colors[i] }} />
+              <span
+                className="size-2 shrink-0 rounded-full"
+                style={{ backgroundColor: colors[i] }}
+              />
               {seriesLabel(key)}
             </Button>
           ))}
@@ -92,106 +172,97 @@ export function OverviewChart({
           )}
         </fieldset>
       </CardHeader>
-      <CardContent className="min-h-0 flex-1">
+      <CardContent className="min-h-0 min-w-0 space-y-3 px-4 sm:flex-1 sm:px-6">
         {!data.hasData ? (
-          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+          <div className="flex h-56 items-center justify-center text-sm text-muted-foreground sm:h-full">
             {label('empty')}
           </div>
         ) : (
-          <ChartContainer className="h-full" label={label(data.heading)} config={config}>
-            <ComposedChart data={data.rows} margin={{ top: 16, right: 8, bottom: 8, left: 0 }}>
-              <CartesianGrid vertical={false} />
-              <XAxis dataKey="date" tickLine={false} axisLine={false} minTickGap={32} />
-              <YAxis
-                yAxisId="count"
-                scale="sqrt"
-                domain={[0, countMax]}
-                ticks={countTicks}
-                width={45}
-                tickLine={false}
-                axisLine={false}
-                allowDecimals={false}
-              />
-              <YAxis
-                yAxisId="money"
-                orientation="right"
-                width={72}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value: number) => formatNumber(value)}
-              />
-              <ChartTooltip
-                content={({ active, label: date }) => {
-                  const row = data.rows.find((r) => r.date === date);
-                  if (!active || !row) return null;
-                  return (
-                    <div
-                      className="rounded-lg border bg-background p-3 text-xs shadow-md"
-                      data-testid="overview-tooltip"
-                    >
-                      <p className="mb-2 font-medium">{row.date}</p>
-                      {overviewKeys
-                        .filter((key) => key !== 'newSignups' || !hidden.includes(key))
-                        .map((key) => (
-                          <div key={key} className="mb-2 last:mb-0">
-                            <div className="flex justify-between gap-6">
-                              <span>{seriesLabel(key)}</span>
-                              <span className="font-mono tabular-nums">
-                                {formatNumber(
-                                  row[key],
-                                  key === 'revenue' ? 'currency' : 'number',
-                                  data.currency,
-                                )}
-                              </span>
-                            </div>
-                            {key === 'payingCustomers' && (
-                              <p className="text-muted-foreground">
-                                {label(
-                                  data.heading === 'overviewPerDay'
-                                    ? 'payingDayHelp'
-                                    : data.heading === 'overviewPerWeek'
-                                      ? 'payingWeekHelp'
-                                      : 'payingMonthHelp',
-                                )}
-                              </p>
-                            )}
-                            {key === 'uses' && (
-                              <p className="text-muted-foreground">
-                                {formatNumber(row.sheets)} {label('sheetCountUnit')} +{' '}
-                                {formatNumber(row.models)} {label('models3d')}
-                              </p>
-                            )}
-                            {key === 'revenue' && (
-                              <p className="text-muted-foreground">{label('grossRevenueHelp')}</p>
-                            )}
-                            {key === 'visits' && data.visitsNote && (
-                              <p className="text-muted-foreground">{label(data.visitsNote)}</p>
-                            )}
-                          </div>
-                        ))}
-                    </div>
-                  );
-                }}
-              />
-              {overviewKeys.map((key, i) => (
-                <Line
-                  key={key}
-                  yAxisId={key === 'revenue' ? 'money' : 'count'}
-                  dataKey={key}
-                  name={seriesLabel(key)}
-                  hide={hidden.includes(key) || (key === 'visits' && Boolean(data.visitsNote))}
-                  stroke={colors[i]}
-                  strokeWidth={2}
-                  strokeDasharray={key === 'visits' ? '4 3' : undefined}
-                  dot={{ r: 2 }}
-                  activeDot={{ r: 4 }}
-                  connectNulls={false}
-                  isAnimationActive={false}
-                  type="linear"
+          <>
+            <ChartContainer className="h-64 sm:h-full" label={label(data.heading)} config={config}>
+              <ComposedChart
+                data={data.rows}
+                margin={{ top: 8, right: 4, bottom: 0, left: 0 }}
+                onClick={selectPoint}
+                onMouseMove={isWideChart ? undefined : selectPoint}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={false}
+                  minTickGap={isWideChart ? 32 : 56}
+                  interval="preserveStartEnd"
                 />
-              ))}
-            </ComposedChart>
-          </ChartContainer>
+                <YAxis
+                  yAxisId="count"
+                  scale="sqrt"
+                  domain={[0, countMax]}
+                  ticks={countTicks}
+                  width="auto"
+                  tickLine={false}
+                  axisLine={false}
+                  allowDecimals={false}
+                  tickMargin={4}
+                />
+                <YAxis
+                  yAxisId="money"
+                  orientation="right"
+                  width="auto"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={4}
+                  tickFormatter={(value: number) => formatNumber(value)}
+                />
+                {isWideChart && (
+                  <ChartTooltip
+                    allowEscapeViewBox={{ x: false, y: false }}
+                    wrapperStyle={{ maxWidth: '16rem', outline: 'none' }}
+                    content={({ active, label: date }) => {
+                      const row = data.rows.find((r) => r.date === date);
+                      if (!active || !row) return null;
+                      return (
+                        <OverviewReadout
+                          row={row}
+                          data={data}
+                          hidden={hidden}
+                          label={label}
+                          seriesLabel={seriesLabel}
+                          isCompact
+                        />
+                      );
+                    }}
+                  />
+                )}
+                {overviewKeys.map((key, i) => (
+                  <Line
+                    key={key}
+                    yAxisId={key === 'revenue' ? 'money' : 'count'}
+                    dataKey={key}
+                    name={seriesLabel(key)}
+                    hide={hidden.includes(key) || (key === 'visits' && Boolean(data.visitsNote))}
+                    stroke={colors[i]}
+                    strokeWidth={2}
+                    strokeDasharray={key === 'visits' ? '4 3' : undefined}
+                    dot={{ r: 2 }}
+                    activeDot={{ r: 4 }}
+                    connectNulls={false}
+                    isAnimationActive={false}
+                    type="linear"
+                  />
+                ))}
+              </ComposedChart>
+            </ChartContainer>
+            {!isWideChart && activeRow && (
+              <OverviewReadout
+                row={activeRow}
+                data={data}
+                hidden={hidden}
+                label={label}
+                seriesLabel={seriesLabel}
+              />
+            )}
+          </>
         )}
       </CardContent>
     </Card>
@@ -253,7 +324,11 @@ export function AnalyticsChart({
                     <Cell key={String(row.name)} fill={colors[i % colors.length]} />
                   ))}
                 </Pie>
-                <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartTooltip
+                  allowEscapeViewBox={{ x: false, y: false }}
+                  wrapperStyle={{ maxWidth: '16rem', outline: 'none' }}
+                  content={<ChartTooltipContent />}
+                />
                 <ChartLegend />
               </PieChart>
             ) : chart.kind === 'area' ? (
@@ -268,7 +343,11 @@ export function AnalyticsChart({
                   axisLine={false}
                   width={40}
                 />
-                <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartTooltip
+                  allowEscapeViewBox={{ x: false, y: false }}
+                  wrapperStyle={{ maxWidth: '16rem', outline: 'none' }}
+                  content={<ChartTooltipContent />}
+                />
                 <ChartLegend />
                 {series.map((key, i) => (
                   <Area
@@ -302,7 +381,11 @@ export function AnalyticsChart({
                   axisLine={false}
                   width={chart.key === 'channels' ? 110 : 40}
                 />
-                <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartTooltip
+                  allowEscapeViewBox={{ x: false, y: false }}
+                  wrapperStyle={{ maxWidth: '16rem', outline: 'none' }}
+                  content={<ChartTooltipContent />}
+                />
                 <ChartLegend />
                 {series.map((key, i) => (
                   <Bar

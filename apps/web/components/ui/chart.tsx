@@ -24,7 +24,7 @@ export function ChartContainer({
       role="img"
       aria-label={label}
       className={cn(
-        'h-72 min-w-0 text-xs [&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line]:stroke-border [&_.recharts-surface]:outline-none',
+        'h-72 w-full min-w-0 max-w-full text-xs [&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line]:stroke-border [&_.recharts-surface]:max-w-full [&_.recharts-surface]:outline-none',
         className,
       )}
       style={style}
@@ -33,7 +33,9 @@ export function ChartContainer({
       <ResponsiveContainer
         width="100%"
         height="100%"
-        initialDimension={{ width: 600, height: 288 }}
+        // A wide first guess (the old 600px) made the chart wider than a phone before measurement
+        // and the page grew sideways. The measured width replaces this on the next frame.
+        initialDimension={{ width: 320, height: 288 }}
       >
         {children}
       </ResponsiveContainer>
@@ -57,11 +59,11 @@ export function ChartTooltipContent({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border bg-background p-3 text-xs shadow-md">
-      <div className="mb-2 font-medium">{label}</div>
+    <div className="max-w-[min(16rem,calc(100vw-3rem))] rounded-lg border bg-background p-2.5 text-xs shadow-md">
+      <div className="mb-1.5 font-medium">{label}</div>
       {payload.map((item) => (
-        <div key={String(item.dataKey)} className="flex justify-between gap-6">
-          <span className="text-muted-foreground">{item.name}</span>
+        <div key={String(item.dataKey)} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3">
+          <span className="min-w-0 text-muted-foreground">{item.name}</span>
           <span className="font-mono tabular-nums">
             {typeof item.value === 'number'
               ? new Intl.NumberFormat('en-GB', { maximumFractionDigits: 2 }).format(item.value)

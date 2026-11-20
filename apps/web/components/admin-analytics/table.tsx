@@ -204,7 +204,7 @@ export function AnalyticsTable({
             )}
           </TableBody>
         </Table>
-        <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
           <span>
             {rows.length} {label('rows')} · {current + 1} / {pages}
           </span>

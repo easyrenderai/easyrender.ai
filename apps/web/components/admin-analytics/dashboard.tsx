@@ -66,7 +66,7 @@ export function AdminControls({ labels, range }: { labels: Record<string, string
   }
   return (
     <div className="space-y-3 rounded-xl border bg-card p-4">
-      <div className="grid grid-cols-6 gap-1 sm:flex sm:flex-wrap sm:items-center sm:gap-2">
+      <div className="flex flex-wrap items-center gap-1">
         {['24h', '7d', '30d', '90d', '12m', 'all'].map((period) => (
           <Button
             key={period}
@@ -79,7 +79,7 @@ export function AdminControls({ labels, range }: { labels: Record<string, string
         ))}
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <div className="grid min-w-0 flex-1 grid-cols-4 gap-1 sm:flex sm:flex-none sm:gap-2">
+        <div className="flex min-w-0 flex-1 flex-wrap gap-1 sm:flex-none sm:gap-2">
           {['auto', 'day', 'week', 'month'].map((granularity) => (
             <Button
               key={granularity}
@@ -109,7 +109,7 @@ export function AdminControls({ labels, range }: { labels: Record<string, string
           {labels.refresh}
         </Button>
       </div>
-      <div className="grid grid-cols-2 items-end gap-3 sm:flex sm:flex-wrap">
+      <div className="grid grid-cols-1 items-end gap-3 min-[480px]:grid-cols-2 sm:flex sm:flex-wrap">
         <div className="min-w-0 space-y-1.5">
           <Label htmlFor="admin-from">{labels.from}</Label>
           <Input
@@ -131,14 +131,14 @@ export function AdminControls({ labels, range }: { labels: Record<string, string
           />
         </div>
         <Button
-          className="col-span-2 sm:col-span-1"
+          className="col-span-full sm:col-span-1"
           size="sm"
           variant="outline"
           onClick={() => change({ period: 'custom', from, to })}
         >
           {labels.apply}
         </Button>
-        <Label className="col-span-2 flex min-h-9 items-center gap-2 sm:col-span-1 sm:ml-auto">
+        <Label className="col-span-full flex min-h-9 items-center gap-2 sm:col-span-1 sm:ml-auto">
           <Checkbox
             checked={range.includeTeam}
             onCheckedChange={() => change({ team: range.includeTeam ? '0' : '1' })}
