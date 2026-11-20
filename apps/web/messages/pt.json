@@ -385,7 +385,8 @@
       "creditsReturned": "Devolvemos {credits, number} créditos ao teu saldo.",
       "buildStartRefunded": "Não foi possível iniciar o modelo 3D. Os créditos descontados foram devolvidos.",
       "sheetStartRefunded": "Não foi possível iniciar as vistas. Devolvemos os teus créditos.",
-      "redrawStartRefunded": "Não conseguimos gerar novas vistas. Manténs a pré-visualização anterior e devolvemos os teus créditos."
+      "redrawStartRefunded": "Não conseguimos gerar novas vistas. Manténs a pré-visualização anterior e devolvemos os teus créditos.",
+      "rebuild": "Não foi possível refazer o modelo. Os créditos usados foram devolvidos."
     },
     "generateSheet": "Criar vistas · {credits} créditos",
     "fixSheetLabel": "Corrigir as vistas",
@@ -422,7 +423,8 @@
         "sheet_redraw": "Correção das vistas iniciada",
         "build": "Criação 3D iniciada",
         "material": "Materiais alterados",
-        "sheet_redraw_refund": "Créditos da correção devolvidos"
+        "sheet_redraw_refund": "Créditos da correção devolvidos",
+        "rebuild_standard": "Refeito em Padrão, créditos devolvidos"
       },
       "credits": "{credits} créditos"
     },
@@ -552,7 +554,9 @@
     "repeatedViewsFailure": "Não foi possível gerar ângulos distintos. Tente outra foto. Os créditos cobrados foram devolvidos.",
     "inconsistentStructureFailure": "Os ângulos gerados alteraram a forma do seu objeto. Tente outra foto. Os créditos cobrados foram devolvidos.",
     "downloadGlb": "Descarregar GLB",
-    "downloadUsdz": "USDZ para Apple"
+    "downloadUsdz": "USDZ para Apple",
+    "rebuildStandard": "Refazer em Padrão, {credits, number} créditos de volta",
+    "rebuildStandardHint": "Se este modelo não parecer certo, refaça-o em Padrão sem custo. Devolvemos a diferença em créditos, uma só vez."
   },
   "PromptBar": {
     "steps": {
@@ -3223,5 +3227,15 @@
         "failed": "Não conseguimos ler esse ficheiro. Pode estar danificado ou usar uma funcionalidade que este visualizador não suporta."
       }
     }
+  },
+  "BuildQuality": {
+    "label": "Qualidade",
+    "low": "Baixa",
+    "medium": "Média",
+    "high": "Alta",
+    "lowHint": "Criação padrão. Rápida e certa para a maioria dos produtos.",
+    "mediumHint": "Cor e forma mais próximas da sua foto. Demora alguns minutos a mais.",
+    "highHint": "O maior detalhe e o ficheiro maior. É a mais demorada.",
+    "credits": "{credits, number} créditos"
   }
 }

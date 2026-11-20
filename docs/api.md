@@ -61,7 +61,7 @@ credentials for another host.
 ## Quotes and spending
 
 `GET /api/credits` and MCP `get_credits` return the same account-specific quote: `balance`,
-`currency`, `pricing_variant`, `render_credits`, `sheet_credits`, `product_views_credits`, `view_polish_credits`,
+`currency`, `pricing_variant`, `render_credits`, `render_credits_by_quality`, `sheet_credits`, `product_views_credits`, `view_polish_credits`,
 `upscale_credits`, `build_from_views_credits`, `plans`, `topup`, and `buy`. Read live credit costs
 and account currency; do not hard-code a credit-to-money conversion. `topup.price_cents` is an
 amount in `topup.currency`; plan prices use the quote's currency. USD-specific compatibility
@@ -70,7 +70,17 @@ authorization. An AI client may also charge independently.
 
 A render response includes `renderCredits`, `sheetCredits`, `upscaleCredits` and `credits` already
 recorded on that render. Pending build debit is `max(0, renderCredits - credits)`; MCP also returns
-`pending_credits`. A reused final sheet can reduce the pending build debit. Product-view sets expose
+`pending_credits`. A reused final sheet can reduce the pending build debit.
+
+Build quality: the build is priced by `quality`, one of `low` (the default and today's build),
+`medium` and `high`. A render response lists `qualityCredits` (the total for each quality),
+`buildQuality` (the one it was built at) and `rebuildRefundCredits`. The debit for a chosen quality is
+`max(0, qualityCredits[quality] - credits)`; quote it before sending `quality` and cap it with
+`maxCredits`. A build with no `quality` is exactly the standard build. Medium and high are built
+from the photo alone on a larger model, take longer and cost more; a failed build is refunded in
+full like any other. A finished medium or high model can be rebuilt in standard for free: the
+difference between what it cost and the standard price comes back once, and the old model is
+replaced when the new one is ready. Product-view sets expose
 `polishCredits`, `upscaleCredits` and `buildCredits`. Refresh the resource and quote before a paid
 action, and honor the user's total budget across concurrent and uncertain attempts.
 
@@ -171,8 +181,10 @@ Malformed cursor/limit/status returns 400. Listing does not advance jobs; poll a
 observe an active job. Use the list to recover an ID after a lost response when necessary.
 
 `GET /api/renders/{id}` returns the current view. `POST .../{id}/render` starts the paid 3D build;
-its optional JSON `{maxCredits}` sets a non-negative safe-integer ceiling enforced in the debit
-transaction. Send the authorized ceiling even though omission remains supported for older clients;
+its optional JSON `{maxCredits, quality}` sets a non-negative safe-integer ceiling enforced in the
+debit transaction and the build quality (`low`, `medium` or `high`; an unknown value returns 400
+`bad_quality`). `POST .../{id}/rebuild` rebuilds a ready medium or high model in standard, free,
+and returns the credit difference once (409 `bad_state` otherwise; repeating it never refunds again). Send the authorized ceiling even though omission remains supported for older clients;
 `POST .../{id}/sheet` starts the paid sheet and `POST .../{id}/sheet/redraw` accepts `{note}` for a
 paid revision. `PATCH .../{id}` accepts `{isPublic}`. `GET .../{id}/model` serves textured GLB
 (`model/gltf-binary`); optional `?download=1` requests a download. `/preview`, `/source` and `/qr` serve the corresponding assets. The preview endpoint serves the
@@ -252,7 +264,8 @@ Tool successes include `structuredContent` and the same JSON in a text content b
 | `get_render`               | `{id}`; render view, `pending_credits`, links.                                                                                                                                    |
 | `list_renders`             | Optional `cursor`, `limit`, `status`; returns `renders` and `next_cursor`.                                                                                                        |
 | `get_credits`              | Current account quote and balance.                                                                                                                                                |
-| `render_3d`                | `{id,max_credits?}`; paid build. Supply the approved ceiling even where optional for older clients.                                                                               |
+| `render_3d`                | `{id,max_credits?,quality?}`; paid build, `quality` is `low` (default), `medium` or `high`. Supply the approved ceiling even where optional for older clients.                    |
+| `rebuild_standard`         | `{id}`; free rebuild of a ready medium or high model in standard. The credit difference is returned once.                                                                         |
 | `set_render_visibility`    | `{id,is_public}`; explicit publication control.                                                                                                                                   |
 | `start_render_sheet`       | `{id,max_credits}`; paid sheet.                                                                                                                                                   |
 | `redraw_render_sheet`      | `{id,note,max_credits}`; paid redraw.                                                                                                                                             |

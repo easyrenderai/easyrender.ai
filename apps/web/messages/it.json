@@ -385,7 +385,8 @@
       "creditsReturned": "Abbiamo riaccreditato {credits, number} crediti sul tuo saldo.",
       "buildStartRefunded": "La creazione del modello 3D non è partita. Gli eventuali crediti scalati sono stati restituiti.",
       "sheetStartRefunded": "La creazione delle viste non è partita. Ti abbiamo restituito i crediti.",
-      "redrawStartRefunded": "Non siamo riusciti a rigenerare le viste. L’anteprima precedente è ancora disponibile e ti abbiamo restituito i crediti."
+      "redrawStartRefunded": "Non siamo riusciti a rigenerare le viste. L’anteprima precedente è ancora disponibile e ti abbiamo restituito i crediti.",
+      "rebuild": "Non siamo riusciti a rifare il modello. I crediti usati sono stati restituiti."
     },
     "generateSheet": "Crea le viste · {credits} crediti",
     "fixSheetLabel": "Correggi le viste",
@@ -422,7 +423,8 @@
         "sheet_redraw": "Correzione delle viste avviata",
         "build": "Creazione 3D avviata",
         "material": "Materiali modificati",
-        "sheet_redraw_refund": "Crediti per la correzione restituiti"
+        "sheet_redraw_refund": "Crediti per la correzione restituiti",
+        "rebuild_standard": "Rifatto in Standard, crediti restituiti"
       },
       "credits": "{credits} crediti"
     },
@@ -552,7 +554,9 @@
     "repeatedViewsFailure": "Non siamo riusciti a generare angolazioni distinte. Prova un’altra foto. I crediti addebitati sono stati rimborsati.",
     "inconsistentStructureFailure": "Le angolazioni generate hanno modificato la forma del tuo oggetto. Prova un’altra foto. I crediti addebitati sono stati rimborsati.",
     "downloadGlb": "Scarica il GLB",
-    "downloadUsdz": "USDZ per Apple"
+    "downloadUsdz": "USDZ per Apple",
+    "rebuildStandard": "Rifai in Standard, {credits, number} crediti restituiti",
+    "rebuildStandardHint": "Se questo modello non convince, rifallo gratis in Standard. Ti restituiamo la differenza in crediti, una sola volta."
   },
   "PromptBar": {
     "steps": {
@@ -3223,5 +3227,15 @@
         "failed": "Non siamo riusciti a leggere quel file. Potrebbe essere danneggiato o usare una funzione che questo visualizzatore non supporta."
       }
     }
+  },
+  "BuildQuality": {
+    "label": "Qualità",
+    "low": "Bassa",
+    "medium": "Media",
+    "high": "Alta",
+    "lowHint": "Creazione standard. Veloce e adatta alla maggior parte dei prodotti.",
+    "mediumHint": "Colore e forma più vicini alla tua foto. Richiede qualche minuto in più.",
+    "highHint": "Il massimo dettaglio e il file più pesante. È la più lenta.",
+    "credits": "{credits, number} crediti"
   }
 }

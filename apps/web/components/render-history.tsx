@@ -9,6 +9,7 @@ const ICONS: Record<RenderEditView['kind'], LucideIcon> = {
   sheet_redraw: RefreshCw,
   sheet_redraw_refund: RefreshCw,
   build: Box,
+  rebuild_standard: RefreshCw,
   material: Palette,
 };
 

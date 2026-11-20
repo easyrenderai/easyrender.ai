@@ -385,7 +385,8 @@
       "creditsReturned": "Nous avons recrédité {credits, number} crédits sur votre solde.",
       "buildStartRefunded": "La création du modèle 3D n’a pas pu démarrer. Les crédits débités ont été recrédités.",
       "sheetStartRefunded": "La création des vues n’a pas pu démarrer. Vos crédits ont été recrédités.",
-      "redrawStartRefunded": "Les vues n’ont pas pu être recréées. Vous conservez l’aperçu précédent et vos crédits ont été recrédités."
+      "redrawStartRefunded": "Les vues n’ont pas pu être recréées. Vous conservez l’aperçu précédent et vos crédits ont été recrédités.",
+      "rebuild": "Le modèle n’a pas pu être refait. Les crédits utilisés ont été recrédités."
     },
     "generateSheet": "Créer les vues · {credits} crédits",
     "fixSheetLabel": "Corriger les vues",
@@ -422,7 +423,8 @@
         "sheet_redraw": "Correction des vues lancée",
         "build": "Création 3D lancée",
         "material": "Matières modifiées",
-        "sheet_redraw_refund": "Correction des vues remboursée"
+        "sheet_redraw_refund": "Correction des vues remboursée",
+        "rebuild_standard": "Refait en Standard, crédits remboursés"
       },
       "credits": "{credits} crédits"
     },
@@ -552,7 +554,9 @@
     "repeatedViewsFailure": "Nous n’avons pas pu générer des angles distincts. Essayez une autre photo. Les crédits débités ont été remboursés.",
     "inconsistentStructureFailure": "Les angles générés ont modifié la forme de votre objet. Essayez une autre photo. Les crédits débités ont été remboursés.",
     "downloadGlb": "Télécharger le GLB",
-    "downloadUsdz": "USDZ pour Apple"
+    "downloadUsdz": "USDZ pour Apple",
+    "rebuildStandard": "Refaire en Standard, {credits, number} crédits remboursés",
+    "rebuildStandardHint": "Si ce modèle ne convient pas, refaites-le gratuitement en Standard. Nous rendons la différence en crédits, une seule fois."
   },
   "PromptBar": {
     "steps": {
@@ -3223,5 +3227,15 @@
         "failed": "Nous n'avons pas pu lire ce fichier. Il est peut-être endommagé ou utilise une fonction que cette visionneuse ne prend pas en charge."
       }
     }
+  },
+  "BuildQuality": {
+    "label": "Qualité",
+    "low": "Basse",
+    "medium": "Moyenne",
+    "high": "Haute",
+    "lowHint": "Création standard. Rapide, et adaptée à la plupart des produits.",
+    "mediumHint": "Couleur et forme plus proches de votre photo. Prend quelques minutes de plus.",
+    "highHint": "Le plus de détails et le fichier le plus lourd. C’est la plus longue.",
+    "credits": "{credits, number} crédits"
   }
 }

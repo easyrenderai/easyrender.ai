@@ -130,7 +130,7 @@ it('serves all tools on independent stateless HTTP requests', async () => {
   );
   expect(response.status).toBe(200);
   const body = await response.json();
-  expect(body.result.tools).toHaveLength(16);
+  expect(body.result.tools).toHaveLength(17);
   expect(body.result.tools).toEqual(
     expect.arrayContaining([
       expect.objectContaining({ name: 'polish_product_view', outputSchema: expect.any(Object) }),

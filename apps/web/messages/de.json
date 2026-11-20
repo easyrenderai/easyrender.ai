@@ -385,7 +385,8 @@
       "creditsReturned": "Wir haben dir {credits, number} Credits gutgeschrieben.",
       "buildStartRefunded": "Das 3D-Modell konnte nicht gestartet werden. Abgebuchte Credits wurden erstattet.",
       "sheetStartRefunded": "Die neuen Ansichten konnten nicht gestartet werden. Deine Credits wurden erstattet.",
-      "redrawStartRefunded": "Die Ansichten konnten nicht neu erstellt werden. Deine bisherige Vorschau bleibt erhalten, und deine Credits wurden erstattet."
+      "redrawStartRefunded": "Die Ansichten konnten nicht neu erstellt werden. Deine bisherige Vorschau bleibt erhalten, und deine Credits wurden erstattet.",
+      "rebuild": "Das Modell konnte nicht neu erstellt werden. Verwendete Credits wurden erstattet."
     },
     "generateSheet": "Ansichten erstellen · {credits} Credits",
     "fixSheetLabel": "Ansichten korrigieren",
@@ -422,7 +423,8 @@
         "sheet_redraw": "Korrektur der Ansichten gestartet",
         "build": "3D-Build gestartet",
         "material": "Materialien geändert",
-        "sheet_redraw_refund": "Credits für die Korrektur erstattet"
+        "sheet_redraw_refund": "Credits für die Korrektur erstattet",
+        "rebuild_standard": "In Standard neu erstellt, Credits erstattet"
       },
       "credits": "{credits} Credits"
     },
@@ -552,7 +554,9 @@
     "repeatedViewsFailure": "Es konnten keine unterschiedlichen Ansichten erstellt werden. Versuche ein anderes Foto. Berechnete Credits wurden erstattet.",
     "inconsistentStructureFailure": "Die erzeugten Ansichten haben die Form deines Objekts verändert. Versuche ein anderes Foto. Berechnete Credits wurden erstattet.",
     "downloadGlb": "GLB herunterladen",
-    "downloadUsdz": "USDZ für Apple"
+    "downloadUsdz": "USDZ für Apple",
+    "rebuildStandard": "In Standard neu erstellen, {credits, number} Credits zurück",
+    "rebuildStandardHint": "Wirkt dieses Modell falsch, erstelle es kostenlos in Standard neu. Wir erstatten die Differenz in Credits, einmalig."
   },
   "PromptBar": {
     "steps": {
@@ -3223,5 +3227,15 @@
         "failed": "Diese Datei konnten wir nicht lesen. Sie ist möglicherweise beschädigt oder nutzt eine Funktion, die dieser Viewer nicht unterstützt."
       }
     }
+  },
+  "BuildQuality": {
+    "label": "Qualität",
+    "low": "Niedrig",
+    "medium": "Mittel",
+    "high": "Hoch",
+    "lowHint": "Standard-Build. Schnell und für die meisten Produkte richtig.",
+    "mediumHint": "Farbe und Form näher an deinem Foto. Dauert einige Minuten länger.",
+    "highHint": "Die meisten Details und die größte Datei. Dauert am längsten.",
+    "credits": "{credits, number} Credits"
   }
 }

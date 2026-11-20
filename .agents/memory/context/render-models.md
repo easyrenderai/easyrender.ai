@@ -42,3 +42,14 @@ difference, not as an automatic fallback.
 check does not exist yet.
 **How to apply:** do not put TRELLIS.2 on the default path. Before building the tier, look for a check
 that catches the bedside-table case (or a way to feed TRELLIS.2 the sheet views).
+
+**Quality tiers shipped (2026-11-20, #306):** the build takes `quality` low (default, TRELLIS v1 on the
+photo and sheet views), medium or high (TRELLIS.2 on the photo alone). Prices come from
+`BUILD_QUALITY_CREDITS` in `packages/harness/src/pricing.ts`: measured average build cost plus the one
+margin. A Medium or High model can be rebuilt in Standard for free; the credit difference is refunded
+once (ledger key `rebuild-refund:<id>`, same transaction as the state change). The prompt bar and build
+panel say Low, Medium, High and never a model name. Tier model settings stay in code, not in the harness repo.
+**Why:** TRELLIS.2 is better on most photos but sometimes returns a see-through model, so the buyer
+must be able to back out without paying the difference.
+**How to apply:** do not make Medium or High the default or an automatic fallback. Re-measure the tier
+costs before changing a price; the quality check for the see-through case is still open.
