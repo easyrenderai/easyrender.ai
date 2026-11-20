@@ -8,7 +8,6 @@ import { ReferralApplied } from '@/components/referral-applied';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { authProjectPath, authReturnPath, localizedAuthPath } from '@/lib/app-locale';
-import { hasPending } from '@/lib/pending-upload';
 
 export function AuthForm({ mode, recovery }: { mode: AuthMode; recovery?: { label: string } }) {
   const t = useTranslations('Auth');
@@ -42,10 +41,9 @@ export function AuthForm({ mode, recovery }: { mode: AuthMode; recovery?: { labe
         <AuthFields
           mode={mode}
           project={project}
-          callbackURL={async () => (!requested && (await hasPending()) ? '/library' : next)}
-          onDone={async () => {
-            // A photo attached on the home page before signing up goes to the Library.
-            router.push(!requested && (await hasPending()) ? '/library' : next);
+          callbackURL={() => next}
+          onDone={() => {
+            router.push(next);
             router.refresh();
           }}
         />
