@@ -1,6 +1,12 @@
 import { mkdir } from 'node:fs/promises';
+import {
+  displayPricing,
+  rendersFor,
+  topupAmountCents,
+  topupPricing,
+} from '@easyrender/harness/pricing';
 import { expect, test } from '@playwright/test';
-import { HTML_LANG, LOCALES } from '../i18n/config';
+import { HTML_LANG, intlLocale, LOCALES } from '../i18n/config';
 import { ROUTES } from '../lib/seo/routes';
 import de from '../messages/de.json' with { type: 'json' };
 import en from '../messages/en.json' with { type: 'json' };
@@ -95,3 +101,118 @@ for (const locale of LOCALES) {
     }
   });
 }
+
+// Expected figures come from the same harness pricing the app renders, so a price change does not
+// break these tests: a Pro subscriber's top-up price and how many models it buys.
+const TOP_UP = 1000;
+const proRate = topupPricing(
+  { status: 'active', plan: 'pro', variant: 'control' },
+  'control',
+  'usd',
+);
+const proCents = topupAmountCents(TOP_UP, proRate);
+const proPrice = `$${(proCents / 100).toFixed(2)}`;
+const models = rendersFor(TOP_UP);
+const proCredits = displayPricing('control', 'usd').plans.pro.monthlyCredits;
+const us = new Intl.NumberFormat('en-US');
+const topUpText = us.format(TOP_UP);
+const proCreditsText = us.format(proCredits);
+const afterTopUpText = us.format(proCredits + TOP_UP);
+
+test('monthly subscriber buys a top-up without changing Pro', async ({ page, context }) => {
+  const signup = await context.request.post(`${base}/api/auth/sign-up/email`, {
+    headers: { origin: base },
+    data: {
+      name: 'Pricing fixture',
+      email: `simplify-${crypto.randomUUID()}@example.invalid`,
+      password: 'local-fixture-password-123',
+    },
+  });
+  expect(signup.ok()).toBe(true);
+  await page.goto(`${base}/credits`);
+  await expect(page.locator('html')).toHaveAttribute('data-pricing-variant', 'control');
+  await page.getByRole('button', { name: 'Subscribe to Pro', exact: true }).click();
+  await expect(
+    page.getByText(`You have ${proCreditsText} credits and you are on Pro.`, { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText('Top up credits', { exact: true })).toBeVisible();
+  await expect(page.getByText('Top-ups at your Pro rate', { exact: true })).toBeVisible();
+  const preset = page.getByRole('button', { name: topUpText, exact: true });
+  await preset.focus();
+  await expect(async () => {
+    await preset.press('Enter');
+    await expect(preset).toHaveAttribute('aria-pressed', 'true', { timeout: 1000 });
+  }).toPass({ timeout: 15000 });
+  await expect(preset).toHaveAccessibleDescription(proPrice);
+  await page.getByLabel('Or enter an amount').fill('499');
+  await expect(page.getByRole('button', { name: 'Buy credits', exact: true })).toBeDisabled();
+  await page.getByLabel('Or enter an amount').fill(String(TOP_UP));
+  await expect(
+    page.getByText(`${proPrice} for about ${models} models`, { exact: true }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: `Buy ${topUpText} credits`, exact: true }).click();
+  await expect(
+    page.getByText(`You have ${afterTopUpText} credits and you are on Pro.`, { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText('Top-up credits never expire.', { exact: true })).toBeVisible();
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.screenshot({ path: `${output}/subscriber-${colorScheme}-375.png`, fullPage: true });
+  }
+});
+
+test('subscriber pricing pages show localized pack prices in every locale', async ({
+  page,
+  context,
+}) => {
+  const signup = await context.request.post(`${base}/api/auth/sign-up/email`, {
+    headers: { origin: base },
+    data: {
+      name: 'Top-up fixture',
+      email: `topup-${crypto.randomUUID()}@example.invalid`,
+      password: 'local-fixture-password-123',
+    },
+  });
+  expect(signup.ok()).toBe(true);
+  await page.goto(`${base}/credits`);
+  await page.getByRole('button', { name: 'Subscribe to Pro', exact: true }).click();
+  await expect(
+    page.getByText(`You have ${proCreditsText} credits and you are on Pro.`, { exact: true }),
+  ).toBeVisible();
+  for (const locale of LOCALES) {
+    await page.goto(`${base}${ROUTES.pricing.paths[locale]}`);
+    const copy = messages[locale];
+    await expect(
+      page.getByText(copy.PaygPicker.planRate.replace('{plan}', 'Pro'), { exact: true }),
+    ).toBeVisible();
+    const amount = new Intl.NumberFormat(intlLocale(locale), {
+      style: 'currency',
+      currency: 'USD',
+    }).format(proCents / 100);
+    const credits = new Intl.NumberFormat(intlLocale(locale)).format(TOP_UP);
+    const preset = page.getByRole('button', { name: credits, exact: true });
+    await expect(preset).toContainText(amount);
+    await preset.click();
+    await expect(
+      page.getByText(
+        copy.PaygPicker.estimate.replace('{price}', amount).replace('{count}', String(models)),
+        {
+          exact: true,
+        },
+      ),
+    ).toBeVisible();
+    await page.setViewportSize({ width: 375, height: 812 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    if (locale === 'en' || locale === 'es') {
+      for (const colorScheme of ['light', 'dark'] as const) {
+        await page.emulateMedia({ colorScheme });
+        await page
+          .locator('[aria-labelledby="pricing-topups"]')
+          .screenshot({ path: `${output}/${locale}-topup-packs-${colorScheme}-375.png` });
+      }
+    }
+  }
+});
