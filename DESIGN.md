@@ -176,22 +176,23 @@ error says what failed and whether credits were refunded.
 
 ## Money and credits
 
-- Credits are the only unit shown in the product. 1 credit = $0.01 (pay as you go); Pro is 5,500
-  credits for $49 a month. Prices come from `@easyrender/harness` pricing, never hard-coded in a
-  component.
+- Credits are the only unit shown in the product. Credit prices, plan sizes and render costs live in
+  `packages/harness/src/pricing.ts`; never hard-code them in a component or in this file.
 - Show the cost on the button that spends it ("Build 3D, N credits", with N from the quote) before the click.
 
 ## Internationalisation
 
-All copy lives in `apps/web/messages/en.json` and `es.json` and is read with `next-intl`. A new
-string is added to both files in the same PR. Layouts have to survive Spanish, which runs about
-20% longer.
+All copy lives in `apps/web/messages/{en,es,de,fr,it,pt}.json` and is read with `next-intl`. A new
+string is added to all six files in the same PR; the three email namespaces are en and es only (see
+`apps/web/lib/messages.test.ts`). Layouts have to survive Spanish, German and French, which run
+about 20% longer than English.
 
 ## Do's and Don'ts
 
 - **Do** reach for an existing shadcn component first.
 - **Do** emulate both light and dark OS preferences and verify the site stays dark at 375px and
-  desktop whenever chrome changes. Say which browser checks were not run.
+  desktop whenever chrome changes. The site is always dark, so a screenshot set is 375px and
+  desktop, each under both OS colour preferences. Say which browser checks were not run.
 - **Do** keep copy in the message files.
 - **Don't** add a raw HTML control, a hex colour, a palette colour or a `dark:` variant to product code.
 - **Don't** add a new font, a new accent colour, or a second component library.
@@ -202,7 +203,7 @@ string is added to both files in the same PR. Layouts have to survive Spanish, w
 ## UI review checkpoints
 
 For a change to shared components, empty states or motion, check the real task in empty,
-loading, success and error states, with keyboard focus, touch, narrow layouts, both colour
-schemes and reduced motion. Use a Before/After table with source locations and user impact in
+loading, success and error states, with keyboard focus, touch, narrow layouts, both OS colour
+preferences (the site stays dark in each) and reduced motion. Use a Before/After table with source locations and user impact in
 the PR. Browser checks that were not run are marked unverified; reading the source is not visual
 approval.

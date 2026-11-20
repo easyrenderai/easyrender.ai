@@ -67,6 +67,8 @@ jobs:
         env:
           BASE_REF: ${{ github.base_ref }}
         run: bun run check:use-effects --against "origin/$BASE_REF"
+      - name: Docs match the repo
+        run: bun run check:docs
       - name: Typecheck
         run: bun run typecheck
       - name: Tests

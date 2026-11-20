@@ -24,11 +24,11 @@ could not run. -->
 
 ## Screenshots
 
-<!-- Required for visible UI changes, light and dark and 375px. Otherwise "Not applicable". -->
+<!-- Required for visible UI changes: 375px and desktop, each under both OS colour preferences (the site is always dark). Otherwise "Not applicable". -->
 
 ## Checklist
 
 - [ ] `bun run preflight` passes
 - [ ] No secrets, `.env*` files or customer data in the diff
-- [ ] New strings are in both `messages/en.json` and `messages/es.json`
+- [ ] New strings are in all six `messages/*.json` files (en, es, de, fr, it, pt; email namespaces are en and es only)
 - [ ] New env vars are in `.env.example` and `turbo.json`
