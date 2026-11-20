@@ -12,6 +12,7 @@
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "test:db": "bun scripts/scratch-db.ts",
     "lint": "biome check . --error-on-warnings",
     "format": "biome check --write .",
     "db:push": "bun run --cwd packages/db db:push",
