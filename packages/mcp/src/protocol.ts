@@ -4,6 +4,7 @@ import {
   AppError,
   assertActorScope,
   config,
+  isRetryable,
   reportError,
   toView,
 } from '@easyrender/core';
@@ -81,7 +82,7 @@ export function toolError(error: unknown): CallToolResult {
       : 'Unexpected error. Check the render status before retrying a mutation.',
     status: isKnown ? error.status : 500,
     ...(error instanceof ApiRateLimitError ? { retry_after_seconds: error.retryAfter } : {}),
-    retryable: isKnown && [429, 502, 503, 504].includes(error.status),
+    retryable: isRetryable(error),
   };
   const data = { error: details };
   return {

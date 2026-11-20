@@ -72,6 +72,4 @@ export const SHOWCASE: ShowcaseItem[] = [
   ),
 ];
 
-export const HERO_ITEM = SHOWCASE[0];
-
 export const findShowcase = (id: string) => SHOWCASE.find((entry) => entry.id === id) ?? null;

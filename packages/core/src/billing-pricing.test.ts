@@ -2,12 +2,15 @@ import { type PricingVariant, pricingFor, unitAmountCents } from '@easyrender/ha
 import type Stripe from 'stripe';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import {
-  createCheckout,
+  createCheckoutDetails,
   parseCheckout,
   planFromInvoice,
   validateCheckoutPrice,
   variantFromInvoice,
 } from './billing';
+
+const createCheckout = async (...args: Parameters<typeof createCheckoutDetails>) =>
+  (await createCheckoutDetails(...args)).url;
 
 const state = vi.hoisted(() => ({
   variant: 'test' as PricingVariant,

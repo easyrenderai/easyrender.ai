@@ -2,7 +2,8 @@
 
 import { ChevronDown, Coins, UserRound } from 'lucide-react';
 import Link from 'next/link';
-import { type KeyboardEvent, type ReactNode, useEffect, useId, useRef, useState } from 'react';
+import type { KeyboardEvent, ReactNode } from 'react';
+import { MenuTrigger, useMenu } from '@/components/menu-trigger';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -63,25 +64,11 @@ export function AccountMenu({
   copy: AccountMenuCopy;
   placement: AccountMenuPlacement;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
-  const listId = useId();
+  const menu = useMenu();
+  const { isOpen, setIsOpen, rootRef, listRef, listId, items, focusItem, close } = menu;
   const hasBalance = copy.balanceLabel !== null && copy.balanceNumber !== null;
   const creditsLabel = copy.balanceLabel ?? copy.creditsLinkLabel;
   const pill = PILL[placement];
-
-  const items = () => Array.from(listRef.current?.querySelectorAll<HTMLAnchorElement>('a') ?? []);
-  const focusItem = (index: number) => {
-    const all = items();
-    if (all.length === 0) return;
-    all[(index + all.length) % all.length]?.focus();
-  };
-  const close = (returnFocus: boolean) => {
-    setIsOpen(false);
-    if (returnFocus) buttonRef.current?.focus();
-  };
 
   const onButtonKey = (event: KeyboardEvent<HTMLButtonElement>) => {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
@@ -108,16 +95,6 @@ export function AccountMenu({
     event.preventDefault();
   };
 
-  // use-effect-audit: ignore document pointerdown listener that closes the menu on an outside click
-  useEffect(() => {
-    if (!isOpen) return;
-    const onPointer = (event: PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) setIsOpen(false);
-    };
-    document.addEventListener('pointerdown', onPointer);
-    return () => document.removeEventListener('pointerdown', onPointer);
-  }, [isOpen]);
-
   return (
     <div
       ref={rootRef}
@@ -125,13 +102,8 @@ export function AccountMenu({
       data-placement={placement}
       className={cn('relative', placement === 'marketing' && 'max-sm:hidden')}
     >
-      <Button
-        ref={buttonRef}
-        variant="ghost"
-        size="sm"
-        aria-haspopup="menu"
-        aria-expanded={isOpen}
-        aria-controls={listId}
+      <MenuTrigger
+        menu={menu}
         aria-label={hasBalance ? `${copy.accountLabel}, ${copy.balanceLabel}` : copy.accountLabel}
         className="gap-1.5 px-2 has-[>svg]:px-2"
         onClick={() => setIsOpen((open) => !open)}
@@ -155,7 +127,7 @@ export function AccountMenu({
           aria-hidden
           className={cn('size-3 opacity-70', placement === 'app' && 'max-sm:hidden')}
         />
-      </Button>
+      </MenuTrigger>
       <div
         ref={listRef}
         id={listId}

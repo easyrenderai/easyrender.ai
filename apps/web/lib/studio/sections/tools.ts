@@ -11,7 +11,7 @@ import {
   axes,
   boundsBox,
   ease,
-  fit,
+  fitItem,
   frame,
   INK,
   lerp,
@@ -54,7 +54,7 @@ async function topology(tile: HTMLElement, { scope, fmt }: ToolsContext) {
   const still = prefersReducedMotion();
   const view = tileView(tile, scope);
   addStudioLights(view.scene);
-  const size = fit(item);
+  const size = fitItem(item);
   const pivot = new THREE.Group();
   pivot.scale.setScalar(size.s);
   view.scene.add(pivot);
@@ -126,7 +126,7 @@ async function material(tile: HTMLElement, { scope, fmt }: ToolsContext) {
   const model = await makeBeauty(id, { ownMaterials: true });
   if (!scope.alive) return;
   const object = normalized(model, item);
-  const size = fit(item);
+  const size = fitItem(item);
   view.scene.add(object);
   addFloor(view.scene, { footprint: size.footprint, pool: 0.07 });
   view.onResize = () => frame(view, { cy: size.cy, margin: 1.5, elev: 0.16, shiftY: 0.12 });
@@ -183,7 +183,7 @@ async function scale(tile: HTMLElement, { scope, fmt }: ToolsContext) {
   gizmo.position.set(-w / 2, 0, d / 2);
   group.add(beauty, boundsBox(item, { opacity: 0.8 }), gizmo);
   const object = normalized(group, item);
-  const size = fit(item);
+  const size = fitItem(item);
   view.scene.add(object);
   view.onResize = () => frame(view, { cy: size.cy, margin: 1.3, elev: 0.34, shiftY: -0.02 });
   view.onResize(view);
@@ -237,7 +237,7 @@ async function collider(tile: HTMLElement, { scope, labels }: ToolsContext) {
   const group = new THREE.Group();
   group.add(clay, box, hull.object, mesh);
   const object = normalized(group, item);
-  const size = fit(item);
+  const size = fitItem(item);
   view.scene.add(object);
   addFloor(view.scene, { footprint: size.footprint, pool: 0.06 });
   view.onResize = () => frame(view, { cy: size.cy, margin: 1.36, elev: 0.26, shiftY: 0.07 });
@@ -306,7 +306,7 @@ async function light(tile: HTMLElement, { scope }: ToolsContext) {
   const lampItem = itemOf('lamp');
   const still = prefersReducedMotion();
   const view = tileView(tile, scope, { envIntensity: 0.14 });
-  const size = fit(lampItem);
+  const size = fitItem(lampItem);
   const world = new THREE.Group();
   world.scale.setScalar(size.s);
   view.scene.add(world);
@@ -485,7 +485,7 @@ async function exportFormats(tile: HTMLElement, { scope }: ToolsContext) {
   const beauty = await makeBeauty(id);
   if (!scope.alive) return;
   const object = normalized(beauty, item);
-  const size = fit(item);
+  const size = fitItem(item);
   view.scene.add(object);
   addFloor(view.scene, { footprint: size.footprint, pool: 0.08 });
   view.onResize = () => frame(view, { cy: size.cy, margin: 1.62, elev: 0.2, shiftY: 0.2 });

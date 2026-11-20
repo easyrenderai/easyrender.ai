@@ -23,13 +23,9 @@ function chunk(type: string, data: Uint8Array): Buffer {
   return out;
 }
 
-export type Rgb = readonly [number, number, number];
+type Rgb = readonly [number, number, number];
 
-export function encodePng(
-  width: number,
-  height: number,
-  paint: (x: number, y: number) => Rgb,
-): Buffer {
+function encodePng(width: number, height: number, paint: (x: number, y: number) => Rgb): Buffer {
   const rows = Buffer.alloc(height * (1 + width * 3));
   for (let y = 0; y < height; y++) {
     const start = y * (1 + width * 3);

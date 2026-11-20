@@ -259,6 +259,8 @@ model Render {
   @@index([isPublic, status, createdAt])
   @@index([completedAt, id])
   @@index([previewCompletedAt, id])
+  // The recovery worker lists renders in flight, oldest first.
+  @@index([status, updatedAt])
 }
 
 // A flat folder in a person's library. Names are unique per owner. Deleting a folder keeps its

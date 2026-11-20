@@ -655,7 +655,6 @@
       "connection": "Some items could not start. Check your connection and try again.",
       "sheetOutOfCredits": "Not enough credits for an angle sheet. Buy more to continue."
     },
-    "fromHome": "Your photo from the home page is here. Generate its angle sheet or 3D model below.",
     "generateSheet": "Angles · {credits}",
     "sheetAlt": "Every angle of {name}",
     "dropOverlay": {

@@ -9,7 +9,7 @@ import {
   addFloor,
   addStudioLights,
   type Fit,
-  fit,
+  fitItem,
   frame,
   makeBeauty,
   makeCollider,
@@ -26,7 +26,7 @@ export type HubPass = 'beauty' | 'wire' | 'normal' | 'depth' | 'collider';
 // Builds its viewport when the card scrolls near, renders once, and only spins while hovered.
 export function mountCard(host: HTMLElement, id: string, scope: Scope, onReady: () => void) {
   const item = itemOf(id);
-  const size = fit(item);
+  const size = fitItem(item);
   const reduced = prefersReducedMotion();
   const objects: Partial<Record<HubMode, THREE.Group>> = {};
   let view: View | null = null;
@@ -240,7 +240,7 @@ export function mountSheet(host: HTMLElement, scope: Scope) {
     show(id: string) {
       state.token++;
       state.id = id;
-      state.size = fit(itemOf(id));
+      state.size = fitItem(itemOf(id));
       state.angle = -0.55;
       state.elev = 0.2;
       state.margin = 1.25;

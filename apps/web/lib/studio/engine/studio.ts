@@ -140,7 +140,7 @@ export type Fit = {
   h: number;
 };
 
-export function fit(item: CatalogItem): Fit {
+export function fitItem(item: CatalogItem): Fit {
   const [w, h, d] = item.dims;
   const s = 1 / (0.5 * Math.hypot(w, h, d));
   return { s, cy: (h / 2) * s, footprint: [w * s, d * s], h: h * s };
@@ -149,7 +149,7 @@ export function fit(item: CatalogItem): Fit {
 // Wraps a model-space object in a group scaled to radius 1.
 export function normalized(object: THREE.Object3D, item: CatalogItem) {
   const group = new THREE.Group();
-  group.scale.setScalar(fit(item).s);
+  group.scale.setScalar(fitItem(item).s);
   group.add(object);
   return group;
 }
