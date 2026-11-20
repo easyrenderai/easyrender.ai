@@ -226,7 +226,8 @@ private resource; 409 can indicate an idempotency conflict or incompatible state
 Do not evade quotas with different keys/accounts. A boolean `retryable` indicates a known retryable
 condition, not permission to spend twice. REST and MCP return the same value for the same error:
 `retryable` is `true` for status 429, 502, 503 and 504 and `false` for everything else, including 500
-and the 503 configuration errors `no_stripe` and `not_configured`, which waiting cannot fix. For a timed-out mutation, read the resource first. Only
+and the 503 configuration errors (`no_stripe`, `not_configured`, `price_mismatch`, `mailing_unavailable`,
+`service_email_unavailable`, `webhook_unavailable`, `exports_unavailable`), which waiting cannot fix. For a timed-out mutation, read the resource first. Only
 preview creation has the documented `Idempotency-Key` contract; do not assume arbitrary paid POSTs
 support it. A 500 or network error does not prove the mutation failed. Never automatically replay
 an uncertain paid/provider submission. For safe GETs, retry transient failures with bounded backoff.
