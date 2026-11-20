@@ -91,7 +91,10 @@ export function replicateBaseUrl(env: NodeJS.ProcessEnv = process.env): string {
   if (url.protocol !== 'http:' && url.protocol !== 'https:') {
     throw new Error('REPLICATE_API_BASE_URL must be an http or https URL');
   }
-  return override.replace(/\/+$/, '');
+  // Trim trailing slashes by hand: a regex on environment input is flagged as backtracking.
+  let end = override.length;
+  while (end > 0 && override[end - 1] === '/') end--;
+  return override.slice(0, end);
 }
 
 export function createReplicate(token: string, fetchImpl: typeof fetch = fetch) {
