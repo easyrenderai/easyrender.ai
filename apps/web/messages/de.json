@@ -1733,7 +1733,10 @@
     "notReady": "Dieses Modell wird noch erstellt. Schau in ein paar Minuten wieder vorbei.",
     "notReadyTitle": "Fast fertig",
     "modelAlt": "3D-Modell von {name}",
-    "madeWith": "3D von Easy Render"
+    "madeWith": "3D von Easy Render",
+    "openInSafari": "Dieser Browser kann AR auf dem iPhone nicht öffnen. Öffne diese Seite in Safari, um das Stück in deinem Raum zu sehen.",
+    "copyLink": "Link kopieren",
+    "linkCopied": "Link kopiert"
   },
   "ShopifyApp": {
     "title": "3D-Modelle für Ihren ganzen Katalog",
