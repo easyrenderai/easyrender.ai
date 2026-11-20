@@ -7,7 +7,9 @@ edit rules here and nowhere else.
 
 easyrender.ai turns product photos into 3D models and AR. Photo in, free preview, angle sheet,
 GLB out. It is sold through an MCP server (agents call it) and a web app and mobile app (people
-use it). Credits are the only unit: 1 credit = $0.01, priced at provider cost plus a 70% margin.
+use it). Credits are the only unit; one margin rule prices everything (provider cost plus margin).
+Credit values, plan sizes and the margin live in `packages/harness/src/pricing.ts`: read them
+there, never copy a number into docs.
 
 - Prod: https://easyrender.ai, Vercel team `shipshitdev`, project root `apps/web`, Neon Postgres.
 - Rendering runs on Replicate for the MVP. Genfeed is the long-term rendering engine.
