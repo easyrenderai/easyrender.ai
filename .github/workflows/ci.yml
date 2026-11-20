@@ -53,7 +53,7 @@ jobs:
           bun-version: 1.4.2
       - run: bun install --frozen-lockfile
       - name: Biome
-        run: bunx biome check .
+        run: bunx biome check . --error-on-warnings
       - name: UI guards
         run: bun run check:ui-guards
       - name: Secrets

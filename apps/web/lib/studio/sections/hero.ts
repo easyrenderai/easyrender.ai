@@ -11,7 +11,7 @@ import {
   addFloor,
   addStudioLights,
   type Fit,
-  fit,
+  fitItem,
   frame,
   makeBeauty,
   makeShaded,
@@ -130,7 +130,7 @@ async function startHero(root: HTMLElement, { scope, fmt, names }: HeroContext) 
 
   function show(id: string, set: PassSet) {
     const item = itemOf(id);
-    const size = fit(item);
+    const size = fitItem(item);
     for (const pass of PASSES) {
       const entry = views[pass];
       entry.pivot.clear();

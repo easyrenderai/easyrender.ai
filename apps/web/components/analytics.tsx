@@ -28,6 +28,7 @@ export function chooseConsent(accepted: boolean, advertising = false) {
   // Stop optional sends immediately, before React effects or pending gtag callbacks run.
   if (!accepted || (previous.advertising && !advertising))
     void setBrowserTools(hasPosthog, false, true, false);
+  // biome-ignore lint/suspicious/noDocumentCookie: the Cookie Store API is missing in Safari and Firefox, and the consent cookie is written synchronously before the event below.
   document.cookie = `er_consent=${encodeURIComponent(JSON.stringify({ version: CONFIG_VERSION, date: new Date().toISOString(), accepted, advertising: accepted && advertising }))}; Path=/; Max-Age=31536000; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
   window.dispatchEvent(new Event('er-consent'));
 }

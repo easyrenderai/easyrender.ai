@@ -39,6 +39,7 @@ export async function isImageLoaded(page: Page, selector: string): Promise<boole
 export async function describePage(page: Page): Promise<string> {
   const text = await page
     .locator('body')
+    // biome-ignore lint/performance/useDomNodeTextContent: innerText is the visible text, textContent would add hidden script and style text to the CI log.
     .innerText()
     .catch(() => '(no body)');
   const links = await page

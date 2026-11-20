@@ -7,7 +7,7 @@ import { itemOf } from '../catalog';
 import { part } from '../dom';
 import { getModel, meshData, standard } from '../engine/assets';
 import { getStage, prefersReducedMotion, View } from '../engine/stage';
-import { fit, frame } from '../engine/studio';
+import { fitItem, frame } from '../engine/studio';
 import type { Scope } from '../scope';
 
 const ITEM = 'sneaker';
@@ -92,7 +92,7 @@ export async function initPoints(root: HTMLElement, { scope }: { scope: Scope })
   const model = await getModel(ITEM, { lod: isSmall ? 1 : 0 });
   if (!scope.alive) return;
   const { mesh, matrix } = meshData(model);
-  const size = fit(item);
+  const size = fitItem(item);
   // Model space → a piece of radius 1 centred on the origin.
   const place = new THREE.Matrix4()
     .makeTranslation(0, -size.cy, 0)
