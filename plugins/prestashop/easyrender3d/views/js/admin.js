@@ -19,9 +19,8 @@
     button.textContent = cfg.i18n.checking;
     var timer = null;
 
-    function fmt(template) {
-      var args = Array.prototype.slice.call(arguments, 1);
-      return template.replace(/%(\d)\$s|%s/g, (match, index) =>
+    function fmt(template, ...args) {
+      return template.replace(/%(\d)\$s|%s/g, (_match, index) =>
         String(args[index ? Number(index) - 1 : 0]),
       );
     }
@@ -33,7 +32,7 @@
         .then((response) => response.json())
         .then((json) => {
           if (!json.success) {
-            throw new Error((json.data && json.data.message) || 'Request failed');
+            throw new Error(json.data?.message || 'Request failed');
           }
           return json.data;
         });

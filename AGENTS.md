@@ -65,7 +65,7 @@ bun install                       # root workspace (apps/web + packages/*)
 bun run dev                       # apps/web on :3000
 bun run typecheck                 # all workspaces
 bun run test                      # vitest in core and harness
-bun run lint                      # biome check .
+bun run lint                      # biome check . --error-on-warnings
 bun run format                    # biome check --write .
 bun run check:ui-guards           # no raw HTML controls in apps/web
 bun run check:use-effects         # useEffect ratchet; --prune after removing effects, --report to list

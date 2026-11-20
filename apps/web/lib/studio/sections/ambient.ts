@@ -7,7 +7,7 @@ import { part } from '../dom';
 import { getStage, prefersReducedMotion, View } from '../engine/stage';
 import {
   addStudioLights,
-  fit,
+  fitItem,
   frame,
   INK,
   makeBeauty,
@@ -22,7 +22,7 @@ const START = -0.6;
 export async function initAmbient(root: HTMLElement, { scope, id }: { scope: Scope; id: string }) {
   const stage = getStage();
   const item = itemOf(id);
-  const size = fit(item);
+  const size = fitItem(item);
   const isMoving = !prefersReducedMotion();
 
   const open = (name: 'wire' | 'beauty') => {
