@@ -27,16 +27,24 @@ shopper's phone.
   forget the shop and its product list; `customers/data_request` and `customers/redact` return 200 because
   no shopper data is stored.
 
-## Setting it up (needs a human with the Partner account)
+## Setting it up
 
-1. Create an app in the Shopify Partner dashboard (Apps > Create app, Shopify CLI). Copy its client ID
-   and client secret.
-2. Set `SHOPIFY_API_KEY` (client ID) and `SHOPIFY_API_SECRET` (client secret) in the Vercel project. They
-   are already in `.env.example` and `turbo.json`.
-3. Put the client ID in `shopify.app.toml` (`client_id`), then from this folder run
-   `shopify app deploy`. That registers the URLs, scopes, webhooks and the theme extension.
-4. Install on a development store, open the app, connect an easyrender account, generate, then add the
-   "View in your room" block to the product template in the theme editor.
+The app lives in the Shopify Dev Dashboard (dev.shopify.com, organization Easy Render), not the old
+Partner dashboard.
+
+1. Dev Dashboard > Apps > Create app. Use the URL, scopes and webhooks API version from
+   `shopify.app.toml`, then release the first version. An app needs a released version before it can
+   be installed.
+2. App Settings holds the client ID and client secret. Put the client ID in `shopify.app.toml`
+   (`client_id`, it is public). Set `SHOPIFY_API_KEY` (client ID) and `SHOPIFY_API_SECRET` (client
+   secret) in the Vercel project. They are already in `.env.example` and `turbo.json`. Never commit the
+   secret.
+3. From this folder run `shopify app deploy`. That registers the URLs, scopes, webhooks and the theme
+   extension as a new app version. In CI, create a service account with the App development
+   permission and pass its token as `SHOPIFY_SERVICE_ACCOUNT_TOKEN` with `--allow-updates`.
+4. Install on a development store (Dev Dashboard > the app > Install app), open the app, connect an
+   easyrender account, generate, then add the "View in your room" block to the product template in
+   the theme editor.
 
 The API version is pinned in `packages/core/src/shopify.ts` and `shopify.app.toml` (`2026-07`).
 
