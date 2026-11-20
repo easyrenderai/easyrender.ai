@@ -1,7 +1,6 @@
 import { db } from '@easyrender/db';
 import {
   type ChargeCurrency,
-  currencyForCountry,
   isPlanId,
   isValidPaygCredits,
   PAYG,
@@ -22,6 +21,7 @@ import { config } from './config';
 import { grantCredits } from './credits';
 import { AppError } from './errors';
 import { enqueueGooglePurchase, linkGoogleCheckout } from './google-outbox';
+import { currencyForVisitor } from './pricing-context';
 import {
   assignedPricing,
   pricingSubject,
@@ -72,8 +72,7 @@ const priceId = (product: 'payg' | PlanId, variant: PricingVariant) => {
 
 // Euro-area visitors see and pay EUR; everyone else USD. EUR_CHECKOUT_DISABLED=1 is the kill switch
 // that puts everyone back on USD. The pricing pages and checkout both ask here, so they agree.
-export const currencyForVisitor = (country: string | null | undefined): ChargeCurrency =>
-  process.env.EUR_CHECKOUT_DISABLED === '1' ? 'usd' : currencyForCountry(country);
+export { currencyForVisitor };
 
 /** A returning buyer stays in the currency of their last paid order, whatever country they browse from. */
 export async function buyerCurrency(

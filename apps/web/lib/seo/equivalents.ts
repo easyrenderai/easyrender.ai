@@ -1,9 +1,16 @@
 import type { Locale } from '@/i18n/config';
 import { postLivePaths, readPosts } from '@/lib/blog/posts';
 import { compareLivePaths, readComparePages } from '@/lib/compare/pages';
-import { isPublished, livePaths, ROUTE_KEYS, ROUTES } from './routes';
+import {
+  type Equivalent,
+  homeEquivalents,
+  pickerFrom,
+  registryEquivalents,
+  toList,
+} from './registry-equivalents';
+import { isPublished, ROUTES } from './routes';
 
-export type Equivalent = { locale: Locale; path: string };
+export type { Equivalent };
 
 /**
  * The same page in every language it is live in, for the language picker and for hreflang. A
@@ -13,10 +20,8 @@ export type Equivalent = { locale: Locale; path: string };
 export function equivalentPaths(pathname: string, now: Date = new Date()): Equivalent[] {
   const path = pathname !== '/' && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 
-  for (const key of ROUTE_KEYS) {
-    const paths = livePaths(key);
-    if (Object.values(paths).includes(path)) return toList(paths);
-  }
+  const registered = registryEquivalents(path);
+  if (registered) return registered;
 
   const post = findPost(path, now);
   if (post) return toList(postLivePaths(post, now));
@@ -24,7 +29,7 @@ export function equivalentPaths(pathname: string, now: Date = new Date()): Equiv
   const comparison = findComparison(path);
   if (comparison) return toList(compareLivePaths(comparison));
 
-  return toList(livePaths('home'));
+  return homeEquivalents();
 }
 
 /**
@@ -33,11 +38,7 @@ export function equivalentPaths(pathname: string, now: Date = new Date()): Equiv
  * vanish on a page that has no translation yet.
  */
 export function pickerPaths(pathname: string, now: Date = new Date()): Equivalent[] {
-  const own = equivalentPaths(pathname, now);
-  if (own.length >= 2) return own;
-  const homes = toList(livePaths('home'));
-  const [page] = own;
-  return page ? homes.map((home) => (home.locale === page.locale ? page : home)) : homes;
+  return pickerFrom(equivalentPaths(pathname, now));
 }
 
 /** The post group whose URL this is, in any language. */
@@ -64,6 +65,3 @@ function findComparison(path: string): string | null {
   }
   return null;
 }
-
-const toList = (paths: Partial<Record<Locale, string>>): Equivalent[] =>
-  (Object.entries(paths) as [Locale, string][]).map(([locale, path]) => ({ locale, path }));

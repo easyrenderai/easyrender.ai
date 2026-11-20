@@ -11,6 +11,7 @@ vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
 }));
 vi.mock('next/link', () => ({ default: () => null }));
+vi.mock('@/components/use-viewer', () => ({ useViewer: () => ({ data: undefined }) }));
 vi.mock('react', async (original) => {
   const react = await original<typeof import('react')>();
   return {

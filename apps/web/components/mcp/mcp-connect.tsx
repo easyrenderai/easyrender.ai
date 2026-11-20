@@ -8,6 +8,7 @@ import { ClientLogo } from '@/components/mcp/client-logo';
 import { KEY_PLACEHOLDER, MCP_CLIENTS } from '@/components/mcp-setup';
 import { AmbientObject } from '@/components/studio/ambient-object';
 import { Button } from '@/components/ui/button';
+import { useViewer } from '@/components/use-viewer';
 import { captureBrowser } from '@/lib/analytics/browser';
 
 // claude.ai connects with a URL and a sign-in; every other client is one of MCP_CLIENTS.
@@ -63,17 +64,24 @@ export function McpConnect({
   label,
   accountHref,
   accountLabel,
+  memberHref,
+  memberLabel,
   keyNote,
 }: {
   url: string;
   /** Names the group of client buttons. */
   label: string;
+  /** Where a visitor gets a key: sign up. */
   accountHref: string;
   accountLabel: string;
+  /** Where a signed-in member gets one: their connectors. The page is cached, so both are passed. */
+  memberHref: string;
+  memberLabel: string;
   /** Shown with a snippet that carries a placeholder key: where the real key comes from. */
   keyNote: string;
 }) {
   const t = useTranslations('McpSetup');
+  const isMember = Boolean(useViewer().data?.signedIn);
   const [choice, setChoice] = useState<string | null>(null);
   const panel = useId();
   const client = MCP_CLIENTS.find(({ id }) => id === choice);
@@ -148,8 +156,12 @@ export function McpConnect({
                     <div className="space-y-3">
                       <p className="text-xs leading-relaxed text-muted-foreground">{keyNote}</p>
                       <Button asChild>
-                        <IntegrationLink channel="mcp" action="setup" href={accountHref}>
-                          {accountLabel} <ArrowRight aria-hidden="true" />
+                        <IntegrationLink
+                          channel="mcp"
+                          action="setup"
+                          href={isMember ? memberHref : accountHref}
+                        >
+                          {isMember ? memberLabel : accountLabel} <ArrowRight aria-hidden="true" />
                         </IntegrationLink>
                       </Button>
                     </div>

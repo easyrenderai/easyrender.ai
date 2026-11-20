@@ -1,5 +1,6 @@
 import { config } from '@easyrender/core';
 import { getTranslations } from 'next-intl/server';
+import { ByViewer } from '@/components/by-viewer';
 import { FaqSection } from '@/components/faq-section';
 import { IntegrationCosts } from '@/components/integrations/costs';
 import { Section } from '@/components/landing';
@@ -10,7 +11,6 @@ import { StudioClosing } from '@/components/studio/proof';
 import { StudioShell } from '@/components/studio/shell';
 import { Card } from '@/components/ui/card';
 import type { Locale } from '@/i18n/config';
-import { currentUser } from '@/lib/actor';
 import { localizedAuthPath } from '@/lib/app-locale';
 
 const STEPS = ['photo', 'review', 'download'] as const;
@@ -23,15 +23,13 @@ export async function mcpFaqItems(locale: Locale) {
 }
 
 export async function McpView({ locale }: { locale: Locale }) {
-  const [t, user, items] = await Promise.all([
+  const [t, items] = await Promise.all([
     getTranslations({ locale, namespace: 'McpLanding' }),
-    currentUser().catch(() => null),
     mcpFaqItems(locale),
   ]);
-  const accountHref = user
-    ? '/connectors'
-    : `${localizedAuthPath(locale, '/sign-up')}?next=%2Fconnectors`;
-  const accountLabel = t(user ? 'connect.cta' : 'connect.signup');
+  // The page is cached for everyone: a visitor's sign-up link is in the HTML, a member's link
+  // replaces it in the browser.
+  const accountHref = `${localizedAuthPath(locale, '/sign-up')}?next=%2Fconnectors`;
   const mcpUrl = `${config.appUrl()}/api/mcp`;
 
   return (
@@ -57,7 +55,9 @@ export async function McpView({ locale }: { locale: Locale }) {
             url={mcpUrl}
             label={t('connect.guide')}
             accountHref={accountHref}
-            accountLabel={accountLabel}
+            accountLabel={t('connect.signup')}
+            memberHref="/connectors"
+            memberLabel={t('connect.cta')}
             keyNote={t('connect.security')}
           />
         </div>
@@ -114,7 +114,18 @@ export async function McpView({ locale }: { locale: Locale }) {
       <McpSkill locale={locale} />
       <FaqSection title={t('faq.title')} items={items} />
       <ResourceLinks locale={locale} context="mcp" />
-      <StudioClosing title={t('closing.title')} label={accountLabel} href={accountHref} />
+      <ByViewer
+        visitor={
+          <StudioClosing
+            title={t('closing.title')}
+            label={t('connect.signup')}
+            href={accountHref}
+          />
+        }
+        member={
+          <StudioClosing title={t('closing.title')} label={t('connect.cta')} href="/connectors" />
+        }
+      />
     </StudioShell>
   );
 }

@@ -1,13 +1,14 @@
 'use client';
 import { CONFIG_VERSION, isToolAllowed, type PrivacyRegion } from '@easyrender/core/attribution';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useViewer } from '@/components/use-viewer';
 import { attribution, gaPageview, initializeGa, setBrowserTools } from '@/lib/analytics/browser';
 import { type ConsentChoice, readConsent } from '@/lib/analytics/consent';
 import { isMailingTokenLocation } from '@/lib/mailing-privacy';
+import { useSitePathname } from '@/lib/use-site-pathname';
 
 const hasPosthog = Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY);
 const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '';
@@ -49,14 +50,22 @@ export function ConsentControls() {
   );
 }
 export function Analytics() {
-  const pathname = usePathname();
-  if (isMailingTokenLocation(pathname)) return null;
+  const pathname = useSitePathname();
+  // The full address, query included: a sign-in page can carry an invite in `next`. Only the
+  // browser has it, and the first render of a hydrating page may not know it yet, which is
+  // harmless: this component renders nothing on the server either way.
+  const isPrivate =
+    isMailingTokenLocation(pathname) ||
+    (typeof window !== 'undefined' && isMailingTokenLocation(window.location.href));
+  // The pricing arm and experiment subject the browser analytics attach to every event.
+  useViewer({ isEnabled: !isPrivate });
+  if (isPrivate) return null;
   return <EnabledAnalytics />;
 }
 function EnabledAnalytics() {
   const t = useTranslations('Analytics');
   const locale = useLocale();
-  const pathname = usePathname();
+  const pathname = useSitePathname();
   const [region, setRegion] = useState<PrivacyRegion>(fallback);
   const [isResolved, setResolved] = useState(false);
   const [choice, setChoice] = useState<ConsentChoice>({ accepted: null, advertising: false });

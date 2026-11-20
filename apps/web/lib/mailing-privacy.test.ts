@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   filterMailingTelemetry,
   isMailingTokenLocation,
+  MAILING_TOKEN_CHECK_SCRIPT,
   redactMailingTokens,
 } from './mailing-privacy';
 
@@ -78,4 +79,28 @@ describe('mail token privacy', () => {
     expect(clean.request.url).toBe('/account');
     expect(event.breadcrumbs[0].data.token).toBe('private');
   });
+});
+
+it('the script the browser runs before the Google tag agrees with the server on every address', () => {
+  const check = new Function(
+    `${MAILING_TOKEN_CHECK_SCRIPT}; return erIsMailingTokenLocation;`,
+  )() as (href: string) => boolean;
+  for (const href of [
+    'https://easyrender.ai/',
+    'https://easyrender.ai/pricing',
+    'https://easyrender.ai/invite/abc',
+    'https://easyrender.ai/invite/abc/extra',
+    'https://easyrender.ai/sign-in?next=%2Finvite%2Fabc',
+    'https://easyrender.ai/sign-in?next=%2Fdashboard',
+    'https://easyrender.ai/email/confirm?token=x',
+    'https://easyrender.ai/email/unsubscribe/abc',
+    'https://easyrender.ai/api/email/verify-account',
+    'https://easyrender.ai/verify-email',
+    'https://easyrender.ai/reset-password?token=x',
+    'https://easyrender.ai/api/auth/reset-password',
+    'https://easyrender.ai/emails',
+  ])
+    expect(check(href), href).toBe(isMailingTokenLocation(href));
+  expect(check('https://easyrender.ai/invite/abc')).toBe(true);
+  expect(check('https://easyrender.ai/pricing')).toBe(false);
 });
