@@ -62,21 +62,6 @@ export function FlowArrow({ isRow = false }: { isRow?: boolean }) {
   );
 }
 
-/** Steps in a row from `sm`, stacked on a phone, with arrows between them. */
-export function Flow({ children, className }: { children: ReactNode[]; className?: string }) {
-  return (
-    <div className={cn('flex flex-col gap-2 sm:flex-row sm:items-stretch', className)}>
-      {children.map((child, index) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: static steps, never reordered
-        <div key={index} className="contents">
-          {index > 0 && <FlowArrow isRow />}
-          <div className="min-w-0 flex-1 [&>*]:h-full">{child}</div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 /** A column heading inside a diagram. */
 export function Heading({ children }: { children: ReactNode }) {
   return (

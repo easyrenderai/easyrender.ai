@@ -33,7 +33,6 @@ import {
   captureBrowser,
   observeRender,
 } from '@/lib/analytics/browser';
-import { takePending } from '@/lib/pending-upload';
 import { prepare } from '@/lib/prepare-image';
 import { cn } from '@/lib/utils';
 
@@ -303,25 +302,6 @@ export function CatalogLibrary({
       window.removeEventListener('dragleave', leave);
       window.removeEventListener('drop', drop);
     };
-  }, []);
-
-  // A photo attached on the home page before signing up is uploaded here, once, for this account.
-  // The handoff from the home composer is claimed once. Each effect run (Strict Mode runs two)
-  // only reports it while it is still mounted.
-  const handoff = useRef<Promise<boolean> | null>(null);
-  // use-effect-audit: ignore claims the photo the home composer handed over, once on mount
-  // biome-ignore lint/correctness/useExhaustiveDependencies: runs once on mount
-  useEffect(() => {
-    const controller = new AbortController();
-    handoff.current ??= takePending().then(async (saved) => {
-      if (!saved) return false;
-      await addFiles([saved.file], saved.prompt);
-      return true;
-    });
-    void handoff.current.then((isAdded) => {
-      if (isAdded && !controller.signal.aborted) setNotice(t('fromHome'));
-    });
-    return () => controller.abort();
   }, []);
 
   const pending = items.filter((item) => item.status === 'preview_ready');

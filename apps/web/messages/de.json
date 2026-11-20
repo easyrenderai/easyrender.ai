@@ -655,7 +655,6 @@
       "connection": "Prüfe deine Verbindung und versuche es erneut.",
       "sheetOutOfCredits": "Für die Ansichten reichen deine Credits nicht aus."
     },
-    "fromHome": "Hier ist dein Foto. Du kannst jetzt die Ansichten oder das 3D-Modell erstellen.",
     "generateSheet": "Ansichten erstellen · {credits}",
     "sheetAlt": "Generierte Ansichten von {name}",
     "dropOverlay": {
