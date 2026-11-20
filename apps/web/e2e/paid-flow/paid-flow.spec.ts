@@ -71,9 +71,15 @@ test('a visitor signs up, previews, pays, builds and downloads a 3D model', asyn
     await preset.click();
     await expect(preset).toHaveAttribute('aria-pressed', 'true', { timeout: 2_000 });
   }).toPass({ timeout: 30_000 });
+  // The dev checkout grants the credits and redirects back to the credits page, as Stripe would.
+  // This page is already /credits, so wait for that redirect itself and not for a matching URL.
+  const returned = page.waitForResponse(
+    (response) => response.request().redirectedFrom()?.url().includes('/api/dev/checkout') === true,
+    { timeout: 60_000 },
+  );
   await page.getByRole('button', { name: `Buy ${packText} credits`, exact: true }).click();
-  // The dev checkout grants the credits and returns to the credits page, as Stripe would.
-  await page.waitForURL(/\/credits(\?|$)/, { timeout: 30_000 });
+  await returned;
+  await page.waitForLoadState('load');
   await expect.poll(() => balanceOf(page), { timeout: 15_000 }).toBe(pack);
   const funded = await balanceOf(page);
 
