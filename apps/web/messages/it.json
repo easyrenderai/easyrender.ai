@@ -1737,7 +1737,7 @@
   },
   "ShopifyApp": {
     "title": "Modelli 3D per tutto il tuo catalogo",
-    "intro": "Genera un modello 3D di ogni prodotto con un clic. I clienti vedono ogni pezzo a casa propria da un pulsante o da un codice QR nella scheda prodotto.",
+    "intro": "Guarda ogni prodotto e se ha già un modello 3D. Spunta quelli da creare, oppure seleziona tutti quelli mancanti, e generali con un clic. I prodotti che hanno già un modello non vengono mai ricreati.",
     "loading": "Caricamento…",
     "notInShopify": "Apri questa pagina dall'amministrazione di Shopify.",
     "error": "Qualcosa è andato storto: {message}",
@@ -1746,17 +1746,47 @@
     "connectWaiting": "Fatto? Questa pagina si aggiorna da sola.",
     "generate": "Genera il 3D di {count} prodotti ({credits} crediti)",
     "starting": "Invio dei prodotti… {count} inviati",
-    "nothing": "Ogni prodotto con foto ha già un modello 3D o è in lavorazione.",
     "balance": "Saldo: {credits} crediti",
     "missing": "Servono altri {credits} crediti",
     "buy": "Acquista crediti",
-    "progress": "{ready} pronti, {running} in corso, {waiting} in attesa",
-    "needsCredits": "{count} aspettano crediti e proseguiranno quando ne aggiungi.",
-    "needsInfo": "{count} hanno bisogno di una foto utilizzabile.",
-    "failed": "{count} sono falliti e sono stati rimborsati. Genera di nuovo per riprovare.",
-    "noPhoto": "{count} non hanno una foto e vengono saltati.",
+    "progress": "{ready} pronti, {running} in corso, {missing} ancora mancanti",
     "themeTitle": "Mostralo nelle schede prodotto",
-    "themeBody": "Apri l'editor del tema, vai a una scheda prodotto, aggiungi il blocco «Guardalo a casa tua» e salva. I prodotti con un modello pronto mostrano un pulsante e un codice QR."
+    "themeBody": "Apri l'editor del tema, vai a una scheda prodotto, aggiungi il blocco «Guardalo a casa tua» e salva. I prodotti con un modello pronto mostrano un pulsante e un codice QR.",
+    "noProducts": "Ancora nessun prodotto attivo. Aggiungi un prodotto con foto in Shopify e apparirà qui.",
+    "filter": {
+      "all": "Tutti ({count})",
+      "missing": "Mancanti ({count})",
+      "running": "In corso ({count})",
+      "ready": "Pronti ({count})",
+      "attention": "Da controllare ({count})"
+    },
+    "selectMissing": "Seleziona tutti i mancanti ({count})",
+    "clear": "Cancella selezione",
+    "selectShown": "Seleziona tutti i prodotti mostrati",
+    "selectOne": "Seleziona {title}",
+    "columnPhoto": "Foto",
+    "columnProduct": "Prodotto",
+    "columnStatus": "Modello 3D",
+    "emptyFilter": "Nessun prodotto qui.",
+    "showMore": "Mostra altri {count}",
+    "pickSome": "Seleziona i prodotti da generare",
+    "stage": {
+      "waiting": "In attesa di iniziare",
+      "sheet": "Disegno della tavola degli angoli",
+      "final_sheet": "Nuovo disegno della tavola finale",
+      "starting_build": "Avvio della creazione 3D",
+      "model": "Creazione del modello 3D"
+    },
+    "status": {
+      "missing": "Mancante",
+      "no_photo": "Senza foto",
+      "queued": "In attesa",
+      "building": "In creazione",
+      "ready": "Pronto",
+      "needs_credits": "Servono crediti",
+      "needs_info": "Serve una foto",
+      "failed": "Non riuscito"
+    }
   },
   "ShopifyConnect": {
     "title": "Collega {shop} a Easy Render",
