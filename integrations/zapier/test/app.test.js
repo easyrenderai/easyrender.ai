@@ -20,6 +20,104 @@ test('auth validates using credits and returns a non-secret connection label', a
   assert.equal(result.accountLabel, 'Catalog team');
   assert.equal(JSON.stringify(result).includes(authData.apiKey), false);
 });
+for (const accountLabel of [
+  '',
+  '   ',
+  'https://example.com/team',
+  'http://localhost:3000',
+  '//example.com',
+  'example.com',
+  'team.example.co.uk',
+  'www.example.com',
+  '127.0.0.1',
+  'er_test_only',
+  'Team er_test_only',
+]) {
+  test(`auth rejects invalid display label ${JSON.stringify(accountLabel)} before any request`, async () => {
+    await assert.rejects(
+      () => run(App.authentication.test, { authData: { ...authData, accountLabel } }),
+      /short display name, not a domain, URL or API key/,
+    );
+  });
+}
+for (const accountLabel of ['Acme Inc.', 'Equipo López', 'Catalog team 3D']) {
+  test(`auth preserves valid display label ${accountLabel}`, async () => {
+    api().get('/api/credits').reply(200, { balance: 0 });
+    assert.deepEqual(
+      await run(App.authentication.test, { authData: { ...authData, accountLabel } }),
+      { accountLabel },
+    );
+    assert.equal(App.authentication.connectionLabel, '{{bundle.authData.accountLabel}}');
+  });
+}
+test('render selectors use a hidden dropdown and still accept custom IDs', () => {
+  const trigger = App.triggers.list_render_ids;
+  assert.ok(trigger, 'the render ID dropdown trigger is registered');
+  assert.equal(trigger.display.hidden, true);
+  assert.equal(trigger.operation.type, 'polling');
+  for (const action of [App.creates.get_render, App.triggers.model_ready]) {
+    const field = action.operation.inputFields.find(({ key }) => key === 'id');
+    assert.equal(field.dynamic, 'list_render_ids.id.name');
+    assert.notEqual(field.preventCustomValues, true);
+  }
+});
+test('render dropdown returns named choices with ID fallback from one bounded page', async () => {
+  assert.ok(App.triggers.list_render_ids, 'the render ID dropdown trigger is registered');
+  api()
+    .get('/api/renders')
+    .query({ limit: 100 })
+    .reply(200, {
+      renders: [
+        { id: 'r_1', name: 'Chair', status: 'ready' },
+        { id: 'r_2', name: null },
+        { id: 'r_3', name: '' },
+        { id: 'r_4' },
+      ],
+      nextCursor: 'next',
+      balance: 0,
+    });
+  assert.deepEqual(
+    await run(App.triggers.list_render_ids.operation.perform, { authData, inputData: {} }),
+    [
+      { id: 'r_1', name: 'Chair' },
+      { id: 'r_2', name: 'r_2' },
+      { id: 'r_3', name: 'r_3' },
+      { id: 'r_4', name: 'r_4' },
+    ],
+  );
+});
+test('render dropdown returns an empty list for an account without renders', async () => {
+  assert.ok(App.triggers.list_render_ids, 'the render ID dropdown trigger is registered');
+  api().get('/api/renders').query({ limit: 100 }).reply(200, { renders: [], nextCursor: null });
+  assert.deepEqual(
+    await run(App.triggers.list_render_ids.operation.perform, { authData, inputData: {} }),
+    [],
+  );
+});
+test('all operations explicitly preserve empty input values', () => {
+  assert.equal(App.flags?.cleanInputData, false);
+  for (const action of [...Object.values(App.creates), ...Object.values(App.triggers)]) {
+    assert.equal(action.operation.cleanInputData ?? App.flags.cleanInputData, false);
+  }
+});
+test('list output fields expose typed render line items and the next cursor', () => {
+  const fields = App.creates.list_renders.operation.outputFields;
+  assert.deepEqual(
+    fields.map(({ key }) => key),
+    [
+      'renders[]id',
+      'renders[]status',
+      'renders[]name',
+      'renders[]hasModel',
+      'renders[]hasPreview',
+      'renders[]isPublic',
+      'renders[]createdAt',
+      'nextCursor',
+    ],
+  );
+  assert.equal(fields.find(({ key }) => key === 'renders[]hasModel').type, 'boolean');
+  assert.equal(fields.find(({ key }) => key === 'renders[]createdAt').type, 'datetime');
+});
 test('create submits private URL preview, metadata and idempotency key', async () => {
   api()
     .post('/api/renders', {
