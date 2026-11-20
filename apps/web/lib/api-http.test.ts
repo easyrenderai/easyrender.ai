@@ -52,6 +52,8 @@ it.each([
   [503, 'upstream_unavailable', true],
   [503, 'exports_unavailable', true],
   [504, 'upstream_timeout', true],
+  [503, 'no_stripe', false],
+  [503, 'not_configured', false],
   [400, 'bad_request', false],
   [401, 'unauthorized', false],
   [402, 'insufficient_credits', false],
