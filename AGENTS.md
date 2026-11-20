@@ -69,15 +69,21 @@ bun run lint                      # biome check .
 bun run format                    # biome check --write .
 bun run check:ui-guards           # no raw HTML controls in apps/web
 bun run check:use-effects         # useEffect ratchet; --prune after removing effects, --report to list
-bun run preflight                 # what CI runs: biome, ui guards, effect ratchet, typecheck, tests
+bun run preflight                 # what CI runs: biome, ui guards, secrets, effect ratchet, typecheck, tests, promotion contract, examples/rest
+bun run test:db                   # scratch Postgres, then core and web tests with none skipped; stops it after
 bun run db:generate               # prisma generate
 cd apps/mobile && bun install && bunx expo export --platform android   # mobile bundle check
 cd apps/desktop && bun install && bun run typecheck && bun run test    # desktop; `bun run dev` opens the window
 cd services/model-export && python -m pytest                           # converter; needs Python 3.13 and requirements-dev.txt
 ```
 
-Run `bun run preflight` before you push. The `credits.integration.test.ts` suite needs a scratch
-Postgres in `TEST_DATABASE_URL` and skips without it.
+Run `bun run preflight` before you push. The integration suites (credits, renders, auth and the rest
+of `*.integration.test.ts`) need Postgres in `TEST_DATABASE_URL` and skip without it, so preflight
+ends by printing how many tests skipped. `bun run test:db` runs them: it starts a throwaway server
+(`initdb` in a temp folder, as the `postgres` user when root), builds the schema from
+`packages/db/prisma/schema.prisma`, runs the core and web tests and stops the server. It needs the
+Postgres server binaries (`PG_BIN` if they are not on PATH). With `TEST_DATABASE_URL` already set it
+uses that database as is. Pass a filter after `--`: `bun run test:db -- credits`.
 
 ## Rules
 
