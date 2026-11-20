@@ -84,6 +84,7 @@ const STALE_MS = 45 * 60 * 1000;
 // A start request lasts under a minute. A render with no prediction id after this long never
 // reached Replicate, so it fails and refunds instead of leaving the visitor waiting.
 const NEVER_STARTED_MS = 3 * 60 * 1000;
+const RECOVERY_BATCH = 20;
 export const MAX_ACTIVE_RENDERS = 5;
 const POLL_INTERVAL_MS = 5000;
 
@@ -746,16 +747,31 @@ export async function advance(id: string): Promise<Render | null> {
       (current?.status === 'drafting' || current?.status === 'rendering')
     ) {
       await fail(id, error, render);
-    } else {
+    } else if (await claimPollFailureReport(id)) {
       reportError(error, { renderId: id, stage: 'render_poll_retryable' });
     }
   }
   return db().render.findUnique({ where: { id } });
 }
 
+// A retryable poll failure (provider read outage, a download that dropped) repeats on every poll
+// and every cron pass until it clears, so only the first one per render goes to Sentry. The marker
+// is written with raw SQL so `updatedAt`, which is the render's timeout deadline, does not move,
+// and the conditional update lets exactly one concurrent caller win the report.
+async function claimPollFailureReport(id: string): Promise<boolean> {
+  const claimed = await db().$executeRaw`UPDATE "Render"
+    SET "quality" = COALESCE("quality", '{}'::jsonb) || '{"pollFailureReported": true}'::jsonb
+    WHERE "id" = ${id} AND COALESCE("quality"->>'pollFailureReported', 'false') <> 'true'`;
+  return claimed > 0;
+}
+
 // A bounded recovery pass for the authenticated worker. Oldest requests first; failures do not
-// prevent another render from progressing. Provider start claims are never replayed.
-export async function recoverRenders(take = 20): Promise<{ checked: number; failed: number }> {
+// prevent another render from progressing. Provider start claims are never replayed. The default
+// is wide enough that a few slow jobs, which stay in flight until they go stale, cannot hide a
+// newer render whose webhook was lost.
+export async function recoverRenders(
+  take = RECOVERY_BATCH,
+): Promise<{ checked: number; failed: number }> {
   const rows = await db().render.findMany({
     where: { status: { in: ['drafting', 'rendering'] } },
     select: { id: true },
