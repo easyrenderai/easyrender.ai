@@ -96,7 +96,8 @@ The run summary shows one line you can read at a glance: the number of responses
 A run that is red because of `edge refused` in the failure column is the edge, not the app: check
 Vercel's firewall page before rolling back. A red run with `HTTP 5xx` right after a release is the
 case for the Rollback workflow. The workflow reads `PRODUCTION_URL` like Release does and needs no
-secret. The checks live in `scripts/prod-smoke.mjs`; `scripts/prod-smoke.test.mjs` runs in CI.
+secret. The checks live in `scripts/prod-smoke.mjs`; `scripts/prod-smoke.test.mjs` runs in CI. A
+pull request that changes the workflow or the script also runs it once against production.
 
 ## Not in this workflow
 

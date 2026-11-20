@@ -7,12 +7,18 @@ name: Production smoke
 # refused. A red run means production is down or the edge refuses requests; the Rollback workflow
 # is the response if a release caused it (RELEASING.md).
 #
-# GitHub only runs schedules from the default branch. Run it by hand from any branch with
-# workflow_dispatch.
+# GitHub only runs schedules, and lets you dispatch a workflow, once the file is on the default
+# branch. A pull request that changes the workflow or the script runs it once against production
+# (seven reads) so the change is proven before it merges.
 on:
   schedule:
     - cron: "*/15 * * * *"
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/prod-smoke.yml
+      - scripts/prod-smoke.mjs
 
 permissions:
   contents: read
