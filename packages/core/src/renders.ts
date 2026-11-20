@@ -480,12 +480,15 @@ async function fail(id: string, error: unknown, expected?: Pick<Render, 'status'
     return true;
   });
   if (!changed || (render.status === 'drafting' && render.sheetKey)) return;
+  // A rejected sheet names its guard (`sheet rejected (sheet_repeated_views): ...`), so the rate of
+  // each rejection can be read from analytics without sending it to the error tracker.
+  const failureReason = /^sheet rejected \((\w+)\)/.exec(message)?.[1] ?? 'generation_failed';
   await captureRender(
     render.status === 'drafting' ? 'preview_failed' : 'render_failed',
     render,
     render.status === 'drafting'
       ? {
-          failure_reason: 'generation_failed',
+          failure_reason: failureReason,
           duration_ms: Date.now() - render.createdAt.getTime(),
           input_type: render.source === 'web' ? 'upload' : 'api',
           free_preview_consumed: false,

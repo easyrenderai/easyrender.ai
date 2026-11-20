@@ -6,7 +6,9 @@ import {
   SHEET_CREDITS,
   SHEET_MODEL,
 } from '@easyrender/harness';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import sharp from 'sharp';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { captureRender } from './analytics';
 import { grantCreditsInTransaction } from './credits';
 import { advance, createDraft, startSheet, toView } from './renders';
 import { reportError } from './report';
@@ -267,10 +269,33 @@ describe('starting a paid angle sheet when Replicate answers 500', () => {
 });
 
 describe('an angle sheet that repeats one view', () => {
-  // The showcase vase is one view pasted into every cell: what Sentry EASYRENDERAI-D rejected.
-  const repeatedSheet = new Uint8Array(
-    readFileSync(new URL('../../../apps/web/public/showcase/vase-angles.jpg', import.meta.url)),
-  );
+  // The armchair's front view pasted into every cell: a model that ignored the turnaround. (The
+  // showcase vase also repeats one view, but it is round, so the guard rightly accepts it.)
+  let repeatedSheet: Uint8Array;
+  beforeAll(async () => {
+    const armchair = readFileSync(
+      new URL('../../../apps/web/public/showcase/armchair-angles.jpg', import.meta.url),
+    );
+    const { width = 0, height = 0 } = await sharp(armchair).metadata();
+    const side = Math.floor(Math.min(width, height) / 3);
+    const front = await sharp(armchair)
+      .extract({ left: 0, top: 0, width: side, height: side })
+      .png()
+      .toBuffer();
+    const bytes = await sharp({
+      create: { width: side * 3, height: side * 3, channels: 3, background: '#ffffff' },
+    })
+      .composite(
+        Array.from({ length: 9 }, (_, index) => ({
+          input: front,
+          left: (index % 3) * side,
+          top: Math.floor(index / 3) * side,
+        })),
+      )
+      .png()
+      .toBuffer();
+    repeatedSheet = new Uint8Array(bytes);
+  });
   const drafting = {
     id: 'r1',
     status: 'drafting',
@@ -428,6 +453,16 @@ describe('an angle sheet that repeats one view', () => {
     expect(stored().sheetKey).toBeNull();
     expect(putFile).not.toHaveBeenCalled();
     expect(start).not.toHaveBeenCalled();
+  });
+
+  it('records which guard rejected the preview, so its rate can be read', async () => {
+    vi.mocked(captureRender).mockClear();
+    await advanceWithRepeatedSheet();
+    expect(captureRender).toHaveBeenCalledWith(
+      'preview_failed',
+      expect.anything(),
+      expect.objectContaining({ failure_reason: 'sheet_repeated_views' }),
+    );
   });
 
   it('refunds the credits and reports a warning, not an exception', async () => {
