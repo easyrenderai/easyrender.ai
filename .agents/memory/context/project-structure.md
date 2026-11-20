@@ -3,8 +3,10 @@
 - `apps/web`: Next.js 16, App Router, Tailwind 4, shadcn (new-york, zinc), next-intl (en, es, de, fr, it, pt),
   Better Auth, Stripe. Route groups: `(marketing)` for every public page (site header and
   footer via `components/site-chrome.tsx`), `(app)` for sign-in and sign-up, `(dashboard)` for the
-  signed-in pages (own rail and sidebar shell, `components/app-shell`, no marketing header). One
-  root layout holds fonts, translations and analytics; paths are unchanged. API routes under `app/api`: `renders`, `mcp`, `oauth`, `keys`, `checkout`,
+  signed-in pages (own rail and sidebar shell, `components/app-shell`, no marketing header). The
+  root layout holds fonts and the query client and reads nothing from the request; each route group
+  puts an `IntlBoundary` in its layout for translations. Marketing pages are cached at the edge:
+  see [cached marketing pages](cached-marketing-pages.md). Paths are unchanged. API routes under `app/api`: `renders`, `mcp`, `oauth`, `keys`, `checkout`,
   `billing`, `webhooks/{stripe,replicate}`, `auth`. Studio (marketing) components under
   `components/studio`.
 - `apps/mobile`: Expo SDK 58, expo-router. Talks to the same `/api/renders*` and Better Auth

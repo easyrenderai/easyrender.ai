@@ -1,11 +1,12 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { SiteLink as Link } from '@/components/site-link';
 import { Button } from '@/components/ui/button';
+import { useViewer } from '@/components/use-viewer';
 import type { Locale } from '@/i18n/config';
 import { headerPrimaryAction, headerSectionHref } from '@/lib/site-navigation';
+import { useSitePathname } from '@/lib/use-site-pathname';
 
 // Layouts persist across client navigation. Resolve section links from the live pathname.
 export function HeaderNavItem({
@@ -21,7 +22,7 @@ export function HeaderNavItem({
   isMobile?: boolean;
   children: ReactNode;
 }) {
-  const path = usePathname();
+  const path = useSitePathname();
   return (
     <Button
       variant="ghost"
@@ -45,16 +46,15 @@ export function HeaderConnect({
   suffix,
   apiLabel,
   uploadLabel,
-  isSignedIn,
 }: {
   locale: Locale;
   connect: string;
   suffix: string;
   apiLabel: string;
   uploadLabel: string;
-  isSignedIn: boolean;
 }) {
-  const action = headerPrimaryAction(locale, usePathname(), isSignedIn);
+  const isSignedIn = Boolean(useViewer().data?.signedIn);
+  const action = headerPrimaryAction(locale, useSitePathname(), isSignedIn);
   // The session entry already links to the dashboard in both header layouts.
   if (action.kind === 'dashboard') return null;
   const label = { api: apiLabel, upload: uploadLabel, mcp: connect }[action.kind];

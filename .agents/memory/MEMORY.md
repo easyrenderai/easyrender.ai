@@ -12,6 +12,7 @@ a line here. Keep this map short.
 ## Task entry points
 
 - **Where things live:** [project structure](context/project-structure.md).
+- **Marketing pages and the edge cache (what a layout may never read):** [cached marketing pages](context/cached-marketing-pages.md).
 - **Money, credits, pricing, Stripe:** [credits and pricing](context/credits-and-pricing.md).
 - **Deploys, env vars, database:** [deploys and environments](context/deploys-and-environments.md). Shipping to prod: `RELEASING.md` (release based, merge does not deploy).
 - **React effects (useEffect ratchet, baseline, how to remove one):** [react effects](context/react-effects.md).

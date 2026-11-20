@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useViewer } from '@/components/use-viewer';
 import { useActivationError } from '@/lib/activation-errors';
 import {
   attribution,
@@ -28,7 +29,8 @@ const TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export { prepare };
 
-export function PromptBar({ signedIn, compact = false }: { signedIn: boolean; compact?: boolean }) {
+export function PromptBar({ compact = false }: { compact?: boolean }) {
+  const signedIn = Boolean(useViewer().data?.signedIn);
   const t = useTranslations('PromptBar');
   const localizedError = useActivationError();
   const showcase = useTranslations('Showcase');

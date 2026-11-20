@@ -256,7 +256,7 @@ describe('once they are published', () => {
       ...filesUnder(join(ROOT, 'messages'), ['.json']),
     ].filter(
       (file) =>
-        !file.includes(`${join('app', '(marketing)', 'compare')}`) &&
+        !file.includes(`${join('app', '(marketing)', '(en)', 'compare')}`) &&
         !file.includes(`${join('components', 'compare')}`) &&
         !file.includes(`${join('components', 'blog', 'blog-index-view')}`),
     );

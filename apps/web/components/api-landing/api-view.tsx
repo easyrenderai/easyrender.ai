@@ -2,6 +2,7 @@ import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { BlogModel } from '@/components/blog/blog-model';
+import { ByViewer } from '@/components/by-viewer';
 import { CodeSnippet } from '@/components/code-snippet';
 import { FaqSection } from '@/components/faq-section';
 import { IntegrationCosts } from '@/components/integrations/costs';
@@ -13,7 +14,6 @@ import { StudioClosing } from '@/components/studio/proof';
 import { StudioShell } from '@/components/studio/shell';
 import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
-import { currentUser } from '@/lib/actor';
 import { localizedAuthPath } from '@/lib/app-locale';
 import { TABLE_EXAMPLE } from '@/lib/marketing-examples';
 import { ROUTES } from '@/lib/seo/routes';
@@ -29,17 +29,20 @@ export async function apiFaqItems(locale: Locale) {
 }
 
 export async function ApiView({ locale }: { locale: Locale }) {
-  const [t, user, items] = await Promise.all([
+  const [t, items] = await Promise.all([
     getTranslations({ locale, namespace: 'ApiLanding' }),
-    currentUser().catch(() => null),
     apiFaqItems(locale),
   ]);
   const examples = await getTranslations({ locale, namespace: 'IntegrationLanding.examples' });
   const result = await getTranslations({ locale, namespace: 'IntegrationLanding.result' });
-  const accountHref = user
-    ? '/connectors'
-    : `${localizedAuthPath(locale, '/sign-up')}?next=%2Fconnectors`;
-  const accountLabel = t(user ? 'connect.cta' : 'connect.signup');
+  // The page is cached for everyone: a visitor's sign-up link is in the HTML, a member's link
+  // replaces it in the browser.
+  const accountHref = `${localizedAuthPath(locale, '/sign-up')}?next=%2Fconnectors`;
+  const setupLink = (href: string, label: string) => (
+    <IntegrationLink channel="api" action="setup" href={href}>
+      {label} <ArrowRight aria-hidden="true" />
+    </IntegrationLink>
+  );
   const copyLabels = {
     copyLabel: t('examples.copy'),
     copiedLabel: t('examples.copied'),
@@ -66,11 +69,18 @@ export async function ApiView({ locale }: { locale: Locale }) {
             </h1>
             <p className="hero__lead">{t('hero.subtitle')}</p>
             <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg">
-                <IntegrationLink channel="api" action="setup" href={accountHref}>
-                  {accountLabel} <ArrowRight aria-hidden="true" />
-                </IntegrationLink>
-              </Button>
+              <ByViewer
+                visitor={
+                  <Button asChild size="lg">
+                    {setupLink(accountHref, t('connect.signup'))}
+                  </Button>
+                }
+                member={
+                  <Button asChild size="lg">
+                    {setupLink('/connectors', t('connect.cta'))}
+                  </Button>
+                }
+              />
               <Button asChild size="lg" variant="outline">
                 <IntegrationLink channel="api" action="reference" href="/api/openapi.json">
                   {examples('reference')}
@@ -160,7 +170,18 @@ export async function ApiView({ locale }: { locale: Locale }) {
         </Link>
       </p>
       <ResourceLinks locale={locale} context="api" />
-      <StudioClosing title={t('closing.title')} label={accountLabel} href={accountHref} />
+      <ByViewer
+        visitor={
+          <StudioClosing
+            title={t('closing.title')}
+            label={t('connect.signup')}
+            href={accountHref}
+          />
+        }
+        member={
+          <StudioClosing title={t('closing.title')} label={t('connect.cta')} href="/connectors" />
+        }
+      />
     </StudioShell>
   );
 }

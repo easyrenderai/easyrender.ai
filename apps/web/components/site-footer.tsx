@@ -1,4 +1,4 @@
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { BrandMark } from '@/components/brand-mark';
 import { SiteLink as Link } from '@/components/site-link';
 import { Separator } from '@/components/ui/separator';
@@ -63,9 +63,9 @@ function hrefFor(link: FooterLink, locale: Locale, home: string): string | null 
   return isPublished(link.route, locale) ? ROUTES[link.route].paths[locale] : null;
 }
 
-export async function SiteFooter() {
-  const [t, locale] = await Promise.all([getTranslations('Footer'), getLocale()]);
-  const home = ROUTES.home.paths[locale as Locale];
+export async function SiteFooter({ locale }: { locale: Locale }) {
+  const t = await getTranslations({ locale, namespace: 'Footer' });
+  const home = ROUTES.home.paths[locale];
 
   return (
     <footer className="border-t bg-muted/30">

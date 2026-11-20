@@ -72,7 +72,7 @@ export async function Pricing() {
         </Link>
       }
     >
-      <PricingExposure variant={pricing.variant} subject={pricing.subject} />
+      <PricingExposure variant={pricing.variant} currency={pricing.currency} />
       <div className="mb-6 flex flex-wrap items-center gap-3">
         <Button asChild>
           <Link href={`${ROUTES.home.paths[locale as Locale]}#try`}>{t('tryFree')}</Link>

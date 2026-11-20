@@ -19,7 +19,7 @@ vi.mock('next-intl/server', () => ({
 }));
 vi.mock('@/lib/actor', () => ({ currentUser: async () => fixture.user }));
 vi.mock('@/lib/pricing', () => ({
-  currentPricing: async () => ({
+  viewerPricing: async () => ({
     plans: { pro: { label: 'Pro', monthlyCredits: 5500, priceCents: 4900 } },
     creditPrice: 0.01,
     currency: 'eur',

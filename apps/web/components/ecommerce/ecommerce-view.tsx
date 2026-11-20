@@ -25,6 +25,7 @@ import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import QRCode from 'qrcode';
 import type { ReactNode } from 'react';
+import { ByViewer } from '@/components/by-viewer';
 import { CodeSnippet } from '@/components/code-snippet';
 import { PrestaShopMark, ShopifyMark, WooMark } from '@/components/ecommerce/platform-logos';
 import { PlatformPicker } from '@/components/ecommerce/platform-picker';
@@ -35,7 +36,6 @@ import { StudioClosing } from '@/components/studio/proof';
 import { StudioShell } from '@/components/studio/shell';
 import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
-import { currentUser } from '@/lib/actor';
 import { localizedAuthPath } from '@/lib/app-locale';
 import { TABLE_EXAMPLE as sample } from '@/lib/marketing-examples';
 import { formatCount, formatMoney } from '@/lib/price-format';
@@ -80,16 +80,15 @@ const snippet = (label: string, caption: string, id: string) =>
 export async function EcommerceView({ locale }: { locale: Locale }) {
   const arUrl = `${SITE_URL}/ar/${sample.id}`;
   const { currentPricing } = await import('@/lib/pricing');
-  const [t, user, items, qr, pricing] = await Promise.all([
+  const [t, items, qr, pricing] = await Promise.all([
     getTranslations({ locale, namespace: 'EcommerceLanding' }),
-    currentUser().catch(() => null),
     ecommerceFaqItems(locale),
     QRCode.toDataURL(arUrl, { margin: 1, width: 280, errorCorrectionLevel: 'M' }),
     currentPricing(),
   ]);
-  const connectorHref = user
-    ? '/connectors'
-    : `${localizedAuthPath(locale, '/sign-up')}?next=%2Fconnectors`;
+  // The page is cached for everyone: the visitor's sign-up link is in the HTML, and a member's
+  // connectors link replaces it in the browser (see the secondary button below).
+  const connectorHref = `${localizedAuthPath(locale, '/sign-up')}?next=%2Fconnectors`;
   const previewHref = `${ROUTES.home.paths[locale]}#try`;
   const apiLocale = isPublished('api', locale) ? locale : 'en';
   const money = (value: number) => formatMoney(locale, value, pricing.currency);
@@ -239,12 +238,17 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
         </h2>
         <div className="flex flex-wrap gap-3">
           {cta(actions[platform].primary, t(`platforms.${platform}.cta`), true)}
-          {cta(
-            actions[platform].secondary,
-            user && (platform === 'woocommerce' || platform === 'prestashop')
-              ? t('picker.manageKeys')
-              : t(`platforms.${platform}.secondary`),
-            false,
+          {platform === 'woocommerce' || platform === 'prestashop' ? (
+            <ByViewer
+              visitor={cta(
+                actions[platform].secondary,
+                t(`platforms.${platform}.secondary`),
+                false,
+              )}
+              member={cta('/connectors', t('picker.manageKeys'), false)}
+            />
+          ) : (
+            cta(actions[platform].secondary, t(`platforms.${platform}.secondary`), false)
           )}
         </div>
       </div>

@@ -19,12 +19,13 @@ vi.mock('@/lib/analytics/browser', () => ({
 }));
 vi.mock('@/lib/auth-client', () => ({ authClient: {} }));
 vi.mock('@/components/analytics', () => ({ cookiesPath: () => '/cookies' }));
+vi.mock('@/components/use-viewer', () => ({ useViewer: () => ({ data: undefined }) }));
 
 import { AuthFields } from '@/components/auth-fields';
 import { PromptBar } from '@/components/prompt-bar';
 
 it('offers existing examples directly without requiring an account or a generation', () => {
-  const html = renderToStaticMarkup(createElement(PromptBar, { signedIn: false }));
+  const html = renderToStaticMarkup(createElement(PromptBar, {}));
   expect(html).toContain('href="/r/cmwceijqd000007l23vfjeftv"');
   expect(html).not.toContain('demo-armchair');
   expect(html).toContain('href="/r/demo-vase"');

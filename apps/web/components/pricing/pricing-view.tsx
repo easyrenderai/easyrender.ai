@@ -1,9 +1,9 @@
 import { PUBLIC_PLAN_IDS, RENDER_CREDITS, rendersFor } from '@easyrender/harness';
 import { ChevronDown } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
-import { PaygPicker } from '@/components/payg-picker';
 import { CatalogCalculator } from '@/components/pricing/catalog-calculator';
 import { PlanCards } from '@/components/pricing/plan-cards';
+import { SubscriberTopup } from '@/components/pricing/subscriber-topup';
 import { PricingExposure } from '@/components/pricing-exposure';
 import { SiteLink as Link } from '@/components/site-link';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/table';
 import type { Locale } from '@/i18n/config';
 import { formatCount, formatMoney } from '@/lib/price-format';
-import { currentPricing, currentTopupPricing } from '@/lib/pricing';
+import { currentPricing } from '@/lib/pricing';
 import { ROUTES } from '@/lib/seo/routes';
 import { FAQ_ITEM_KEYS } from './faq-keys';
 
@@ -65,11 +65,10 @@ export async function pricingFaqItems(locale: Locale) {
  * variant); the purchase itself happens on /credits, behind sign-up.
  */
 export async function PricingView({ locale }: { locale: Locale }) {
-  const [t, pricing, items, topup] = await Promise.all([
+  const [t, pricing, items] = await Promise.all([
     getTranslations({ locale, namespace: 'Pricing' }),
     currentPricing(),
     pricingFaqItems(locale),
-    currentTopupPricing(),
   ]);
   const tPlans = await getTranslations({ locale, namespace: 'Landing.pricing' });
   const usd = dollars(locale, pricing.currency);
@@ -109,7 +108,7 @@ export async function PricingView({ locale }: { locale: Locale }) {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-      <PricingExposure variant={pricing.variant} subject={pricing.subject} />
+      <PricingExposure variant={pricing.variant} currency={pricing.currency} />
       <header className="mx-auto max-w-2xl space-y-3 text-center">
         <Badge variant="outline">{t('eyebrow')}</Badge>
         <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
@@ -148,14 +147,7 @@ export async function PricingView({ locale }: { locale: Locale }) {
         </Link>
       </section>
 
-      {topup.plan && (
-        <section className="mx-auto mt-8 max-w-lg space-y-4" aria-labelledby="pricing-topups">
-          <h2 id="pricing-topups" className="text-2xl font-semibold tracking-tight">
-            {t('topUpTitle')}
-          </h2>
-          <PaygPicker pricingVariant={pricing.variant} currency={topup.currency} rate={topup} />
-        </section>
-      )}
+      <SubscriberTopup title={t('topUpTitle')} variant={pricing.variant} />
 
       <section className="mt-16 space-y-4" aria-labelledby="pricing-compare">
         <div className="space-y-1">

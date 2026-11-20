@@ -13,6 +13,7 @@ vi.mock('@/lib/pricing', () => ({ currentPricing: async () => ({}) }));
 vi.mock('next/font/local', () => ({ default: () => ({ className: '', variable: '' }) }));
 const catalogs = { en, es, fr, de, it: itMessages, pt };
 vi.mock('next-intl/server', () => ({
+  setRequestLocale: () => {},
   getTranslations: async ({
     locale,
     namespace,

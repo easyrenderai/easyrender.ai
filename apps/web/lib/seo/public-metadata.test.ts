@@ -94,13 +94,13 @@ describe('public pricing copy', () => {
   });
 
   it('the footer does not contradict EUR checkout prices', async () => {
-    const html = renderToStaticMarkup(await SiteFooter());
+    const html = renderToStaticMarkup(await SiteFooter({ locale: 'en' }));
     expect(html).not.toContain('Prices in USD.');
     expect(html).toContain('checkout');
   });
 
   it('makes the comparison hub and named author discoverable from public pages', async () => {
-    const html = renderToStaticMarkup(await SiteFooter());
+    const html = renderToStaticMarkup(await SiteFooter({ locale: 'en' }));
     expect(html).toContain('href="/compare"');
     expect(html).toContain('href="/authors/jorge-rodriguez"');
   });

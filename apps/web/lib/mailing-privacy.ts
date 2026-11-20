@@ -1,6 +1,9 @@
-export const PRIVATE_TOKEN_PAGE_HEADER = 'x-easyrender-private-token-page';
-
-const isInvitePath = (path: string) => /^\/invite\/[^/]+\/?$/.test(path);
+const INVITE_PATH = /^\/invite\/[^/]+\/?$/;
+const TOKEN_PATHS = [
+  /^\/(?:api\/)?email\/(?:confirm|unsubscribe)(?:\/|$)/,
+  /^\/api\/email\/verify-account(?:\/|$)/,
+  /^\/(?:api\/auth\/)?(?:verify-email|reset-password)(?:\/|$)/,
+];
 
 /** Token links are private actions, not analytics landing pages. */
 export function isMailingTokenLocation(value: string): boolean {
@@ -10,16 +13,21 @@ export function isMailingTokenLocation(value: string): boolean {
       'https://easyrender.invalid',
     );
     return (
-      isInvitePath(path) ||
-      isInvitePath(searchParams.get('next') ?? '') ||
-      /^\/(?:api\/)?email\/(?:confirm|unsubscribe)(?:\/|$)/.test(path) ||
-      /^\/api\/email\/verify-account(?:\/|$)/.test(path) ||
-      /^\/(?:api\/auth\/)?(?:verify-email|reset-password)(?:\/|$)/.test(path)
+      INVITE_PATH.test(path) ||
+      INVITE_PATH.test(searchParams.get('next') ?? '') ||
+      TOKEN_PATHS.some((pattern) => pattern.test(path))
     );
   } catch {
     return false;
   }
 }
+
+/**
+ * The same test as a script the browser runs before anything loads: the root layout is built once
+ * for every page, so it can no longer read the request to leave the Google tag out of a token page.
+ * mailing-privacy.test.ts runs both against the same addresses.
+ */
+export const MAILING_TOKEN_CHECK_SCRIPT = `function erIsMailingTokenLocation(href){try{var u=new URL(href);var p=u.pathname;var n=u.searchParams.get('next')||'';return ${INVITE_PATH}.test(p)||${INVITE_PATH}.test(n)||${TOKEN_PATHS.map((pattern) => `${pattern}.test(p)`).join('||')}}catch(e){return false}}`;
 
 /** Remove tokens from URLs, bodies and nested breadcrumbs without mutating an SDK event. */
 export function redactMailingTokens<T>(value: T): T {
