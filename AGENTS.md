@@ -77,12 +77,14 @@ bun install                       # root workspace (apps/web + packages/*)
 bun run dev                       # apps/web on :3000
 bun run typecheck                 # all workspaces
 bun run test                      # vitest in web, core, harness, mcp and db
-bun run lint                      # biome check .
+bun run lint                      # biome check . --error-on-warnings
 bun run format                    # biome check --write .
 bun run check:ui-guards           # no raw HTML controls in apps/web
 bun run check:use-effects         # useEffect ratchet; --prune after removing effects, --report to list
-bun run check:docs                 # AGENTS.md layout and language list match the repo
-bun run preflight                 # what CI runs: biome, ui guards, effect ratchet, docs, typecheck, tests
+bun run check:knip               # unused files, exports and types (knip.json); --prune after deleting code
+bun run check:env                # every process.env.X read is in .env.example and turbo.json; --prune after fixing
+bun run check:docs                # AGENTS.md layout and language list match the repo
+bun run preflight                 # what CI runs: biome, ui guards, effect ratchet, knip, env, docs, typecheck, tests
 bun run db:generate               # prisma generate
 cd apps/mobile && bun install && bunx expo export --platform android   # mobile bundle check
 cd apps/desktop && bun install && bun run typecheck && bun run test    # desktop; `bun run dev` opens the window
@@ -149,6 +151,8 @@ Postgres in `TEST_DATABASE_URL` and skips without it.
     run it against prod from a laptop.
 15. New env var: add it to `.env.example` and `turbo.json` (`build.env`) in the same PR, and say
     in the PR that it has to be set in Vercel. Never commit a value.
+    `bun run check:env` fails otherwise. `bun run check:knip` fails on a new unused file or export:
+    delete it. Both baselines only shrink.
 16. Tests: assert what the user or caller sees (returned or stored values), not call order. A
     bug fix ships with a test that failed before it.
 

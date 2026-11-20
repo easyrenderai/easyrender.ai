@@ -10,7 +10,7 @@ import {
   addFloor,
   addStudioLights,
   type Fit,
-  fit,
+  fitItem,
   frame,
   makeBeauty,
   makeWire,
@@ -49,7 +49,7 @@ export async function initWheel(panel: HTMLElement, { scope }: { scope: Scope })
         makeBeauty(id, { shadows: true }),
       ]).then(([wire, beauty]) => ({
         id,
-        size: fit(item),
+        size: fitItem(item),
         wire: normalized(wire.object, item),
         beauty: normalized(beauty, item),
       }));

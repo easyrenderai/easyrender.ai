@@ -49,8 +49,6 @@ export function verifyWebhook(
 
 // --- Session tokens (App Bridge) -----------------------------------------------------------------
 
-export type ShopifySession = { shop: string; token: string };
-
 // Verifies the JWT App Bridge gives the embedded page: HS256 with the app secret, for this app,
 // from a real shop, not expired. Returns the shop it was issued for.
 export function verifySessionToken(

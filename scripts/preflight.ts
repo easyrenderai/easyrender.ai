@@ -1,13 +1,16 @@
-// Runs what CI runs, in order, and stops at the first failure: Biome, UI guards, effect ratchet,
-// docs check, typecheck, tests.
+// Runs what CI runs, in order, and stops at the first failure: Biome (warnings fail), UI guards,
+// effect ratchet, unused code and env checks, docs check, typecheck, tests.
 // Usage: bun run preflight [--keep-going]
 const keepGoing = process.argv.includes('--keep-going');
 
 const steps: Array<[string, string[]]> = [
-  ['biome', ['bunx', 'biome', 'check', '.']],
+  ['biome', ['bunx', 'biome', 'check', '.', '--error-on-warnings']],
   ['ui guards', ['bun', 'scripts/check-ui-guards.ts']],
   ['use-effect ratchet', ['bun', 'scripts/check-use-effect.ts']],
   ['use-effect ratchet tests', ['bun', 'test', 'scripts/use-effect-audit.test.ts']],
+  ['unused code (knip)', ['bun', 'scripts/check-knip.ts']],
+  ['env variables', ['bun', 'scripts/check-env.ts']],
+  ['baseline checks tests', ['bun', 'test', 'scripts/name-ratchet.test.ts']],
   ['docs', ['bun', 'scripts/check-docs.ts']],
   ['typecheck', ['bunx', 'turbo', 'run', 'typecheck']],
   ['tests', ['bunx', 'turbo', 'run', 'test']],

@@ -53,7 +53,7 @@ jobs:
           bun-version: 1.4.2
       - run: bun install --frozen-lockfile
       - name: Biome
-        run: bunx biome check .
+        run: bunx biome check . --error-on-warnings
       - name: UI guards
         run: bun run check:ui-guards
       - name: Secrets
@@ -67,6 +67,18 @@ jobs:
         env:
           BASE_REF: ${{ github.base_ref }}
         run: bun run check:use-effects --against "origin/$BASE_REF"
+      - name: Unused code and env variables
+        run: |
+          bun test scripts/name-ratchet.test.ts
+          bun run check:knip
+          bun run check:env
+      - name: Unused code and env baselines may not grow
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          bun run check:knip --against "origin/$BASE_REF"
+          bun run check:env --against "origin/$BASE_REF"
       - name: Docs match the repo
         run: bun run check:docs
       - name: Typecheck
@@ -79,8 +91,8 @@ jobs:
         with:
           node-version: 24
           package-manager-cache: false
-      - name: Release promotion contract
-        run: node --test scripts/promote-vercel.test.mjs
+      - name: Release promotion and production smoke contracts
+        run: node --test scripts/promote-vercel.test.mjs scripts/prod-smoke.test.mjs
       - name: Python and TypeScript API examples
         run: |
           bunx tsc -p examples/rest/tsconfig.json

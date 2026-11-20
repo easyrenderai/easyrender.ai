@@ -17,6 +17,7 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+// biome-ignore lint/suspicious/noUndeclaredEnvVars: a manual spike run with bun, never through turbo, so the key stays out of turbo.json.
 const FAL_KEY = process.env.FAL_KEY;
 const SKETCH_DIR = join(import.meta.dir, 'sketch-bench');
 const OUT_DIR = 'sketch-bench-out';

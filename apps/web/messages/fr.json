@@ -655,7 +655,6 @@
       "connection": "Vérifiez votre connexion et réessayez.",
       "sheetOutOfCredits": "Vous n’avez pas assez de crédits pour créer les vues."
     },
-    "fromHome": "Voici votre photo. Vous pouvez créer les vues ou le modèle 3D.",
     "generateSheet": "Créer les vues · {credits}",
     "sheetAlt": "Vues générées de {name}",
     "dropOverlay": {

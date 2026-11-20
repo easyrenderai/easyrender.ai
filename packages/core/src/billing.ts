@@ -347,12 +347,6 @@ export async function createCheckoutDetails(
 }
 
 /** Keep the URL-only core API compatible with existing callers. */
-export async function createCheckout(
-  ...args: Parameters<typeof createCheckoutDetails>
-): Promise<string> {
-  return (await createCheckoutDetails(...args)).url;
-}
-
 export function validateCheckoutPrice(
   price: Stripe.Price,
   plan: 'payg' | PlanId,

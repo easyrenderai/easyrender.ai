@@ -10,7 +10,7 @@ import { getStage, prefersReducedMotion, View } from '../engine/stage';
 import {
   addFloor,
   addStudioLights,
-  fit,
+  fitItem,
   frame,
   INK,
   makeBeauty,
@@ -191,7 +191,7 @@ export type LensContext = { scope: Scope; id: string };
 
 export async function initLens(root: HTMLElement, { scope, id }: LensContext) {
   const item = itemOf(id);
-  const size = fit(item);
+  const size = fitItem(item);
   const still = prefersReducedMotion();
   const host = part(root, 'view');
   // In the page from the pointer outwards: texture, normals, physics, mesh.
