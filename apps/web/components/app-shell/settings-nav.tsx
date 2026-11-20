@@ -15,9 +15,9 @@ export function SettingsNav() {
   );
   return (
     <Tabs value={current?.href ?? SETTINGS_NAV[0].href} className="mb-6">
-      <TabsList aria-label={nav('account')}>
+      <TabsList aria-label={nav('account')} className="max-w-full justify-start overflow-x-auto">
         {SETTINGS_NAV.map((item) => (
-          <TabsTrigger key={item.href} value={item.href} asChild>
+          <TabsTrigger key={item.href} value={item.href} className="shrink-0 flex-none" asChild>
             <Link href={item.href}>{nav(item.key)}</Link>
           </TabsTrigger>
         ))}

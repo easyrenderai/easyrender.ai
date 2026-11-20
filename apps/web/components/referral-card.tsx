@@ -36,8 +36,14 @@ export function ReferralLink({
   return (
     <div className="grid gap-2">
       <Label htmlFor="referral-link">{label}</Label>
-      <div className="flex gap-2">
-        <Input id="referral-link" value={link} readOnly onFocus={(e) => e.currentTarget.select()} />
+      <div className="flex min-w-0 flex-col gap-2 min-[480px]:flex-row">
+        <Input
+          id="referral-link"
+          className="min-w-0 flex-1"
+          value={link}
+          readOnly
+          onFocus={(e) => e.currentTarget.select()}
+        />
         <Button type="button" variant="outline" onClick={copy} className="shrink-0">
           {status === 'copied' ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
           {status === 'copied' ? copiedLabel : copyLabel}

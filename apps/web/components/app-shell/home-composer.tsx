@@ -171,10 +171,10 @@ export function HomeComposer() {
               type="button"
               variant="outline"
               onClick={() => picker.current?.click()}
-              className="size-20 shrink-0 flex-col gap-1 rounded-xl border-dashed sm:size-24 border-foreground bg-muted font-medium hover:bg-accent"
+              className="h-auto min-h-20 w-20 shrink-0 flex-col gap-1 whitespace-normal rounded-xl border-dashed border-foreground bg-muted px-1 py-2 text-center text-xs font-medium leading-tight hover:bg-accent sm:min-h-24 sm:w-24"
             >
-              <ImagePlus className="size-5" />
-              <span className="text-xs">{t('slot')}</span>
+              <ImagePlus className="size-5 shrink-0" />
+              {t('slot')}
             </Button>
           )}
           <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">

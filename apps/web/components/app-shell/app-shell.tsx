@@ -136,10 +136,13 @@ export function AppShell({
   // `w-full`: settings, admin and phone pages sit in a plain flex row, not a resizable panel. Without
   // it the scroll container shrinks to the content column and its scrollbar floats mid-page.
   const page = (
-    <main className="h-full w-full min-w-0 overflow-y-auto">
+    // overflow-x is clip, not auto: a chart, date field or tooltip that paints past the column
+    // must not open a horizontal scroller. iOS Safari scrolls that scroller to keep the tooltip
+    // in view and the page slides left under the header.
+    <main className="h-full w-full min-w-0 overflow-x-clip overflow-y-auto">
       <div
         className={cn(
-          'mx-auto flex min-h-full flex-col px-4 py-6 sm:px-6 lg:py-8',
+          'mx-auto flex min-h-full min-w-0 flex-col px-4 py-6 sm:px-6 lg:py-8',
           // Admin tables and charts need more room than the app's pages.
           isAdmin ? 'max-w-[90rem]' : 'max-w-5xl',
         )}
@@ -150,7 +153,9 @@ export function AppShell({
   );
 
   return (
-    <div className="flex h-dvh flex-col bg-muted/40 md:flex-row">
+    // svh, not dvh: on iPhone Safari the dynamic viewport still reaches under the bottom toolbar
+    // when the document itself does not scroll, which hides the tab labels.
+    <div className="flex h-svh flex-col overflow-x-clip bg-muted/40 md:flex-row">
       {/* Rail: the destinations as icons. Desktop only; phones get the bottom bar. */}
       <aside
         aria-label={t('navLabel')}
@@ -352,7 +357,7 @@ export function AppShell({
       {/* Bottom bar on phones. */}
       <nav
         aria-label={t('navLabel')}
-        className="flex shrink-0 justify-around border-t bg-muted/40 px-2 pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] md:hidden"
+        className="flex shrink-0 border-t bg-muted/40 px-1 pt-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden"
       >
         {[...APP_NAV, accountNav].map((item) => (
           <Link
@@ -360,12 +365,12 @@ export function AppShell({
             href={item.href}
             aria-current={isActivePath(pathname, item.href) ? 'page' : undefined}
             className={cn(
-              'flex min-w-14 flex-col items-center gap-0.5 rounded-md px-2 py-1 text-xs text-muted-foreground',
+              'flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-md px-1 py-1 text-center text-xs leading-tight text-muted-foreground',
               isActivePath(pathname, item.href) && 'text-foreground',
             )}
           >
-            <item.icon className="size-4" />
-            {nav(item.key)}
+            <item.icon className="size-4 shrink-0" />
+            <span className="line-clamp-2 w-full">{nav(item.key)}</span>
           </Link>
         ))}
       </nav>

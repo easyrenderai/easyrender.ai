@@ -107,12 +107,13 @@ for (const colorScheme of ['light', 'dark'] as const) {
         await page.route('**/showcase/vase.glb*', (route) => route.abort());
         await page.route('**/showcase/vase-angles.jpg', (route) => route.abort());
         await page.reload({ waitUntil: 'domcontentloaded' });
+        // model-viewer can sit on "loading" for several seconds after an aborted GLB before it errors.
         await expect(
           page.getByRole('alert').filter({ hasText: '3D model could not load' }),
-        ).toBeVisible();
+        ).toBeVisible({ timeout: 20_000 });
         await expect(
           page.getByRole('alert').filter({ hasText: 'angle sheet could not load' }),
-        ).toBeVisible();
+        ).toBeVisible({ timeout: 20_000 });
         await page.screenshot({
           path: `${output}/error-${colorScheme}-${width}.png`,
           fullPage: true,

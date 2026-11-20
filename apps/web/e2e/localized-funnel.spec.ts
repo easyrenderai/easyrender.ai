@@ -132,6 +132,7 @@ test('a confirmed fixture payment restores French and returns to the original pr
       .filter({ hasText: fr.Credits.checkoutConfirmed.replace('{credits}', '500') }),
   ).toBeVisible();
   await page.getByRole('link', { name: fr.Credits.backToProject }).click();
-  await expect(page).toHaveURL(`${base}/r/demo-vase`);
+  // A cold `next dev` compiles the render page on this click, same as sign-up above.
+  await expect(page).toHaveURL(`${base}/r/demo-vase`, { timeout: 30_000 });
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
 });
