@@ -24,6 +24,11 @@ process.setMaxListeners(0);
 
 let envelopes: string[] = [];
 
+// Release health sessions (sent whenever a release is set, as in CI) carry no URL, so they are not
+// telemetry about a request.
+const requestTelemetry = () =>
+  envelopes.filter((envelope) => !envelope.includes('"type":"session"'));
+
 // Runs the real SDK with the app's own config file, but swaps the network for a recorder.
 vi.mock('@sentry/nextjs', async (importOriginal) => {
   const real = await importOriginal<typeof import('@sentry/nextjs')>();
@@ -118,7 +123,7 @@ describe('tracing never reaches Sentry with a private link', () => {
           await loadConfig(file, runtime === 'client' ? '/account' : `${ORIGIN}${request.path}`);
           await traceRequest(request);
           expect(envelopes.join('')).not.toContain(TOKEN);
-          expect(envelopes).toEqual([]);
+          expect(requestTelemetry()).toEqual([]);
         });
       }
 
