@@ -3,7 +3,7 @@
 
 import sharp from 'sharp';
 
-const API = 'https://api.replicate.com/v1';
+const DEFAULT_API = 'https://api.replicate.com/v1';
 const MAX_ATTEMPTS = 3;
 const REQUEST_TIMEOUT_MS = 10_000;
 const REQUEST_BUDGET_MS = 45_000;
@@ -69,8 +69,37 @@ export async function toDataUri(bytes: Uint8Array, contentType: string): Promise
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Test and CI only: REPLICATE_API_BASE_URL points the client at a local mock so a browser test
+// can run the paid flow without spending real money. It is refused wherever real customers
+// are served, so a stray variable can never redirect production traffic (or its token).
+// harness cannot import core's config, so this repeats `config.isProduction()`.
+export function replicateBaseUrl(env: NodeJS.ProcessEnv = process.env): string {
+  const override = env.REPLICATE_API_BASE_URL?.trim();
+  if (!override) return DEFAULT_API;
+  const isProduction =
+    env.VERCEL_ENV === 'production' ||
+    (env.NODE_ENV === 'production' && env.VERCEL_ENV !== 'preview');
+  if (isProduction) {
+    throw new Error('REPLICATE_API_BASE_URL is not allowed in production');
+  }
+  let url: URL;
+  try {
+    url = new URL(override);
+  } catch {
+    throw new Error('REPLICATE_API_BASE_URL is not a valid URL');
+  }
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    throw new Error('REPLICATE_API_BASE_URL must be an http or https URL');
+  }
+  // Trim trailing slashes by hand: a regex on environment input is flagged as backtracking.
+  let end = override.length;
+  while (end > 0 && override[end - 1] === '/') end--;
+  return override.slice(0, end);
+}
+
 export function createReplicate(token: string, fetchImpl: typeof fetch = fetch) {
   if (!token) throw new Error('REPLICATE_API_TOKEN is not set');
+  const apiBase = replicateBaseUrl();
 
   const deadline = Date.now() + REQUEST_BUDGET_MS;
   // GET is safe to retry; a rejected 429 can also be retried. Never replay an uncertain POST.
@@ -80,7 +109,7 @@ export function createReplicate(token: string, fetchImpl: typeof fetch = fetch) 
     if (remaining <= 0) throw new ProviderRequestError('Provider request deadline exceeded', false);
     let response: Response;
     try {
-      response = await fetchImpl(`${API}${path}`, {
+      response = await fetchImpl(`${apiBase}${path}`, {
         ...init,
         signal: AbortSignal.timeout(Math.min(remaining, REQUEST_TIMEOUT_MS)),
         headers: { Authorization: `Bearer ${token}`, ...init.headers },

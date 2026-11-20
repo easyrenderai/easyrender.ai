@@ -9,7 +9,8 @@
     "vercel-build": "bun run --cwd ../../packages/db db:deploy && next build",
     "start": "next start",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "e2e": "playwright test -c e2e/playwright.config.ts && node e2e/assert-no-skips.mjs"
   },
   "dependencies": {
     "@better-auth/infra": "^0.4.28",

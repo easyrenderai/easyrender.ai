@@ -217,29 +217,7 @@ Review query syntax in the project's HogQL editor before saving; this PR does no
 
 - `bun run preflight`: lint, UI guards, typecheck, unit tests.
 - `TEST_DATABASE_URL=<scratch-local-postgres> bun run --cwd packages/core test`: real ledger, signed webhook replay, test renewals after shutdown, revenue and owner-scoped confirmations.
-- `apps/web/e2e/pricing.spec.ts`: opt-in local browser flow for both arms, consent declined, all six home pricing/FAQ/structured-data surfaces, 375px light/dark, signup identity continuity, stale/invalid checkout rejection, simulated plan credit grant. Run with `PRICING_AB_E2E=1` and a local flag API fixture serving the configuration above; `PRICING_E2E_URL` defaults to `http://localhost:3147`.
-
-Reproduce the browser check using three terminals (create/sync a **scratch** local database first):
-
-```sh
-node apps/web/e2e/pricing-flag-server.mjs
-```
-
-```sh
-DATABASE_URL=postgresql://localhost/easyrender_pricing \
-BETTER_AUTH_URL=http://localhost:3147 APP_URL=http://localhost:3147 \
-BETTER_AUTH_SECRET=local-pricing-test-secret-at-least-32-characters \
-STRIPE_SECRET_KEY= PRICING_AB_ENABLED=1 \
-POSTHOG_PERSONAL_API_KEY=local-fixture POSTHOG_PROJECT_ID=347125 \
-POSTHOG_API_HOST=http://127.0.0.1:3148 \
-NEXT_PUBLIC_POSTHOG_KEY=phc_localtest NEXT_PUBLIC_POSTHOG_HOST=http://127.0.0.1:3148 \
-bun run --cwd apps/web dev --port 3147
-```
-
-```sh
-cd apps/web
-PRICING_AB_E2E=1 node node_modules/@playwright/test/cli.js test --config e2e/playwright.config.ts pricing.spec.ts
-```
+- The opt-in browser spec for both arms (`pricing.spec.ts`, with its PostHog flag fixture) was removed on 2026-11-20 because it needed a second app build and hard-coded prices; it stays in git history before that change. The assignment and pricing rules are covered by `packages/core/src/pricing-experiment.test.ts` and `billing-pricing.test.ts`.
 
 Screenshots: [control light](images/pricing-ab/control-light-375.png), [control dark](images/pricing-ab/control-dark-375.png), [test light](images/pricing-ab/test-light-375.png), [test dark](images/pricing-ab/test-dark-375.png).
 

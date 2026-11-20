@@ -86,6 +86,8 @@ bun run check:env                # every process.env.X read is in .env.example a
 bun run check:docs                # AGENTS.md layout and language list match the repo
 bun run preflight                 # what CI runs: biome, ui guards, secrets, effect ratchet, knip, env, docs, typecheck, tests, promotion contract, examples/rest
 bun run test:db                   # scratch Postgres, then core and web tests with none skipped; stops it after
+bun run --cwd apps/web e2e        # browser tests: paid flow + specs, on `next dev`, mock Replicate; needs a
+                                  # scratch Postgres in DATABASE_URL with the schema (db:push) and Chromium
 bun run db:generate               # prisma generate
 cd apps/mobile && bun install && bunx expo export --platform android   # mobile bundle check
 cd apps/desktop && bun install && bun run typecheck && bun run test    # desktop; `bun run dev` opens the window
