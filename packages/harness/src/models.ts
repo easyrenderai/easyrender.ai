@@ -1,3 +1,5 @@
+import type { BuildQuality } from './pricing';
+
 // The Replicate steps of the harness. The free preview draws a 1K angle sheet with Nano Banana 2.1
 // and a paid build builds the 3D model from that same sheet: there is no second, bigger draw. A
 // bake-off on the six showcase photos (2026-11-17, packages/harness/scripts/sheet-bakeoff.ts, see
@@ -58,6 +60,45 @@ export const BUILD_MODEL = {
   },
 } as const;
 
+// The higher build qualities (Medium and High). fishwowater/trellis2 on Replicate takes one image.
+// The settings are the ones the bake-off measured (docs/benchmarks): the cascade size sets how much
+// detail is drawn, the face count the file size, the texture size the texture. Unlike the standard
+// build they stay in code: the harness repo cannot swap the model the Medium and High prices were
+// worked out for.
+export const BUILD_MODEL_2 = {
+  name: 'fishwowater/trellis2',
+  version: '52e1ad6852599ea10ce8e257635a3c11485cba51c181ea5173e34d9b2955b226',
+  usdPerSecond: A100_USD_PER_SECOND,
+} as const;
+
+const BUILD_INPUT_2 = {
+  generate_model: true,
+  generate_video: false,
+  randomize_seed: false,
+  seed: 42,
+} as const;
+
+export const HIGHER_BUILD_SETTINGS = {
+  medium: {
+    version: BUILD_MODEL_2.version,
+    input: {
+      ...BUILD_INPUT_2,
+      pipeline_type: '1024_cascade',
+      decimation_target: 200_000,
+      texture_size: 2048,
+    },
+  },
+  high: {
+    version: BUILD_MODEL_2.version,
+    input: {
+      ...BUILD_INPUT_2,
+      pipeline_type: '1536_cascade',
+      decimation_target: 500_000,
+      texture_size: 4096,
+    },
+  },
+} as const satisfies Record<'medium' | 'high', { version: string; input: Record<string, unknown> }>;
+
 // The tunable part of each step. The private harness can override these; the cost and the model
 // name stay in code so pricing never drifts from what is actually run.
 export type SheetSettings = { path: string; input: Record<string, unknown> };
@@ -88,6 +129,18 @@ export const DEFAULT_BUILD_SETTINGS: BuildSettings = {
 
 export function buildRequest(images: string[], settings: BuildSettings = DEFAULT_BUILD_SETTINGS) {
   return { version: settings.version, input: { ...settings.input, images } };
+}
+
+// The request for a build at `quality`. Low is the standard build on the photo and the sheet's
+// views; Medium and High send the photo alone to TRELLIS.2.
+export function buildRequestFor(
+  quality: BuildQuality,
+  images: string[],
+  standard: BuildSettings = DEFAULT_BUILD_SETTINGS,
+) {
+  if (quality === 'low') return buildRequest(images, standard);
+  const settings = HIGHER_BUILD_SETTINGS[quality];
+  return { version: settings.version, input: { ...settings.input, image: images[0] } };
 }
 
 export function buildCostUsd(predictSeconds: number | undefined): number {

@@ -36,6 +36,8 @@ function countImages(body: unknown): number {
       const images = value.filter((item) => item.startsWith('data:image/'));
       if (images.length) return images.length;
     }
+    // A model that takes one picture (TRELLIS.2) gets a single data URL.
+    if (typeof value === 'string' && value.startsWith('data:image/')) return 1;
   }
   return 0;
 }

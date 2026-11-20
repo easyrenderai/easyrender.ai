@@ -7,6 +7,7 @@ export const RENDER_EDIT_KINDS = [
   'sheet_redraw',
   'sheet_redraw_refund',
   'build',
+  'rebuild_standard',
   'material',
 ] as const;
 export type RenderEditKind = (typeof RENDER_EDIT_KINDS)[number];

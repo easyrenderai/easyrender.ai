@@ -1,5 +1,6 @@
 import {
   BUILD_FROM_VIEWS_CREDITS,
+  BUILD_QUALITY_CREDITS,
   displayPricing,
   ENTERPRISE_BOOKING_URL,
   PRODUCT_VIEWS_CREDITS,
@@ -31,6 +32,7 @@ export async function getCreditQuote(actor: Actor & { userId: string }) {
     currency,
     balance,
     render_credits: RENDER_CREDITS,
+    render_credits_by_quality: { ...BUILD_QUALITY_CREDITS },
     sheet_credits: SHEET_CREDITS,
     product_views_credits: PRODUCT_VIEWS_CREDITS,
     view_polish_credits: VIEW_POLISH_CREDITS,

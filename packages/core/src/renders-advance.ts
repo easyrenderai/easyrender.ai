@@ -1,6 +1,7 @@
 import { db, type Render } from '@easyrender/db';
 import {
   BUILD_MODEL,
+  BUILD_MODEL_2,
   buildCostUsd,
   checkGlb,
   checkSheet,
@@ -156,7 +157,8 @@ export async function advance(id: string): Promise<Render | null> {
       const url = prediction.status === 'succeeded' ? findGlbUrl(prediction.output) : null;
       if (!url)
         throw new TerminalRenderError(
-          prediction.error ?? `${BUILD_MODEL.name} ${prediction.status}`,
+          prediction.error ??
+            `${render.buildQuality ? BUILD_MODEL_2.name : BUILD_MODEL.name} ${prediction.status}`,
         );
       const glb = await download(url);
       const quality = checkGlb(glb);

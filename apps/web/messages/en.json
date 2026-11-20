@@ -385,7 +385,8 @@
       "creditsReturned": "We’ve returned {credits, number} credits to your balance.",
       "buildStartRefunded": "We couldn’t start the 3D model. Any credits used to start it were returned.",
       "sheetStartRefunded": "We couldn’t start the new views. Your credits were returned.",
-      "redrawStartRefunded": "We couldn’t regenerate the views. Your earlier preview is still there and your credits were returned."
+      "redrawStartRefunded": "We couldn’t regenerate the views. Your earlier preview is still there and your credits were returned.",
+      "rebuild": "We couldn’t rebuild the model. Any credits used were returned."
     },
     "generateSheet": "Generate angle sheet ({credits} credits)",
     "fixSheetLabel": "Correct the views",
@@ -422,7 +423,8 @@
         "sheet_redraw": "View correction started",
         "build": "3D build started",
         "material": "Materials changed",
-        "sheet_redraw_refund": "View correction refunded"
+        "sheet_redraw_refund": "View correction refunded",
+        "rebuild_standard": "Rebuilt in Standard, credits returned"
       },
       "credits": "{credits} credits"
     },
@@ -552,7 +554,9 @@
     "repeatedViewsFailure": "We could not generate distinct angles. Try another photo. Any credits charged were refunded.",
     "inconsistentStructureFailure": "The generated angles changed the shape of your object. Try another photo. Any credits charged were refunded.",
     "downloadGlb": "Download GLB",
-    "downloadUsdz": "USDZ for Apple"
+    "downloadUsdz": "USDZ for Apple",
+    "rebuildStandard": "Rebuild in Standard, {credits, number} credits back",
+    "rebuildStandardHint": "If this model looks wrong, rebuild it in Standard for free. We return the difference in credits, once."
   },
   "PromptBar": {
     "steps": {
@@ -3600,5 +3604,15 @@
         "failed": "We couldn't read that file. It may be damaged, or use a feature this viewer doesn't support."
       }
     }
+  },
+  "BuildQuality": {
+    "label": "Quality",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "lowHint": "Standard build. Quick, and right for most products.",
+    "mediumHint": "Colour and shape closer to your photo. Takes a few minutes longer.",
+    "highHint": "The most detail and the biggest file. Takes the longest.",
+    "credits": "{credits, number} credits"
   }
 }

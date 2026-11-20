@@ -15,6 +15,7 @@ export const CLIENT_NAMESPACES = [
   'ShopifyConnect',
   'Ar',
   'Auth',
+  'BuildQuality',
   'BuyButton',
   'Catalog',
   'ConnectorsPanel',

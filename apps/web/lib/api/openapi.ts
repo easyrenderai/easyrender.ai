@@ -224,12 +224,29 @@ export const openapi = {
                   description:
                     'Optional per-call authorized ceiling, enforced atomically at debit.',
                 },
+                quality: {
+                  type: 'string',
+                  enum: ['low', 'medium', 'high'],
+                  description:
+                    'Build quality. Omit it for the standard build (low). The price is qualityCredits[quality] minus credits already recorded on the render.',
+                },
               },
               [],
             ),
           ),
           required: false,
         },
+      },
+    },
+    '/api/renders/{id}/rebuild': {
+      post: {
+        ...operation(
+          'rebuildRenderStandard',
+          'Rebuild a medium or high model in standard quality, free; refunds the credit difference once',
+          ['spend'],
+          ref('Render'),
+        ),
+        parameters: [id],
       },
     },
     '/api/renders/{id}/sheet': {
@@ -502,6 +519,9 @@ export const openapi = {
         modelVersion: integer,
         credits: integer,
         renderCredits: integer,
+        qualityCredits: object({ low: integer, medium: integer, high: integer }),
+        buildQuality: { type: 'string', enum: ['low', 'medium', 'high'] },
+        rebuildRefundCredits: integer,
         sheetCredits: integer,
         upscaleCredits: integer,
         canUpscale: boolean,
@@ -519,6 +539,7 @@ export const openapi = {
         currency: { type: 'string', enum: ['usd', 'eur'] },
         balance: integer,
         render_credits: integer,
+        render_credits_by_quality: object({ low: integer, medium: integer, high: integer }),
         sheet_credits: integer,
         product_views_credits: integer,
         view_polish_credits: integer,

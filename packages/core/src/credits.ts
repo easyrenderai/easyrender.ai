@@ -70,6 +70,11 @@ export async function spendCreditsInTransaction(
   return true;
 }
 
+// A grant that gives back what a friend spent: a failed job (`*_failed`) or the difference of a
+// build rebuilt at a lower quality. It takes the referral kickback back with it.
+const isRefundReason = (reason: string) =>
+  reason.endsWith('_failed') || reason === 'build_quality_refund';
+
 // A referred friend's net spend pays the referrer a kickback. A spend adds to it and a refund (a
 // failed job's `*_failed` grant) takes it back, so the kickback always follows what the friend
 // really paid for. A reversal never takes more than the referrer still has.
@@ -136,8 +141,7 @@ export async function grantCreditsInTransaction(
     where: { id: input.userId },
     data: { credits: { increment: input.amount } },
   });
-  if (input.reason.endsWith('_failed'))
-    await applyReferralKickback(tx, input.userId, -input.amount);
+  if (isRefundReason(input.reason)) await applyReferralKickback(tx, input.userId, -input.amount);
   return true;
 }
 

@@ -1,10 +1,12 @@
 'use client';
 
+import { BUILD_QUALITY_CREDITS, type BuildQuality } from '@easyrender/harness/pricing';
 import { ImagePlus, Loader2, Sparkles, TriangleAlert, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { BuildQualityPicker } from '@/components/build-quality-picker';
 import { SiteLink as Link } from '@/components/site-link';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -37,6 +39,7 @@ export function PromptBar({ signedIn, compact = false }: { signedIn: boolean; co
   const [file, setFile] = useState<File | null>(null);
   const [thumb, setThumb] = useState<string | null>(null);
   const [prompt, setPrompt] = useState('');
+  const [quality, setQuality] = useState<BuildQuality>('low');
   const [isDragging, setDragging] = useState(false);
   const [isBusy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +98,7 @@ export function PromptBar({ signedIn, compact = false }: { signedIn: boolean; co
       captureBrowser('render_preview_created', { source: 'home', has_prompt: Boolean(prompt) });
       // Anonymous visitors can inspect their real, watermarked sheet here. Registration is
       // requested only when they choose to build; the server enforces ownership and quotas.
-      router.push(`/r/${data.id}`);
+      router.push(`/r/${data.id}${quality === 'low' ? '' : `?quality=${quality}`}`);
     } catch {
       setError(t('errors.upload'));
     } finally {
@@ -219,6 +222,13 @@ export function PromptBar({ signedIn, compact = false }: { signedIn: boolean; co
                 }}
               />
             </details>
+            <BuildQualityPicker
+              id="prompt-bar-quality"
+              value={quality}
+              onChange={setQuality}
+              credits={BUILD_QUALITY_CREDITS}
+              isDisabled={isBusy}
+            />
             <Button type="submit" disabled={isBusy} className="w-full">
               {isBusy ? <Loader2 className="animate-spin" /> : <Sparkles />}
               {isBusy ? t('uploadingReal') : t('generate')}

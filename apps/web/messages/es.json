@@ -385,7 +385,8 @@
       "creditsReturned": "Te hemos devuelto {credits, number} créditos al saldo.",
       "buildStartRefunded": "El modelo 3D no se ha iniciado. Si se descontaron créditos, ya están de vuelta en tu saldo.",
       "sheetStartRefunded": "No hemos podido empezar a crear las vistas. Te hemos devuelto los créditos.",
-      "redrawStartRefunded": "No hemos podido regenerar las vistas. Conservas la vista anterior y te hemos devuelto los créditos."
+      "redrawStartRefunded": "No hemos podido regenerar las vistas. Conservas la vista anterior y te hemos devuelto los créditos.",
+      "rebuild": "No hemos podido rehacer el modelo. Los créditos usados se han devuelto."
     },
     "generateSheet": "Generar hoja de ángulos ({credits} créditos)",
     "fixSheetLabel": "Corregir las vistas",
@@ -422,7 +423,8 @@
         "sheet_redraw": "Corrección de las vistas iniciada",
         "build": "Creación 3D iniciada",
         "material": "Materiales cambiados",
-        "sheet_redraw_refund": "Créditos devueltos por la corrección"
+        "sheet_redraw_refund": "Créditos devueltos por la corrección",
+        "rebuild_standard": "Rehecho en Estándar, créditos devueltos"
       },
       "credits": "{credits} créditos"
     },
@@ -552,7 +554,9 @@
     "repeatedViewsFailure": "No hemos podido generar ángulos distintos. Prueba con otra foto. Los créditos cobrados se han devuelto.",
     "inconsistentStructureFailure": "Los ángulos generados cambiaron la forma de tu objeto. Prueba con otra foto. Los créditos cobrados se han devuelto.",
     "downloadGlb": "Descargar GLB",
-    "downloadUsdz": "USDZ para Apple"
+    "downloadUsdz": "USDZ para Apple",
+    "rebuildStandard": "Rehacer en Estándar, te devolvemos {credits, number} créditos",
+    "rebuildStandardHint": "Si este modelo no te convence, rehazlo en Estándar gratis. Te devolvemos la diferencia en créditos, una sola vez."
   },
   "PromptBar": {
     "steps": {
@@ -3600,5 +3604,15 @@
         "failed": "No pudimos leer ese archivo. Puede estar dañado o usar una función que este visor no admite."
       }
     }
+  },
+  "BuildQuality": {
+    "label": "Calidad",
+    "low": "Baja",
+    "medium": "Media",
+    "high": "Alta",
+    "lowHint": "Creación estándar. Rápida y adecuada para la mayoría de productos.",
+    "mediumHint": "Color y forma más cercanos a tu foto. Tarda unos minutos más.",
+    "highHint": "El mayor detalle y el archivo más grande. Es la más lenta.",
+    "credits": "{credits, number} créditos"
   }
 }

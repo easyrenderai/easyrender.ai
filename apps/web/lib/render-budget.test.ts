@@ -4,7 +4,9 @@ import { API_EXAMPLES } from '../components/api-landing/examples';
 
 vi.mock('server-only', () => ({}));
 const mocks = vi.hoisted(() => ({
-  startBuild: vi.fn(async (_id: string, actor: Record<string, unknown>) => actor),
+  startBuild: vi.fn(
+    async (_id: string, actor: Record<string, unknown>, _quality?: string) => actor,
+  ),
 }));
 vi.mock('@easyrender/core', async (original) => ({
   ...(await original<typeof import('@easyrender/core')>()),
@@ -39,6 +41,35 @@ it.each([-1, 1.5, '2', null, true, Number.MAX_SAFE_INTEGER + 1])(
     expect(mocks.startBuild).not.toHaveBeenCalled();
   },
 );
+it('builds at the standard quality unless the caller picks another', async () => {
+  const post = (body?: object) =>
+    POST(
+      new Request('https://easyrender.ai/api/renders/r1/render', {
+        method: 'POST',
+        body: body ? JSON.stringify(body) : undefined,
+      }),
+      { params: Promise.resolve({ id: 'r1' }) },
+    );
+  mocks.startBuild.mockClear();
+  await post();
+  await post({ maxCredits: 99 });
+  await post({ quality: 'low' });
+  await post({ quality: 'high', maxCredits: 150 });
+  expect(mocks.startBuild.mock.calls.map((call) => call[2])).toEqual(['low', 'low', 'low', 'high']);
+});
+it.each(['ultra', 1, null, 'HIGH'])('refuses the quality %s before spending', async (quality) => {
+  mocks.startBuild.mockClear();
+  const response = await POST(
+    new Request('https://easyrender.ai/api/renders/r1/render', {
+      method: 'POST',
+      body: JSON.stringify({ quality }),
+    }),
+    { params: Promise.resolve({ id: 'r1' }) },
+  );
+  expect(response.status).toBe(400);
+  expect(await response.json()).toMatchObject({ code: 'bad_quality' });
+  expect(mocks.startBuild).not.toHaveBeenCalled();
+});
 it('preserves existing clients with no request body', async () => {
   const response = await POST(
     new Request('https://easyrender.ai/api/renders/r1/render', { method: 'POST' }),
