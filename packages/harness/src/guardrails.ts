@@ -44,6 +44,11 @@ export const LIMITS = {
   // view differs by under 0.01.
   duplicateViewDistance: 0.015,
   maxDuplicateViews: 3,
+  // A product that looks the same from every side (a cylinder vase, a bottle, a can) really does
+  // give eight identical turnaround views. It is told apart from a model that copied one view by
+  // its top-down cell: a round product has a round top, so the footprint overlaps itself when
+  // turned 45 degrees (measured: vase 0.99, armchair 0.68, table 0.56; 1 is a perfect match).
+  roundTopOverlap: 0.93,
   sheetMaxOpenFill: 0.52,
   sheetMinClosedFill: 0.84,
   sheetMaxOppositeFillGap: 0.38,
@@ -147,6 +152,67 @@ export async function checkPhoto(bytes: Uint8Array): Promise<Check<PhotoMeasures
   return ok({ width, height, spread: round(stdev), sharpness: round(focus) }, warnings);
 }
 
+const MASK_SIZE = 96;
+
+// Footprint of the object in a cell: 1 where the pixel is clearly off-white.
+async function footprint(cell: Uint8Array): Promise<Uint8Array> {
+  const { data, info } = await sharp(cell)
+    .resize(MASK_SIZE, MASK_SIZE, { fit: 'fill' })
+    .removeAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const mask = new Uint8Array(MASK_SIZE * MASK_SIZE);
+  for (let i = 0; i < mask.length; i++) {
+    const at = i * info.channels;
+    mask[i] =
+      Math.min(data[at] as number, data[at + 1] as number, data[at + 2] as number) < 235 ? 1 : 0;
+  }
+  return mask;
+}
+
+// How well a footprint matches itself turned by `degrees` about its centre of mass (1 is a match).
+function turnedOverlap(mask: Uint8Array, degrees: number): number {
+  let area = 0;
+  let cx = 0;
+  let cy = 0;
+  for (let y = 0; y < MASK_SIZE; y++) {
+    for (let x = 0; x < MASK_SIZE; x++) {
+      if (!mask[y * MASK_SIZE + x]) continue;
+      area++;
+      cx += x;
+      cy += y;
+    }
+  }
+  if (!area) return 0;
+  cx /= area;
+  cy /= area;
+  const angle = (degrees * Math.PI) / 180;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  let both = 0;
+  let either = 0;
+  for (let y = 0; y < MASK_SIZE; y++) {
+    for (let x = 0; x < MASK_SIZE; x++) {
+      const sx = Math.round(cx + (x - cx) * cos + (y - cy) * sin);
+      const sy = Math.round(cy - (x - cx) * sin + (y - cy) * cos);
+      const isTurned =
+        sx >= 0 && sx < MASK_SIZE && sy >= 0 && sy < MASK_SIZE && mask[sy * MASK_SIZE + sx] === 1;
+      const isOriginal = mask[y * MASK_SIZE + x] === 1;
+      if (isTurned && isOriginal) both++;
+      if (isTurned || isOriginal) either++;
+    }
+  }
+  return both / either;
+}
+
+// Eight identical turnaround views are right for a product that looks the same from every side,
+// and wrong when the model copied one view of anything else. The top-down view decides: a round
+// product has a round top, a copied view of a chair or table does not.
+async function isRoundProduct(top: Uint8Array, limits: Limits): Promise<boolean> {
+  const mask = await footprint(top);
+  return turnedOverlap(mask, 45) >= limits.roundTopOverlap;
+}
+
 // The sheet must be a usable 3x3 grid: big enough, with an object in nearly every cell.
 export async function checkSheet(
   sheet: Uint8Array,
@@ -199,7 +265,10 @@ export async function checkSheet(
     ),
   );
   const repeated = nearest.filter((gap) => gap < limits.duplicateViewDistance).length;
-  if (repeated > limits.maxDuplicateViews) {
+  const isRound =
+    repeated === ring.length &&
+    (await isRoundProduct(cells[VIEWS.length - 1] as Uint8Array, limits));
+  if (repeated > limits.maxDuplicateViews && !isRound) {
     return reject(
       'sheet_repeated_views',
       `The angle sheet repeats the same view in ${repeated} of 8 cells.`,
@@ -214,7 +283,10 @@ export async function checkSheet(
   }
   return ok(
     { side, emptyCells: empty, repeatedViews: repeated, closestViews: round(Math.min(...nearest)) },
-    [...(empty > 0 ? ['empty_cell'] : []), ...(repeated > 0 ? ['similar_views'] : [])],
+    [
+      ...(empty > 0 ? ['empty_cell'] : []),
+      ...(isRound ? ['same_from_every_side'] : repeated > 0 ? ['similar_views'] : []),
+    ],
   );
 }
 

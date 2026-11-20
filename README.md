@@ -33,20 +33,21 @@ codex mcp login easyrender
 Setup for claude.ai, Cursor, VS Code and Claude Desktop is on the
 [MCP page](https://easyrender.ai/mcp#connect).
 
-The core workflow uses four tools. The server exposes 16 in total (below); ask the client for `tools/list`
+The core workflow uses four tools. The server exposes 17 in total (below); ask the client for `tools/list`
 for the current schemas.
 
-| Tool                                                                                                                 | What it does                                                            |
-| -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `create_render`                                                                                                      | Start a free preview from one photo (URL, upload id or base64)          |
-| `get_render`                                                                                                         | Read status, links and the credits still needed                         |
-| `get_credits`                                                                                                        | Read your balance and the current cost of each operation                |
-| `render_3d`                                                                                                          | Build the approved preview into a GLB, with a `max_credits` ceiling     |
-| `list_renders`                                                                                                       | Find and resume your renders                                            |
-| `set_render_visibility`                                                                                              | Publish or unpublish a finished render (renders are private by default) |
-| `start_render_sheet`, `redraw_render_sheet`                                                                          | Generate or redraw the angle sheet                                      |
-| `create_product_views`, `get_product_views`, `list_product_views`, `polish_product_view`, `build_from_product_views` | Product photo sets and 3D from a set                                    |
-| `upscale_image`, `get_upscale`, `list_upscales`                                                                      | Enlarge a product view or sheet                                         |
+| Tool                                                                                                                 | What it does                                                                                                            |
+| -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `create_render`                                                                                                      | Start a free preview from one photo (URL, upload id or base64)                                                          |
+| `get_render`                                                                                                         | Read status, links and the credits still needed                                                                         |
+| `get_credits`                                                                                                        | Read your balance and the current cost of each operation                                                                |
+| `render_3d`                                                                                                          | Build the approved preview into a GLB, with a `max_credits` ceiling and an optional `quality` (`low`, `medium`, `high`) |
+| `rebuild_standard`                                                                                                   | Rebuild a medium or high model in standard, free; the credit difference is returned once                                |
+| `list_renders`                                                                                                       | Find and resume your renders                                                                                            |
+| `set_render_visibility`                                                                                              | Publish or unpublish a finished render (renders are private by default)                                                 |
+| `start_render_sheet`, `redraw_render_sheet`                                                                          | Generate or redraw the angle sheet                                                                                      |
+| `create_product_views`, `get_product_views`, `list_product_views`, `polish_product_view`, `build_from_product_views` | Product photo sets and 3D from a set                                                                                    |
+| `upscale_image`, `get_upscale`, `list_upscales`                                                                      | Enlarge a product view or sheet                                                                                         |
 
 Paid tools accept a `max_credits` ceiling, and `render_3d` refuses to run above it. A failed 3D build refunds its
 credits. See [current pricing](https://easyrender.ai/pricing).

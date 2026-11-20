@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
 import { checkGlb, checkNote, checkPhoto, checkSheet } from './guardrails';
-import { sheetPrompt } from './sheet';
+import { cutCells, sheetPrompt } from './sheet';
 import { DEFAULT_SKILL, selectSkill } from './skills';
 
 const noise = (width: number, height: number) =>
@@ -120,7 +120,7 @@ describe('sheet guardrail', () => {
     expect((await checkSheet(await sheetWith([0, 1, 2, 3, 4, 5, 6, 7]))).ok).toBe(true);
   });
 
-  // Real sheets from the showcase: the armchair rotates, the vase is one view pasted nine times.
+  // Real sheets from the showcase: the armchair rotates, the round vase looks the same from every side.
   const showcase = (name: string) =>
     new Uint8Array(
       readFileSync(new URL(`../../../apps/web/public/showcase/${name}`, import.meta.url)),
@@ -155,8 +155,69 @@ describe('sheet guardrail', () => {
     expect(partial.ok && partial.warnings).toContain('empty_cell');
   });
 
-  it('rejects a real sheet that repeats one view', async () => {
+  it('accepts the vase, which looks the same from every side', async () => {
     const check = await checkSheet(showcase('vase-angles.jpg'));
+    expect(check.ok && check.warnings).toEqual(['same_from_every_side']);
+    expect(check.ok && check.measures.repeatedViews).toBe(8);
+  });
+
+  // Puts nine cells back together as one 3x3 sheet.
+  async function assemble(cells: Uint8Array[]) {
+    const size = 400;
+    const composite = await Promise.all(
+      cells.map(async (cell, index) => ({
+        input: await sharp(cell).resize(size, size, { fit: 'fill' }).png().toBuffer(),
+        left: (index % 3) * size,
+        top: Math.floor(index / 3) * size,
+      })),
+    );
+    const buffer = await sharp({
+      create: { width: size * 3, height: size * 3, channels: 3, background: '#ffffff' },
+    })
+      .composite(composite)
+      .png()
+      .toBuffer();
+    return new Uint8Array(buffer);
+  }
+  const cellsOf = async (name: string) => cutCells(showcase(name));
+  // The first cell of a real sheet in the eight turnaround cells, then `top` as the ninth.
+  const repeatedAround = async (name: string, top: Uint8Array) => {
+    const cells = await cellsOf(name);
+    return assemble([...Array.from({ length: 8 }, () => cells[0] as Uint8Array), top]);
+  };
+
+  it('rejects a real sheet whose front view is pasted into every cell', async () => {
+    // A model that ignored the turnaround and drew the armchair's front nine times.
+    const cells = await cellsOf('armchair-angles.jpg');
+    const check = await checkSheet(
+      await repeatedAround('armchair-angles.jpg', cells[0] as Uint8Array),
+    );
+    expect(!check.ok && check.code).toBe('sheet_repeated_views');
+  });
+
+  it('rejects one view repeated around a top view that is not round', async () => {
+    const armchair = await cellsOf('armchair-angles.jpg');
+    const table = await cellsOf('table-angles.png');
+    for (const [name, top] of [
+      ['armchair-angles.jpg', armchair[8]],
+      ['table-angles.png', table[8]],
+    ] as const) {
+      const check = await checkSheet(await repeatedAround(name, top as Uint8Array));
+      expect(!check.ok && check.code).toBe('sheet_repeated_views');
+    }
+  });
+
+  it('rejects the vase photo pasted into the top cell too', async () => {
+    const cells = await cellsOf('vase-angles.jpg');
+    const check = await checkSheet(await repeatedAround('vase-angles.jpg', cells[0] as Uint8Array));
+    expect(!check.ok && check.code).toBe('sheet_repeated_views');
+  });
+
+  it('rejects a repeated vase ring whose top view is an armchair', async () => {
+    const armchair = await cellsOf('armchair-angles.jpg');
+    const check = await checkSheet(
+      await repeatedAround('vase-angles.jpg', armchair[8] as Uint8Array),
+    );
     expect(!check.ok && check.code).toBe('sheet_repeated_views');
   });
 

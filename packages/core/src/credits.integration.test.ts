@@ -664,14 +664,13 @@ run('credits and generation billing (real database)', () => {
 
   describe('the 3D build runs on the preview sheet', () => {
     const draft = (userId: string) => newRender(userId, { sheetKey: 'fake:sheets/draft.png' });
-    // A render that was paid and drawing its second sheet when the app stopped drawing one: the
-    // worker still finishes it, so nothing already charged is lost.
-    const drawing = (userId: string, data: Record<string, unknown> = {}) =>
+    // A paid render whose 3D prediction is running.
+    const building = (userId: string, data: Record<string, unknown> = {}) =>
       newRender(userId, {
         status: 'rendering',
         credits: RENDER_CREDITS,
         sheetKey: 'fake:sheets/draft.png',
-        finalSheetPredictionId: `final_${userId}`,
+        buildPredictionId: `build_${userId}`,
         ...data,
       });
     const stale = (id: string) =>
@@ -702,65 +701,6 @@ run('credits and generation billing (real database)', () => {
       expect(await balance(userId)).toBe(0);
     });
 
-    it('finishes a second sheet that was already drawing, then starts the 3D build once', async () => {
-      const { renders } = await load();
-      const userId = await newUser(RENDER_CREDITS);
-      const render = await drawing(userId);
-      replicate.start.mockResolvedValueOnce({ id: `build_${userId}` });
-
-      // Webhook and polling arrive together: only one of them starts the 3D build.
-      replicate.get.mockResolvedValue({ status: 'succeeded', output: 'https://x.test/final.png' });
-      await Promise.all([renders.advance(render.id), renders.advance(render.id)]);
-      expect(replicate.start).toHaveBeenCalledTimes(1);
-      expect(replicate.start.mock.calls[0]?.[0]).toBe('/predictions');
-      const after = await db().render.findUniqueOrThrow({ where: { id: render.id } });
-      expect(after.buildPredictionId).toBe(`build_${userId}`);
-      expect(after.sheetKey).toBe('fake:sheets/sheet.png');
-      expect(after.costUsd).toBeCloseTo(0.0504, 5);
-      expect(after.quality).toEqual({
-        finalSheet: { ...sheetMeasures, warnings: [] },
-        isDraftUsed: false,
-      });
-    });
-
-    it('builds from the draft when a second sheet in flight fails the guardrails', async () => {
-      const { renders } = await load();
-      const userId = await newUser(RENDER_CREDITS);
-      const render = await drawing(userId);
-      replicate.start.mockResolvedValueOnce({ id: `build_${userId}` });
-      replicate.get.mockResolvedValue({ status: 'succeeded', output: 'https://x.test/final.png' });
-      replicate.checkSheet.mockResolvedValueOnce({
-        ok: false,
-        code: 'sheet_empty',
-        message: 'empty',
-      });
-      await renders.advance(render.id);
-      const after = await db().render.findUniqueOrThrow({ where: { id: render.id } });
-      expect(after.status).toBe('rendering');
-      expect(after.buildPredictionId).toBe(`build_${userId}`);
-      expect(after.sheetKey).toBe('fake:sheets/draft.png');
-      expect(after.quality).toEqual({ isDraftUsed: true, finalSheetProblem: 'sheet_empty' });
-    });
-
-    it('refunds instead of building from an inconsistent legacy draft after a failed final sheet', async () => {
-      const { renders } = await load();
-      const userId = await newUser(0);
-      const render = await drawing(userId);
-      replicate.get.mockResolvedValue({ status: 'failed', error: 'redraw failed' });
-      replicate.checkSheet.mockResolvedValue({
-        ok: false,
-        code: 'sheet_inconsistent_structure',
-        message: 'invented panels',
-      });
-      const after = await renders.advance(render.id);
-      expect(after?.status).toBe('failed');
-      expect(after?.buildPredictionId).toBeNull();
-      expect(after?.error).toContain('sheet_inconsistent_structure');
-      expect(await balance(userId)).toBe(RENDER_CREDITS);
-      await renders.advance(render.id);
-      expect(await balance(userId)).toBe(RENDER_CREDITS);
-    });
-
     it('refunds an inconsistent previously purchased sheet before a 3D prediction starts', async () => {
       const { renders } = await load();
       const userId = await newUser(RENDER_CREDITS);
@@ -779,45 +719,10 @@ run('credits and generation billing (real database)', () => {
       expect(await balance(userId)).toBe(RENDER_CREDITS);
     });
 
-    it('records that the draft was used when the final model reports a failure', async () => {
-      const { renders } = await load();
-      const userId = await newUser(RENDER_CREDITS);
-      const render = await drawing(userId);
-      replicate.start.mockResolvedValueOnce({ id: `build_${userId}` });
-      replicate.get.mockResolvedValue({ status: 'failed', error: 'model error' });
-      await renders.advance(render.id);
-      const after = await db().render.findUniqueOrThrow({ where: { id: render.id } });
-      expect(after.status).toBe('rendering');
-      expect(after.sheetKey).toBe('fake:sheets/draft.png');
-      expect(after.quality).toEqual({ isDraftUsed: true, finalSheetProblem: 'redraw_failed' });
-    });
-
-    it('keeps the measurements of earlier stages when a later one is stored', async () => {
-      const { renders } = await load();
-      const userId = await newUser(RENDER_CREDITS);
-      const photo = { width: 1200, height: 900, spread: 40, sharpness: 120, warnings: [] };
-      const render = await drawing(userId, {
-        quality: { photo, draftSheet: { ...sheetMeasures, warnings: ['similar_views'] } },
-      });
-      replicate.start.mockResolvedValueOnce({ id: `build_${userId}` });
-      replicate.get.mockResolvedValue({ status: 'succeeded', output: 'https://x.test/final.png' });
-      await renders.advance(render.id);
-      const after = await db().render.findUniqueOrThrow({ where: { id: render.id } });
-      expect(after.quality).toEqual({
-        photo,
-        draftSheet: { ...sheetMeasures, warnings: ['similar_views'] },
-        finalSheet: { ...sheetMeasures, warnings: [] },
-        isDraftUsed: false,
-      });
-    });
-
     it('stores the size of the finished model', async () => {
       const { renders } = await load();
       const userId = await newUser(RENDER_CREDITS);
-      const render = await drawing(userId);
-      replicate.start.mockResolvedValueOnce({ id: `build_${userId}` });
-      replicate.get.mockResolvedValue({ status: 'succeeded', output: 'https://x.test/final.png' });
-      await renders.advance(render.id);
+      const render = await building(userId);
       // The fake download is three bytes, so use a real binary glTF for the model.
       const glb = new Uint8Array(30_000);
       const view = new DataView(glb.buffer);
@@ -831,7 +736,7 @@ run('credits and generation billing (real database)', () => {
       });
       const done = await renders.advance(render.id);
       expect(done?.status).toBe('ready');
-      expect(done?.quality).toMatchObject({ glb: { bytes: 30_000 }, isDraftUsed: false });
+      expect(done?.quality).toMatchObject({ glb: { bytes: 30_000 } });
       expect(done?.completedAt).toBeInstanceOf(Date);
       const completedAt = done?.completedAt?.getTime();
       await db().render.update({
@@ -841,14 +746,21 @@ run('credits and generation billing (real database)', () => {
       expect((await renders.advance(render.id))?.completedAt?.getTime()).toBe(completedAt);
     });
 
-    it('refunds a build whose second sheet never finishes', async () => {
+    it('refunds a legacy render that was waiting for a second sheet', async () => {
       const { renders } = await load();
       const userId = await newUser(0);
-      const render = await drawing(userId);
+      // Nothing draws a second sheet any more, so such a render has no 3D prediction to wait for.
+      const render = await newRender(userId, {
+        status: 'rendering',
+        credits: RENDER_CREDITS,
+        sheetKey: 'fake:sheets/draft.png',
+        finalSheetPredictionId: `final_${userId}`,
+      });
       await stale(render.id);
-      replicate.get.mockResolvedValue({ status: 'processing' });
       const after = await renders.advance(render.id);
       expect(after?.status).toBe('failed');
+      expect(await balance(userId)).toBe(RENDER_CREDITS);
+      await renders.advance(render.id);
       expect(await balance(userId)).toBe(RENDER_CREDITS);
     });
   });

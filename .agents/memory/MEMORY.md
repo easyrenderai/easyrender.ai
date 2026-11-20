@@ -26,3 +26,4 @@ a line here. Keep this map short.
 - **Upscaling (the paid Upscale action, which model and why):** [upscalers](context/upscalers.md).
 - **Referral program (share link, cookie, payout rules):** [referrals](context/referrals.md).
 - **Issues, board, priority, status columns:** [project board](context/project-board.md).
+- **Sentry (tokens in links, trace lifecycle, shared options):** [sentry privacy](context/sentry-privacy.md).

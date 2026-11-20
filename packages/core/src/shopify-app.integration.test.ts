@@ -154,6 +154,67 @@ run('shopify app (real database)', () => {
       balance: RENDER_CREDITS * 5,
       quote: { totalCredits: RENDER_CREDITS * 2, missingCredits: 0 },
     });
+    // The master grid has one row per product, whether or not it can be built.
+    const rows = (overview as { products: { id: string; status: string; isSelectable: boolean }[] })
+      .products;
+    expect(rows.map((row) => [row.id, row.status, row.isSelectable])).toEqual([
+      ['1', 'missing', true],
+      ['2', 'missing', true],
+      ['3', 'no_photo', false],
+    ]);
+  });
+
+  it('builds only the ticked products, shows their stage, and never rebuilds a ready one', async () => {
+    const { shopifyOverview, shopifyGenerate } = await import('./shopify-app');
+    const { linkShop } = await import('./shopify');
+    const userId = await newUser(RENDER_CREDITS * 5);
+    const shopify = fakeShopify(products);
+    await shopifyOverview(SHOP, sessionToken(), shopify.impl);
+    await linkShop(SHOP, userId);
+
+    // The price is for the ticked product alone.
+    await expect(
+      shopifyGenerate(
+        SHOP,
+        sessionToken(),
+        { approvedCredits: 0, isFirst: true, externalIds: ['2'] },
+        shopify.impl,
+      ),
+    ).rejects.toMatchObject({ code: 'quote_changed' });
+    expect(
+      await shopifyGenerate(
+        SHOP,
+        sessionToken(),
+        { approvedCredits: RENDER_CREDITS, isFirst: true, externalIds: ['2'] },
+        shopify.impl,
+      ),
+    ).toEqual({ sent: 1, remaining: 0 });
+    expect(
+      (await db().catalogItem.findMany({ where: { userId } })).map((item) => item.externalId),
+    ).toEqual(['2']);
+
+    // It is now running, with its real stage, and no longer offered for building.
+    const running = (await shopifyOverview(SHOP, sessionToken(), shopify.impl)) as {
+      products: { id: string; status: string; stage: string | null; isSelectable: boolean }[];
+    };
+    expect(
+      running.products.map((row) => [row.id, row.status, row.stage, row.isSelectable]),
+    ).toEqual([
+      ['1', 'missing', null, true],
+      ['2', 'building', 'sheet', false],
+      ['3', 'no_photo', null, false],
+    ]);
+
+    // Ticking it again, with product 1, only builds product 1.
+    expect(
+      await shopifyGenerate(
+        SHOP,
+        sessionToken(),
+        { approvedCredits: RENDER_CREDITS, isFirst: true, externalIds: ['1', '2'] },
+        shopify.impl,
+      ),
+    ).toEqual({ sent: 1, remaining: 0 });
+    expect(await db().catalogItem.count({ where: { userId } })).toBe(2);
   });
 
   it('refuses a stale price, queues the products on the next click and writes finished models to the product', async () => {

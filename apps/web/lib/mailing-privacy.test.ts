@@ -20,6 +20,27 @@ describe('mail token privacy', () => {
     }
     expect(isMailingTokenLocation('/reset-password-guide')).toBe(false);
   });
+  it('redacts the reset token that better-auth puts in the path, and finds it in span attributes', () => {
+    const url =
+      'https://easyrender.ai/api/auth/reset-password/abcDEF123?callbackURL=%2Freset-password';
+    expect(redactMailingTokens({ url })).toEqual({
+      url: 'https://easyrender.ai/api/auth/reset-password/[Filtered]?callbackURL=%2Freset-password',
+    });
+    expect(redactMailingTokens('/reset-password-guide')).toBe('/reset-password-guide');
+    // Next names the transaction by its route template, so the URL is only in the trace data.
+    expect(
+      filterMailingTelemetry({
+        transaction: 'GET /api/auth/[...all]',
+        contexts: { trace: { data: { 'url.full': url } } },
+      }),
+    ).toBeNull();
+    expect(
+      filterMailingTelemetry({
+        transaction: 'GET /account',
+        contexts: { trace: { data: { 'url.full': 'https://easyrender.ai/account' } } },
+      }),
+    ).not.toBeNull();
+  });
   it('recognizes only token action routes', () => {
     expect(isMailingTokenLocation('https://easyrender.ai/email/confirm?token=private')).toBe(true);
     expect(isMailingTokenLocation('/api/email/unsubscribe?token=private')).toBe(true);
