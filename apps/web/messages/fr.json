@@ -385,7 +385,8 @@
       "creditsReturned": "Nous avons recrédité {credits, number} crédits sur votre solde.",
       "buildStartRefunded": "La création du modèle 3D n’a pas pu démarrer. Les crédits débités ont été recrédités.",
       "sheetStartRefunded": "La création des vues n’a pas pu démarrer. Vos crédits ont été recrédités.",
-      "redrawStartRefunded": "Les vues n’ont pas pu être recréées. Vous conservez l’aperçu précédent et vos crédits ont été recrédités."
+      "redrawStartRefunded": "Les vues n’ont pas pu être recréées. Vous conservez l’aperçu précédent et vos crédits ont été recrédités.",
+      "rebuild": "Le modèle n’a pas pu être refait. Les crédits utilisés ont été recrédités."
     },
     "generateSheet": "Créer les vues · {credits} crédits",
     "fixSheetLabel": "Corriger les vues",
@@ -422,7 +423,8 @@
         "sheet_redraw": "Correction des vues lancée",
         "build": "Création 3D lancée",
         "material": "Matières modifiées",
-        "sheet_redraw_refund": "Correction des vues remboursée"
+        "sheet_redraw_refund": "Correction des vues remboursée",
+        "rebuild_standard": "Refait en Standard, crédits remboursés"
       },
       "credits": "{credits} crédits"
     },
@@ -552,7 +554,9 @@
     "repeatedViewsFailure": "Nous n’avons pas pu générer des angles distincts. Essayez une autre photo. Les crédits débités ont été remboursés.",
     "inconsistentStructureFailure": "Les angles générés ont modifié la forme de votre objet. Essayez une autre photo. Les crédits débités ont été remboursés.",
     "downloadGlb": "Télécharger le GLB",
-    "downloadUsdz": "USDZ pour Apple"
+    "downloadUsdz": "USDZ pour Apple",
+    "rebuildStandard": "Refaire en Standard, {credits, number} crédits remboursés",
+    "rebuildStandardHint": "Si ce modèle ne convient pas, refaites-le gratuitement en Standard. Nous rendons la différence en crédits, une seule fois."
   },
   "PromptBar": {
     "steps": {
@@ -1729,11 +1733,14 @@
     "notReady": "Ce modèle est encore en cours de création. Revenez dans quelques minutes.",
     "notReadyTitle": "Presque prêt",
     "modelAlt": "Modèle 3D de {name}",
-    "madeWith": "3D par Easy Render"
+    "madeWith": "3D par Easy Render",
+    "openInSafari": "Ce navigateur ne peut pas ouvrir la réalité augmentée sur iPhone. Ouvrez cette page dans Safari pour voir l'objet dans votre pièce.",
+    "copyLink": "Copier le lien",
+    "linkCopied": "Lien copié"
   },
   "ShopifyApp": {
     "title": "Des modèles 3D pour tout votre catalogue",
-    "intro": "Générez un modèle 3D de chaque produit en un clic. Vos clients voient chaque pièce chez eux grâce à un bouton ou un QR code sur la fiche produit.",
+    "intro": "Voyez chaque produit et s'il a déjà un modèle 3D. Cochez ceux à créer, ou sélectionnez tous ceux qui manquent, et générez-les en un clic. Les produits qui ont déjà un modèle ne sont jamais recréés.",
     "loading": "Chargement…",
     "notInShopify": "Ouvrez cette page depuis l'administration Shopify.",
     "error": "Une erreur est survenue : {message}",
@@ -1742,17 +1749,47 @@
     "connectWaiting": "Terminé ? Cette page se met à jour toute seule.",
     "generate": "Générer la 3D de {count} produits ({credits} crédits)",
     "starting": "Envoi des produits… {count} envoyés",
-    "nothing": "Chaque produit avec une photo a déjà un modèle 3D ou est en cours.",
     "balance": "Solde : {credits} crédits",
     "missing": "Il manque {credits} crédits",
     "buy": "Acheter des crédits",
-    "progress": "{ready} prêts, {running} en cours, {waiting} en attente",
-    "needsCredits": "{count} attendent des crédits et reprendront quand vous en ajouterez.",
-    "needsInfo": "{count} ont besoin d'une photo exploitable.",
-    "failed": "{count} ont échoué et ont été remboursés. Relancez la génération pour réessayer.",
-    "noPhoto": "{count} n'ont pas de photo et sont ignorés.",
+    "progress": "{ready} prêts, {running} en cours, {missing} encore manquants",
     "themeTitle": "Affichez-le sur vos fiches produit",
-    "themeBody": "Ouvrez l'éditeur de thème, allez sur une fiche produit, ajoutez le bloc « Voir chez vous » et enregistrez. Les produits avec un modèle terminé affichent un bouton et un QR code."
+    "themeBody": "Ouvrez l'éditeur de thème, allez sur une fiche produit, ajoutez le bloc « Voir chez vous » et enregistrez. Les produits avec un modèle terminé affichent un bouton et un QR code.",
+    "noProducts": "Aucun produit actif pour l'instant. Ajoutez un produit avec une photo dans Shopify et il apparaîtra ici.",
+    "filter": {
+      "all": "Tous ({count})",
+      "missing": "Manquants ({count})",
+      "running": "En cours ({count})",
+      "ready": "Prêts ({count})",
+      "attention": "À vérifier ({count})"
+    },
+    "selectMissing": "Sélectionner tous les manquants ({count})",
+    "clear": "Effacer la sélection",
+    "selectShown": "Sélectionner tous les produits affichés",
+    "selectOne": "Sélectionner {title}",
+    "columnPhoto": "Photo",
+    "columnProduct": "Produit",
+    "columnStatus": "Modèle 3D",
+    "emptyFilter": "Aucun produit ici.",
+    "showMore": "Afficher {count} de plus",
+    "pickSome": "Sélectionnez des produits à générer",
+    "stage": {
+      "waiting": "En attente de démarrage",
+      "sheet": "Dessin de la planche d'angles",
+      "final_sheet": "Nouveau dessin de la planche finale",
+      "starting_build": "Démarrage de la création 3D",
+      "model": "Création du modèle 3D"
+    },
+    "status": {
+      "missing": "Manquant",
+      "no_photo": "Sans photo",
+      "queued": "En attente",
+      "building": "En création",
+      "ready": "Prêt",
+      "needs_credits": "Crédits requis",
+      "needs_info": "Photo requise",
+      "failed": "Échec"
+    }
   },
   "ShopifyConnect": {
     "title": "Connecter {shop} à Easy Render",
@@ -3223,5 +3260,15 @@
         "failed": "Nous n'avons pas pu lire ce fichier. Il est peut-être endommagé ou utilise une fonction que cette visionneuse ne prend pas en charge."
       }
     }
+  },
+  "BuildQuality": {
+    "label": "Qualité",
+    "low": "Basse",
+    "medium": "Moyenne",
+    "high": "Haute",
+    "lowHint": "Création standard. Rapide, et adaptée à la plupart des produits.",
+    "mediumHint": "Couleur et forme plus proches de votre photo. Prend quelques minutes de plus.",
+    "highHint": "Le plus de détails et le fichier le plus lourd. C’est la plus longue.",
+    "credits": "{credits, number} crédits"
   }
 }

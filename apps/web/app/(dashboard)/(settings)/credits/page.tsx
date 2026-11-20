@@ -34,7 +34,7 @@ import {
 import { intlLocale } from '@/i18n/config';
 import { currentUser } from '@/lib/actor';
 import { localizedAuthPath } from '@/lib/app-locale';
-import { currentPricing, currentTopupPricing } from '@/lib/pricing';
+import { currentTopupPricing, viewerPricing } from '@/lib/pricing';
 import { ROUTES } from '@/lib/seo/routes';
 import { absoluteUrl } from '@/lib/seo/site';
 import { cn } from '@/lib/utils';
@@ -108,7 +108,7 @@ function PlanCard({
 }
 
 export default async function CreditsPage({ searchParams }: PageProps<'/credits'>) {
-  const [pricing, topup] = await Promise.all([currentPricing(), currentTopupPricing()]);
+  const [pricing, topup] = await Promise.all([viewerPricing(), currentTopupPricing()]);
   const { plans: SUBSCRIPTION_PLANS } = pricing;
   const { status, next, session_id: session } = await searchParams;
   const user = await currentUser();
@@ -188,7 +188,11 @@ export default async function CreditsPage({ searchParams }: PageProps<'/credits'
       {sessionId && (
         <PurchaseConversion key={sessionId} sessionId={sessionId} initial={confirmed} />
       )}
-      <PricingExposure variant={pricing.variant} subject={pricing.subject} />
+      <PricingExposure
+        variant={pricing.variant}
+        currency={pricing.currency}
+        subject={pricing.subject}
+      />
       <div className="space-y-3">
         {/* Signed in, the breadcrumb names the page. The pricing page keeps its heading for visitors and search. */}
         {!user && (

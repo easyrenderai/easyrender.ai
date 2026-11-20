@@ -1,6 +1,7 @@
 'use client';
 
 import type { FirstModelOffer, RenderEditView, RenderView as View } from '@easyrender/core';
+import type { BuildQuality } from '@easyrender/harness/pricing';
 import { useQuery } from '@tanstack/react-query';
 import { Box, Download, Globe, Grid3x3, Loader2, Lock, RefreshCw, Sparkles } from 'lucide-react';
 import Link from 'next/link';
@@ -9,6 +10,7 @@ import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { AngleSheet } from '@/components/angle-sheet';
 import { ShellPanel } from '@/components/app-shell/shell-context';
+import { BuildQualityPicker } from '@/components/build-quality-picker';
 import { ModelView } from '@/components/model-view';
 import { DATE_FORMAT, RenderDetail } from '@/components/render-detail';
 import { RenderHistory } from '@/components/render-history';
@@ -53,6 +55,7 @@ export function RenderView({
   owner,
   canExport = false,
   sampleDownload,
+  initialQuality = 'low',
 }: {
   initial: View;
   // The owner's history of this render, read on the server. A new step refreshes it.
@@ -64,6 +67,8 @@ export function RenderView({
   /** The deployment can convert models to OBJ, FBX and BLEND. */
   canExport?: boolean;
   sampleDownload?: string;
+  /** The quality picked in the prompt bar, shown selected on the build button. */
+  initialQuality?: BuildQuality;
 }) {
   const t = useTranslations('Render');
   const locale = useLocale();
@@ -75,6 +80,7 @@ export function RenderView({
   const [hasConnectionError, setHasConnectionError] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
+  const [quality, setQuality] = useState<BuildQuality>(initialQuality);
   const [saving, setSaving] = useState(false);
   const [redrawError, setRedrawError] = useState<string | null>(null);
   const [note, setNote] = useState(initial.sheetNote ?? '');
@@ -97,7 +103,10 @@ export function RenderView({
         ? 'status.paidSheet'
         : `status.${render.status}`,
   );
-  const next = encodeURIComponent(`/r/${render.id}`);
+  // Signing up or buying credits comes back to this page with the chosen quality still selected.
+  const next = encodeURIComponent(
+    `/r/${render.id}${quality === 'low' ? '' : `?quality=${quality}`}`,
+  );
   const signupHref = `${localizedAuthPath(locale, '/sign-up')}?next=${next}`;
   // The first-model offer is created once when the preview is ready. The POST is not repeated on
   // reconnect or on a later mount of the same page.
@@ -143,7 +152,9 @@ export function RenderView({
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(
-          isUsingFreeModel ? { useFreeModel: true, maxCredits: 0 } : { maxCredits: owed },
+          isUsingFreeModel
+            ? { useFreeModel: true, maxCredits: 0 }
+            : { maxCredits: owed, ...(quality === 'low' ? {} : { quality }) },
         ),
       });
       const data = await response.json();
@@ -167,6 +178,30 @@ export function RenderView({
       }
     } catch {
       setError(t('errors.start'));
+    } finally {
+      setStarting(false);
+    }
+  }
+
+  // A Medium or High model rebuilt in Standard, free: the credit difference comes back once.
+  async function rebuild() {
+    setStarting(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/renders/${render.id}/rebuild`, { method: 'POST' });
+      const data = await response.json();
+      if (response.ok) {
+        setRender(data);
+        router.refresh();
+        captureBrowser('render_rebuild_standard', {
+          source: 'render_detail',
+          credits_returned: render.rebuildRefundCredits,
+        });
+      } else {
+        setError(localizedError(data, t('errors.rebuild')));
+      }
+    } catch {
+      setError(t('errors.rebuild'));
     } finally {
       setStarting(false);
     }
@@ -243,7 +278,7 @@ export function RenderView({
   }
 
   // An angle sheet bought earlier already counts toward the price.
-  const owed = Math.max(0, render.renderCredits - render.credits);
+  const owed = Math.max(0, render.qualityCredits[quality] - render.credits);
   const base = `/api/renders/${render.id}`;
   const title = render.name || render.prompt || t('untitled');
 
@@ -444,6 +479,13 @@ export function RenderView({
 
   const buildAction = (
     <>
+      <BuildQualityPicker
+        id="build-quality"
+        value={quality}
+        onChange={setQuality}
+        credits={render.qualityCredits}
+        isDisabled={starting}
+      />
       {(!signedIn || balance >= owed) && (
         <p className="text-sm text-muted-foreground">
           {t('journey.buildCost', { credits: format.number(owed) })}
@@ -517,6 +559,15 @@ export function RenderView({
             {t('generateSheet', { credits: render.sheetCredits })}
           </Button>
         )}
+      {render.status === 'ready' && render.buildQuality !== 'low' && (
+        <div className="space-y-2">
+          <Button variant="outline" className="w-full" onClick={rebuild} disabled={starting}>
+            {starting ? <Loader2 className="animate-spin" /> : <RefreshCw />}
+            {t('rebuildStandard', { credits: render.rebuildRefundCredits })}
+          </Button>
+          <p className="text-xs text-muted-foreground">{t('rebuildStandardHint')}</p>
+        </div>
+      )}
       {render.status === 'failed' && (
         <Button variant="outline" className="w-full" asChild>
           <SiteLink href={newHref}>{t('tryAnother')}</SiteLink>

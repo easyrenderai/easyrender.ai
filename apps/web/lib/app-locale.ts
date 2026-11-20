@@ -28,6 +28,24 @@ const APP_SECTIONS = new Set([
 
 export const isAppLocalePath = (pathname: string) => APP_SECTIONS.has(pathname.split('/')[1] ?? '');
 
+/**
+ * The language of the marketing page a visitor just came from, when it is not English: /es/precios
+ * to /credits opens the app in Spanish. A marketing page is cached and cannot set the preference
+ * cookie, and the visitor's /api/viewer call may not have answered yet, so the page they clicked
+ * from is the answer. English pages have no prefix to read, so they leave the cookie in charge.
+ */
+export function refererLocale(referer: string | null, hosts: readonly string[]): Locale | null {
+  if (!referer) return null;
+  try {
+    const url = new URL(referer);
+    if (!hosts.includes(url.host.toLowerCase())) return null;
+    const segment = url.pathname.split('/')[1];
+    return isRoutableLocale(segment) && segment !== DEFAULT_LOCALE ? segment : null;
+  } catch {
+    return null;
+  }
+}
+
 export function requestLocale(pathname: string, choice: unknown, preference: unknown): Locale {
   const segment = pathname.split('/')[1];
   if (isRoutableLocale(segment)) return segment;

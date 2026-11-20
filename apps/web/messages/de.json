@@ -385,7 +385,8 @@
       "creditsReturned": "Wir haben dir {credits, number} Credits gutgeschrieben.",
       "buildStartRefunded": "Das 3D-Modell konnte nicht gestartet werden. Abgebuchte Credits wurden erstattet.",
       "sheetStartRefunded": "Die neuen Ansichten konnten nicht gestartet werden. Deine Credits wurden erstattet.",
-      "redrawStartRefunded": "Die Ansichten konnten nicht neu erstellt werden. Deine bisherige Vorschau bleibt erhalten, und deine Credits wurden erstattet."
+      "redrawStartRefunded": "Die Ansichten konnten nicht neu erstellt werden. Deine bisherige Vorschau bleibt erhalten, und deine Credits wurden erstattet.",
+      "rebuild": "Das Modell konnte nicht neu erstellt werden. Verwendete Credits wurden erstattet."
     },
     "generateSheet": "Ansichten erstellen · {credits} Credits",
     "fixSheetLabel": "Ansichten korrigieren",
@@ -422,7 +423,8 @@
         "sheet_redraw": "Korrektur der Ansichten gestartet",
         "build": "3D-Build gestartet",
         "material": "Materialien geändert",
-        "sheet_redraw_refund": "Credits für die Korrektur erstattet"
+        "sheet_redraw_refund": "Credits für die Korrektur erstattet",
+        "rebuild_standard": "In Standard neu erstellt, Credits erstattet"
       },
       "credits": "{credits} Credits"
     },
@@ -552,7 +554,9 @@
     "repeatedViewsFailure": "Es konnten keine unterschiedlichen Ansichten erstellt werden. Versuche ein anderes Foto. Berechnete Credits wurden erstattet.",
     "inconsistentStructureFailure": "Die erzeugten Ansichten haben die Form deines Objekts verändert. Versuche ein anderes Foto. Berechnete Credits wurden erstattet.",
     "downloadGlb": "GLB herunterladen",
-    "downloadUsdz": "USDZ für Apple"
+    "downloadUsdz": "USDZ für Apple",
+    "rebuildStandard": "In Standard neu erstellen, {credits, number} Credits zurück",
+    "rebuildStandardHint": "Wirkt dieses Modell falsch, erstelle es kostenlos in Standard neu. Wir erstatten die Differenz in Credits, einmalig."
   },
   "PromptBar": {
     "steps": {
@@ -1729,11 +1733,14 @@
     "notReady": "Dieses Modell wird noch erstellt. Schau in ein paar Minuten wieder vorbei.",
     "notReadyTitle": "Fast fertig",
     "modelAlt": "3D-Modell von {name}",
-    "madeWith": "3D von Easy Render"
+    "madeWith": "3D von Easy Render",
+    "openInSafari": "Dieser Browser kann AR auf dem iPhone nicht öffnen. Öffne diese Seite in Safari, um das Stück in deinem Raum zu sehen.",
+    "copyLink": "Link kopieren",
+    "linkCopied": "Link kopiert"
   },
   "ShopifyApp": {
-    "title": "3D-Modelle für Ihren ganzen Katalog",
-    "intro": "Erstellen Sie mit einem Klick ein 3D-Modell für jedes Produkt. Kunden sehen jedes Stück per Button oder QR-Code auf der Produktseite in ihrem eigenen Raum.",
+    "title": "3D-Modelle für Ihren gesamten Katalog",
+    "intro": "Sehen Sie jedes Produkt und ob es schon ein 3D-Modell hat. Wählen Sie die gewünschten Produkte oder alle fehlenden aus und erzeugen Sie sie mit einem Klick. Produkte mit Modell werden nie neu erstellt.",
     "loading": "Wird geladen…",
     "notInShopify": "Öffnen Sie diese Seite im Shopify-Admin.",
     "error": "Etwas ist schiefgelaufen: {message}",
@@ -1742,17 +1749,47 @@
     "connectWaiting": "Fertig? Diese Seite aktualisiert sich selbst.",
     "generate": "3D für {count} Produkte erstellen ({credits} Credits)",
     "starting": "Produkte werden gesendet… {count} gesendet",
-    "nothing": "Jedes Produkt mit Foto hat bereits ein 3D-Modell oder ist in Arbeit.",
     "balance": "Guthaben: {credits} Credits",
     "missing": "{credits} weitere Credits nötig",
     "buy": "Credits kaufen",
-    "progress": "{ready} fertig, {running} in Arbeit, {waiting} wartend",
-    "needsCredits": "{count} warten auf Credits und machen weiter, sobald Sie welche hinzufügen.",
-    "needsInfo": "{count} brauchen ein brauchbares Foto.",
-    "failed": "{count} sind fehlgeschlagen und wurden erstattet. Erstellen Sie erneut, um es zu wiederholen.",
-    "noPhoto": "{count} haben kein Foto und werden übersprungen.",
+    "progress": "{ready} fertig, {running} in Arbeit, {missing} fehlen noch",
     "themeTitle": "Auf Ihren Produktseiten anzeigen",
-    "themeBody": "Öffnen Sie den Theme-Editor, gehen Sie zu einer Produktseite, fügen Sie den Block „In deinem Zuhause ansehen“ hinzu und speichern Sie. Produkte mit fertigem Modell zeigen einen Button und einen QR-Code."
+    "themeBody": "Öffnen Sie den Theme-Editor, gehen Sie zu einer Produktseite, fügen Sie den Block „In deinem Zuhause ansehen“ hinzu und speichern Sie. Produkte mit fertigem Modell zeigen einen Button und einen QR-Code.",
+    "noProducts": "Noch keine aktiven Produkte. Fügen Sie in Shopify ein Produkt mit Foto hinzu, dann erscheint es hier.",
+    "filter": {
+      "all": "Alle ({count})",
+      "missing": "Fehlend ({count})",
+      "running": "In Arbeit ({count})",
+      "ready": "Fertig ({count})",
+      "attention": "Prüfen ({count})"
+    },
+    "selectMissing": "Alle fehlenden auswählen ({count})",
+    "clear": "Auswahl aufheben",
+    "selectShown": "Alle angezeigten Produkte auswählen",
+    "selectOne": "{title} auswählen",
+    "columnPhoto": "Foto",
+    "columnProduct": "Produkt",
+    "columnStatus": "3D-Modell",
+    "emptyFilter": "Hier sind keine Produkte.",
+    "showMore": "{count} weitere anzeigen",
+    "pickSome": "Produkte zum Erzeugen auswählen",
+    "stage": {
+      "waiting": "Wartet auf den Start",
+      "sheet": "Winkelblatt wird gezeichnet",
+      "final_sheet": "Finales Blatt wird neu gezeichnet",
+      "starting_build": "3D-Erstellung startet",
+      "model": "3D-Modell wird erstellt"
+    },
+    "status": {
+      "missing": "Fehlt",
+      "no_photo": "Kein Foto",
+      "queued": "Wartet",
+      "building": "Wird erstellt",
+      "ready": "Fertig",
+      "needs_credits": "Credits fehlen",
+      "needs_info": "Foto nötig",
+      "failed": "Fehlgeschlagen"
+    }
   },
   "ShopifyConnect": {
     "title": "{shop} mit Easy Render verbinden",
@@ -3223,5 +3260,15 @@
         "failed": "Diese Datei konnten wir nicht lesen. Sie ist möglicherweise beschädigt oder nutzt eine Funktion, die dieser Viewer nicht unterstützt."
       }
     }
+  },
+  "BuildQuality": {
+    "label": "Qualität",
+    "low": "Niedrig",
+    "medium": "Mittel",
+    "high": "Hoch",
+    "lowHint": "Standard-Build. Schnell und für die meisten Produkte richtig.",
+    "mediumHint": "Farbe und Form näher an deinem Foto. Dauert einige Minuten länger.",
+    "highHint": "Die meisten Details und die größte Datei. Dauert am längsten.",
+    "credits": "{credits, number} Credits"
   }
 }

@@ -8,6 +8,7 @@ import {
   listEdits,
   toView,
 } from '@easyrender/core';
+import { isBuildQuality } from '@easyrender/harness/pricing';
 import { Globe, Sparkles } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -74,8 +75,9 @@ export async function generateMetadata({ params }: PageProps<'/r/[id]'>): Promis
   };
 }
 
-export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
+export default async function RenderPage({ params, searchParams }: PageProps<'/r/[id]'>) {
   const { id } = await params;
+  const { quality } = await searchParams;
   const demo = findShowcase(id);
   if (demo) {
     const [t, format, user, locale] = await Promise.all([
@@ -156,6 +158,7 @@ export default async function RenderPage({ params }: PageProps<'/r/[id]'>) {
       balance={balance}
       owner={isOwner}
       canExport={isModelExportEnabled()}
+      initialQuality={typeof quality === 'string' && isBuildQuality(quality) ? quality : 'low'}
     />
   );
 }

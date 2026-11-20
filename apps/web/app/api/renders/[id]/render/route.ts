@@ -1,11 +1,13 @@
 import { AppError, startBuild, toView } from '@easyrender/core';
+import { type BuildQuality, isBuildQuality } from '@easyrender/harness/pricing';
 import { NextResponse } from 'next/server';
 import { resolveActor } from '@/lib/actor';
 import { apiHandle, apiOptions } from '@/lib/api-http';
 
 export const maxDuration = 60;
 
-// Spends the render credits and starts the 3D build from the approved preview.
+// Spends the render credits and starts the 3D build from the approved preview. The body may pick
+// a quality (low, medium or high); without one the build is the standard one, as always.
 export const POST = (request: Request, { params }: RouteContext<'/api/renders/[id]/render'>) =>
   apiHandle(request, async () => {
     const { id } = await params;
@@ -24,17 +26,32 @@ export const POST = (request: Request, { params }: RouteContext<'/api/renders/[i
     const text = bounded ? await new Response(bounded).text() : '';
     let maxCredits: number | undefined;
     let isUsingFreeModel = false;
+    let quality: BuildQuality = 'low';
     if (text.trim()) {
       let body: unknown;
       try {
         body = JSON.parse(text);
       } catch {
-        throw new AppError('Send a JSON object with optional maxCredits', 400, 'bad_body');
+        throw new AppError(
+          'Send a JSON object with optional maxCredits and quality',
+          400,
+          'bad_body',
+        );
       }
       if (!body || typeof body !== 'object' || Array.isArray(body))
-        throw new AppError('Send a JSON object with optional maxCredits', 400, 'bad_body');
+        throw new AppError(
+          'Send a JSON object with optional maxCredits and quality',
+          400,
+          'bad_body',
+        );
       const value = (body as Record<string, unknown>).maxCredits;
       const trial = (body as Record<string, unknown>).useFreeModel;
+      const chosen = (body as Record<string, unknown>).quality;
+      if (chosen !== undefined) {
+        if (!isBuildQuality(chosen))
+          throw new AppError('quality must be low, medium or high', 400, 'bad_quality');
+        quality = chosen;
+      }
       if (trial !== undefined && typeof trial !== 'boolean')
         throw new AppError('useFreeModel must be a boolean', 400, 'bad_body');
       isUsingFreeModel = trial === true;
@@ -49,7 +66,7 @@ export const POST = (request: Request, { params }: RouteContext<'/api/renders/[i
       }
     }
     return NextResponse.json(
-      toView(await startBuild(id, { ...actor, maxCredits, isUsingFreeModel })),
+      toView(await startBuild(id, { ...actor, maxCredits, isUsingFreeModel }, quality)),
     );
   });
 

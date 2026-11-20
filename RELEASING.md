@@ -85,7 +85,7 @@ aws cloudformation deploy --region eu-west-1 --stack-name easyrender-github-rele
 
 ## Production smoke
 
-**Production smoke** (`prod-smoke.yml`) runs every 15 minutes and on demand (Actions, **Production
+**Production smoke** (`prod-smoke.yml`) runs every 15 minutes (at :07, :22, :37 and :52) and on demand (Actions, **Production
 smoke**, Run workflow). It is read-only: it reads `/`, `/pricing`, `/3d-viewer`,
 `/api/openapi.json` and the two `/.well-known/oauth-*` documents, and sends one unauthenticated
 `POST /api/mcp` that must answer 401 with the JSON error. It never signs in, uploads or pays. Each

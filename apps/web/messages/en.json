@@ -385,7 +385,8 @@
       "creditsReturned": "We’ve returned {credits, number} credits to your balance.",
       "buildStartRefunded": "We couldn’t start the 3D model. Any credits used to start it were returned.",
       "sheetStartRefunded": "We couldn’t start the new views. Your credits were returned.",
-      "redrawStartRefunded": "We couldn’t regenerate the views. Your earlier preview is still there and your credits were returned."
+      "redrawStartRefunded": "We couldn’t regenerate the views. Your earlier preview is still there and your credits were returned.",
+      "rebuild": "We couldn’t rebuild the model. Any credits used were returned."
     },
     "generateSheet": "Generate angle sheet ({credits} credits)",
     "fixSheetLabel": "Correct the views",
@@ -422,7 +423,8 @@
         "sheet_redraw": "View correction started",
         "build": "3D build started",
         "material": "Materials changed",
-        "sheet_redraw_refund": "View correction refunded"
+        "sheet_redraw_refund": "View correction refunded",
+        "rebuild_standard": "Rebuilt in Standard, credits returned"
       },
       "credits": "{credits} credits"
     },
@@ -552,7 +554,9 @@
     "repeatedViewsFailure": "We could not generate distinct angles. Try another photo. Any credits charged were refunded.",
     "inconsistentStructureFailure": "The generated angles changed the shape of your object. Try another photo. Any credits charged were refunded.",
     "downloadGlb": "Download GLB",
-    "downloadUsdz": "USDZ for Apple"
+    "downloadUsdz": "USDZ for Apple",
+    "rebuildStandard": "Rebuild in Standard, {credits, number} credits back",
+    "rebuildStandardHint": "If this model looks wrong, rebuild it in Standard for free. We return the difference in credits, once."
   },
   "PromptBar": {
     "steps": {
@@ -1729,11 +1733,14 @@
     "notReady": "This model is still being built. Check back in a few minutes.",
     "notReadyTitle": "Almost there",
     "modelAlt": "3D model of {name}",
-    "madeWith": "3D by Easy Render"
+    "madeWith": "3D by Easy Render",
+    "openInSafari": "Your browser cannot open AR on iPhone. Open this page in Safari to see the piece in your room.",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied"
   },
   "ShopifyApp": {
     "title": "3D models for your whole catalogue",
-    "intro": "Generate a 3D model for every product in one click. Shoppers see each piece in their own room from a button or a QR code on the product page.",
+    "intro": "See every product and whether it has a 3D model. Tick the ones to build, or select everything that is missing, and generate them in one click. Products that already have a model are never rebuilt.",
     "loading": "Loading…",
     "notInShopify": "Open this page from your Shopify admin.",
     "error": "Something went wrong: {message}",
@@ -1742,17 +1749,47 @@
     "connectWaiting": "Finished? This page updates by itself.",
     "generate": "Generate 3D for {count} products ({credits} credits)",
     "starting": "Sending products… {count} sent",
-    "nothing": "Every product with a photo already has a 3D model or is on its way.",
     "balance": "Balance: {credits} credits",
     "missing": "{credits} more credits needed",
     "buy": "Buy credits",
-    "progress": "{ready} ready, {running} in progress, {waiting} waiting",
-    "needsCredits": "{count} are waiting for credits and will continue when you add some.",
-    "needsInfo": "{count} need a usable photo.",
-    "failed": "{count} failed and were refunded. Generate again to retry.",
-    "noPhoto": "{count} have no photo and are skipped.",
+    "progress": "{ready} ready, {running} in progress, {missing} still missing",
     "themeTitle": "Show it on your product pages",
-    "themeBody": "Open the theme editor, go to a product page, add the \"View in your room\" block and save. Products with a finished model show a button and a QR code."
+    "themeBody": "Open the theme editor, go to a product page, add the \"View in your room\" block and save. Products with a finished model show a button and a QR code.",
+    "noProducts": "No active products yet. Add a product with a photo in Shopify and it shows up here.",
+    "filter": {
+      "all": "All ({count})",
+      "missing": "Missing ({count})",
+      "running": "In progress ({count})",
+      "ready": "Ready ({count})",
+      "attention": "Needs attention ({count})"
+    },
+    "selectMissing": "Select all missing ({count})",
+    "clear": "Clear selection",
+    "selectShown": "Select all products shown",
+    "selectOne": "Select {title}",
+    "columnPhoto": "Photo",
+    "columnProduct": "Product",
+    "columnStatus": "3D model",
+    "emptyFilter": "No products here.",
+    "showMore": "Show {count} more",
+    "pickSome": "Select products to generate",
+    "stage": {
+      "waiting": "Waiting to start",
+      "sheet": "Drawing the angle sheet",
+      "final_sheet": "Redrawing the final sheet",
+      "starting_build": "Starting the 3D build",
+      "model": "Building the 3D model"
+    },
+    "status": {
+      "missing": "Missing",
+      "no_photo": "No photo",
+      "queued": "Waiting",
+      "building": "Building",
+      "ready": "Ready",
+      "needs_credits": "Needs credits",
+      "needs_info": "Needs a photo",
+      "failed": "Failed"
+    }
   },
   "ShopifyConnect": {
     "title": "Connect {shop} to Easy Render",
@@ -3600,5 +3637,15 @@
         "failed": "We couldn't read that file. It may be damaged, or use a feature this viewer doesn't support."
       }
     }
+  },
+  "BuildQuality": {
+    "label": "Quality",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "lowHint": "Standard build. Quick, and right for most products.",
+    "mediumHint": "Colour and shape closer to your photo. Takes a few minutes longer.",
+    "highHint": "The most detail and the biggest file. Takes the longest.",
+    "credits": "{credits, number} credits"
   }
 }

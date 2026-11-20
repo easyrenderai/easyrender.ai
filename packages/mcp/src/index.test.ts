@@ -7,6 +7,7 @@ const core = vi.hoisted(() => ({
   createModelExport: vi.fn(),
   getRender: vi.fn(),
   startBuild: vi.fn(),
+  rebuildStandard: vi.fn(),
   fetchRemoteImage: vi.fn(),
   getUploadedImage: vi.fn(),
   listRenderPage: vi.fn(),
@@ -40,6 +41,7 @@ vi.mock('@easyrender/core', async (importOriginal) => {
       currency: 'eur',
       balance: 500,
       render_credits: 64,
+      render_credits_by_quality: { low: 64, medium: 120, high: 180 },
       sheet_credits: 4,
       product_views_credits: 100,
       view_polish_credits: 2,
@@ -94,6 +96,9 @@ const render = {
   modelVersion: 1,
   credits: 0,
   renderCredits: 64,
+  qualityCredits: { low: 64, medium: 120, high: 180 },
+  buildQuality: 'low',
+  rebuildRefundCredits: 0,
   sheetCredits: 4,
   upscaleCredits: 1,
   canUpscale: false,
@@ -277,6 +282,50 @@ describe('MCP protocol contract', () => {
       arguments: { id: 'r1', max_credits: 64 },
     });
     expect(accepted.isError).not.toBe(true);
+  });
+  it('checks the budget against the chosen quality and passes it on', async () => {
+    core.getRender.mockResolvedValue(render);
+    core.startBuild.mockResolvedValue({ ...render, status: 'rendering', credits: 180 });
+    const client = await connect();
+    // A standard budget does not cover High.
+    const refused = await client.callTool({
+      name: 'render_3d',
+      arguments: { id: 'r1', max_credits: 64, quality: 'high' },
+    });
+    expect(refused).toMatchObject({
+      isError: true,
+      structuredContent: { error: { code: 'budget_exceeded' } },
+    });
+    expect(core.startBuild).not.toHaveBeenCalled();
+    await client.callTool({
+      name: 'render_3d',
+      arguments: { id: 'r1', max_credits: 180, quality: 'high' },
+    });
+    expect(core.startBuild).toHaveBeenCalledWith('r1', expect.anything(), 'high');
+    // No quality is the standard build.
+    core.startBuild.mockClear();
+    await client.callTool({ name: 'render_3d', arguments: { id: 'r1', max_credits: 64 } });
+    expect(core.startBuild).toHaveBeenCalledWith('r1', expect.anything(), undefined);
+    const unknown = await client.callTool({
+      name: 'render_3d',
+      arguments: { id: 'r1', quality: 'ultra' },
+    });
+    expect(unknown.isError).toBe(true);
+  });
+  it('rebuilds a medium or high model in standard for the owner', async () => {
+    core.rebuildStandard.mockResolvedValue({ ...render, status: 'rendering' });
+    const client = await connect();
+    const response = await client.callTool({ name: 'rebuild_standard', arguments: { id: 'r1' } });
+    expect(response.structuredContent).toMatchObject({ id: 'r1', status: 'rendering' });
+    expect(core.rebuildStandard).toHaveBeenCalledWith(
+      'r1',
+      expect.objectContaining({ userId: 'u1' }),
+    );
+    const readOnly = await (await connect(['read'])).callTool({
+      name: 'rebuild_standard',
+      arguments: { id: 'r1' },
+    });
+    expect(readOnly.isError).toBe(true);
   });
   it('lists owned renders with a usable continuation cursor', async () => {
     core.listRenderPage.mockResolvedValue({ renders: [render], nextCursor: 'next1' });

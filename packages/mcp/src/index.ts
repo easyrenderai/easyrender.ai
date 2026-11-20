@@ -6,6 +6,7 @@ import {
   getCreditQuote,
   getRender,
   MODEL_EXPORT_FORMATS,
+  rebuildStandard,
   startBuild,
   toView,
 } from '@easyrender/core';
@@ -18,6 +19,8 @@ import {
   idSchema,
   modelExportSchema,
   paidActor,
+  pendingCredits,
+  qualitySchema,
   quoteSchema,
   renderSchema,
   requireBudget,
@@ -122,8 +125,12 @@ export function createMcpServer(actor: Actor) {
     {
       title: 'Render in 3D',
       description:
-        'Build an approved preview for its pending_credits. Send max_credits as the authorized ceiling. Repeating the same running/ready render does not charge again. On timeout query the same id before retrying; never create another paid render automatically.',
-      inputSchema: { id: idSchema, max_credits: z.number().int().nonnegative().optional() },
+        'Build an approved preview. Without quality it is the standard build for pending_credits. Pass quality medium or high for a finer model: the price is qualityCredits[quality] minus credits already recorded (get_credits quotes them). Send max_credits as the authorized ceiling. Repeating the same running/ready render does not charge again. On timeout query the same id before retrying; never create another paid render automatically. A medium or high model that looks wrong can be rebuilt in standard with rebuild_standard, which returns the credit difference.',
+      inputSchema: {
+        id: idSchema,
+        max_credits: z.number().int().nonnegative().optional(),
+        quality: qualitySchema.optional(),
+      },
       outputSchema: renderSchema,
       annotations: {
         readOnlyHint: false,
@@ -132,15 +139,29 @@ export function createMcpServer(actor: Actor) {
         openWorldHint: true,
       },
     },
-    ({ id, max_credits }) =>
+    ({ id, max_credits, quality }) =>
       forActor(actor, 'spend', async () => {
         const view = toView(await getRender(id, actor));
-        requireBudget(
-          max_credits,
-          view.status === 'preview_ready' ? Math.max(0, view.renderCredits - view.credits) : 0,
-        );
-        return result(await startBuild(id, paidActor(actor, max_credits)));
+        requireBudget(max_credits, pendingCredits(view, quality));
+        return result(await startBuild(id, paidActor(actor, max_credits), quality));
       }),
+  );
+  server.registerTool(
+    'rebuild_standard',
+    {
+      title: 'Rebuild in standard quality',
+      description:
+        'Rebuild a ready medium or high model in standard quality for free. The credit difference between what the model cost and the standard price is returned once, in the same step, however many times this is called. The old model is replaced when the new one is ready; poll get_render. Fails with bad_state when the render was not built at medium or high.',
+      inputSchema: { id: idSchema },
+      outputSchema: renderSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    ({ id }) => forActor(actor, 'spend', async () => result(await rebuildStandard(id, actor))),
   );
   server.registerTool(
     'get_credits',

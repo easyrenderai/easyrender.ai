@@ -1,6 +1,6 @@
 // The render pipeline, split by job. Import from here: this file is the public surface.
 export { advance, recoverRenders } from './renders-advance';
-export { startBuild } from './renders-build';
+export { rebuildStandard, startBuild } from './renders-build';
 export { createDraft } from './renders-draft';
 export {
   type DashboardStats,

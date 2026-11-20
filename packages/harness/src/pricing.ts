@@ -22,6 +22,17 @@ export const BUILD_COST_USD = 0.095;
 export const RENDER_COST_USD = BUILD_COST_USD;
 export const RENDER_CREDITS = Math.max(35, creditsFor(RENDER_COST_USD));
 
+// Higher build qualities run TRELLIS.2 on the photo alone (it takes one image, so the sheet's
+// views are not used). The figures are the measured average cost of builds at each setting
+// (docs/benchmarks, 2026-11-18, A100 seconds): Medium seven builds of $0.10 to $0.38 (average
+// $0.26), High three builds of $0.32 to $0.52 (average $0.41). Like the standard build they are
+// the averages, not a list price: a build that costs more on a slow GPU is still charged the same.
+// What a buyer is charged is the tier's credits minus what the render already paid.
+export const MEDIUM_BUILD_COST_USD = 0.27;
+export const HIGH_BUILD_COST_USD = 0.41;
+export const MEDIUM_RENDER_CREDITS = creditsFor(MEDIUM_BUILD_COST_USD);
+export const HIGH_RENDER_CREDITS = creditsFor(HIGH_BUILD_COST_USD);
+
 // The 2K sheet of a product views set (nine packshots are cut from it).
 export const FINAL_SHEET_COST_USD = 0.0504;
 
@@ -41,6 +52,17 @@ export const PRODUCT_VIEWS_COST_USD =
 export const PRODUCT_VIEWS_CREDITS = creditsFor(PRODUCT_VIEWS_COST_USD);
 // Polishing one view: the owner describes what is wrong and that view is drawn again.
 export const VIEW_POLISH_CREDITS = creditsFor(VIEW_REDRAW_COST_USD);
+export const BUILD_QUALITIES = ['low', 'medium', 'high'] as const;
+export type BuildQuality = (typeof BUILD_QUALITIES)[number];
+export const isBuildQuality = (value: unknown): value is BuildQuality =>
+  typeof value === 'string' && (BUILD_QUALITIES as readonly string[]).includes(value);
+
+// The total credits of a 3D build at each quality. Low is the standard build.
+export const BUILD_QUALITY_CREDITS = {
+  low: RENDER_CREDITS,
+  medium: MEDIUM_RENDER_CREDITS,
+  high: HIGH_RENDER_CREDITS,
+} as const;
 // A 3D build from a finished set reuses its 2K sheet: it is the same 3D step as any render.
 export const BUILD_FROM_VIEWS_CREDITS = RENDER_CREDITS;
 

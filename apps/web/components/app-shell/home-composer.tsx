@@ -1,10 +1,12 @@
 'use client';
 
+import { BUILD_QUALITY_CREDITS, type BuildQuality } from '@easyrender/harness/pricing';
 import { FolderOpen, ImagePlus, Loader2, TriangleAlert, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { BuildQualityPicker } from '@/components/build-quality-picker';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,6 +28,7 @@ export function HomeComposer() {
   const [file, setFile] = useState<File | null>(null);
   const [thumb, setThumb] = useState<string | null>(null);
   const [prompt, setPrompt] = useState('');
+  const [quality, setQuality] = useState<BuildQuality>('low');
   const [isDragging, setIsDragging] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -127,7 +130,7 @@ export function HomeComposer() {
         return;
       }
       observeRender(data);
-      router.push(`/r/${data.id}`);
+      router.push(`/r/${data.id}${quality === 'low' ? '' : `?quality=${quality}`}`);
       return;
     } catch {
       setError(t('errors.upload'));
@@ -202,6 +205,17 @@ export function HomeComposer() {
             onChange={(event) => pick(event.target.files?.[0])}
           />
         </div>
+        {file && (
+          <div className="mt-3">
+            <BuildQualityPicker
+              id="composer-quality"
+              value={quality}
+              onChange={setQuality}
+              credits={BUILD_QUALITY_CREDITS}
+              isDisabled={isBusy}
+            />
+          </div>
+        )}
         <div className="mt-3 flex flex-wrap items-center justify-end gap-3">
           <p className="mr-auto text-xs text-muted-foreground">{t('costNote')}</p>
           <Button type="submit" disabled={!file || isBusy}>

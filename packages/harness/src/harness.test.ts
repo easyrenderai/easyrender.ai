@@ -1,12 +1,24 @@
 import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
-import { buildCostUsd, buildRequest, FINAL_SHEET_MODEL, SHEET_MODEL } from './models';
 import {
+  BUILD_MODEL,
+  BUILD_MODEL_2,
+  buildCostUsd,
+  buildRequest,
+  buildRequestFor,
+  FINAL_SHEET_MODEL,
+  SHEET_MODEL,
+} from './models';
+import {
+  BUILD_QUALITY_CREDITS,
   CREDIT_USD,
   creditsFor,
   FINAL_SHEET_COST_USD,
+  HIGH_BUILD_COST_USD,
+  isBuildQuality,
   isPlanId,
   isValidPaygCredits,
+  MEDIUM_BUILD_COST_USD,
   PLAN_IDS,
   PRO_PLAN,
   paygPriceCents,
@@ -20,6 +32,49 @@ import {
 import { findGlbUrl } from './replicate';
 import { cutCells, sheetOutputUrl, sheetPrompt, VIEWS } from './sheet';
 import { watermark } from './watermark';
+
+describe('build quality', () => {
+  it('prices each quality at its cost plus the one margin, with Low unchanged', () => {
+    expect(BUILD_QUALITY_CREDITS.low).toBe(RENDER_CREDITS);
+    expect(BUILD_QUALITY_CREDITS.medium).toBe(creditsFor(MEDIUM_BUILD_COST_USD));
+    expect(BUILD_QUALITY_CREDITS.high).toBe(creditsFor(HIGH_BUILD_COST_USD));
+    expect(BUILD_QUALITY_CREDITS.low).toBeLessThan(BUILD_QUALITY_CREDITS.medium);
+    expect(BUILD_QUALITY_CREDITS.medium).toBeLessThan(BUILD_QUALITY_CREDITS.high);
+    // Each price covers its cost at a 70% margin.
+    expect(BUILD_QUALITY_CREDITS.medium * CREDIT_USD * 0.3).toBeGreaterThanOrEqual(
+      MEDIUM_BUILD_COST_USD - 1e-9,
+    );
+    expect(BUILD_QUALITY_CREDITS.high * CREDIT_USD * 0.3).toBeGreaterThanOrEqual(
+      HIGH_BUILD_COST_USD - 1e-9,
+    );
+  });
+
+  it('builds Low exactly as before and sends one photo to TRELLIS.2 for Medium and High', () => {
+    const images = ['photo', 'cell-1', 'cell-2'];
+    expect(buildRequestFor('low', images)).toEqual(buildRequest(images));
+    expect(buildRequestFor('low', images).version).toBe(BUILD_MODEL.version);
+    for (const quality of ['medium', 'high'] as const) {
+      const request = buildRequestFor(quality, images);
+      expect(request.version).toBe(BUILD_MODEL_2.version);
+      expect(request.input).toMatchObject({ image: 'photo', generate_model: true });
+      expect(request.input).not.toHaveProperty('images');
+    }
+    expect(buildRequestFor('high', images).input).toMatchObject({
+      pipeline_type: '1536_cascade',
+      texture_size: 4096,
+    });
+    expect(buildRequestFor('medium', images).input).toMatchObject({
+      pipeline_type: '1024_cascade',
+      texture_size: 2048,
+    });
+  });
+
+  it('recognises only the three qualities', () => {
+    expect(['low', 'medium', 'high'].every(isBuildQuality)).toBe(true);
+    expect(isBuildQuality('ultra')).toBe(false);
+    expect(isBuildQuality(undefined)).toBe(false);
+  });
+});
 
 describe('pricing', () => {
   it('keeps a 70% margin over cost', () => {

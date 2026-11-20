@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { AppFrame } from '@/components/app-shell/app-frame';
+import { IntlBoundary } from '@/components/intl-boundary';
 import { requireAdmin } from '@/lib/admin-analytics/auth';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -13,5 +14,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   await requireAdmin();
   // The same shell as the signed-in app: one frame, never the marketing header. The guard above
   // has already sent anyone who is not a verified admin away, so a user is always present here.
-  return <AppFrame>{children}</AppFrame>;
+  return (
+    <IntlBoundary>
+      <AppFrame>{children}</AppFrame>
+    </IntlBoundary>
+  );
 }

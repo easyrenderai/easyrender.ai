@@ -6,7 +6,10 @@ const session = vi.hoisted(() => ({
   isSignedIn: false,
   path: '/',
   balance: 120 as number | 'throw',
+  // What /api/viewer answered, set by each test before it renders.
+  viewer: undefined as unknown,
 }));
+vi.mock('@/components/use-viewer', () => ({ useViewer: () => ({ data: session.viewer }) }));
 vi.mock('next/server', () => ({ connection: async () => {} }));
 vi.mock('next/navigation', () => ({ usePathname: () => session.path }));
 vi.mock('next-intl', () => ({
@@ -41,6 +44,15 @@ vi.mock('react-resizable-panels', () => ({
 import { AppShell } from '@/components/app-shell/app-shell';
 import type { ShellData } from '@/components/app-shell/types';
 import { SiteHeader } from '@/components/site-header';
+import { loadHeaderAccount } from '@/lib/header-account';
+
+// The header is built once for every visitor; who is looking arrives from /api/viewer. This stands
+// in for that answer, built by the same server function the route calls.
+async function viewerAnswers() {
+  session.viewer = session.isSignedIn
+    ? { signedIn: true, account: await loadHeaderAccount('fixture', 'en') }
+    : undefined;
+}
 
 const shell: ShellData = {
   email: 'a@example.com',
@@ -56,7 +68,8 @@ it.each([false, true])(
     session.isSignedIn = isSignedIn;
     session.balance = 120;
     session.path = '/';
-    const html = renderToStaticMarkup(await SiteHeader());
+    await viewerAnswers();
+    const html = renderToStaticMarkup(await SiteHeader({ locale: 'en' }));
     const destination = isSignedIn ? '/dashboard' : '/sign-in';
     expect(html.match(new RegExp(`href="${destination}"`, 'g'))).toHaveLength(isSignedIn ? 1 : 2);
     expect(html).toContain('href="/#try"');
@@ -77,7 +90,8 @@ it('does not repeat the dashboard action on secondary landings', async () => {
   session.isSignedIn = true;
   session.balance = 120;
   session.path = '/pricing';
-  const html = renderToStaticMarkup(await SiteHeader());
+  await viewerAnswers();
+  const html = renderToStaticMarkup(await SiteHeader({ locale: 'en' }));
   // One session entry shared across widths, with no duplicate primary action.
   expect(html.match(/href="\/dashboard"/g)).toHaveLength(1);
   expect(html).not.toContain('href="/sign-in"');
@@ -88,7 +102,8 @@ it('hides the balance when the read fails and keeps the credits link', async () 
   session.isSignedIn = true;
   session.balance = 'throw';
   session.path = '/hub';
-  const html = renderToStaticMarkup(await SiteHeader());
+  await viewerAnswers();
+  const html = renderToStaticMarkup(await SiteHeader({ locale: 'en' }));
   expect(html).toContain('data-slot="account-menu"');
   expect(html).toContain('aria-label="account"');
   expect(html).not.toContain('creditsBalance');
@@ -101,7 +116,8 @@ it('shows a zero balance', async () => {
   session.isSignedIn = true;
   session.balance = 0;
   session.path = '/hub';
-  const html = renderToStaticMarkup(await SiteHeader());
+  await viewerAnswers();
+  const html = renderToStaticMarkup(await SiteHeader({ locale: 'en' }));
   expect(html).toContain('aria-label="account, creditsBalance:0"');
 });
 

@@ -1,5 +1,12 @@
 import { db, type Render } from '@easyrender/db';
-import { RENDER_CREDITS, SHEET_CREDITS, UPSCALE_CREDITS } from '@easyrender/harness';
+import {
+  BUILD_QUALITY_CREDITS,
+  type BuildQuality,
+  isBuildQuality,
+  RENDER_CREDITS,
+  SHEET_CREDITS,
+  UPSCALE_CREDITS,
+} from '@easyrender/harness';
 import { AppError, notFound } from './errors';
 import { type RenderEditView, toEditView } from './render-edits';
 import { type RenderQuality, storedQuality } from './render-quality';
@@ -30,6 +37,13 @@ export type RenderView = {
   modelVersion: number;
   credits: number;
   renderCredits: number;
+  // What each build quality costs in all, and the one this render was built at (Low unless the
+  // owner chose a higher one).
+  qualityCredits: Record<BuildQuality, number>;
+  buildQuality: BuildQuality;
+  // A finished Medium or High model can be rebuilt in Standard for free; this is what the owner
+  // gets back when they do. Zero when the render cannot be rebuilt.
+  rebuildRefundCredits: number;
   sheetCredits: number;
   // What enlarging the angle sheet costs, and whether it can be done yet (the 3D model is paid).
   upscaleCredits: number;
@@ -78,6 +92,12 @@ export function toView(render: Render): RenderView {
     // A failed render was refunded in full, so nothing counts as spent on it.
     credits: render.status === 'failed' ? 0 : render.credits,
     renderCredits: RENDER_CREDITS,
+    qualityCredits: { ...BUILD_QUALITY_CREDITS },
+    buildQuality: isBuildQuality(render.buildQuality) ? render.buildQuality : 'low',
+    rebuildRefundCredits:
+      render.status === 'ready' && isBuildQuality(render.buildQuality)
+        ? Math.max(0, render.credits - RENDER_CREDITS)
+        : 0,
     sheetCredits: SHEET_CREDITS,
     upscaleCredits: UPSCALE_CREDITS,
     canUpscale: Boolean(render.sheetKey) && (render.status === 'ready' || render.hasFinalSheet),

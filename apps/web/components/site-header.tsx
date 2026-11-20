@@ -1,39 +1,36 @@
-import { connection } from 'next/server';
-import { getLocale, getTranslations } from 'next-intl/server';
-import { AccountCreditsLink, AccountMenu } from '@/components/account-menu';
+import { getTranslations } from 'next-intl/server';
 import { BrandMark } from '@/components/brand-mark';
+import {
+  HeaderAccount,
+  HeaderMenuCredits,
+  HeaderMenuSignIn,
+  HeaderSession,
+} from '@/components/header-viewer';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { HeaderConnect, HeaderNavItem } from '@/components/site-header-links';
 import { SiteLink as Link } from '@/components/site-link';
 import { SiteMenu } from '@/components/site-menu';
-import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
-import { currentUser } from '@/lib/actor';
 import { localizedAuthPath } from '@/lib/app-locale';
-import { loadHeaderAccount } from '@/lib/header-account';
 import { isPublished, ROUTES } from '@/lib/seo/routes';
 import { siteNavigation } from '@/lib/site-navigation';
 
-export async function SiteHeader() {
-  // Per-request: the header reads the session, so no page (404 included) is prerendered against the database.
-  await connection();
-  const user = await currentUser().catch(() => null);
-  const [t, locale, apiT, account] = await Promise.all([
-    getTranslations('Header'),
-    getLocale(),
-    getTranslations('ApiLanding'),
-    user ? loadHeaderAccount(user.id) : Promise.resolve(null),
+// The same HTML for every visitor of a language, so the edge can cache the page around it. What
+// depends on who is looking (Dashboard or Sign in, the balance pill) is in components/header-viewer
+// and fills in when /api/viewer answers.
+export async function SiteHeader({ locale }: { locale: Locale }) {
+  const [t, apiT] = await Promise.all([
+    getTranslations({ locale, namespace: 'Header' }),
+    getTranslations({ locale, namespace: 'ApiLanding' }),
   ]);
-  const home = ROUTES.home.paths[locale as Locale];
+  const home = ROUTES.home.paths[locale];
   const signIn = localizedAuthPath(locale, '/sign-in');
-  const nav = siteNavigation(locale as Locale);
+  const nav = siteNavigation(locale);
   // Pricing falls back to the home anchor; unpublished integration pages are filtered above.
   const navHref = (item: (typeof nav)[number]) => {
     if ('href' in item) return item.href;
     if ('route' in item)
-      return isPublished(item.route, locale as Locale)
-        ? ROUTES[item.route].paths[locale as Locale]
-        : `${home}#pricing`;
+      return isPublished(item.route, locale) ? ROUTES[item.route].paths[locale] : `${home}#pricing`;
     return `${home}${item.hash}`;
   };
   return (
@@ -54,7 +51,7 @@ export async function SiteHeader() {
             {nav.map((item) => (
               <HeaderNavItem
                 key={item.key}
-                locale={locale as Locale}
+                locale={locale}
                 href={navHref(item)}
                 hash={'hash' in item ? item.hash : undefined}
               >
@@ -65,30 +62,26 @@ export async function SiteHeader() {
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <LocaleSwitcher />
-          <Button variant="ghost" size="sm" className={user ? undefined : 'max-sm:hidden'} asChild>
-            <Link href={user ? '/dashboard' : signIn}>{t(user ? 'dashboard' : 'signIn')}</Link>
-          </Button>
+          <HeaderSession
+            dashboardLabel={t('dashboard')}
+            signInLabel={t('signIn')}
+            signInHref={signIn}
+          />
           <HeaderConnect
-            locale={locale as Locale}
+            locale={locale}
             connect={t('connect')}
             suffix={t('connectSuffix')}
             apiLabel={apiT('headerCta')}
             uploadLabel={t('upload')}
-            isSignedIn={Boolean(user)}
           />
-          {account ? <AccountMenu placement="marketing" copy={account} /> : null}
+          <HeaderAccount />
           <SiteMenu openLabel={t('menuOpen')} closeLabel={t('menuClose')}>
-            {account ? (
-              <AccountCreditsLink
-                label={account.balanceLabel ?? account.creditsLinkLabel}
-                className="sm:hidden"
-              />
-            ) : null}
+            <HeaderMenuCredits />
             <nav aria-label={t('sections')} className="flex flex-col">
               {nav.map((item) => (
                 <HeaderNavItem
                   key={item.key}
-                  locale={locale as Locale}
+                  locale={locale}
                   href={navHref(item)}
                   hash={'hash' in item ? item.hash : undefined}
                   isMobile
@@ -98,11 +91,7 @@ export async function SiteHeader() {
               ))}
             </nav>
             {/* Members already have Dashboard in the phone's visible header row. */}
-            {!user ? (
-              <Button variant="outline" className="mt-2 sm:hidden" asChild>
-                <Link href={signIn}>{t('signIn')}</Link>
-              </Button>
-            ) : null}
+            <HeaderMenuSignIn label={t('signIn')} href={signIn} />
           </SiteMenu>
         </div>
       </div>

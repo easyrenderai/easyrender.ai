@@ -1,5 +1,11 @@
 import { adminDecision } from '@easyrender/core/admin-analytics/helpers';
 import {
+  isPricingContextKey,
+  isPricingExperimentLive,
+  PRICING_CONTEXT_COOKIE,
+  visitorPricingContext,
+} from '@easyrender/core/pricing-context';
+import {
   normalizeReferralCode,
   REFERRAL_COOKIE,
   REFERRAL_COOKIE_MAX_AGE,
@@ -7,8 +13,9 @@ import {
 import { type NextRequest, NextResponse } from 'next/server';
 import { isRoutableLocale, LOCALE_HEADER, PATH_HEADER } from './i18n/config';
 import { adminVerificationPath } from './lib/admin-analytics/navigation';
-import { APP_LOCALE_COOKIE, isAppLocalePath, requestLocale } from './lib/app-locale';
+import { APP_LOCALE_COOKIE, isAppLocalePath, refererLocale, requestLocale } from './lib/app-locale';
 import { canonicalHostTarget } from './lib/canonical-host';
+import { isEdgeCachedPage } from './lib/edge-cache';
 import {
   COUNTRY_HEADER,
   decideHome,
@@ -17,8 +24,10 @@ import {
   HOME_VARY,
   homePath,
 } from './lib/home-locale';
-
-import { isMailingTokenLocation, PRIVATE_TOKEN_PAGE_HEADER } from './lib/mailing-privacy';
+import { isMailingTokenLocation } from './lib/mailing-privacy';
+import { isPricedPage } from './lib/priced-pages';
+import { isPricedInternalPath, pricedPath, publicPath } from './lib/priced-route';
+import { SITE_HOST } from './lib/seo/site';
 
 const ANON_COOKIE = 'er_anon';
 
@@ -85,10 +94,15 @@ function homeRedirect(request: NextRequest) {
   return varyHome(response);
 }
 
-// Canonical host first, then the first-visit language of the root, then an anonymous id for every
-// visitor so a free preview can be tied to them before sign up, then the locale of the URL for
-// the layout and next-intl to read.
-export function proxy(request: NextRequest) {
+// Canonical host first, then the first-visit language of the root, then the pricing key of a page
+// that quotes money, an anonymous id where one is needed so a free preview can be tied to a visitor
+// before sign up, then the locale of the URL for the layout and next-intl to read.
+//
+// A marketing page is the same HTML for every visitor of its URL, so the edge keeps it, and this
+// function runs in front of that cache on every request. It therefore adds nothing to such a
+// response that varies per visitor: no no-store, and a cookie only where the answer cannot be
+// had another way (see isEdgeCachedPage and mintsAnonymousId below).
+export async function proxy(request: NextRequest) {
   if (request.nextUrl.pathname === '/admin' || request.nextUrl.pathname.startsWith('/admin/')) {
     return adminResponse(request);
   }
@@ -98,6 +112,15 @@ export function proxy(request: NextRequest) {
   const home = homeRedirect(request);
   if (home instanceof NextResponse) return home;
 
+  // /p/{key}/... is where a priced page is built, never an address. Send a direct request to the
+  // public path, which is also what the canonical URL says.
+  const requested = request.nextUrl.pathname;
+  if (isPricedInternalPath(requested)) {
+    const target = request.nextUrl.clone();
+    target.pathname = publicPath(requested);
+    return NextResponse.redirect(target, 308);
+  }
+
   const headers = new Headers(request.headers);
   const { pathname, searchParams } = request.nextUrl;
   const isApp = isAppLocalePath(pathname);
@@ -106,13 +129,21 @@ export function proxy(request: NextRequest) {
   const locale = requestLocale(
     pathname,
     searchParams.get('locale'),
-    saved ?? request.cookies.get(HOME_LOCALE_COOKIE)?.value,
+    refererLocale(request.headers.get('referer'), [request.nextUrl.host, SITE_HOST]) ??
+      saved ??
+      request.cookies.get(HOME_LOCALE_COOKIE)?.value,
   );
   headers.set(LOCALE_HEADER, locale);
   headers.set(PATH_HEADER, pathname);
-  headers.set(PRIVATE_TOKEN_PAGE_HEADER, isPrivateTokenPage ? '1' : '0');
 
-  const response = withAnonymousId(request, headers);
+  const isRead = request.method === 'GET' || request.method === 'HEAD';
+  const isCached = isRead && !isPrivateTokenPage && isEdgeCachedPage(pathname);
+  const isPriced = isRead && isPricedPage(pathname);
+  const anon = await anonymousId(request, headers, { isCached, isPriced });
+  const response = isPriced
+    ? await pricedResponse(request, headers, anon.id)
+    : NextResponse.next({ request: { headers } });
+  if (anon.isNew) response.cookies.set(ANON_COOKIE, anon.id, anonCookie(request));
   // A share link (?ref=CODE) is remembered, so the code survives navigation and Google sign in.
   const referral = normalizeReferralCode(searchParams.get('ref'));
   if (referral && request.method === 'GET')
@@ -131,8 +162,11 @@ export function proxy(request: NextRequest) {
   // App pages can depend on a browser preference. Indexable pages always use their URL.
   if (isApp || isPrivateTokenPage) response.headers.set('Cache-Control', 'private, no-store');
   if (isPrivateTokenPage) response.headers.set('Referrer-Policy', 'no-referrer');
+  // The language a visitor last read the site in is the language the app opens in. A marketing page
+  // cannot carry that cookie, so its own /api/viewer call writes it; here only the app side does.
   if (
     isDocument &&
+    !isCached &&
     saved !== locale &&
     (isApp ||
       isRoutableLocale(pathname.split('/')[1]) ||
@@ -147,6 +181,47 @@ export function proxy(request: NextRequest) {
     response.cookies.set(HOME_LOCALE_COOKIE, home.cookie, homeCookie(request));
   }
   return response;
+}
+
+const anonCookie = (request: NextRequest) => ({
+  httpOnly: true,
+  sameSite: 'lax' as const,
+  secure: request.nextUrl.protocol === 'https:',
+  path: '/',
+  maxAge: 60 * 60 * 24 * 365,
+});
+
+/**
+ * The visitor's anonymous id, minted on a first visit where it is needed: everywhere that is not a
+ * cacheable marketing page, and on a priced page only while the pricing experiment is live (its arm
+ * is picked from the id). A cached page with no experiment carries no cookie at all.
+ */
+async function anonymousId(
+  request: NextRequest,
+  headers: Headers,
+  page: { isCached: boolean; isPriced: boolean },
+): Promise<{ id: string; isNew: boolean }> {
+  const existing = request.cookies.get(ANON_COOKIE)?.value;
+  if (existing) return { id: existing, isNew: false };
+  const isNeeded = !page.isCached || (page.isPriced && (await isPricingExperimentLive()));
+  if (!isNeeded) return { id: '', isNew: false };
+  const id = crypto.randomUUID();
+  const cookie = request.headers.get('cookie');
+  headers.set('cookie', `${cookie ? `${cookie}; ` : ''}${ANON_COOKIE}=${id}`);
+  return { id, isNew: true };
+}
+
+/** Rewrites a priced page to the build made for this visitor's currency and pricing arm. */
+async function pricedResponse(request: NextRequest, headers: Headers, anonId: string) {
+  const remembered = request.cookies.get(PRICING_CONTEXT_COOKIE)?.value;
+  const key = await visitorPricingContext({
+    country: request.headers.get(COUNTRY_HEADER),
+    anonId: anonId || null,
+    remembered: isPricingContextKey(remembered) ? remembered : null,
+  });
+  const target = request.nextUrl.clone();
+  target.pathname = pricedPath(key, request.nextUrl.pathname.replace(/(.)\/$/, '$1'));
+  return NextResponse.rewrite(target, { request: { headers } });
 }
 
 async function adminResponse(request: NextRequest) {
@@ -173,25 +248,6 @@ async function adminResponse(request: NextRequest) {
   else response = NextResponse.next({ request: { headers } });
   response.headers.set('X-Robots-Tag', 'noindex, nofollow');
   response.headers.set('Cache-Control', 'private, no-store');
-  return response;
-}
-
-function withAnonymousId(request: NextRequest, headers: Headers): NextResponse {
-  const anon = request.cookies.get(ANON_COOKIE)?.value;
-  if (anon) return NextResponse.next({ request: { headers } });
-
-  const id = crypto.randomUUID();
-  const cookie = request.headers.get('cookie');
-  headers.set('cookie', `${cookie ? `${cookie}; ` : ''}${ANON_COOKIE}=${id}`);
-
-  const response = NextResponse.next({ request: { headers } });
-  response.cookies.set(ANON_COOKIE, id, {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: request.nextUrl.protocol === 'https:',
-    path: '/',
-    maxAge: 60 * 60 * 24 * 365,
-  });
   return response;
 }
 

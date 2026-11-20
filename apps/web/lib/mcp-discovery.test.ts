@@ -90,7 +90,7 @@ it('allows an anonymous discovery handshake and lists the real tool schemas', as
   const list = await POST(request(rpc('tools/list')));
   expect(list.status).toBe(200);
   const body = await list.json();
-  expect(body.result.tools).toHaveLength(16);
+  expect(body.result.tools).toHaveLength(17);
   expect(body.result.tools).toContainEqual(
     expect.objectContaining({ name: 'render_3d', inputSchema: expect.any(Object) }),
   );

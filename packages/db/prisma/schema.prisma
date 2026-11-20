@@ -231,6 +231,8 @@ model Render {
   hasFinalSheet     Boolean      @default(false)
   // Set by whichever call starts the 3D build, so webhook and polling cannot start it twice.
   buildClaimedAt    DateTime?
+  // The quality the buyer chose for the 3D build: "medium" or "high". Null is the standard build.
+  buildQuality      String?
   costUsd           Float        @default(0)
   credits           Int          @default(0)
   error             String?

@@ -1,24 +1,19 @@
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
 import Script from 'next/script';
-import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages, getTranslations } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
-import { Analytics } from '@/components/analytics';
 import { QueryProvider } from '@/components/query-provider';
-import { HTML_LANG, type Locale, PATH_HEADER } from '@/i18n/config';
-import { pickClientMessages } from '@/lib/client-messages';
+import { RootHtml } from '@/components/root-html';
+import { ShopifyBridge } from '@/components/shopify-bridge';
 import { geistMono, geistSans } from '@/lib/fonts';
 import { GOOGLE_TAG_BOOTSTRAP } from '@/lib/google-tag';
-import { isMailingTokenLocation, PRIVATE_TOKEN_PAGE_HEADER } from '@/lib/mailing-privacy';
-import { currentPricing } from '@/lib/pricing';
 import { SITE_URL } from '@/lib/seo/site';
 import './globals.css';
 
 // metadataBase makes every relative canonical, Open Graph and sitemap URL absolute against the
 // canonical origin, so a preview deployment never emits its own host in an indexable tag.
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('Metadata');
+  const t = await getTranslations({ locale: 'en', namespace: 'Metadata' });
   return {
     metadataBase: new URL(SITE_URL),
     title: t('title'),
@@ -26,44 +21,24 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function RootLayout({ children }: { children: ReactNode }) {
-  const [locale, messages, requestHeaders] = await Promise.all([
-    getLocale(),
-    getMessages(),
-    headers(),
-  ]);
-  // The Shopify app's page runs inside the Shopify admin, which needs App Bridge loaded first in the head.
-  const pricing = await currentPricing();
-  const isShopifyApp = requestHeaders.get(PATH_HEADER) === '/shopify';
-  const isPrivateTokenPage =
-    requestHeaders.get(PRIVATE_TOKEN_PAGE_HEADER) === '1' ||
-    isMailingTokenLocation(requestHeaders.get(PATH_HEADER) ?? '');
+// The root of every route, and it reads nothing from the request: no headers, no cookies, no
+// session. Reading any of them here would make every page of the site dynamic, which is what kept
+// the marketing pages out of the edge cache. What used to be here lives where it can be decided
+// without the request: the language of <html> comes from the route (components/root-html), the
+// translations from each group's IntlBoundary, the pricing arm from the page's pricing key, the
+// session from /api/viewer, and the private-page checks run in the browser.
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html
-      lang={HTML_LANG[locale as Locale]}
-      data-pricing-variant={pricing.variant}
-      data-pricing-subject={pricing.subject ?? undefined}
-      className={`${geistSans.variable} ${geistMono.variable}`}
-    >
+    <RootHtml className={`${geistSans.variable} ${geistMono.variable}`}>
       <head>
-        {isShopifyApp && (
-          <>
-            <meta name="shopify-api-key" content={process.env.SHOPIFY_API_KEY ?? ''} />
-            <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js" />
-          </>
-        )}
-        {!isPrivateTokenPage && (
-          <Script id="easyrender-google-tag" strategy="beforeInteractive">
-            {GOOGLE_TAG_BOOTSTRAP}
-          </Script>
-        )}
+        <ShopifyBridge apiKey={process.env.SHOPIFY_API_KEY ?? ''} />
+        <Script id="easyrender-google-tag" strategy="beforeInteractive">
+          {GOOGLE_TAG_BOOTSTRAP}
+        </Script>
       </head>
       <body className="flex min-h-dvh flex-col font-sans antialiased">
-        <NextIntlClientProvider locale={locale} messages={pickClientMessages(messages)}>
-          <QueryProvider>{children}</QueryProvider>
-          {!isPrivateTokenPage && <Analytics />}
-        </NextIntlClientProvider>
+        <QueryProvider>{children}</QueryProvider>
       </body>
-    </html>
+    </RootHtml>
   );
 }

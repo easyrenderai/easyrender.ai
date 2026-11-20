@@ -10,6 +10,7 @@ import {
 } from '@easyrender/core';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+export const qualitySchema = z.enum(['low', 'medium', 'high']);
 export const idSchema = z.string().min(1).max(200);
 export const renderSchema = {
   id: idSchema,
@@ -24,6 +25,13 @@ export const renderSchema = {
   modelVersion: z.number(),
   credits: z.number().nonnegative(),
   renderCredits: z.number().nonnegative(),
+  qualityCredits: z.object({
+    low: z.number().nonnegative(),
+    medium: z.number().nonnegative(),
+    high: z.number().nonnegative(),
+  }),
+  buildQuality: z.enum(['low', 'medium', 'high']),
+  rebuildRefundCredits: z.number().nonnegative(),
   sheetCredits: z.number().nonnegative(),
   upscaleCredits: z.number().nonnegative(),
   canUpscale: z.boolean(),
@@ -49,6 +57,7 @@ export const quoteSchema = {
   currency: z.enum(['usd', 'eur']),
   balance: z.number(),
   render_credits: z.number(),
+  render_credits_by_quality: z.object({ low: z.number(), medium: z.number(), high: z.number() }),
   sheet_credits: z.number(),
   product_views_credits: z.number(),
   view_polish_credits: z.number(),
@@ -128,6 +137,16 @@ export function forActor(
     return fn({ ...actor, userId: actor.userId });
   });
 }
+// What starting a build at `quality` still costs: its total minus what the render already paid.
+export function pendingCredits(
+  view: ReturnType<typeof toView>,
+  quality: z.infer<typeof qualitySchema> = 'low',
+) {
+  return view.status === 'preview_ready'
+    ? Math.max(0, view.qualityCredits[quality] - view.credits)
+    : 0;
+}
+
 export function requireBudget(maxCredits: number | undefined, cost: number) {
   if (maxCredits !== undefined && cost > maxCredits)
     throw new AppError(

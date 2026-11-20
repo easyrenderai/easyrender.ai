@@ -9,8 +9,12 @@ const request = (path: string, cookie = '') =>
   });
 
 it('remembers the language of a direct visit to a localized landing for the creation journey', async () => {
+  // A marketing page is cached at the edge, so the proxy sets nothing on it: the page's own
+  // /api/viewer call writes the cookie (see lib/viewer-route.test.ts). The app side still does.
   const landing = await proxy(request('/es/precios'));
-  const preference = landing.cookies.get('er_app_locale')?.value;
+  expect(landing.cookies.get('er_app_locale')).toBeUndefined();
+  const app = await proxy(request('/dashboard?locale=es'));
+  const preference = app.cookies.get('er_app_locale')?.value;
   expect(preference).toBe('es');
   for (const path of ['/dashboard', '/r/example', '/credits?next=%2Fr%2Fexample', '/views']) {
     const response = await proxy(request(path, `er_app_locale=${preference}`));
@@ -49,4 +53,22 @@ it('resumes only a canonical invitation and rejects action or external variants'
   ]) {
     expect(authProjectPath(invalid)).toBeNull();
   }
+});
+
+it('opens the app in the language of the marketing page the visitor clicked from', async () => {
+  // The page is cached and cannot set the cookie, and /api/viewer may not have answered yet.
+  const from = (referer: string, path = '/credits') =>
+    proxy(
+      new NextRequest(`https://easyrender.ai${path}`, {
+        headers: { accept: 'text/html', 'sec-fetch-dest': 'document', referer },
+      }),
+    );
+  const spanish = await from('https://easyrender.ai/es/precios');
+  expect(spanish.headers.get('x-middleware-request-x-easyrender-locale')).toBe('es');
+  expect(spanish.cookies.get('er_app_locale')?.value).toBe('es');
+  // English pages have no prefix to read, and another site's address is never believed.
+  const english = await from('https://easyrender.ai/pricing');
+  expect(english.headers.get('x-middleware-request-x-easyrender-locale')).toBe('en');
+  const foreign = await from('https://example.com/es/precios');
+  expect(foreign.headers.get('x-middleware-request-x-easyrender-locale')).toBe('en');
 });
