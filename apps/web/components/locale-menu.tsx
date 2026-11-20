@@ -1,9 +1,9 @@
 'use client';
 
 import { Check, ChevronDown, Globe } from 'lucide-react';
-import { type KeyboardEvent, useEffect, useId, useRef, useState } from 'react';
+import type { KeyboardEvent } from 'react';
 import { LocaleLink } from '@/components/locale-link';
-import { Button } from '@/components/ui/button';
+import { MenuTrigger, useMenu } from '@/components/menu-trigger';
 import type { Locale } from '@/i18n/config';
 import { cn } from '@/lib/utils';
 
@@ -23,17 +23,9 @@ export function LocaleMenu({
   options: LocaleOption[];
   label: string;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
-  const listId = useId();
+  const menu = useMenu();
+  const { isOpen, setIsOpen, rootRef, listRef, listId, items, focusItem, close } = menu;
 
-  const items = () => Array.from(listRef.current?.querySelectorAll('a') ?? []);
-  const focusItem = (index: number) => {
-    const all = items();
-    all[(index + all.length) % all.length]?.focus();
-  };
   const open = (focus: 'current' | 'first' | 'last') => {
     setIsOpen(true);
     // The list is display:none until the next paint, so focus after it shows.
@@ -50,21 +42,6 @@ export function LocaleMenu({
         );
     });
   };
-  const close = (returnFocus: boolean) => {
-    setIsOpen(false);
-    if (returnFocus) buttonRef.current?.focus();
-  };
-
-  // use-effect-audit: ignore document pointerdown listener that closes the menu on an outside click
-  useEffect(() => {
-    if (!isOpen) return;
-    const onPointer = (event: PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) setIsOpen(false);
-    };
-    document.addEventListener('pointerdown', onPointer);
-    return () => document.removeEventListener('pointerdown', onPointer);
-  }, [isOpen]);
-
   const onButtonKey = (event: KeyboardEvent<HTMLButtonElement>) => {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
@@ -91,13 +68,8 @@ export function LocaleMenu({
 
   return (
     <div ref={rootRef} className="sm:relative">
-      <Button
-        ref={buttonRef}
-        variant="ghost"
-        size="sm"
-        aria-haspopup="menu"
-        aria-expanded={isOpen}
-        aria-controls={listId}
+      <MenuTrigger
+        menu={menu}
         aria-label={`${label}: ${options.find((option) => option.locale === current)?.name ?? current}`}
         className="gap-1 px-2 text-muted-foreground has-[>svg]:px-2"
         onClick={() => (isOpen ? close(false) : open('current'))}
@@ -112,7 +84,7 @@ export function LocaleMenu({
             isOpen && 'rotate-180',
           )}
         />
-      </Button>
+      </MenuTrigger>
       <div
         ref={listRef}
         id={listId}

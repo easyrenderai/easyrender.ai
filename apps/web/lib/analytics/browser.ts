@@ -262,8 +262,10 @@ export async function setBrowserTools(
     const domains = ['', window.location.hostname, `.${window.location.hostname}`];
     const labels = window.location.hostname.split('.');
     for (let i = 1; i < labels.length - 1; i++) domains.push(`.${labels.slice(i).join('.')}`);
-    for (const domain of domains)
+    for (const domain of domains) {
+      // biome-ignore lint/suspicious/noDocumentCookie: expires Google cookies after consent is withdrawn; the Cookie Store API is missing in Safari and Firefox.
       document.cookie = `${name}=; Max-Age=0; Path=/${domain ? `; Domain=${domain}` : ''}`;
+    }
   }
   if (allowGa && gaId) {
     restoreCampaign();

@@ -3,7 +3,6 @@ import {
   ArrowDown,
   ArrowRight,
   Box,
-  ChevronDownIcon,
   ClipboardPaste,
   Cloud,
   Code2,
@@ -29,6 +28,7 @@ import type { ReactNode } from 'react';
 import { CodeSnippet } from '@/components/code-snippet';
 import { PrestaShopMark, ShopifyMark, WooMark } from '@/components/ecommerce/platform-logos';
 import { PlatformPicker } from '@/components/ecommerce/platform-picker';
+import { FaqSection } from '@/components/faq-section';
 import { Section } from '@/components/landing';
 import { SiteLink as Link } from '@/components/site-link';
 import { StudioClosing } from '@/components/studio/proof';
@@ -346,22 +346,7 @@ export async function EcommerceView({ locale }: { locale: Locale }) {
         <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{t('cost.note')}</p>
       </Section>
 
-      <Section id="faq" title={t('faq.title')} narrow>
-        <div className="sec__column">
-          {items.map((item) => (
-            <details key={item.question} className="group border-b last:border-b-0">
-              <summary className="flex cursor-pointer list-none items-start justify-between gap-4 rounded-md py-5 text-left font-medium outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50 [&::-webkit-details-marker]:hidden">
-                <h3 className="text-base font-medium">{item.question}</h3>
-                <ChevronDownIcon
-                  className="size-4 shrink-0 translate-y-1 text-muted-foreground transition-transform group-open:rotate-180"
-                  aria-hidden="true"
-                />
-              </summary>
-              <p className="pb-5 text-sm leading-relaxed text-muted-foreground">{item.answer}</p>
-            </details>
-          ))}
-        </div>
-      </Section>
+      <FaqSection title={t('faq.title')} items={items} />
       <StudioClosing title={t('closing.title')} label={t('closing.cta')} href={previewHref} />
     </StudioShell>
   );

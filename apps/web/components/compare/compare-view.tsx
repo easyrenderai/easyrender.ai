@@ -1,40 +1,15 @@
-import '@/components/blog/editorial.css';
-import { ArrowRight, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
-import { ArticlePromo } from '@/components/blog/article-promo';
-import { ArticleTracking } from '@/components/blog/article-tracking';
+import { ArticleShell } from '@/components/blog/article-shell';
 import { DATE_FORMAT } from '@/components/blog/post-card';
 import { ComparisonChoices } from '@/components/compare/comparison-choices';
-import { ResourceLinks } from '@/components/resource-links';
-import { Button } from '@/components/ui/button';
-import { Markdown, type TocEntry, tocOf } from '@/lib/blog/markdown';
-import { isLiveBlogLink, readingMinutes } from '@/lib/blog/posts';
 import type { ComparePage } from '@/lib/compare/pages';
-import { landingIntent } from '@/lib/landing-intent';
 import { ROUTES } from '@/lib/seo/routes';
-
-function TocList({ entries }: { entries: TocEntry[] }) {
-  return (
-    <ol className="space-y-2.5 text-sm">
-      {entries.map((entry) => (
-        <li key={entry.id}>
-          <a
-            href={`#${entry.id}`}
-            className="block py-1 leading-snug text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {entry.text}
-          </a>
-        </li>
-      ))}
-    </ol>
-  );
-}
 
 /**
  * One comparison page, on the guide template: the same header, reading measure, table of
  * contents, tables and FAQ accordion, and the same closing call to the free preview. It has no
- * byline, related guides or link back to the hub, because it is not a guide. Every word comes
+ * related guides or link back to the hub, because it is not a guide. Every word comes
  * from the content file or from the Blog strings it shares with the guides.
  */
 export async function CompareView({ page }: { page: ComparePage }) {
@@ -43,181 +18,90 @@ export async function CompareView({ page }: { page: ComparePage }) {
     getFormatter({ locale: page.locale }),
   ]);
   const home = ROUTES.home.paths[page.locale];
-  const intent = landingIntent(page.group, page.locale);
-  const nextT = await getTranslations({ locale: page.locale, namespace: 'LandingIntent' });
-  const isInspection = intent.action === 'inspect';
-  const ctaBody = isInspection
-    ? nextT(`${intent.key}.body`)
-    : (page.cta ?? nextT(`${intent.key}.body`));
-  const promoCopy = {
-    title: isInspection ? nextT(`${intent.key}.title`) : t('post.promo.title'),
-    solution: isInspection ? ctaBody : t('post.promo.solution'),
-    visual: t('post.promo.visual'),
-    play: t('post.promo.play'),
-    pause: t('post.promo.pause'),
-    button: nextT(intent.action),
-    disclosure: isInspection ? nextT('sampleDisclosure') : t('post.promo.disclosure'),
-  };
-  const toc = tocOf(page.body);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pt-10 pb-20 sm:px-6 sm:pt-14 sm:pb-28">
-      <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
-        <ol className="flex items-center gap-2">
-          <li className="shrink-0">
-            <Link href={home} className="hover:text-foreground">
-              {t('breadcrumb.home')}
-            </Link>
-          </li>
-          <li aria-hidden>/</li>
-          <li className="shrink-0">
-            <Link href={ROUTES.compare.paths[page.locale]} className="hover:text-foreground">
-              {t('comparisons.title')}
-            </Link>
-          </li>
-          <li aria-hidden>/</li>
-          {/* One line, so a long title cannot re-wrap and shift the page when the font loads. */}
-          <li aria-current="page" className="min-w-0 truncate text-foreground">
-            {page.title}
-          </li>
-        </ol>
-      </nav>
-
-      <article data-editorial-root>
-        <ArticleTracking group={page.group} locale={page.locale} path={page.path} />
-        <header className="mt-10 max-w-4xl sm:mt-14">
-          <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground tabular-nums">
-            {t('post.readingTime', { minutes: readingMinutes(page.body) })}
-          </p>
-          <h1 className="mt-5 text-4xl font-semibold tracking-tighter text-balance sm:text-5xl lg:text-6xl">
-            {page.title}
-          </h1>
-          <p className="mt-6 max-w-3xl text-lg leading-relaxed text-muted-foreground text-pretty sm:text-xl">
-            {page.description}
-          </p>
-          {(page.author || page.updated) && (
-            <p className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 border-t pt-5 text-sm text-muted-foreground tabular-nums">
-              {page.author &&
-                (page.author.url ? (
-                  <Link
-                    href={page.author.url}
-                    className="font-medium text-foreground underline underline-offset-4"
-                  >
-                    {t('post.by', { author: page.author.name })}
-                  </Link>
-                ) : (
-                  <span className="font-medium text-foreground">
-                    {t('post.by', { author: page.author.name })}
-                  </span>
-                ))}
-              {page.author && page.updated && <span aria-hidden>·</span>}
-              {page.updated && (
-                <time dateTime={page.updated}>
-                  {t('post.updated', {
-                    date: format.dateTime(new Date(`${page.updated}T00:00:00Z`), DATE_FORMAT),
-                  })}
-                </time>
-              )}
-            </p>
-          )}
-        </header>
-
-        <div className="mt-14 lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-14 xl:gap-20">
-          <div className="min-w-0">
-            {toc.length > 0 && (
-              <details className="group mb-10 rounded-xl border lg:hidden">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
-                  {t('post.toc')}
-                  <ChevronDown className="size-4 text-muted-foreground transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none" />
-                </summary>
-                <nav aria-label={t('post.toc')} className="border-t px-4 py-4">
-                  <TocList entries={toc} />
-                </nav>
-              </details>
-            )}
-
-            <div className="mb-10 max-w-sm lg:hidden">
-              <ArticlePromo
-                position="mobile"
-                locale={page.locale}
-                href={intent.href}
-                copy={promoCopy}
-              />
-            </div>
-
-            {['compare-meshy', 'compare-tripo'].includes(page.group) && (
-              <ComparisonChoices
-                copy={{
-                  title: t('comparisons.choices.title'),
-                  photo: {
-                    need: t('comparisons.choices.photo.need'),
-                    tools: t('comparisons.choices.photo.tools'),
-                    check: t('comparisons.choices.photo.check'),
-                  },
-                  views: {
-                    need: t('comparisons.choices.views.need'),
-                    tools: t('comparisons.choices.views.tools'),
-                    check: t('comparisons.choices.views.check'),
-                  },
-                  animation: {
-                    need: t('comparisons.choices.animation.need'),
-                    tools: t('comparisons.choices.animation.tools'),
-                    check: t('comparisons.choices.animation.check'),
-                  },
-                }}
-              />
-            )}
-
-            <div className="editorial-body text-base sm:text-lg">
-              <Markdown
-                source={page.body}
-                isLive={isLiveBlogLink(page.locale)}
-                locale={page.locale}
-              />
-            </div>
-
-            <aside className="mt-20 max-w-xl rounded-2xl border bg-muted/40 p-6 sm:p-10">
-              <p className="text-2xl font-semibold tracking-tight text-balance">
-                {nextT(`${intent.key}.title`)}
-              </p>
-              <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">{ctaBody}</p>
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <Button asChild size="lg">
-                  <Link href={intent.href} data-article-cta="closing">
-                    {nextT(intent.action)}
-                    <ArrowRight />
-                  </Link>
-                </Button>
-                {isInspection && (
-                  <Button asChild variant="outline" size="lg">
-                    <Link href={intent.uploadHref} data-article-cta="closing">
-                      {nextT('upload')}
-                    </Link>
-                  </Button>
-                )}
-              </div>
-            </aside>
-          </div>
-
-          {toc.length > 0 && (
-            <aside className="hidden lg:block">
-              <div className="sticky top-24 max-h-[calc(100dvh-7rem)] space-y-5 overflow-y-auto pb-4">
-                <nav
-                  aria-label={t('post.toc')}
-                  className="max-h-[min(26dvh,14rem)] overflow-y-auto border-l pl-5 pr-2"
+    <ArticleShell
+      locale={page.locale}
+      group={page.group}
+      path={page.path}
+      title={page.title}
+      description={page.description}
+      body={page.body}
+      cta={page.cta}
+      t={t}
+      breadcrumb={
+        <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+          <ol className="flex items-center gap-2">
+            <li className="shrink-0">
+              <Link href={home} className="hover:text-foreground">
+                {t('breadcrumb.home')}
+              </Link>
+            </li>
+            <li aria-hidden>/</li>
+            <li className="shrink-0">
+              <Link href={ROUTES.compare.paths[page.locale]} className="hover:text-foreground">
+                {t('comparisons.title')}
+              </Link>
+            </li>
+            <li aria-hidden>/</li>
+            {/* One line, so a long title cannot re-wrap and shift the page when the font loads. */}
+            <li aria-current="page" className="min-w-0 truncate text-foreground">
+              {page.title}
+            </li>
+          </ol>
+        </nav>
+      }
+      byline={
+        (page.author || page.updated) && (
+          <p className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 border-t pt-5 text-sm text-muted-foreground tabular-nums">
+            {page.author &&
+              (page.author.url ? (
+                <Link
+                  href={page.author.url}
+                  className="font-medium text-foreground underline underline-offset-4"
                 >
-                  <p className="mb-4 font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                    {t('post.toc')}
-                  </p>
-                  <TocList entries={toc} />
-                </nav>
-                <ArticlePromo locale={page.locale} href={intent.href} copy={promoCopy} />
-              </div>
-            </aside>
-          )}
-        </div>
-      </article>
-      <ResourceLinks locale={page.locale} context="article" />
-    </div>
+                  {t('post.by', { author: page.author.name })}
+                </Link>
+              ) : (
+                <span className="font-medium text-foreground">
+                  {t('post.by', { author: page.author.name })}
+                </span>
+              ))}
+            {page.author && page.updated && <span aria-hidden>·</span>}
+            {page.updated && (
+              <time dateTime={page.updated}>
+                {t('post.updated', {
+                  date: format.dateTime(new Date(`${page.updated}T00:00:00Z`), DATE_FORMAT),
+                })}
+              </time>
+            )}
+          </p>
+        )
+      }
+      beforeBody={
+        ['compare-meshy', 'compare-tripo'].includes(page.group) && (
+          <ComparisonChoices
+            copy={{
+              title: t('comparisons.choices.title'),
+              photo: {
+                need: t('comparisons.choices.photo.need'),
+                tools: t('comparisons.choices.photo.tools'),
+                check: t('comparisons.choices.photo.check'),
+              },
+              views: {
+                need: t('comparisons.choices.views.need'),
+                tools: t('comparisons.choices.views.tools'),
+                check: t('comparisons.choices.views.check'),
+              },
+              animation: {
+                need: t('comparisons.choices.animation.need'),
+                tools: t('comparisons.choices.animation.tools'),
+                check: t('comparisons.choices.animation.check'),
+              },
+            }}
+          />
+        )
+      }
+    />
   );
 }

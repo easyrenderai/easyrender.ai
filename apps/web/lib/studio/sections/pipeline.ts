@@ -11,7 +11,7 @@ import {
   addStudioLights,
   ease,
   type Fit,
-  fit,
+  fitItem,
   frame,
   INK,
   makeBeauty,
@@ -102,7 +102,7 @@ export async function initPipeline(panel: HTMLElement, { scope, fmt, prompts }: 
     if (!pending) {
       pending = (async () => {
         const item = itemOf(id);
-        const size = fit(item);
+        const size = fitItem(item);
         const [wire, beauty, lod1] = await Promise.all([
           makeWire(id, { fill: 0x151517, opacity: 0.7 }),
           makeBeauty(id, { ownMaterials: true, shadows: true }),

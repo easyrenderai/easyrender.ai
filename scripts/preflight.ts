@@ -1,27 +1,37 @@
-// Runs what CI runs, in order, and stops at the first failure: Biome, UI guards, secrets, effect
-// ratchet, typecheck, tests, the release promotion contract and the REST example typecheck.
+// Runs what CI runs, in order, and stops at the first failure: Biome (warnings fail), UI guards,
+// secrets, effect ratchet, unused code and env checks, docs check, typecheck, tests, the release
+// promotion contract and the REST example typecheck.
 // Tests that need a database skip without TEST_DATABASE_URL; the run ends by saying how many
 // skipped and how to run them (`bun run test:db`).
 // Usage: bun run preflight [--keep-going]
 const keepGoing = process.argv.includes('--keep-going');
 
 const steps: Array<[string, string[]]> = [
-  ['biome', ['bunx', 'biome', 'check', '.']],
+  ['biome', ['bunx', 'biome', 'check', '.', '--error-on-warnings']],
   ['ui guards', ['bun', 'scripts/check-ui-guards.ts']],
   ['secrets', ['bun', 'scripts/check-secrets.ts']],
   ['use-effect ratchet', ['bun', 'scripts/check-use-effect.ts']],
   ['use-effect ratchet tests', ['bun', 'test', 'scripts/use-effect-audit.test.ts']],
   ['preflight tests', ['bun', 'test', 'scripts/preflight.test.ts']],
+  ['unused code (knip)', ['bun', 'scripts/check-knip.ts']],
+  ['env variables', ['bun', 'scripts/check-env.ts']],
+  ['baseline checks tests', ['bun', 'test', 'scripts/name-ratchet.test.ts']],
+  ['docs', ['bun', 'scripts/check-docs.ts']],
   ['typecheck', ['bunx', 'turbo', 'run', 'typecheck']],
   ['tests', ['bunx', 'turbo', 'run', 'test']],
   ['examples/rest typecheck', ['bunx', 'tsc', '-p', 'examples/rest/tsconfig.json']],
 ];
 
-// CI runs the release promotion contract with Node's test runner.
+// CI runs the release promotion and production smoke contracts with Node's test runner.
 if (Bun.which('node')) {
-  steps.push(['release promotion contract', ['node', '--test', 'scripts/promote-vercel.test.mjs']]);
+  steps.push([
+    'release promotion and smoke contracts',
+    ['node', '--test', 'scripts/promote-vercel.test.mjs', 'scripts/prod-smoke.test.mjs'],
+  ]);
 } else {
-  console.warn('preflight: node not found, skipping the release promotion contract test');
+  console.warn(
+    'preflight: node not found, skipping the release promotion and smoke contract tests',
+  );
 }
 
 // The store plugins are PHP; CI checks them in their own job, and so does this when php is installed.

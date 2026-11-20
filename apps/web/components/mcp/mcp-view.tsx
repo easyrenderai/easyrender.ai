@@ -1,6 +1,6 @@
 import { config } from '@easyrender/core';
-import { ChevronDownIcon } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { FaqSection } from '@/components/faq-section';
 import { IntegrationCosts } from '@/components/integrations/costs';
 import { Section } from '@/components/landing';
 import { McpConnect } from '@/components/mcp/mcp-connect';
@@ -112,22 +112,7 @@ export async function McpView({ locale }: { locale: Locale }) {
       </Section>
 
       <McpSkill locale={locale} />
-      <Section id="faq" title={t('faq.title')} narrow>
-        <div className="sec__column">
-          {items.map((item) => (
-            <details key={item.question} className="group border-b last:border-b-0">
-              <summary className="flex cursor-pointer list-none items-start justify-between gap-4 rounded-md py-5 text-left font-medium outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50 [&::-webkit-details-marker]:hidden">
-                <h3 className="text-base font-medium">{item.question}</h3>
-                <ChevronDownIcon
-                  className="size-4 shrink-0 translate-y-1 text-muted-foreground transition-transform group-open:rotate-180"
-                  aria-hidden="true"
-                />
-              </summary>
-              <p className="pb-5 text-sm leading-relaxed text-muted-foreground">{item.answer}</p>
-            </details>
-          ))}
-        </div>
-      </Section>
+      <FaqSection title={t('faq.title')} items={items} />
       <ResourceLinks locale={locale} context="mcp" />
       <StudioClosing title={t('closing.title')} label={accountLabel} href={accountHref} />
     </StudioShell>

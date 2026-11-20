@@ -23,6 +23,9 @@ export type RenderQuality = {
   finalSheetProblem?: string;
   glb?: GlbMeasures;
   fidelity?: StoredFidelity;
+  // Set once a retryable poll failure has gone to Sentry, so the same outage is not reported on
+  // every poll. Written by `claimPollFailureReport` in renders.ts.
+  pollFailureReported?: boolean;
 };
 
 export function storedQuality(render: Pick<Render, 'quality'>): RenderQuality {
