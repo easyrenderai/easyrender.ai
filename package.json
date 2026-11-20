@@ -18,6 +18,7 @@
     "db:generate": "bun run --cwd packages/db generate",
     "preflight": "bun scripts/preflight.ts",
     "check:ui-guards": "bun scripts/check-ui-guards.ts",
+    "check:docs": "bun scripts/check-docs.ts",
     "check:secrets": "bun scripts/check-secrets.ts",
     "check:use-effects": "bun scripts/check-use-effect.ts",
     "check:knip": "bun scripts/check-knip.ts",

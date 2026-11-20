@@ -7,7 +7,9 @@ edit rules here and nowhere else.
 
 easyrender.ai turns product photos into 3D models and AR. Photo in, free preview, angle sheet,
 GLB out. It is sold through an MCP server (agents call it) and a web app and mobile app (people
-use it). Credits are the only unit: 1 credit = $0.01, priced at provider cost plus a 70% margin.
+use it). Credits are the only unit; one margin rule prices everything (provider cost plus margin).
+Credit values, plan sizes and the margin live in `packages/harness/src/pricing.ts`: read them
+there, never copy a number into docs.
 
 - Prod: https://easyrender.ai, Vercel team `shipshitdev`, project root `apps/web`, Neon Postgres.
 - Rendering runs on Replicate for the MVP. Genfeed is the long-term rendering engine.
@@ -27,7 +29,17 @@ packages/tsconfig  shared tsconfig
 services/model-export  Blender converter: GLB to OBJ, FBX and BLEND, one run per export on AWS Lambda.
                 Python with its own Dockerfile, NOT in the bun workspace
 infra/aws       CloudFormation for the S3 buckets and CloudFront
+integrations/   Make, n8n and Zapier connectors
+plugins/        Shopify, WooCommerce and PrestaShop store plugins, and the e2e plugin tests
+examples/       REST API examples (TypeScript and Python)
+tools/          Content tooling (blog and guide renders)
+skills/         Agent skill packs published to agents
+docs/           API reference, runbooks, benchmarks, analytics notes
+scripts/        Repo checks (preflight, UI guards, secrets, effect ratchet, docs) and one-off tools
 ```
+
+Languages: `en`, `es`, `de`, `fr`, `it`, `pt` (`apps/web/i18n/config.ts`). `bun run check:docs`
+keeps this line and the layout above in step with the repo.
 
 Respect the boundaries: shared logic in `packages/*`, framework code in `apps/*`. `packages/core`
 and `packages/harness` import no Next.js. Route handlers stay thin and call into `packages/core`.
@@ -64,14 +76,15 @@ places before writing something new.
 bun install                       # root workspace (apps/web + packages/*)
 bun run dev                       # apps/web on :3000
 bun run typecheck                 # all workspaces
-bun run test                      # vitest in core and harness
+bun run test                      # vitest in web, core, harness, mcp and db
 bun run lint                      # biome check . --error-on-warnings
 bun run format                    # biome check --write .
 bun run check:ui-guards           # no raw HTML controls in apps/web
 bun run check:use-effects         # useEffect ratchet; --prune after removing effects, --report to list
 bun run check:knip               # unused files, exports and types (knip.json); --prune after deleting code
 bun run check:env                # every process.env.X read is in .env.example and turbo.json; --prune after fixing
-bun run preflight                 # what CI runs: biome, ui guards, effect ratchet, typecheck, tests
+bun run check:docs                # AGENTS.md layout and language list match the repo
+bun run preflight                 # what CI runs: biome, ui guards, effect ratchet, knip, env, docs, typecheck, tests
 bun run db:generate               # prisma generate
 cd apps/mobile && bun install && bunx expo export --platform android   # mobile bundle check
 cd apps/desktop && bun install && bun run typecheck && bun run test    # desktop; `bun run dev` opens the window
@@ -115,7 +128,9 @@ Postgres in `TEST_DATABASE_URL` and skips without it.
    guard's allowlist only shrinks.
 8. Semantic tokens only (`bg-background`, `text-muted-foreground`). No hex values, no palette
    colours, no new `dark:` variants in product code. See `DESIGN.md`.
-9. Copy lives in `apps/web/messages/en.json` and `es.json`. Add every new string to both.
+9. Copy lives in `apps/web/messages/{en,es,de,fr,it,pt}.json`. Add every new string to all six
+   (three email namespaces, `MailingEmails`, `MailingSystem` and `MailingUI`, are en and es only;
+   `apps/web/lib/messages.test.ts` enforces both).
 10. Never hard-code a price or credit amount. Use `@easyrender/harness` pricing.
 
 ### Data, money, security

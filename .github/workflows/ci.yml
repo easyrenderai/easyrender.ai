@@ -79,6 +79,8 @@ jobs:
         run: |
           bun run check:knip --against "origin/$BASE_REF"
           bun run check:env --against "origin/$BASE_REF"
+      - name: Docs match the repo
+        run: bun run check:docs
       - name: Typecheck
         run: bun run typecheck
       - name: Tests
