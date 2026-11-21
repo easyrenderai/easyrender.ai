@@ -1,6 +1,6 @@
 name: Production smoke
 
-# Read-only check that production answers, every 15 minutes. It makes seven anonymous requests
+# Read-only check that production answers, once a day. It makes seven anonymous requests
 # (the public pages, the API and OAuth documents, and one unauthenticated POST to /api/mcp that
 # must answer 401) and never signs in, uploads or pays. Each check is retried once. The run summary
 # counts responses carrying `x-vercel-mitigated`, which is how Vercel's edge marks a request it
@@ -12,8 +12,9 @@ name: Production smoke
 # (seven reads) so the change is proven before it merges.
 on:
   schedule:
-    # Off the quarter hours: GitHub delays scheduled runs under load, most at the top of the hour.
-    - cron: "7,22,37,52 * * * *"
+    # Once a day, off the top of the hour. GitHub throttles scheduled runs, so a tighter cadence
+    # only produced a run every 6 to 8 hours anyway.
+    - cron: "17 6 * * *"
   workflow_dispatch:
   pull_request:
     branches: [main]
