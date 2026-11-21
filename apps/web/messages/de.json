@@ -18,14 +18,14 @@
       "mcp": "MCP",
       "api": "API"
     },
-    "dashboard": "Dashboard",
+    "dashboard": "App",
     "signIn": "Anmelden",
     "connect": "Agent verbinden",
     "connectSuffix": "",
     "sections": "Bereiche",
     "menuOpen": "Menü öffnen",
     "menuClose": "Menü schließen",
-    "upload": "Foto hochladen",
+    "upload": "Kostenlos testen",
     "account": "Mein Konto",
     "accountMenu": "Kontomenü",
     "creditsLink": "Credits",
@@ -651,6 +651,7 @@
     },
     "generateOne": "3D-Modell erstellen · {credits}",
     "errors": {
+      "retryItem": "Das Foto konnte nicht wiederverwendet werden. Laden Sie es erneut hoch.",
       "upload": "Das Foto konnte nicht hochgeladen werden.",
       "unreadable": "Das Foto konnte nicht gelesen werden.",
       "dailyLimit": "Nicht hochgeladen. Das Tageslimit ist erreicht.",
@@ -670,6 +671,8 @@
       "body": "Klicke hier oder zieh Fotos auf die Seite."
     },
     "retry": "Erneut versuchen",
+    "retryItem": "Erneut versuchen",
+    "retrying": "Neuer Versuch…",
     "dismiss": "Schließen",
     "estimate": {
       "prices": "Die Vorschauen sind kostenlos. Ein 3D-Modell kostet {credits} Credits.",
@@ -844,16 +847,11 @@
     }
   },
   "AppHome": {
+    "upload": "Foto hochladen",
     "heading": "Erstelle ein 3D-Modell aus einem Foto",
-    "slot": "Foto ablegen",
     "hint": "JPG, PNG oder WebP, bis 4 MB. Einfügen geht auch.",
-    "placeholder": "Beschreibe das Produkt oder lege einfach ein Foto ab",
     "dropOverlay": "Foto zum Anhängen ablegen",
-    "remove": "Foto entfernen",
-    "create": "Kostenlose Vorschau erstellen",
     "uploading": "Wird hochgeladen…",
-    "batch": "Mehrere Fotos hochladen",
-    "connect": "Agenten verbinden",
     "errors": {
       "type": "Verwende ein JPG-, PNG- oder WebP-Foto.",
       "upload": "Der Upload ist fehlgeschlagen. Versuche es erneut.",

@@ -18,14 +18,14 @@
       "mcp": "MCP",
       "api": "API"
     },
-    "dashboard": "Tableau de bord",
+    "dashboard": "App",
     "signIn": "Se connecter",
     "connect": "Connecter",
     "connectSuffix": "ton agent",
     "sections": "Rubriques",
     "menuOpen": "Ouvrir le menu",
     "menuClose": "Fermer le menu",
-    "upload": "Importer une photo",
+    "upload": "Essai gratuit",
     "account": "Mon compte",
     "accountMenu": "Menu du compte",
     "creditsLink": "Crédits",
@@ -651,6 +651,7 @@
     },
     "generateOne": "Créer le modèle 3D · {credits}",
     "errors": {
+      "retryItem": "Impossible de réutiliser la photo. Importez-la de nouveau.",
       "upload": "Impossible d’importer la photo.",
       "unreadable": "Impossible de lire la photo.",
       "dailyLimit": "Photo non importée. La limite quotidienne est atteinte.",
@@ -670,6 +671,8 @@
       "body": "Cliquez ici ou déposez des photos sur la page."
     },
     "retry": "Réessayer",
+    "retryItem": "Réessayer",
+    "retrying": "Nouvel essai…",
     "dismiss": "Fermer",
     "estimate": {
       "prices": "Les aperçus sont gratuits. Un modèle 3D coûte {credits} crédits.",
@@ -844,16 +847,11 @@
     }
   },
   "AppHome": {
+    "upload": "Importer une photo",
     "heading": "Créez un modèle 3D à partir d’une photo",
-    "slot": "Déposez une photo",
     "hint": "JPG, PNG ou WebP, 4 Mo maximum. Vous pouvez aussi la coller.",
-    "placeholder": "Décrivez le produit ou déposez simplement une photo",
     "dropOverlay": "Déposez la photo pour l’ajouter",
-    "remove": "Retirer la photo",
-    "create": "Créer un aperçu gratuit",
     "uploading": "Envoi en cours…",
-    "batch": "Envoyer plusieurs photos",
-    "connect": "Connecter un agent",
     "errors": {
       "type": "Utilisez une photo JPG, PNG ou WebP.",
       "upload": "L’envoi a échoué. Réessayez.",

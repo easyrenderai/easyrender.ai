@@ -4,6 +4,7 @@ import type { LibraryFolderView, LibraryItemView, RenderView } from '@easyrender
 import {
   AlertCircle,
   Box,
+  ChevronsLeftRight,
   FolderInput,
   Grid3x3,
   ImageUp,
@@ -16,7 +17,15 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useFormatter, useTranslations } from 'next-intl';
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type PointerEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { ShellPanel } from '@/components/app-shell/shell-context';
 import {
   DeleteFolderDialog,
@@ -25,7 +34,6 @@ import {
 } from '@/components/library-folder-dialogs';
 import { type FolderScope, LibraryPanel } from '@/components/library-panel';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
 import { useActivationError } from '@/lib/activation-errors';
 import {
   attribution,
@@ -256,6 +264,27 @@ export function CatalogLibrary({
     await sendUploads(queued);
   }
 
+  // A failed item starts again from the photo it was made from, as a new render. The failed
+  // card steps aside once the new one is on its way.
+  const [retrying, setRetrying] = useState<string[]>([]);
+  const [retried, setRetried] = useState<string[]>([]);
+  async function retryItem(item: LibraryItemView) {
+    setNotice(null);
+    setRetrying((current) => [...current, item.id]);
+    try {
+      const response = await fetch(`/api/renders/${item.id}/source`);
+      if (!response.ok) throw new Error('source');
+      const blob = await response.blob();
+      const name = item.name || t('untitled');
+      await addFiles([new File([blob], `${name}.jpg`, { type: blob.type || 'image/jpeg' })]);
+      setRetried((current) => [...current, item.id]);
+    } catch {
+      setNotice(t('errors.retryItem'));
+    } finally {
+      setRetrying((current) => current.filter((id) => id !== item.id));
+    }
+  }
+
   async function retry(upload: QueuedUpload) {
     setNotice(null);
     const fresh = { ...upload, error: null };
@@ -415,7 +444,9 @@ export function CatalogLibrary({
     return byFolder;
   }, [items]);
   const noneCount = items.filter((item) => item.folderId === null).length;
-  const visible = scoped.filter(FILTERS.find((f) => f.id === filter)?.match ?? (() => true));
+  const visible = scoped
+    .filter(FILTERS.find((f) => f.id === filter)?.match ?? (() => true))
+    .filter((item) => !retried.includes(item.id));
   const isShowingUploads = filter === 'all' && (activeScope === 'all' || activeScope === 'none');
 
   // Folder calls resolve with the message to show, or null when the change was saved.
@@ -697,6 +728,9 @@ export function CatalogLibrary({
                 photo={`/api/renders/${item.id}/source`}
                 title={item.name || item.prompt || t('untitled')}
                 status={t(`status.${item.status}`)}
+                isFailed={item.status === 'failed'}
+                isRetrying={retrying.includes(item.id)}
+                onRetry={() => retryItem(item)}
                 onMove={() => setMoving(item)}
                 pane={
                   <ModelPane
@@ -780,7 +814,8 @@ function Segmented<T extends string>({
 }
 
 // A catalog card. The photo sets the card's height (that's what makes the grid masonry);
-// the 3D pane sits beside it, or on top of it in 3D view.
+// the 3D pane sits beside it, or on top of it in 3D view. A failed item shows its photo and a
+// Retry button only: no pane, no slider.
 function Tile({
   view,
   photo,
@@ -789,6 +824,9 @@ function Tile({
   pane,
   href,
   onMove,
+  onRetry,
+  isFailed = false,
+  isRetrying = false,
   alwaysPane = false,
 }: {
   view: View;
@@ -799,15 +837,42 @@ function Tile({
   href?: string;
   // Opens the folder picker for this item.
   onMove?: () => void;
+  // Starts the item again from its stored photo.
+  onRetry?: () => void;
+  isFailed?: boolean;
+  isRetrying?: boolean;
   alwaysPane?: boolean;
 }) {
   const t = useTranslations('Library');
   // How much of the photo shows, in percent. The 3D pane covers the rest, from the right.
   const [split, setSplit] = useState(50);
+  const box = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const splitAt = (clientX: number) => {
+    const rect = box.current?.getBoundingClientRect();
+    if (!rect || rect.width === 0) return split;
+    return Math.min(96, Math.max(4, ((clientX - rect.left) / rect.width) * 100));
+  };
+  // A drag that starts on the handle or on the photo half moves the divider. A drag that starts on
+  // the 3D half is left to the viewer, which turns the model.
+  const startDrag = (event: PointerEvent<HTMLDivElement>) => {
+    const next = splitAt(event.clientX);
+    if (next > split + 5) return;
+    isDragging.current = true;
+    box.current?.setPointerCapture(event.pointerId);
+    setSplit(next);
+  };
+  const endDrag = (event: PointerEvent<HTMLDivElement>) => {
+    isDragging.current = false;
+    if (box.current?.hasPointerCapture(event.pointerId)) {
+      box.current.releasePointerCapture(event.pointerId);
+    }
+  };
   const image = (
     // biome-ignore lint/performance/noImgElement: authenticated API image, not optimizable
     <img src={photo} alt={title} loading="lazy" className="block h-auto w-full" />
   );
+  const isCompare = view === 'compare' && !alwaysPane && !isFailed;
   return (
     <figure className="mb-4 break-inside-avoid overflow-hidden rounded-lg border bg-card shadow-xs">
       {alwaysPane ? (
@@ -816,13 +881,27 @@ function Tile({
           <div className="relative bg-muted/40">{pane}</div>
         </div>
       ) : (
-        <div className="relative bg-muted/40">
+        <div
+          ref={box}
+          className={cn(
+            'relative bg-muted/40',
+            isCompare && 'touch-pan-y cursor-ew-resize select-none',
+          )}
+          onPointerDown={isCompare ? startDrag : undefined}
+          onPointerMove={
+            isCompare
+              ? (event) => isDragging.current && setSplit(splitAt(event.clientX))
+              : undefined
+          }
+          onPointerUp={isCompare ? endDrag : undefined}
+          onPointerCancel={isCompare ? endDrag : undefined}
+        >
           {image}
           {/* Translucent so items without a model still show which product they are. */}
-          {view === '3d' && (
+          {view === '3d' && !isFailed && (
             <div className="absolute inset-0 bg-muted/85 backdrop-blur-sm">{pane}</div>
           )}
-          {view === 'compare' && (
+          {isCompare && (
             <>
               <div
                 className="absolute inset-0 bg-muted"
@@ -835,48 +914,74 @@ function Tile({
                 className="pointer-events-none absolute inset-y-0 w-px bg-foreground/60"
                 style={{ left: `${split}%` }}
               />
+              <div
+                role="slider"
+                tabIndex={0}
+                aria-label={t('compareLabel')}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(split)}
+                aria-valuetext={`${t('views.photo')} ${Math.round(split)}%`}
+                onKeyDown={(event) => {
+                  if (event.key === 'ArrowLeft') setSplit((now) => Math.max(4, now - 5));
+                  if (event.key === 'ArrowRight') setSplit((now) => Math.min(96, now + 5));
+                }}
+                className="absolute top-1/2 grid size-9 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize place-items-center rounded-full border bg-background text-foreground shadow-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 pointer-coarse:size-11"
+                style={{ left: `${split}%` }}
+              >
+                <ChevronsLeftRight className="size-4" />
+              </div>
             </>
           )}
         </div>
       )}
-      {view === 'compare' && !alwaysPane && (
-        <div className="flex items-center gap-2 border-t px-3 py-2 text-xs text-muted-foreground">
-          <span>{t('views.photo')}</span>
-          <Slider
-            value={[split]}
-            onValueChange={(next) => setSplit(next[0] ?? 50)}
-            min={0}
-            max={100}
-            step={1}
-            aria-label={t('compareLabel')}
-          />
-          <span>{t('views.3d')}</span>
-        </div>
-      )}
-      <figcaption className="flex items-center justify-between gap-2 px-3 py-2 text-sm">
-        {href ? (
-          <Link href={href} className="truncate py-1 font-medium capitalize hover:underline">
-            {title}
-          </Link>
-        ) : (
-          <span className="truncate font-medium capitalize">{title}</span>
-        )}
-        <span className="flex shrink-0 items-center gap-1">
-          <span className="text-xs text-muted-foreground">{status}</span>
-          {onMove && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              onClick={onMove}
-              aria-label={t('folders.moveAria', { name: title })}
-              title={t('folders.move')}
-              className="-my-1 -mr-2"
-            >
-              <FolderInput />
-            </Button>
+      <figcaption className="space-y-1.5 px-3 py-2 text-sm">
+        <div className="flex items-center justify-between gap-2">
+          {href ? (
+            <Link href={href} className="truncate py-1 font-medium capitalize hover:underline">
+              {title}
+            </Link>
+          ) : (
+            <span className="truncate font-medium capitalize">{title}</span>
           )}
-        </span>
+          <span className="flex shrink-0 items-center gap-1">
+            {!isFailed && <span className="text-xs text-muted-foreground">{status}</span>}
+            {onMove && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                onClick={onMove}
+                aria-label={t('folders.moveAria', { name: title })}
+                title={t('folders.move')}
+                className="-my-1 -mr-2"
+              >
+                <FolderInput />
+              </Button>
+            )}
+          </span>
+        </div>
+        {isFailed && (
+          <>
+            <p className="flex items-center gap-1.5 text-xs text-destructive">
+              <AlertCircle className="size-3.5 shrink-0" />
+              {status}
+            </p>
+            {onRetry && (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="w-full"
+                disabled={isRetrying}
+                onClick={onRetry}
+              >
+                {isRetrying ? <Loader2 className="animate-spin" /> : <RotateCcw />}
+                {isRetrying ? t('retrying') : t('retryItem')}
+              </Button>
+            )}
+          </>
+        )}
       </figcaption>
     </figure>
   );

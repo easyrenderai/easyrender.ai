@@ -55,11 +55,12 @@ export function HeaderConnect({
 }) {
   const isSignedIn = Boolean(useViewer().data?.signedIn);
   const action = headerPrimaryAction(locale, useSitePathname(), isSignedIn);
-  // The session entry already links to the dashboard in both header layouts.
-  if (action.kind === 'dashboard') return null;
+  // Members see one button, App, from the session entry. The upload and connect actions are for
+  // visitors; the app has its own way to start a render.
+  if (isSignedIn || action.kind === 'dashboard') return null;
   const label = { api: apiLabel, upload: uploadLabel, mcp: connect }[action.kind];
   return (
-    <Button size="sm" className={isSignedIn ? 'max-sm:hidden' : undefined} asChild>
+    <Button size="sm" asChild>
       <Link href={action.href}>
         <span>
           {label}

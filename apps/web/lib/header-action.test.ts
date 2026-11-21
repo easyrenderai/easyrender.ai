@@ -9,7 +9,7 @@ describe('primary marketing action', () => {
       for (const isSignedIn of [false, true]) {
         expect(headerPrimaryAction(locale, ROUTES.home.paths[locale], isSignedIn)).toEqual({
           kind: 'upload',
-          href: `${ROUTES.home.paths[locale]}#try`,
+          href: '/try',
         });
       }
     }
@@ -34,7 +34,7 @@ describe('primary marketing action', () => {
     });
     expect(headerPrimaryAction('fr', '/fr/mcp', false)).toEqual({
       kind: 'upload',
-      href: '/fr#try',
+      href: '/try',
     });
   });
 });

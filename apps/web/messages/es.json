@@ -18,7 +18,7 @@
       "try": "Pruébalo",
       "pricing": "Precios"
     },
-    "dashboard": "Dashboard",
+    "dashboard": "App",
     "account": "Mi cuenta",
     "accountMenu": "Menú de la cuenta",
     "creditsLink": "Créditos",
@@ -29,7 +29,7 @@
     "sections": "Secciones",
     "menuOpen": "Abrir menú",
     "menuClose": "Cerrar menú",
-    "upload": "Subir una foto"
+    "upload": "Pruébalo gratis"
   },
   "Footer": {
     "tagline": "Convierte cualquier foto de producto en un modelo 3D",
@@ -651,6 +651,7 @@
     },
     "generateOne": "Generar · {credits}",
     "errors": {
+      "retryItem": "No pudimos reutilizar la foto. Súbela de nuevo.",
       "upload": "No se pudo subir",
       "unreadable": "No se pudo leer esta foto",
       "dailyLimit": "No se subió: has alcanzado el límite diario",
@@ -670,6 +671,8 @@
       "body": "Haz clic o suéltalas en cualquier parte de esta página"
     },
     "retry": "Reintentar",
+    "retryItem": "Reintentar",
+    "retrying": "Reintentando…",
     "dismiss": "Descartar",
     "estimate": {
       "prices": "Las vistas previas son gratis. El 3D cuesta {credits} créditos por artículo.",
@@ -844,16 +847,11 @@
     }
   },
   "AppHome": {
+    "upload": "Subir una foto",
     "heading": "Crea un modelo 3D desde una foto",
-    "slot": "Suelta una foto",
     "hint": "JPG, PNG o WebP, hasta 4 MB. También puedes pegarla.",
-    "placeholder": "Describe el producto o suelta una foto",
     "dropOverlay": "Suelta la foto para adjuntarla",
-    "remove": "Quitar la foto",
-    "create": "Crear vista previa gratis",
     "uploading": "Subiendo…",
-    "batch": "Subir varias fotos",
-    "connect": "Conectar un agente",
     "errors": {
       "type": "Usa una foto JPG, PNG o WebP.",
       "upload": "No se pudo subir. Inténtalo de nuevo.",

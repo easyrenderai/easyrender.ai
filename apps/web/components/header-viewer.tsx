@@ -9,7 +9,7 @@ import { useViewer } from '@/components/use-viewer';
 // and cached, so these start as the visitor's header and become the member's when /api/viewer
 // answers (components/use-viewer). Labels are translated by the server component that renders them.
 
-/** Dashboard for a member, Sign in for a visitor. Phones keep Sign in in the menu. */
+/** App for a member (the one primary button), Sign in for a visitor. Phones keep Sign in in the menu. */
 export function HeaderSession({
   dashboardLabel,
   signInLabel,
@@ -21,11 +21,16 @@ export function HeaderSession({
 }) {
   const { data } = useViewer();
   const isSignedIn = Boolean(data?.signedIn);
+  if (isSignedIn) {
+    return (
+      <Button size="sm" asChild>
+        <Link href="/dashboard">{dashboardLabel}</Link>
+      </Button>
+    );
+  }
   return (
-    <Button variant="ghost" size="sm" className={isSignedIn ? undefined : 'max-sm:hidden'} asChild>
-      <Link href={isSignedIn ? '/dashboard' : signInHref}>
-        {isSignedIn ? dashboardLabel : signInLabel}
-      </Link>
+    <Button variant="ghost" size="sm" className="max-sm:hidden" asChild>
+      <Link href={signInHref}>{signInLabel}</Link>
     </Button>
   );
 }
@@ -48,7 +53,7 @@ export function HeaderMenuCredits() {
   );
 }
 
-/** Sign in, last in the phone menu, for a visitor. A member already has Dashboard in the row. */
+/** Sign in, last in the phone menu, for a visitor. A member already has App in the row. */
 export function HeaderMenuSignIn({ label, href }: { label: string; href: string }) {
   const { data } = useViewer();
   if (data?.signedIn) return null;

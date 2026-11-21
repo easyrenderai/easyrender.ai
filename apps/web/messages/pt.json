@@ -18,14 +18,14 @@
       "mcp": "MCP",
       "api": "API"
     },
-    "dashboard": "Painel",
+    "dashboard": "App",
     "signIn": "Iniciar sessão",
     "connect": "Ligar",
     "connectSuffix": "o teu agente",
     "sections": "Secções",
     "menuOpen": "Abrir menu",
     "menuClose": "Fechar menu",
-    "upload": "Carregar uma foto",
+    "upload": "Experimente grátis",
     "account": "Minha conta",
     "accountMenu": "Menu da conta",
     "creditsLink": "Créditos",
@@ -651,6 +651,7 @@
     },
     "generateOne": "Criar modelo 3D · {credits}",
     "errors": {
+      "retryItem": "Não foi possível reutilizar a foto. Carregue-a de novo.",
       "upload": "Não foi possível carregar a fotografia.",
       "unreadable": "Não foi possível ler a fotografia.",
       "dailyLimit": "Fotografia não carregada. Atingiste o limite diário.",
@@ -670,6 +671,8 @@
       "body": "Clica aqui ou arrasta fotografias para a página."
     },
     "retry": "Tentar novamente",
+    "retryItem": "Tentar de novo",
+    "retrying": "Tentando de novo…",
     "dismiss": "Fechar",
     "estimate": {
       "prices": "As pré-visualizações são gratuitas. Cada modelo 3D custa {credits} créditos.",
@@ -844,16 +847,11 @@
     }
   },
   "AppHome": {
+    "upload": "Carregar uma foto",
     "heading": "Cria um modelo 3D a partir de uma fotografia",
-    "slot": "Solte uma foto",
     "hint": "JPG, PNG ou WebP, até 4 MB. Também podes colar uma imagem.",
-    "placeholder": "Descreva o produto ou solte uma foto",
     "dropOverlay": "Solte a foto para anexar",
-    "remove": "Remover a foto",
-    "create": "Criar pré-visualização grátis",
     "uploading": "Enviando…",
-    "batch": "Enviar várias fotos",
-    "connect": "Conectar um agente",
     "errors": {
       "type": "Use uma foto JPG, PNG ou WebP.",
       "upload": "O envio falhou. Tente de novo.",

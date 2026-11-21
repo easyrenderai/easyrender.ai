@@ -18,7 +18,7 @@
       "try": "Try it",
       "pricing": "Pricing"
     },
-    "dashboard": "Dashboard",
+    "dashboard": "App",
     "account": "My account",
     "accountMenu": "Account menu",
     "creditsLink": "Credits",
@@ -29,7 +29,7 @@
     "sections": "Sections",
     "menuOpen": "Open menu",
     "menuClose": "Close menu",
-    "upload": "Upload a photo"
+    "upload": "Try it free"
   },
   "Footer": {
     "tagline": "Turn any Product Photo into a 3D model",
@@ -651,6 +651,7 @@
     },
     "generateOne": "Generate · {credits}",
     "errors": {
+      "retryItem": "We couldn’t reuse the photo. Upload it again.",
       "upload": "Upload failed",
       "unreadable": "Could not read this photo",
       "dailyLimit": "Not uploaded: daily limit reached",
@@ -670,6 +671,8 @@
       "body": "Click, or drop them anywhere on this page"
     },
     "retry": "Try again",
+    "retryItem": "Retry",
+    "retrying": "Retrying…",
     "dismiss": "Dismiss",
     "estimate": {
       "prices": "Previews are free. 3D costs {credits} credits per item.",
@@ -844,16 +847,11 @@
     }
   },
   "AppHome": {
+    "upload": "Upload a photo",
     "heading": "Create a 3D model from a photo",
-    "slot": "Drop photo",
     "hint": "JPG, PNG or WebP, up to 4 MB. You can also paste.",
-    "placeholder": "Describe the product, or just drop a photo",
     "dropOverlay": "Drop photo to attach",
-    "remove": "Remove photo",
-    "create": "Create free preview",
     "uploading": "Uploading…",
-    "batch": "Upload a batch",
-    "connect": "Connect an agent",
     "errors": {
       "type": "Use a JPG, PNG or WebP photo.",
       "upload": "The upload failed. Try again.",

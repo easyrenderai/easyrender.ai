@@ -18,14 +18,14 @@
       "mcp": "MCP",
       "api": "API"
     },
-    "dashboard": "Dashboard",
+    "dashboard": "App",
     "signIn": "Accedi",
     "connect": "Collega",
     "connectSuffix": "il tuo agente",
     "sections": "Sezioni",
     "menuOpen": "Apri il menu",
     "menuClose": "Chiudi il menu",
-    "upload": "Carica una foto",
+    "upload": "Provalo gratis",
     "account": "Il mio account",
     "accountMenu": "Menu account",
     "creditsLink": "Crediti",
@@ -651,6 +651,7 @@
     },
     "generateOne": "Crea il modello 3D · {credits}",
     "errors": {
+      "retryItem": "Non siamo riusciti a riutilizzare la foto. Caricala di nuovo.",
       "upload": "Non è stato possibile caricare la foto.",
       "unreadable": "Non è stato possibile leggere la foto.",
       "dailyLimit": "Foto non caricata. Hai raggiunto il limite giornaliero.",
@@ -670,6 +671,8 @@
       "body": "Fai clic qui o trascina le foto nella pagina."
     },
     "retry": "Riprova",
+    "retryItem": "Riprova",
+    "retrying": "Nuovo tentativo…",
     "dismiss": "Chiudi",
     "estimate": {
       "prices": "Le anteprime sono gratuite. Un modello 3D costa {credits} crediti.",
@@ -844,16 +847,11 @@
     }
   },
   "AppHome": {
+    "upload": "Carica una foto",
     "heading": "Crea un modello 3D da una foto",
-    "slot": "Trascina una foto",
     "hint": "JPG, PNG o WebP, fino a 4 MB. Puoi anche incollarla.",
-    "placeholder": "Descrivi il prodotto o trascina una foto",
     "dropOverlay": "Rilascia la foto per allegarla",
-    "remove": "Rimuovi la foto",
-    "create": "Crea anteprima gratuita",
     "uploading": "Caricamento…",
-    "batch": "Carica più foto",
-    "connect": "Collega un agente",
     "errors": {
       "type": "Usa una foto JPG, PNG o WebP.",
       "upload": "Caricamento non riuscito. Riprova.",
