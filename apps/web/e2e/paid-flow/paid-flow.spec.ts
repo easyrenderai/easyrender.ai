@@ -50,8 +50,12 @@ test('a visitor signs up, previews, pays, builds and downloads a 3D model', asyn
   await page.screenshot({ path: testInfo.outputPath('1-preview.png') });
 
   // 3. Building needs an account: sign up and come back to the same preview.
-  await page.getByRole('link', { name: 'Create free account' }).click();
-  await expect(page).toHaveURL(/\/sign-up\?next=/);
+  // `next dev` paints the page before it is interactive and the render view re-renders while it
+  // polls, so a click can be lost: click until the sign-up page opens.
+  await expect(async () => {
+    await page.getByRole('link', { name: 'Create free account' }).click({ timeout: 5_000 });
+    await expect(page).toHaveURL(/\/sign-up\?next=/, { timeout: 5_000 });
+  }).toPass({ timeout: 45_000 });
   await page.getByLabel('Email').fill(`paid-flow-${crypto.randomUUID()}@example.invalid`);
   await page.getByLabel('Password').fill('paid-flow-password-123');
   await page.getByRole('button', { name: 'Create account', exact: true }).click();
