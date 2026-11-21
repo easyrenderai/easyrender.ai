@@ -18,6 +18,7 @@ import { RenderJourneyStatus } from '@/components/render-journey-status';
 import { SiteLink } from '@/components/site-link';
 import { TrialBuildAction } from '@/components/trial-build-action';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -108,6 +109,7 @@ export function RenderView({
     `/r/${render.id}${quality === 'low' ? '' : `?quality=${quality}`}`,
   );
   const signupHref = `${localizedAuthPath(locale, '/sign-up')}?next=${next}`;
+  const signinHref = `${localizedAuthPath(locale, '/sign-in')}?next=${next}`;
   // The first-model offer is created once when the preview is ready. The POST is not repeated on
   // reconnect or on a later mount of the same page.
   const trial = useQuery({
@@ -330,8 +332,21 @@ export function RenderView({
     );
 
   const isFixable = owner && signedIn && render.status === 'preview_ready' && render.hasSheet;
+  // A visitor without an account sees their sheet only after signing up: until then the server
+  // sends a blurred, downscaled image, and this card asks for the account.
+  const isGated = !signedIn && owner && render.status === 'preview_ready' && render.hasPreview;
   const sheet = render.hasPreview ? (
-    <AngleSheet src={`${base}/preview?v=${render.modelVersion}`} />
+    <div className="relative">
+      <AngleSheet src={`${base}/preview?v=${render.modelVersion}`} />
+      {isGated && (
+        <div className="absolute inset-0 grid place-items-center rounded-lg bg-black/30">
+          <Badge variant="secondary" className="gap-1.5 px-3 py-1.5 text-sm">
+            <Lock className="size-3.5" />
+            {t('gate.locked')}
+          </Badge>
+        </div>
+      )}
+    </div>
   ) : (
     <div className="flex aspect-square w-full items-center justify-center rounded-lg border bg-muted/40 text-muted-foreground">
       {render.status === 'failed' ? (
@@ -524,7 +539,25 @@ export function RenderView({
     </>
   );
 
-  const actions = owner ? (
+  const gate = (
+    <div className="space-y-3">
+      <div className="space-y-1">
+        <p className="text-base font-medium">{t('gate.title')}</p>
+        <p className="text-sm text-muted-foreground">{t('gate.description')}</p>
+      </div>
+      <Button size="lg" className="h-auto min-h-11 w-full whitespace-normal" asChild>
+        <SiteLink href={signupHref}>{t('gate.signUp')}</SiteLink>
+      </Button>
+      <Button variant="outline" className="w-full" asChild>
+        <SiteLink href={signinHref}>{t('gate.signIn')}</SiteLink>
+      </Button>
+      <p className="text-xs text-muted-foreground">{t('gate.note')}</p>
+    </div>
+  );
+
+  const actions = isGated ? (
+    gate
+  ) : owner ? (
     <>
       {render.status === 'preview_ready' &&
         (hasTrialError ? (
@@ -636,6 +669,9 @@ export function RenderView({
         isViewerFirst={render.status === 'ready'}
         input={`${base}/source`}
         angles={angles}
+        anglesUrl={
+          render.hasPreview && !isGated ? `${base}/preview?v=${render.modelVersion}` : null
+        }
         meta={[
           {
             label: t('meta.status'),

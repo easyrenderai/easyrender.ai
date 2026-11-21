@@ -335,6 +335,16 @@
     "inputPhoto": "Photo d’origine",
     "sourceAlt": "Photo d’origine de {title}",
     "everyAngle": "Vues générées",
+    "downloadPhoto": "Télécharger la photo",
+    "downloadAngles": "Télécharger la planche d’angles",
+    "gate": {
+      "locked": "Aperçu prêt",
+      "title": "Votre aperçu 3D est prêt",
+      "description": "Créez un compte gratuit pour voir tous les angles de votre photo et la transformer en modèle 3D.",
+      "signUp": "Créer un compte gratuit",
+      "signIn": "Se connecter",
+      "note": "Aucune carte requise."
+    },
     "prompt": "Description",
     "noPrompt": "Photo seule, sans description",
     "example": "Exemple",
@@ -602,7 +612,8 @@
     "guestNote": "Aperçu gratuit dans la limite quotidienne. Sans compte ni carte.",
     "seeExample": "Ou explorez un exemple terminé :",
     "startPreview": "Importer une photo",
-    "compactNote": "Aperçu gratuit, sans compte ni carte. La création du modèle 3D téléchargeable coûte des crédits."
+    "compactNote": "Aperçu gratuit, sans compte ni carte. La création du modèle 3D téléchargeable coûte des crédits.",
+    "tryNote": "Aperçu gratuit. Vous créez un compte gratuit pour voir le résultat."
   },
   "Library": {
     "metaTitle": "Bibliothèque · Easy Render",
@@ -3268,5 +3279,15 @@
     "mediumHint": "Couleur et forme plus proches de votre photo. Prend quelques minutes de plus.",
     "highHint": "Le plus de détails et le fichier le plus lourd. C’est la plus longue.",
     "credits": "{credits, number} crédits"
+  },
+  "Try": {
+    "metaTitle": "Essai gratuit · Easy Render",
+    "metaDescription": "Importez la photo d’un produit et obtenez un aperçu 3D gratuit. Créez un compte gratuit pour voir le résultat.",
+    "title": "Essai gratuit",
+    "description": "Importez la photo d’un produit. L’aperçu gratuit démarre tout de suite, et un compte gratuit vous montre tous les angles.",
+    "cta": "Essai gratuit",
+    "step1": "Importer une photo",
+    "step2": "Créer un compte gratuit",
+    "step3": "Voir tous les angles"
   }
 }

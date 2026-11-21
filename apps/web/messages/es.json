@@ -335,6 +335,16 @@
     "inputPhoto": "Foto original",
     "sourceAlt": "Foto original de {title}",
     "everyAngle": "Vistas generadas",
+    "downloadPhoto": "Descargar foto",
+    "downloadAngles": "Descargar hoja de ángulos",
+    "gate": {
+      "locked": "Vista previa lista",
+      "title": "Tu vista previa 3D está lista",
+      "description": "Crea una cuenta gratis para ver todos los ángulos de tu foto y convertirla en un modelo 3D.",
+      "signUp": "Crear cuenta gratis",
+      "signIn": "Iniciar sesión",
+      "note": "No hace falta tarjeta."
+    },
     "prompt": "Prompt",
     "noPrompt": "Sin prompt, solo la foto",
     "example": "Ejemplo",
@@ -602,7 +612,8 @@
     "guestNote": "Vista previa gratis, con límite diario. Sin cuenta ni tarjeta.",
     "seeExample": "O explora un ejemplo terminado:",
     "startPreview": "Subir una foto",
-    "compactNote": "Vista previa gratis, sin cuenta ni tarjeta. Crear el modelo 3D descargable cuesta créditos."
+    "compactNote": "Vista previa gratis, sin cuenta ni tarjeta. Crear el modelo 3D descargable cuesta créditos.",
+    "tryNote": "Vista previa gratis. Creas una cuenta gratis para ver el resultado."
   },
   "Library": {
     "metaTitle": "Biblioteca · Easy Render",
@@ -3645,5 +3656,15 @@
     "mediumHint": "Color y forma más cercanos a tu foto. Tarda unos minutos más.",
     "highHint": "El mayor detalle y el archivo más grande. Es la más lenta.",
     "credits": "{credits, number} créditos"
+  },
+  "Try": {
+    "metaTitle": "Pruébalo gratis · Easy Render",
+    "metaDescription": "Sube la foto de un producto y recibe una vista previa 3D gratis. Crea una cuenta gratis para ver el resultado.",
+    "title": "Pruébalo gratis",
+    "description": "Sube la foto de un producto. Empezamos una vista previa gratis al instante y creas una cuenta gratis para ver todos los ángulos.",
+    "cta": "Pruébalo gratis",
+    "step1": "Sube una foto",
+    "step2": "Crea una cuenta gratis",
+    "step3": "Mira todos los ángulos"
   }
 }

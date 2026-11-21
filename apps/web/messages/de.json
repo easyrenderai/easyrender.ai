@@ -335,6 +335,16 @@
     "inputPhoto": "Originalfoto",
     "sourceAlt": "Originalfoto von {title}",
     "everyAngle": "Ansichten",
+    "downloadPhoto": "Foto herunterladen",
+    "downloadAngles": "Winkelblatt herunterladen",
+    "gate": {
+      "locked": "Vorschau bereit",
+      "title": "Ihre 3D-Vorschau ist fertig",
+      "description": "Erstellen Sie ein kostenloses Konto, um jeden Winkel Ihres Fotos zu sehen und daraus ein 3D-Modell zu machen.",
+      "signUp": "Kostenloses Konto erstellen",
+      "signIn": "Anmelden",
+      "note": "Keine Karte nötig."
+    },
     "prompt": "Beschreibung",
     "noPrompt": "Nur Foto, keine Beschreibung",
     "example": "Beispiel",
@@ -602,7 +612,8 @@
     "guestNote": "Kostenlose Vorschau mit Tageslimit. Kein Konto und keine Karte nötig.",
     "seeExample": "Oder ein fertiges Beispiel ansehen:",
     "startPreview": "Foto hochladen",
-    "compactNote": "Kostenlose Vorschau ohne Konto oder Karte. Das 3D-Modell zum Herunterladen kostet Credits."
+    "compactNote": "Kostenlose Vorschau ohne Konto oder Karte. Das 3D-Modell zum Herunterladen kostet Credits.",
+    "tryNote": "Kostenlose Vorschau. Für das Ergebnis erstellst du ein kostenloses Konto."
   },
   "Library": {
     "metaTitle": "Bibliothek · Easy Render",
@@ -3268,5 +3279,15 @@
     "mediumHint": "Farbe und Form näher an deinem Foto. Dauert einige Minuten länger.",
     "highHint": "Die meisten Details und die größte Datei. Dauert am längsten.",
     "credits": "{credits, number} Credits"
+  },
+  "Try": {
+    "metaTitle": "Kostenlos testen · Easy Render",
+    "metaDescription": "Lade ein Produktfoto hoch und erhalte eine kostenlose 3D-Vorschau. Für das Ergebnis erstellst du ein kostenloses Konto.",
+    "title": "Kostenlos testen",
+    "description": "Lade ein Produktfoto hoch. Die kostenlose Vorschau startet sofort, und mit einem kostenlosen Konto siehst du jeden Blickwinkel.",
+    "cta": "Kostenlos testen",
+    "step1": "Foto hochladen",
+    "step2": "Kostenloses Konto erstellen",
+    "step3": "Jeden Blickwinkel ansehen"
   }
 }

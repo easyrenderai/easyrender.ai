@@ -4,7 +4,6 @@ import { HomeIntegrations } from '@/components/home/home-integrations';
 import { HomeIntro } from '@/components/home/home-intro';
 import { HomeJourney } from '@/components/home/home-journey';
 import { Faq, Pricing } from '@/components/landing';
-import { PromptBar } from '@/components/prompt-bar';
 import { ResourceLinks } from '@/components/resource-links';
 import { StudioIndustries } from '@/components/studio/industries';
 import { StudioPipeline } from '@/components/studio/pipeline';
@@ -28,7 +27,7 @@ export async function HomeView() {
 
   return (
     <StudioShell>
-      <HomeHero upload={<PromptBar compact />} />
+      <HomeHero />
       <StudioCompatibility />
       <StudioPipeline />
       <HomeJourney />

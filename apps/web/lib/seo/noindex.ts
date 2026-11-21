@@ -4,6 +4,7 @@
 //
 //  - /explore, /hub and /r/* are the gallery, the element hub and the model pages: product
 //    surfaces that grow on their own, parked until decision 2's three conditions are met.
+//  - /try is the test flow behind the home's button: the upload, then a sign-up for the result.
 //  - /lp/* are ad landings. They are noindex but deliberately crawlable, because AdsBot has to
 //    fetch them, which is why none of this is done with a Disallow.
 //  - /sign-in, /sign-up and /oauth are auth.
@@ -14,6 +15,7 @@ export const NOINDEX_PREFIXES = [
   '/explore',
   '/hub',
   '/r/',
+  '/try',
   '/lp/',
   '/sign-in',
   '/sign-up',
@@ -27,6 +29,7 @@ export const NOINDEX_HEADER_PATHS = [
   '/explore',
   '/hub',
   '/r/:id',
+  '/try',
   '/lp/:path*',
   '/ar/:id',
   '/shopify/:path*',

@@ -144,6 +144,7 @@ describe('noindex paths', () => {
       '/explore',
       '/explore/chairs',
       '/hub',
+      '/try',
       '/r/demo-armchair',
       '/lp/en/ecommerce',
       '/sign-in',

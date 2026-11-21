@@ -335,6 +335,16 @@
     "inputPhoto": "Foto originale",
     "sourceAlt": "Foto originale di {title}",
     "everyAngle": "Viste generate",
+    "downloadPhoto": "Scarica la foto",
+    "downloadAngles": "Scarica la tavola degli angoli",
+    "gate": {
+      "locked": "Anteprima pronta",
+      "title": "La tua anteprima 3D è pronta",
+      "description": "Crea un account gratuito per vedere ogni angolazione della tua foto e trasformarla in un modello 3D.",
+      "signUp": "Crea un account gratuito",
+      "signIn": "Accedi",
+      "note": "Nessuna carta richiesta."
+    },
     "prompt": "Descrizione",
     "noPrompt": "Solo foto, senza descrizione",
     "example": "Esempio",
@@ -602,7 +612,8 @@
     "guestNote": "Anteprima gratuita entro il limite giornaliero. Non servono account o carta.",
     "seeExample": "Oppure esplora un esempio finito:",
     "startPreview": "Carica una foto",
-    "compactNote": "Anteprima gratuita, senza account né carta. Il modello 3D scaricabile richiede crediti."
+    "compactNote": "Anteprima gratuita, senza account né carta. Il modello 3D scaricabile richiede crediti.",
+    "tryNote": "Anteprima gratuita. Crei un account gratuito per vedere il risultato."
   },
   "Library": {
     "metaTitle": "Libreria · Easy Render",
@@ -3268,5 +3279,15 @@
     "mediumHint": "Colore e forma più vicini alla tua foto. Richiede qualche minuto in più.",
     "highHint": "Il massimo dettaglio e il file più pesante. È la più lenta.",
     "credits": "{credits, number} crediti"
+  },
+  "Try": {
+    "metaTitle": "Provalo gratis · Easy Render",
+    "metaDescription": "Carica la foto di un prodotto e ottieni un’anteprima 3D gratuita. Crea un account gratuito per vedere il risultato.",
+    "title": "Provalo gratis",
+    "description": "Carica la foto di un prodotto. L’anteprima gratuita parte subito e con un account gratuito vedi ogni angolazione.",
+    "cta": "Provalo gratis",
+    "step1": "Carica una foto",
+    "step2": "Crea un account gratuito",
+    "step3": "Guarda ogni angolazione"
   }
 }

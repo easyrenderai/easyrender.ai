@@ -29,7 +29,8 @@ it('offers existing examples directly without requiring an account or a generati
   expect(html).toContain('href="/r/cmwceijqd000007l23vfjeftv"');
   expect(html).not.toContain('demo-armchair');
   expect(html).toContain('href="/r/demo-vase"');
-  expect(html).toContain('optionalNotes');
+  expect(html).toContain('startPreview');
+  expect(html).toContain('tryNote');
   expect(html).not.toContain('name="name"');
 });
 

@@ -335,6 +335,16 @@
     "inputPhoto": "Input photo",
     "sourceAlt": "Source of {title}",
     "everyAngle": "Generated views",
+    "downloadPhoto": "Download photo",
+    "downloadAngles": "Download angle sheet",
+    "gate": {
+      "locked": "Preview ready",
+      "title": "Your 3D preview is ready",
+      "description": "Create a free account to see every angle of your photo and turn it into a 3D model.",
+      "signUp": "Create free account",
+      "signIn": "Sign in",
+      "note": "No card needed."
+    },
     "prompt": "Prompt",
     "noPrompt": "No prompt, photo only",
     "example": "Example",
@@ -602,7 +612,8 @@
     "guestNote": "Free preview within daily limits. No account or card needed.",
     "seeExample": "Or explore a finished example:",
     "startPreview": "Upload a photo",
-    "compactNote": "Free preview, no account or card. Creating the downloadable 3D model uses credits."
+    "compactNote": "Free preview, no account or card. Creating the downloadable 3D model uses credits.",
+    "tryNote": "Free preview. You create a free account to see the result."
   },
   "Library": {
     "metaTitle": "Library · Easy Render",
@@ -3645,5 +3656,15 @@
     "mediumHint": "Colour and shape closer to your photo. Takes a few minutes longer.",
     "highHint": "The most detail and the biggest file. Takes the longest.",
     "credits": "{credits, number} credits"
+  },
+  "Try": {
+    "metaTitle": "Try it free · Easy Render",
+    "metaDescription": "Upload a product photo and get a free 3D preview. Create a free account to see the result.",
+    "title": "Try it free",
+    "description": "Upload one product photo. We start a free preview straight away, and you create a free account to see every angle.",
+    "cta": "Try it free",
+    "step1": "Upload a photo",
+    "step2": "Create a free account",
+    "step3": "See every angle"
   }
 }

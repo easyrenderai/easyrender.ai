@@ -31,7 +31,7 @@ import {
 } from './pricing';
 import { findGlbUrl } from './replicate';
 import { cutCells, sheetOutputUrl, sheetPrompt, VIEWS } from './sheet';
-import { watermark } from './watermark';
+import { lockedPreview, watermark } from './watermark';
 
 describe('build quality', () => {
   it('prices each quality at its cost plus the one margin, with Low unchanged', () => {
@@ -176,6 +176,32 @@ describe('sheet', () => {
     const meta = await sharp(preview).metadata();
     expect(meta.format).toBe('webp');
     expect(meta.width).toBe(1024);
+  });
+
+  it('blurs the locked preview until a hard edge is gone', async () => {
+    const block = await sharp({
+      create: { width: 1000, height: 1000, channels: 3, background: '#000000' },
+    })
+      .png()
+      .toBuffer();
+    const sheet = await sharp({
+      create: { width: 2048, height: 2048, channels: 3, background: '#ffffff' },
+    })
+      .composite([{ input: block, left: 500, top: 500 }])
+      .png()
+      .toBuffer();
+    const locked = await lockedPreview(new Uint8Array(sheet));
+    const { data, info } = await sharp(locked)
+      .greyscale()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    expect(info.width).toBeLessThanOrEqual(480);
+    // The original jumps from 255 to 0 between two neighbouring pixels; the blur spreads that out.
+    let steepest = 0;
+    for (let i = 1; i < data.length; i += 1) {
+      if (i % info.width !== 0) steepest = Math.max(steepest, Math.abs(data[i] - data[i - 1]));
+    }
+    expect(steepest).toBeLessThan(20);
   });
 
   it('leaves the sheet it stamps untouched, so the stored master stays clean', async () => {
