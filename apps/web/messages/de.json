@@ -18,14 +18,14 @@
       "mcp": "MCP",
       "api": "API"
     },
-    "dashboard": "Dashboard",
+    "dashboard": "App",
     "signIn": "Anmelden",
     "connect": "Agent verbinden",
     "connectSuffix": "",
     "sections": "Bereiche",
     "menuOpen": "Menü öffnen",
     "menuClose": "Menü schließen",
-    "upload": "Foto hochladen",
+    "upload": "Kostenlos testen",
     "account": "Mein Konto",
     "accountMenu": "Kontomenü",
     "creditsLink": "Credits",
@@ -335,6 +335,16 @@
     "inputPhoto": "Originalfoto",
     "sourceAlt": "Originalfoto von {title}",
     "everyAngle": "Ansichten",
+    "downloadPhoto": "Foto herunterladen",
+    "downloadAngles": "Winkelblatt herunterladen",
+    "gate": {
+      "locked": "Vorschau bereit",
+      "title": "Ihre 3D-Vorschau ist fertig",
+      "description": "Erstellen Sie ein kostenloses Konto, um jeden Winkel Ihres Fotos zu sehen und daraus ein 3D-Modell zu machen.",
+      "signUp": "Kostenloses Konto erstellen",
+      "signIn": "Anmelden",
+      "note": "Keine Karte nötig."
+    },
     "prompt": "Beschreibung",
     "noPrompt": "Nur Foto, keine Beschreibung",
     "example": "Beispiel",
@@ -602,7 +612,8 @@
     "guestNote": "Kostenlose Vorschau mit Tageslimit. Kein Konto und keine Karte nötig.",
     "seeExample": "Oder ein fertiges Beispiel ansehen:",
     "startPreview": "Foto hochladen",
-    "compactNote": "Kostenlose Vorschau ohne Konto oder Karte. Das 3D-Modell zum Herunterladen kostet Credits."
+    "compactNote": "Kostenlose Vorschau ohne Konto oder Karte. Das 3D-Modell zum Herunterladen kostet Credits.",
+    "tryNote": "Kostenlose Vorschau. Für das Ergebnis erstellst du ein kostenloses Konto."
   },
   "Library": {
     "metaTitle": "Bibliothek · Easy Render",
@@ -651,6 +662,7 @@
     },
     "generateOne": "3D-Modell erstellen · {credits}",
     "errors": {
+      "retryItem": "Das Foto konnte nicht wiederverwendet werden. Laden Sie es erneut hoch.",
       "upload": "Das Foto konnte nicht hochgeladen werden.",
       "unreadable": "Das Foto konnte nicht gelesen werden.",
       "dailyLimit": "Nicht hochgeladen. Das Tageslimit ist erreicht.",
@@ -670,6 +682,8 @@
       "body": "Klicke hier oder zieh Fotos auf die Seite."
     },
     "retry": "Erneut versuchen",
+    "retryItem": "Erneut versuchen",
+    "retrying": "Neuer Versuch…",
     "dismiss": "Schließen",
     "estimate": {
       "prices": "Die Vorschauen sind kostenlos. Ein 3D-Modell kostet {credits} Credits.",
@@ -844,16 +858,11 @@
     }
   },
   "AppHome": {
+    "upload": "Foto hochladen",
     "heading": "Erstelle ein 3D-Modell aus einem Foto",
-    "slot": "Foto ablegen",
     "hint": "JPG, PNG oder WebP, bis 4 MB. Einfügen geht auch.",
-    "placeholder": "Beschreibe das Produkt oder lege einfach ein Foto ab",
     "dropOverlay": "Foto zum Anhängen ablegen",
-    "remove": "Foto entfernen",
-    "create": "Kostenlose Vorschau erstellen",
     "uploading": "Wird hochgeladen…",
-    "batch": "Mehrere Fotos hochladen",
-    "connect": "Agenten verbinden",
     "errors": {
       "type": "Verwende ein JPG-, PNG- oder WebP-Foto.",
       "upload": "Der Upload ist fehlgeschlagen. Versuche es erneut.",
@@ -3270,5 +3279,15 @@
     "mediumHint": "Farbe und Form näher an deinem Foto. Dauert einige Minuten länger.",
     "highHint": "Die meisten Details und die größte Datei. Dauert am längsten.",
     "credits": "{credits, number} Credits"
+  },
+  "Try": {
+    "metaTitle": "Kostenlos testen · Easy Render",
+    "metaDescription": "Lade ein Produktfoto hoch und erhalte eine kostenlose 3D-Vorschau. Für das Ergebnis erstellst du ein kostenloses Konto.",
+    "title": "Kostenlos testen",
+    "description": "Lade ein Produktfoto hoch. Die kostenlose Vorschau startet sofort, und mit einem kostenlosen Konto siehst du jeden Blickwinkel.",
+    "cta": "Kostenlos testen",
+    "step1": "Foto hochladen",
+    "step2": "Kostenloses Konto erstellen",
+    "step3": "Jeden Blickwinkel ansehen"
   }
 }

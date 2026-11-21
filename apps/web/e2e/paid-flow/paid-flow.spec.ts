@@ -30,14 +30,13 @@ test('a visitor signs up, previews, pays, builds and downloads a 3D model', asyn
   test.setTimeout(240_000);
   await fetch(`${mock}/__reset`);
 
-  // 1. Upload on the home page and start the free preview, still anonymous.
-  await page.goto(app);
+  // 1. Upload on the try page: choosing the photo starts the free preview, still anonymous.
+  await page.goto(`${app}/try`);
   await page.locator('input[type="file"]').first().setInputFiles({
     name: 'mug.png',
     mimeType: 'image/png',
     buffer: productPhoto(),
   });
-  await page.getByRole('button', { name: 'Create free preview' }).click();
   await page.waitForURL(/\/r\/[a-z0-9]+/i, { timeout: 60_000 });
   const renderId = new URL(page.url()).pathname.split('/').pop() as string;
 
@@ -51,8 +50,10 @@ test('a visitor signs up, previews, pays, builds and downloads a 3D model', asyn
   await page.screenshot({ path: testInfo.outputPath('1-preview.png') });
 
   // 3. Building needs an account: sign up and come back to the same preview.
-  await page.getByRole('link', { name: 'Create an account to continue' }).click();
-  await expect(page).toHaveURL(/\/sign-up\?next=/);
+  // The sign-up page can take a while to compile under `next dev` on a CI runner, so wait for
+  // the navigation itself instead of the default five seconds.
+  await page.getByRole('link', { name: 'Create free account' }).click();
+  await expect(page).toHaveURL(/\/sign-up\?next=/, { timeout: 45_000 });
   await page.getByLabel('Email').fill(`paid-flow-${crypto.randomUUID()}@example.invalid`);
   await page.getByLabel('Password').fill('paid-flow-password-123');
   await page.getByRole('button', { name: 'Create account', exact: true }).click();

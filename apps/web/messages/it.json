@@ -18,14 +18,14 @@
       "mcp": "MCP",
       "api": "API"
     },
-    "dashboard": "Dashboard",
+    "dashboard": "App",
     "signIn": "Accedi",
     "connect": "Collega",
     "connectSuffix": "il tuo agente",
     "sections": "Sezioni",
     "menuOpen": "Apri il menu",
     "menuClose": "Chiudi il menu",
-    "upload": "Carica una foto",
+    "upload": "Provalo gratis",
     "account": "Il mio account",
     "accountMenu": "Menu account",
     "creditsLink": "Crediti",
@@ -335,6 +335,16 @@
     "inputPhoto": "Foto originale",
     "sourceAlt": "Foto originale di {title}",
     "everyAngle": "Viste generate",
+    "downloadPhoto": "Scarica la foto",
+    "downloadAngles": "Scarica la tavola degli angoli",
+    "gate": {
+      "locked": "Anteprima pronta",
+      "title": "La tua anteprima 3D è pronta",
+      "description": "Crea un account gratuito per vedere ogni angolazione della tua foto e trasformarla in un modello 3D.",
+      "signUp": "Crea un account gratuito",
+      "signIn": "Accedi",
+      "note": "Nessuna carta richiesta."
+    },
     "prompt": "Descrizione",
     "noPrompt": "Solo foto, senza descrizione",
     "example": "Esempio",
@@ -602,7 +612,8 @@
     "guestNote": "Anteprima gratuita entro il limite giornaliero. Non servono account o carta.",
     "seeExample": "Oppure esplora un esempio finito:",
     "startPreview": "Carica una foto",
-    "compactNote": "Anteprima gratuita, senza account né carta. Il modello 3D scaricabile richiede crediti."
+    "compactNote": "Anteprima gratuita, senza account né carta. Il modello 3D scaricabile richiede crediti.",
+    "tryNote": "Anteprima gratuita. Crei un account gratuito per vedere il risultato."
   },
   "Library": {
     "metaTitle": "Libreria · Easy Render",
@@ -651,6 +662,7 @@
     },
     "generateOne": "Crea il modello 3D · {credits}",
     "errors": {
+      "retryItem": "Non siamo riusciti a riutilizzare la foto. Caricala di nuovo.",
       "upload": "Non è stato possibile caricare la foto.",
       "unreadable": "Non è stato possibile leggere la foto.",
       "dailyLimit": "Foto non caricata. Hai raggiunto il limite giornaliero.",
@@ -670,6 +682,8 @@
       "body": "Fai clic qui o trascina le foto nella pagina."
     },
     "retry": "Riprova",
+    "retryItem": "Riprova",
+    "retrying": "Nuovo tentativo…",
     "dismiss": "Chiudi",
     "estimate": {
       "prices": "Le anteprime sono gratuite. Un modello 3D costa {credits} crediti.",
@@ -844,16 +858,11 @@
     }
   },
   "AppHome": {
+    "upload": "Carica una foto",
     "heading": "Crea un modello 3D da una foto",
-    "slot": "Trascina una foto",
     "hint": "JPG, PNG o WebP, fino a 4 MB. Puoi anche incollarla.",
-    "placeholder": "Descrivi il prodotto o trascina una foto",
     "dropOverlay": "Rilascia la foto per allegarla",
-    "remove": "Rimuovi la foto",
-    "create": "Crea anteprima gratuita",
     "uploading": "Caricamento…",
-    "batch": "Carica più foto",
-    "connect": "Collega un agente",
     "errors": {
       "type": "Usa una foto JPG, PNG o WebP.",
       "upload": "Caricamento non riuscito. Riprova.",
@@ -3270,5 +3279,15 @@
     "mediumHint": "Colore e forma più vicini alla tua foto. Richiede qualche minuto in più.",
     "highHint": "Il massimo dettaglio e il file più pesante. È la più lenta.",
     "credits": "{credits, number} crediti"
+  },
+  "Try": {
+    "metaTitle": "Provalo gratis · Easy Render",
+    "metaDescription": "Carica la foto di un prodotto e ottieni un’anteprima 3D gratuita. Crea un account gratuito per vedere il risultato.",
+    "title": "Provalo gratis",
+    "description": "Carica la foto di un prodotto. L’anteprima gratuita parte subito e con un account gratuito vedi ogni angolazione.",
+    "cta": "Provalo gratis",
+    "step1": "Carica una foto",
+    "step2": "Crea un account gratuito",
+    "step3": "Guarda ogni angolazione"
   }
 }

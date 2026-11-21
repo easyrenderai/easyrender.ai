@@ -88,8 +88,10 @@ export function AppShell({
   const { setLeftNode, setRightNode, hasLeftContext, hasRightContext, slot } = usePanelSlotState();
   const isAdmin = isAdminPath(pathname);
   const isLibrary = pathname === '/library' || pathname.startsWith('/library/');
-  // Settings and admin are full pages: no drawers.
-  const isFullPage = isSettingsPath(pathname) || isAdmin;
+  // Overview is one focused upload, so it has no renders drawer (that list was a second scrollbar
+  // beside the page; the Library has the renders). Settings and admin are full pages too.
+  const isOverview = pathname === '/dashboard';
+  const isFullPage = isSettingsPath(pathname) || isAdmin || isOverview;
   const hasLeft = isMd && !isFullPage;
   const hasRight = isXl && !isFullPage && hasRightContext;
   // A render page also offers its edit history, so the left drawer gets a second tab.
@@ -162,7 +164,7 @@ export function AppShell({
         className="relative z-30 hidden w-14 shrink-0 flex-col items-center gap-1 py-3 md:flex"
       >
         <Button variant="ghost" size="icon" className="mb-2 size-10" asChild>
-          <Link href="/" aria-label={t('home')} title={t('home')}>
+          <Link href="/dashboard" aria-label={t('home')} title={t('home')}>
             <BrandMark className="size-[1.375rem]" />
           </Link>
         </Button>

@@ -10,7 +10,7 @@ const NAV = [
   { hash: '#connect', key: 'connect' },
   { route: 'mcp', key: 'mcp' },
   { route: 'api', key: 'api' },
-  { hash: '#try', key: 'try' },
+  { href: '/try', key: 'try' },
   { route: 'pricing', key: 'pricing' },
 ] as const;
 
@@ -30,9 +30,12 @@ export function headerSectionHref(locale: Locale, path: string | null, hash: str
   return `${isIntegrationPage && isLocalSection ? path : ROUTES.home.paths[locale]}${hash}`;
 }
 
+// The upload entry is the try page, the same in every language like /hub.
+export const TRY_HREF = '/try';
+
 export function headerPrimaryAction(locale: Locale, path: string | null, isSignedIn: boolean) {
   if (path === ROUTES.home.paths[locale]) {
-    return { kind: 'upload', href: `${path}#try` } as const;
+    return { kind: 'upload', href: TRY_HREF } as const;
   }
   for (const kind of ['api', 'mcp'] as const) {
     if (isPublished(kind, locale) && path === ROUTES[kind].paths[locale]) {
@@ -41,5 +44,5 @@ export function headerPrimaryAction(locale: Locale, path: string | null, isSigne
   }
   return isSignedIn
     ? ({ kind: 'dashboard', href: '/dashboard' } as const)
-    : ({ kind: 'upload', href: `${ROUTES.home.paths[locale]}#try` } as const);
+    : ({ kind: 'upload', href: TRY_HREF } as const);
 }

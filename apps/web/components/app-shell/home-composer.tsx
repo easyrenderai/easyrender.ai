@@ -1,16 +1,12 @@
 'use client';
 
-import { BUILD_QUALITY_CREDITS, type BuildQuality } from '@easyrender/harness/pricing';
-import { FolderOpen, ImagePlus, Loader2, TriangleAlert, X } from 'lucide-react';
-import Link from 'next/link';
+import { ImagePlus, Loader2, TriangleAlert } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { BuildQualityPicker } from '@/components/build-quality-picker';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { useActivationError } from '@/lib/activation-errors';
 import { attribution, attributionHeaders, observeRender } from '@/lib/analytics/browser';
 import { prepare } from '@/lib/prepare-image';
@@ -18,44 +14,63 @@ import { cn } from '@/lib/utils';
 
 const TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
-// The app's home: a prompt bar built around a drop slot. A photo is all it needs; the text is
-// optional. Dragging a file anywhere over the page lights the bar up.
+// The app's home: one button. Choosing, dropping or pasting a photo starts the free preview at
+// once. Dragging a file anywhere over the page lights the box up.
 export function HomeComposer() {
   const t = useTranslations('AppHome');
   const localizedError = useActivationError();
   const router = useRouter();
   const picker = useRef<HTMLInputElement>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const [thumb, setThumb] = useState<string | null>(null);
-  const [prompt, setPrompt] = useState('');
-  const [quality, setQuality] = useState<BuildQuality>('low');
   const [isDragging, setIsDragging] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
+  const isStarting = useRef(false);
   const [error, setError] = useState<string | null>(null);
 
-  // use-effect-audit: ignore releases the blob URL of the thumbnail when it is replaced or the page unmounts
-  useEffect(() => () => void (thumb && URL.revokeObjectURL(thumb)), [thumb]);
-
-  const pick = useCallback(
-    (next: File | null | undefined) => {
-      if (!next) return;
-      if (!TYPES.includes(next.type)) {
+  // One job: a photo starts the free preview at once. Nothing else to fill in; the quality and the
+  // cost are chosen on the render's page, where the sheet can be checked first.
+  const start = useCallback(
+    async (file: File | null | undefined) => {
+      if (!file || isStarting.current) return;
+      if (!TYPES.includes(file.type)) {
         setError(t('errors.type'));
         return;
       }
+      isStarting.current = true;
+      setIsBusy(true);
       setError(null);
-      setFile(next);
-      setThumb(URL.createObjectURL(next));
+      let isLeaving = false;
+      try {
+        const body = new FormData();
+        body.append('attribution', JSON.stringify(attribution()));
+        const photo = await prepare(file).catch(() => null);
+        if (!photo) {
+          setError(t('errors.unreadable'));
+        } else {
+          body.append('image', photo, 'source.jpg');
+          const response = await fetch('/api/renders', {
+            method: 'POST',
+            body,
+            headers: attributionHeaders(),
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok || typeof data.id !== 'string') {
+            setError(localizedError(data, t('errors.upload')));
+          } else {
+            observeRender(data);
+            isLeaving = true;
+            router.push(`/r/${data.id}`);
+          }
+        }
+      } catch {
+        setError(t('errors.upload'));
+      }
+      if (picker.current) picker.current.value = '';
+      if (isLeaving) return;
+      isStarting.current = false;
+      setIsBusy(false);
     },
-    [t],
+    [localizedError, router, t],
   );
-
-  const clear = () => {
-    setFile(null);
-    setThumb(null);
-    setError(null);
-    if (picker.current) picker.current.value = '';
-  };
 
   // Page-wide drag and paste. A depth counter, because dragenter and dragleave fire for every
   // child the pointer crosses.
@@ -80,13 +95,13 @@ export function HomeComposer() {
       event.preventDefault();
       depth = 0;
       setIsDragging(false);
-      pick(event.dataTransfer?.files[0]);
+      void start(event.dataTransfer?.files[0]);
     };
     const paste = (event: ClipboardEvent) => {
       const image = Array.from(event.clipboardData?.files ?? []).find((item) =>
         item.type.startsWith('image/'),
       );
-      if (image) pick(image);
+      if (image) void start(image);
     };
     window.addEventListener('dragenter', enter);
     window.addEventListener('dragleave', leave);
@@ -100,129 +115,41 @@ export function HomeComposer() {
       window.removeEventListener('drop', drop);
       window.removeEventListener('paste', paste);
     };
-  }, [pick]);
-
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    if (!file || isBusy) return;
-    setIsBusy(true);
-    setError(null);
-    try {
-      const body = new FormData();
-      body.append('attribution', JSON.stringify(attribution()));
-      const photo = await prepare(file).catch(() => null);
-      if (!photo) {
-        setError(t('errors.unreadable'));
-        setIsBusy(false);
-        return;
-      }
-      body.append('image', photo, 'source.jpg');
-      body.append('prompt', prompt);
-      const response = await fetch('/api/renders', {
-        method: 'POST',
-        body,
-        headers: attributionHeaders(),
-      });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok || typeof data.id !== 'string') {
-        setError(localizedError(data, t('errors.upload')));
-        setIsBusy(false);
-        return;
-      }
-      observeRender(data);
-      router.push(`/r/${data.id}${quality === 'low' ? '' : `?quality=${quality}`}`);
-      return;
-    } catch {
-      setError(t('errors.upload'));
-    }
-    setIsBusy(false);
-  }
+  }, [start]);
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-5 py-8">
       <h1 className="text-center text-3xl font-semibold tracking-tight text-balance">
         {t('heading')}
       </h1>
-      <form
-        onSubmit={submit}
+      <div
         className={cn(
-          'relative w-full max-w-2xl rounded-2xl border bg-card p-3.5 shadow-xs transition-[border-color,box-shadow] duration-200 ease-[cubic-bezier(0.2,0.7,0.2,1)] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/30 motion-reduce:transition-none',
+          'relative w-full max-w-xl space-y-3 rounded-2xl border bg-card p-4 shadow-xs transition-[border-color,box-shadow] duration-200 ease-[cubic-bezier(0.2,0.7,0.2,1)] motion-reduce:transition-none',
           isDragging && 'border-foreground ring-4 ring-foreground/10',
         )}
+        aria-busy={isBusy}
       >
-        <div className="flex gap-3.5">
-          {file && thumb ? (
-            <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border sm:size-24">
-              {/* biome-ignore lint/performance/noImgElement: local object URL thumbnail */}
-              <img src={thumb} alt={file.name} className="size-full object-cover" />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon-sm"
-                className="absolute top-1 right-1 size-6 rounded-full pointer-coarse:size-8"
-                onClick={clear}
-                aria-label={t('remove')}
-              >
-                <X className="size-3" />
-              </Button>
-            </div>
-          ) : (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => picker.current?.click()}
-              className="h-auto min-h-20 w-20 shrink-0 flex-col gap-1 whitespace-normal rounded-xl border-dashed border-foreground bg-muted px-1 py-2 text-center text-xs font-medium leading-tight hover:bg-accent sm:min-h-24 sm:w-24"
-            >
-              <ImagePlus className="size-5 shrink-0" />
-              {t('slot')}
-            </Button>
-          )}
-          <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
-            <Textarea
-              value={prompt}
-              onChange={(event) => setPrompt(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' && !event.shiftKey) {
-                  event.preventDefault();
-                  event.currentTarget.form?.requestSubmit();
-                }
-              }}
-              maxLength={500}
-              rows={2}
-              placeholder={t('placeholder')}
-              aria-label={t('placeholder')}
-              className="min-h-0 resize-none border-0 bg-transparent px-1 py-1 text-base shadow-none focus-visible:ring-0 dark:bg-transparent"
-            />
-            <p className="line-clamp-2 break-words px-1 text-xs text-muted-foreground">
-              {file ? file.name : t('hint')}
-            </p>
-          </div>
-          <Input
-            ref={picker}
-            type="file"
-            accept={TYPES.join(',')}
-            className="hidden"
-            onChange={(event) => pick(event.target.files?.[0])}
-          />
-        </div>
-        {file && (
-          <div className="mt-3">
-            <BuildQualityPicker
-              id="composer-quality"
-              value={quality}
-              onChange={setQuality}
-              credits={BUILD_QUALITY_CREDITS}
-              isDisabled={isBusy}
-            />
-          </div>
-        )}
-        <div className="mt-3 flex flex-wrap items-center justify-end gap-3">
-          <p className="mr-auto text-xs text-muted-foreground">{t('costNote')}</p>
-          <Button type="submit" disabled={!file || isBusy}>
-            {isBusy && <Loader2 className="animate-spin" />}
-            {isBusy ? t('uploading') : t('create')}
-          </Button>
-        </div>
+        <Input
+          ref={picker}
+          type="file"
+          accept={TYPES.join(',')}
+          className="hidden"
+          tabIndex={-1}
+          aria-label={t('upload')}
+          onChange={(event) => void start(event.target.files?.[0])}
+        />
+        <Button
+          type="button"
+          size="lg"
+          className="h-12 w-full text-base"
+          disabled={isBusy}
+          onClick={() => picker.current?.click()}
+        >
+          {isBusy ? <Loader2 className="animate-spin" /> : <ImagePlus />}
+          {isBusy ? t('uploading') : t('upload')}
+        </Button>
+        <p className="text-center text-xs text-muted-foreground">{t('hint')}</p>
+        <p className="text-center text-xs text-muted-foreground">{t('costNote')}</p>
         <div
           aria-hidden
           className={cn(
@@ -233,24 +160,13 @@ export function HomeComposer() {
           <ImagePlus className="size-6" />
           <span className="text-sm font-medium">{t('dropOverlay')}</span>
         </div>
-      </form>
+      </div>
       {error && (
-        <Alert variant="destructive" className="max-w-2xl">
+        <Alert variant="destructive" className="max-w-xl">
           <TriangleAlert />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-      <div className="flex flex-wrap justify-center gap-1">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/library">
-            <FolderOpen />
-            {t('batch')}
-          </Link>
-        </Button>
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/connectors">{t('connect')}</Link>
-        </Button>
-      </div>
     </div>
   );
 }

@@ -33,3 +33,15 @@ export async function watermark(image: Uint8Array): Promise<Uint8Array> {
     .toBuffer();
   return new Uint8Array(output);
 }
+
+// What a visitor without an account gets in place of the sheet: small and blurred until the
+// shapes are gone, so the real image only leaves the server for a signed-in owner. The blur is
+// made here, never in the browser, because the browser could be asked for the original.
+export async function lockedPreview(image: Uint8Array): Promise<Uint8Array> {
+  const output = await sharp(image)
+    .resize(480, 480, { fit: 'inside' })
+    .blur(14)
+    .webp({ quality: 55 })
+    .toBuffer();
+  return new Uint8Array(output);
+}

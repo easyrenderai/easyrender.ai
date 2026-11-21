@@ -4,7 +4,7 @@ import { headerPrimaryAction } from './site-navigation';
 describe('first-model navigation', () => {
   it('keeps commercial and editorial visitors on the photo workflow', () => {
     for (const path of ['/es/precios', '/es/comparativas/meshy', '/es/guias/fotos', '/hub']) {
-      expect(headerPrimaryAction('es', path, false)).toEqual({ kind: 'upload', href: '/es#try' });
+      expect(headerPrimaryAction('es', path, false)).toEqual({ kind: 'upload', href: '/try' });
     }
   });
   it('retains the dedicated integration actions', () => {

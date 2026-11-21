@@ -5,7 +5,6 @@
   "apps/web/components/prompt-bar.tsx": ["export prepare"],
   "apps/web/components/ui/badge.tsx": ["export badgeVariants"],
   "apps/web/components/ui/button.tsx": ["export buttonVariants"],
-  "apps/web/components/ui/card.tsx": ["export CardAction"],
   "apps/web/components/ui/dialog.tsx": [
     "export DialogClose",
     "export DialogOverlay",

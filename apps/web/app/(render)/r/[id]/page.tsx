@@ -103,6 +103,7 @@ export default async function RenderPage({ params, searchParams }: PageProps<'/r
             </p>
           )
         }
+        anglesUrl={demo.angles ?? null}
         meta={[
           { label: t('Render.meta.status'), value: t('Render.status.ready') },
           { label: t('Render.meta.dimensions'), value: demo.dimensions },

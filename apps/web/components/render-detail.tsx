@@ -1,10 +1,11 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 import { ShellPanel } from '@/components/app-shell/shell-context';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 export type DetailMeta = { label: string; value: ReactNode };
@@ -17,6 +18,7 @@ export function RenderDetail({
   viewer,
   input,
   angles,
+  anglesUrl = null,
   meta,
   actions,
   isInApp = false,
@@ -32,6 +34,8 @@ export function RenderDetail({
   viewer: ReactNode;
   input: string | null;
   angles: ReactNode;
+  // Where the angle sheet can be downloaded from, once it exists.
+  anglesUrl?: string | null;
   meta: DetailMeta[];
   actions?: ReactNode;
   // Inside the signed-in shell the page is split: the result in the middle, its parts in the right drawer.
@@ -46,6 +50,15 @@ export function RenderDetail({
     <Card className="gap-3 py-4">
       <CardHeader className="px-4">
         <CardTitle className="text-sm">{t('inputPhoto')}</CardTitle>
+        {input && (
+          <CardAction>
+            <Button variant="ghost" size="icon-sm" asChild>
+              <a href={input} download aria-label={t('downloadPhoto')} title={t('downloadPhoto')}>
+                <Download />
+              </a>
+            </Button>
+          </CardAction>
+        )}
       </CardHeader>
       <CardContent className="px-4">
         {input ? (
@@ -65,6 +78,20 @@ export function RenderDetail({
     <Card className="gap-3 py-4">
       <CardHeader className="px-4">
         <CardTitle className="text-sm">{t('everyAngle')}</CardTitle>
+        {anglesUrl && (
+          <CardAction>
+            <Button variant="ghost" size="icon-sm" asChild>
+              <a
+                href={anglesUrl}
+                download
+                aria-label={t('downloadAngles')}
+                title={t('downloadAngles')}
+              >
+                <Download />
+              </a>
+            </Button>
+          </CardAction>
+        )}
       </CardHeader>
       <CardContent className="px-4">{angles}</CardContent>
     </Card>

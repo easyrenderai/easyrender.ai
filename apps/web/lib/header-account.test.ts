@@ -72,7 +72,8 @@ it.each([false, true])(
     const html = renderToStaticMarkup(await SiteHeader({ locale: 'en' }));
     const destination = isSignedIn ? '/dashboard' : '/sign-in';
     expect(html.match(new RegExp(`href="${destination}"`, 'g'))).toHaveLength(isSignedIn ? 1 : 2);
-    expect(html).toContain('href="/#try"');
+    // The Try it link in both menus, plus the visitor's call to action; members get App only.
+    expect(html.match(/href="\/try"/g)).toHaveLength(isSignedIn ? 2 : 3);
     expect(html).toContain(isSignedIn ? '>dashboard</a>' : '>signIn</a>');
     if (isSignedIn) {
       expect(html).not.toContain('href="/sign-in"');
