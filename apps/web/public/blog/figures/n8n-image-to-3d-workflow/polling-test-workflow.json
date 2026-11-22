@@ -1,0 +1,41 @@
+{
+  "id": "EREditorialPoll01",
+  "name": "EasyRender editorial - preview and polling fixture",
+  "nodes": [
+    {
+      "id": "51ae9dfc-1659-4e98-9f7a-2ed0b3a6cb21",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "parameters": {}
+    },
+    {
+      "id": "340f2a54-d7c6-49f7-a348-e01f3ce642b0",
+      "name": "Check review and polling on sample responses",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0],
+      "parameters": {
+        "jsCode": "const scenarios = [\n  { key: 'preview running', hasModel: false, status: 'drafting', expected: 'wait_on_saved_id' },\n  { key: 'awaiting approval', hasModel: false, status: 'preview_ready', expected: 'request_review' },\n  { key: 'deadline exceeded', hasModel: false, status: 'rendering', expired: true, expected: 'save_for_reconciliation' },\n  { key: 'ready without file', hasModel: false, status: 'ready', expected: 'save_for_reconciliation' },\n  { key: 'ready with file', hasModel: true, status: 'ready', expected: 'eligible_for_download' },\n  { key: 'job failed', hasModel: false, status: 'failed', expected: 'stop_attempt' },\n];\nfunction nextStep(result) {\n  if (result.expired) return 'save_for_reconciliation';\n  if (result.status === 'failed') return 'stop_attempt';\n  if (result.status === 'preview_ready') return 'request_review';\n  if (result.status === 'drafting' || result.status === 'rendering') return 'wait_on_saved_id';\n  if (result.status === 'ready' && result.hasModel === true) return 'eligible_for_download';\n  return 'save_for_reconciliation';\n}\nreturn scenarios.map(test => {\n  const observed = nextStep(test);\n  if (observed !== test.expected) throw new Error('Unexpected branch: ' + test.key);\n  return { json: { scenario: test.key, result: observed } };\n});"
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check review and polling on sample responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "n8n": "2.48.5",
+  "mode": "local fixture execution",
+  "status": "success",
+  "networkRequests": 0,
+  "cases": [
+    {
+      "scenario": "preview running",
+      "result": "wait_on_saved_id"
+    },
+    {
+      "scenario": "awaiting approval",
+      "result": "request_review"
+    },
+    {
+      "scenario": "deadline exceeded",
+      "result": "save_for_reconciliation"
+    },
+    {
+      "scenario": "ready without file",
+      "result": "save_for_reconciliation"
+    },
+    {
+      "scenario": "ready with file",
+      "result": "eligible_for_download"
+    },
+    {
+      "scenario": "job failed",
+      "result": "stop_attempt"
+    }
+  ]
+}
