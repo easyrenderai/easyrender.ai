@@ -1,6 +1,12 @@
-export type GoogleContext = { clientId: string; sessionId: string; adMeasurementAllowed?: boolean };
+export type GoogleContext = {
+  id?: string;
+  clientId: string;
+  sessionId: string;
+  adMeasurementAllowed?: boolean;
+};
 type Purchase = {
   id: string;
+  stripeSessionId?: string;
   packId: string;
   amountCents: number;
   currency: string;
@@ -38,7 +44,7 @@ export function googlePurchasePayload(purchase: Purchase, checkout: GoogleContex
       {
         name: 'purchase',
         params: {
-          transaction_id: purchase.id,
+          transaction_id: checkout.id ?? purchase.stripeSessionId ?? purchase.id,
           value: purchase.amountCents / 100,
           currency: purchase.currency.toUpperCase(),
           session_id: checkout.sessionId,

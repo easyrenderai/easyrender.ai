@@ -64,6 +64,7 @@ function EnabledAnalytics() {
   const pathname = usePathname();
   const [region, setRegion] = useState<PrivacyRegion>(fallback);
   const [isResolved, setResolved] = useState(false);
+  const [hasRegionFailed, setRegionFailed] = useState(false);
   const [choice, setChoice] = useState<ConsentChoice>({ accepted: null, advertising: false });
   // use-effect-audit: ignore initialises GA, subscribes to the consent event and fetches the privacy region on mount
   useEffect(() => {
@@ -90,6 +91,7 @@ function EnabledAnalytics() {
         setResolved(true);
       })
       .catch(() => {
+        setRegionFailed(true);
         setRegion({
           ...fallback,
           gpc: hasGpc,
@@ -108,10 +110,9 @@ function EnabledAnalytics() {
     // PostHog starts on load: it does not wait for the privacy region or a consent choice.
     const ph =
       hasPosthog && isToolAllowed('posthog', region.consent_region, choice.accepted, region.gpc);
-    const ga =
-      isResolved &&
-      Boolean(gaId) &&
-      isToolAllowed('ga4', region.consent_region, choice.accepted, region.gpc);
+    const hasIdentityPermission =
+      isResolved && isToolAllowed('ga4', region.consent_region, choice.accepted, region.gpc);
+    const ga = Boolean(gaId) && hasIdentityPermission;
     if (!ph && !ga) {
       void setBrowserTools(false, false, choice.accepted === false || region.gpc);
       return;
@@ -122,10 +123,11 @@ function EnabledAnalytics() {
         ga,
         !ga && (choice.accepted === false || region.gpc),
         ga && allowsAdvertisingMeasurement(region, choice),
+        isResolved || hasRegionFailed ? hasIdentityPermission : null,
       );
     }, 100);
     return () => clearTimeout(timer);
-  }, [region, choice, isResolved]);
+  }, [region, choice, isResolved, hasRegionFailed]);
   // use-effect-audit: ignore sends a GA pageview, an external system, when the route changes
   useEffect(() => {
     if (pathname) gaPageview();

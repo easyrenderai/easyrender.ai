@@ -1,8 +1,10 @@
 'use client';
+import type { confirmedPurchase } from '@easyrender/core';
 import {
   type Attribution,
   analyticsUrl,
   normalizeAttribution,
+  normalizeCheckoutAttribution,
   sanitizeProperties,
   UTM_KEYS,
 } from '@easyrender/core/attribution';
@@ -16,6 +18,7 @@ import {
   advertisingUrl,
   readAdvertisingTouch,
 } from './advertising';
+import { readConsent } from './consent';
 import { createEditorialMetrics } from './editorial';
 
 declare global {
@@ -30,8 +33,12 @@ let landingUrl = '';
 let testCountry: string | null = null;
 let hasLanding = false;
 let posthog: PostHog | null = null;
+let cookielessPosthog: PostHog | null = null;
+let consentedPosthog: PostHog | null = null;
 let isPosthogAllowed = false;
 let isGaAllowed = false;
+let isAnalyticsIdentityAllowed = false;
+let hasPosthogIdentity = false;
 let isAdvertisingAllowed = false;
 let advertisingTouch: AdvertisingTouch | null = null;
 let advertisingExpiry: ReturnType<typeof setTimeout> | undefined;
@@ -60,14 +67,26 @@ export function attributionHeaders(): Record<string, string> {
   attribution();
   return testCountry !== null ? { 'x-test-country': testCountry } : {};
 }
-export function beforeSend<T extends { properties: Record<string, unknown> }>(event: T): T {
-  const properties = sanitizeProperties({
-    ui_locale: typeof document === 'undefined' ? undefined : document.documentElement?.lang,
-    pricing_subject: browserPricingSubject(),
-    pricing_variant: browserPricingVariant(),
-    [`$feature/${PRICING_FLAG}`]: browserPricingVariant(),
-    ...event.properties,
-  });
+export function beforeSend<T extends { event?: string; properties: Record<string, unknown> }>(
+  event: T,
+): T {
+  const properties = sanitizeProperties(
+    {
+      ui_locale: typeof document === 'undefined' ? undefined : document.documentElement?.lang,
+      pricing_subject: browserPricingSubject(),
+      pricing_variant: browserPricingVariant(),
+      [`$feature/${PRICING_FLAG}`]: browserPricingVariant(),
+      ...event.properties,
+    },
+    event.event === 'purchase_completed' && allowsCheckoutAdvertising(),
+  );
+  // The SDK overwrites $session_id during capture. Use the verified checkout session on return.
+  if (
+    event.event === 'purchase_completed' &&
+    allowsCheckoutIdentifiers() &&
+    typeof properties.posthog_session_id === 'string'
+  )
+    properties.$session_id = properties.posthog_session_id;
   // PostHog requires its PUBLIC project write key in this SDK field. It is not a URL/auth token.
   if (event.properties.token === process.env.NEXT_PUBLIC_POSTHOG_KEY)
     properties.token = event.properties.token;
@@ -175,7 +194,19 @@ export async function setBrowserTools(
   allowGa: boolean,
   hasWithdrawal = false,
   allowAdvertising = false,
+  hasAnalyticsPermission: boolean | null = allowGa,
 ) {
+  isAnalyticsIdentityAllowed = hasAnalyticsPermission === true && !hasWithdrawal;
+  if (hasAnalyticsPermission === false || hasWithdrawal) {
+    try {
+      sessionStorage.removeItem('er_purchase_receipts');
+      sessionStorage.removeItem('er_campaign');
+      sessionStorage.removeItem('er_ad_touch');
+    } catch {
+      /* Storage unavailable. */
+    }
+  }
+  syncPosthogIdentity();
   isPosthogAllowed = allowPosthog;
   if (!allowPosthog) articleMetrics.clear();
   isGaAllowed = allowGa && Boolean(gaId);
@@ -285,8 +316,8 @@ export async function setBrowserTools(
       document.cookie = `${name}=; Max-Age=0; Path=/${domain ? `; Domain=${domain}` : ''}`;
     }
   }
+  if (allowsCheckoutIdentifiers()) restoreCampaign();
   if (allowGa && gaId) {
-    restoreCampaign();
     gaPageview();
     void captureSignup();
   }
@@ -296,27 +327,42 @@ export async function setBrowserTools(
     const { default: sdk } = await import('posthog-js');
     // Concurrent consent effects can await the same module import. Initialize only once.
     if (!isPosthogAllowed || posthog) return;
-    posthog = sdk;
-    sdk.init(key, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com',
-      cookieless_mode: 'always',
-      persistence: 'memory',
-      autocapture: false,
-      disable_session_recording: true,
-      capture_pageview: 'history_change',
-      capture_pageleave: false,
-      // Only explicit page/landing events: avoid retaining a batch after consent is withdrawn.
-      request_batching: false,
-      person_profiles: 'never',
-      advanced_disable_feature_flags: true,
-      disable_surveys: true,
-      enable_heatmaps: false,
-      capture_exceptions: false,
-      before_send: (event) =>
-        event && isPosthogAllowed && !isMailingTokenLocation(window.location.href)
-          ? beforeSend(event)
-          : null,
-    });
+    const hasIdentityPermission = allowsCheckoutIdentifiers();
+    // The SDK creates its session manager only at initialization (or its persistent opt-in API).
+    // Separate memory-only instances avoid inventing a shared cookieless ID or a consent cookie.
+    const instance = sdk.init(
+      key,
+      {
+        api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com',
+        cookieless_mode: hasIdentityPermission ? undefined : 'always',
+        persistence: 'memory',
+        disable_persistence: true,
+        save_campaign_params: false,
+        autocapture: false,
+        disable_session_recording: true,
+        capture_pageview: 'history_change',
+        capture_pageleave: false,
+        // Only explicit page/landing events: avoid retaining a batch after consent is withdrawn.
+        request_batching: false,
+        person_profiles: 'never',
+        advanced_disable_feature_flags: true,
+        disable_surveys: true,
+        enable_heatmaps: false,
+        capture_exceptions: false,
+        before_send: (event) =>
+          event &&
+          isPosthogAllowed &&
+          hasIdentityPermission === allowsCheckoutIdentifiers() &&
+          !isMailingTokenLocation(window.location.href)
+            ? beforeSend(event)
+            : null,
+      },
+      hasIdentityPermission ? 'er_consented' : 'er_cookieless',
+    );
+    if (!instance) return;
+    if (hasIdentityPermission) consentedPosthog = instance;
+    else cookielessPosthog = instance;
+    posthog = instance;
   }
   capturePricingView();
   articleMetrics.flush();
@@ -438,21 +484,20 @@ export async function captureSignup() {
 
 /** Consent-gated session context; never persists click IDs or arbitrary URL parameters. */
 function restoreCampaign() {
-  const current = attribution();
+  attribution();
   try {
     const saved = JSON.parse(sessionStorage.getItem('er_campaign') ?? 'null');
-    if (
-      saved?.expiresAt > Date.now() &&
-      saved.expiresAt <= Date.now() + 30 * 60 * 1000 &&
-      !UTM_KEYS.some((key) => current?.[key])
-    ) {
+    if (saved?.expiresAt > Date.now() && saved.expiresAt <= Date.now() + 30 * 60 * 1000) {
       firstTouch = normalizeAttribution(saved.touch, window.location.origin);
     }
     sessionStorage.setItem(
       'er_campaign',
       JSON.stringify({
         touch: firstTouch,
-        expiresAt: Date.now() + 30 * 60 * 1000,
+        expiresAt:
+          saved?.expiresAt > Date.now() && saved.expiresAt <= Date.now() + 30 * 60 * 1000
+            ? saved.expiresAt
+            : Date.now() + 30 * 60 * 1000,
       }),
     );
   } catch {
@@ -462,7 +507,7 @@ function restoreCampaign() {
 
 /** Ask the configured Google tag, never parse its evolving cookie format. Timeout cannot block checkout. */
 export async function googleCheckoutContext() {
-  if (!isGaAllowed || !gaId || !window.gtag) return null;
+  if (!isGaAllowed || !gaId || !window.gtag || !allowsCheckoutIdentifiers()) return null;
   const read = (field: string) =>
     new Promise<unknown>((resolve) => {
       const timer = setTimeout(() => resolve(null), 1000);
@@ -472,11 +517,132 @@ export async function googleCheckoutContext() {
       });
     });
   const [clientId, sessionId] = await Promise.all([read('client_id'), read('session_id')]);
-  if (!isGaAllowed || typeof clientId !== 'string' || !sessionId) return null;
+  if (!isGaAllowed || !allowsCheckoutIdentifiers() || typeof clientId !== 'string' || !sessionId)
+    return null;
   return {
     measurementId: gaId,
     clientId,
     sessionId: String(sessionId),
-    adMeasurementAllowed: isAdvertisingAllowed,
+    adMeasurementAllowed: allowsCheckoutAdvertising(),
   };
+}
+
+function allowsCheckoutIdentifiers() {
+  if (!isAnalyticsIdentityAllowed || typeof window === 'undefined') return false;
+  const hasGpc =
+    typeof navigator !== 'undefined' &&
+    (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl === true;
+  return (
+    !hasGpc &&
+    readConsent(document.cookie.match(/(?:^|;\s*)er_consent=([^;]+)/)?.[1]).accepted !== false
+  );
+}
+
+function allowsCheckoutAdvertising() {
+  const choice = readConsent(document.cookie.match(/(?:^|;\s*)er_consent=([^;]+)/)?.[1]);
+  return (
+    allowsCheckoutIdentifiers() &&
+    isAdvertisingAllowed &&
+    (choice.accepted === null || choice.advertising)
+  );
+}
+
+function syncPosthogIdentity() {
+  const isAllowed = allowsCheckoutIdentifiers();
+  if (hasPosthogIdentity !== isAllowed) {
+    hasLanding = false;
+    if (!isAllowed) consentedPosthog?.reset(true);
+    hasPosthogIdentity = isAllowed;
+  }
+  posthog = isAllowed ? consentedPosthog : cookielessPosthog;
+}
+
+/** Only optional, consented identities cross the checkout boundary; prices and locale are server-owned. */
+export function checkoutAttribution() {
+  syncPosthogIdentity();
+  const isAllowed = allowsCheckoutIdentifiers();
+  const touch = attribution();
+  let referrerHost = '';
+  try {
+    referrerHost = new URL(touch?.referrer ?? '').hostname;
+  } catch {
+    /* Direct visit. */
+  }
+  const adTouch =
+    isAllowed && allowsCheckoutAdvertising()
+      ? readAdvertisingTouch(window.location.href, advertisingTouch, true)
+      : null;
+  return normalizeCheckoutAttribution(
+    {
+      ...touch,
+      referrer_host: referrerHost,
+      ...(isAllowed && posthog
+        ? {
+            posthog_distinct_id: posthog.get_distinct_id(),
+            posthog_session_id: posthog.get_session_id(),
+          }
+        : {}),
+      ...adTouch?.ids,
+    },
+    isAllowed,
+    isAllowed && allowsCheckoutAdvertising(),
+  );
+}
+
+type Confirmation = NonNullable<Awaited<ReturnType<typeof confirmedPurchase>>>;
+function hasPurchaseReceipt(key: string) {
+  if (conversions.has(key)) return true;
+  try {
+    return JSON.parse(sessionStorage.getItem('er_purchase_receipts') ?? '[]').includes(key);
+  } catch {
+    return false;
+  }
+}
+function rememberPurchaseReceipt(key: string) {
+  conversions.add(key);
+  try {
+    const saved: unknown = JSON.parse(sessionStorage.getItem('er_purchase_receipts') ?? '[]');
+    const receipts = Array.isArray(saved) ? saved.filter((value) => typeof value === 'string') : [];
+    sessionStorage.setItem('er_purchase_receipts', JSON.stringify([...receipts.slice(-99), key]));
+  } catch {
+    /* Memory-only dedup when storage is blocked. */
+  }
+}
+
+/** Called only with an owner-scoped, paid confirmation, never success-page URL values. */
+export function reportPurchaseConversion(result: Confirmation) {
+  if (!allowsCheckoutIdentifiers() || isMailingTokenLocation(window.location.href)) return;
+  const key = `posthog:purchase:${result.transaction_id}`;
+  const entry = result.posthog;
+  if (isPosthogAllowed && posthog && entry && !hasPurchaseReceipt(key)) {
+    const properties = entry.properties as Record<string, unknown>;
+    const captured = posthog.capture(
+      'purchase_completed',
+      {
+        ...properties,
+        distinct_id: entry.distinctId,
+      },
+      { uuid: entry.id, timestamp: new Date(entry.occurredAt) },
+    );
+    if (captured) rememberPurchaseReceipt(key);
+  }
+  // Ads purchases are imported from GA4. No second website conversion/label is configured.
+  const gaKey = `ga:purchase:${result.transaction_id}`;
+  if (
+    result.server_managed ||
+    !allowsCheckoutAdvertising() ||
+    !isGaAllowed ||
+    !gaId ||
+    !window.gtag ||
+    hasPurchaseReceipt(gaKey)
+  )
+    return;
+  const {
+    posthog: _posthog,
+    server_managed: _managed,
+    issued_credits: _credits,
+    ...purchase
+  } = result;
+  gaEvent('purchase', purchase, purchase.transaction_id);
+  rememberPurchaseReceipt(gaKey);
 }

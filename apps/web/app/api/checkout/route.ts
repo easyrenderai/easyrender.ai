@@ -5,6 +5,7 @@ import {
   parseGoogleContext,
   reportError,
 } from '@easyrender/core';
+import { normalizeCheckoutAttribution } from '@easyrender/core/attribution';
 import { db } from '@easyrender/db';
 import { NextResponse } from 'next/server';
 import { isRoutableLocale } from '@/i18n/config';
@@ -23,12 +24,18 @@ export const POST = (request: Request) =>
       plan?: unknown;
       credits?: unknown;
       locale?: unknown;
+      attribution?: unknown;
       googleAnalytics?: { measurementId?: unknown };
     } | null;
     if (!body || typeof body !== 'object' || Array.isArray(body))
       throw new AppError('Send a JSON object', 400, 'bad_body');
     const details = await createCheckoutDetails(userId, body, {
       anonId,
+      checkoutAttribution: normalizeCheckoutAttribution(
+        body.attribution,
+        allowsServerMeasurement(request.headers),
+        allowsServerAdvertisingMeasurement(request.headers),
+      ),
       expectedVariant: request.headers.get('x-pricing-variant'),
       // The same country the pricing pages used, so the page and the charge agree.
       country: geoCountry,

@@ -32,7 +32,6 @@
   "apps/web/lib/upscale-polling.ts": ["export UPSCALE_POLL_MS"],
   "packages/core/src/mailing/policy.ts": ["export SLOTS"],
   "packages/core/src/mailing/template.ts": ["type EmailAction"],
-  "packages/core/src/posthog-outbox.ts": ["export sendPosthogEvent"],
   "packages/harness/src/fidelity/correction.ts": [
     "export measureCorrection",
     "type CorrectionMeasure"

@@ -199,3 +199,61 @@ it('keeps standard-region analytics-only checkout contexts free of advertising p
   );
   expect(mocks.create.mock.calls[0][0].data).toMatchObject({ adMeasurementAllowed: false });
 });
+
+it.each([
+  ['accepted', 'ES', true, true, false, true, true],
+  ['analytics only', 'ES', true, false, false, true, false],
+  ['rejected', 'US', false, false, false, false, false],
+  ['region required', 'ES', null, false, false, false, false],
+  ['unknown region', 'XX', null, false, false, false, false],
+  ['GPC', 'US', true, true, true, false, false],
+  ['regional default', 'US', null, false, false, true, true],
+] as const)(
+  'server sanitizes checkout attribution for %s independently of forged client grants',
+  async (_label, country, accepted, advertising, hasGpc, hasIds, hasAds) => {
+    const headers = new Headers({ 'x-vercel-ip-country': country });
+    if (hasGpc) headers.set('sec-gpc', '1');
+    if (accepted !== null)
+      headers.set(
+        'cookie',
+        `er_consent=${encodeURIComponent(JSON.stringify({ version: 'v1', date: new Date().toISOString(), accepted, advertising }))}`,
+      );
+    await POST(
+      new Request('https://easyrender.ai/api/checkout', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          attribution: {
+            posthog_distinct_id: 'browser-fixture',
+            posthog_session_id: '019a0000-0000-7000-8000-000000000001',
+            gclid: 'Allowed_123',
+            gbraid: 'Braid_123',
+            wbraid: 'Web_123',
+            landing_path: '/es?email=private',
+            referrer_host: 'www.google.com',
+            utm_source: 'google',
+            isAnalyticsAllowed: true,
+            isAdvertisingAllowed: true,
+          },
+        }),
+      }),
+    );
+    const context = mocks.checkout.mock.calls[0] as unknown as [
+      string,
+      unknown,
+      { checkoutAttribution: Record<string, string> },
+    ];
+    const attribution = context[2].checkoutAttribution;
+    expect(attribution).toMatchObject({
+      landing_path: '/es',
+      referrer_host: 'www.google.com',
+      utm_source: 'google',
+    });
+    expect(Boolean(attribution.posthog_distinct_id)).toBe(hasIds);
+    expect(Boolean(attribution.posthog_session_id)).toBe(hasIds);
+    for (const key of ['gclid', 'gbraid', 'wbraid']) expect(Boolean(attribution[key])).toBe(hasAds);
+    expect(JSON.stringify(attribution)).not.toMatch(
+      /email|private|isAnalyticsAllowed|isAdvertisingAllowed/,
+    );
+  },
+);
