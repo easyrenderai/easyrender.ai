@@ -129,7 +129,13 @@ jobs:
       - name: Apply the schema on main to an empty database
         working-directory: packages/db
         run: |
-          git show "origin/${{ github.base_ref || 'main' }}:packages/db/prisma/schema.prisma" > "$RUNNER_TEMP/main.prisma"
+          base="origin/${{ github.base_ref || 'main' }}"
+          # A hotfix release ships on top of the last release tag, not main: compare against that tag.
+          if [[ "${GITHUB_REF}" == refs/heads/hotfix/* ]]; then
+            base="$(git describe --tags --abbrev=0 --match 'v[0-9]*.[0-9]*.[0-9]*' HEAD)"
+          fi
+          echo "Schema baseline: ${base}"
+          git show "${base}:packages/db/prisma/schema.prisma" > "$RUNNER_TEMP/main.prisma"
           bun run prisma db push --schema "$RUNNER_TEMP/main.prisma"
       - name: Check that this branch's schema change is additive
         run: bun run --cwd packages/db db:check
