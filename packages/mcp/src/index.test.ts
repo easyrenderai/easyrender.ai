@@ -25,6 +25,8 @@ const core = vi.hoisted(() => ({
   getBalance: vi.fn(async () => 500),
   buyerCurrency: vi.fn(async () => 'eur'),
   getTopupPricing: vi.fn(async () => ({ currency: 'eur', plan: null, creditPrice: 0.01 })),
+  // USD buyers also get the legacy `usd_per_*` aliases from the real getCreditQuote.
+  quote: { isUsd: false },
 }));
 vi.mock('@easyrender/core', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@easyrender/core')>();
@@ -38,7 +40,7 @@ vi.mock('@easyrender/core', async (importOriginal) => {
     MAX_UPLOAD_BYTES: 4 * 1024 * 1024,
     getCreditQuote: async () => ({
       pricing_variant: 'control',
-      currency: 'eur',
+      currency: core.quote.isUsd ? 'usd' : 'eur',
       balance: 500,
       render_credits: 64,
       render_credits_by_quality: { low: 64, medium: 120, high: 180 },
@@ -48,8 +50,17 @@ vi.mock('@easyrender/core', async (importOriginal) => {
       upscale_credits: 1,
       build_from_views_credits: 60,
       plans: {
-        pay_as_you_go: { price_per_credit: 0.01, min_credits: 500, max_credits: 100000 },
-        pro: { price_per_month: 46, credits_per_month: 5500 },
+        pay_as_you_go: {
+          price_per_credit: 0.01,
+          ...(core.quote.isUsd ? { usd_per_credit: 0.01 } : {}),
+          min_credits: 500,
+          max_credits: 100000,
+        },
+        pro: {
+          price_per_month: 46,
+          ...(core.quote.isUsd ? { usd_per_month: 46 } : {}),
+          credits_per_month: 5500,
+        },
         enterprise: { book_a_call: 'https://example.com/book' },
       },
       topup: { plan: null, currency: 'eur', price_cents: 1, credits_per_unit: 1 },
@@ -222,6 +233,25 @@ describe('MCP protocol contract', () => {
       plans: { pay_as_you_go: { price_per_credit: 0.01 }, pro: { price_per_month: 46 } },
     });
     expect(result.structuredContent).not.toHaveProperty('plans.pay_as_you_go.usd_per_credit');
+  });
+  it('returns the quote to USD buyers, with the legacy usd_per_* aliases', async () => {
+    core.quote.isUsd = true;
+    try {
+      const client = await connect();
+      // The client validates structured output only against a schema it has listed.
+      await client.listTools();
+      const result = await client.callTool({ name: 'get_credits', arguments: {} });
+      expect(result.isError).not.toBe(true);
+      expect(result.structuredContent).toMatchObject({
+        currency: 'usd',
+        plans: {
+          pay_as_you_go: { price_per_credit: 0.01, usd_per_credit: 0.01 },
+          pro: { price_per_month: 46, usd_per_month: 46 },
+        },
+      });
+    } finally {
+      core.quote.isUsd = false;
+    }
   });
   it('uses the protected downloader for URL photos', async () => {
     core.fetchRemoteImage.mockResolvedValue({
