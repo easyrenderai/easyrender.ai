@@ -149,7 +149,8 @@ chrome accents. Chart series also use labels, legends and dashed previous-period
 - Settings (Account, Credits and Connectors) are reached from the Account rail item. Their list is
   in the left drawer, in place of the renders list and drawn like it (a tile, a title, one line
   under it, the current page highlighted): the app has one kind of side list, not a second menu.
-  Below `md`, where the drawers are hidden, the same three pages are one row of tabs at the top.
+  Below `md`, where the drawers are hidden, the same list sits at the top of the page. Settings
+  never use tabs.
   The current balance is also in the top bar of every signed-in page: a pill on the account menu,
   and that same balance as a link to Credits inside the menu. Below the `sm` breakpoint the marketing header keeps the balance in the phone menu, because
   that row has no room for another control. The app shell shows a compact number there. The rail
