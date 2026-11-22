@@ -855,6 +855,12 @@
     },
     "history": {
       "title": "Historique"
+    },
+    "settings": {
+      "title": "Réglages",
+      "profile": "Nom, parrainage, e-mails",
+      "credits": "Solde et packs",
+      "connectors": "Agents, boutiques, automatisations"
     }
   },
   "AppHome": {

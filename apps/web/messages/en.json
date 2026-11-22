@@ -855,6 +855,12 @@
     },
     "history": {
       "title": "History"
+    },
+    "settings": {
+      "title": "Settings",
+      "profile": "Name, referral, emails",
+      "credits": "Balance and packs",
+      "connectors": "Agents, stores, automations"
     }
   },
   "AppHome": {
