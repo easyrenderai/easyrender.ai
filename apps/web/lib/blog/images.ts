@@ -49,14 +49,22 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   },
   // The base colour texture inside /showcase/clay-vase.glb, copied out of the file unchanged.
   '/blog/figures/glb-file/clay-vase-texture.webp': { width: 1024, height: 1024 },
-  '/blog/figures/n8n-product-pages-images-3d/n8n-ficha-foto-vistas-modelo.jpg': {
+  '/blog/figures/n8n-product-pages-images-3d/photo-angles-model.jpg': {
     width: 1200,
     height: 400,
   },
   '/blog/figures/n8n-product-pages-images-3d/workflow-en.webp': { width: 1280, height: 720 },
   '/blog/figures/n8n-product-pages-images-3d/workflow-es.webp': { width: 1280, height: 720 },
+  '/blog/figures/furniture-photography/table-source.jpg': { width: 660, height: 660 },
+  '/blog/figures/shopify-3d-models/chair-inspection.webp': { width: 960, height: 720 },
+  '/blog/figures/product-photography-angles/armchair-rear-quarter.jpg': { width: 392, height: 391 },
+  '/blog/figures/3d-file-formats/blender-reopen.jpg': { width: 640, height: 480 },
 
   // Drawn illustrations, see ILLUSTRATION_DIR below.
+  '/blog/illustrations/furniture-photography/hero.webp': { width: 1280, height: 720 },
+  '/blog/illustrations/shopify-3d-models/hero.webp': { width: 1280, height: 720 },
+  '/blog/illustrations/product-photography-angles/hero.webp': { width: 1280, height: 720 },
+  '/blog/illustrations/3d-file-formats/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/n8n-product-pages-images-3d/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/how-to-make-a-3d-model-from-photos/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/product-photography-for-ecommerce/hero.webp': { width: 1280, height: 720 },
@@ -78,6 +86,8 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   '/compare/illustrations/photogrammetry-software/hero.webp': { width: 1280, height: 720 },
   '/compare/illustrations/meshy/hero.webp': { width: 1280, height: 720 },
   '/compare/illustrations/tripo/hero.webp': { width: 1280, height: 720 },
+  '/compare/illustrations/meshy-vs-tripo/hero.webp': { width: 1280, height: 720 },
+  '/compare/figures/meshy-vs-tripo/same-photo.jpg': { width: 1280, height: 545 },
   // Unedited screenshots of downloaded competitor GLBs in an external viewer.
   '/benchmarks/2026-11-15/meshy-viewer.jpg': { width: 1512, height: 750 },
   '/benchmarks/2026-11-15/tripo-viewer.jpg': { width: 1512, height: 750 },

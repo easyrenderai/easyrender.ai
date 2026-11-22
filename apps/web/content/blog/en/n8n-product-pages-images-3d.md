@@ -37,7 +37,7 @@ The [n8n image-to-Shopify template](https://n8n.io/workflows/11695-generate-prod
 
 Start with a familiar object so you can verify the kind of file each stage should deliver. This vase from the easyrender gallery shows the original image, generated angle sheet and the exported model. Use these files as a reference when setting up the workflow.
 
-![Original product photo, generated angle sheet and a view of the same vase model](/blog/figures/n8n-product-pages-images-3d/n8n-ficha-foto-vistas-modelo.jpg "Existing easyrender sample assets. The center shows generated views and the right shows a still of the model.")
+![Original product photo, generated angle sheet and a view of the same vase model](/blog/figures/n8n-product-pages-images-3d/photo-angles-model.jpg "Existing easyrender sample assets. The center shows generated views and the right shows a still of the model.")
 
 | Field to review       | Sample entry                                                |
 | --------------------- | ----------------------------------------------------------- |

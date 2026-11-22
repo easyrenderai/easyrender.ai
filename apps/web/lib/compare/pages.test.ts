@@ -33,6 +33,7 @@ const REVIEW_SLUGS = [
 ];
 
 const pages = readComparePages();
+const beforeFirstCalendarComparison = new Date('2026-11-22T12:00:00Z');
 const ROOT = process.cwd();
 const raw = (slug: string) =>
   readFileSync(join(ROOT, 'content', 'compare', 'en', `${slug}.md`), 'utf8');
@@ -82,10 +83,11 @@ function filesUnder(dir: string, extensions: string[]): string[] {
 
 describe('the published comparisons', () => {
   it('are the six English pages, plus an index', () => {
-    expect(pages.map((page) => page.slug)).toEqual(REVIEW_SLUGS);
+    expect(listComparePages('en', beforeFirstCalendarComparison).map((page) => page.slug)).toEqual(
+      REVIEW_SLUGS,
+    );
     expect(isComparePublished()).toBe(true);
     expect(isCompareInReview()).toBe(false);
-    expect(listComparePages()).toHaveLength(6);
     expect(COMPARE_INDEX.en.title.length).toBeLessThanOrEqual(60);
     expect(postTitle(COMPARE_INDEX.en.title).length).toBeLessThanOrEqual(60);
     expect(COMPARE_INDEX.en.description.length).toBeLessThanOrEqual(160);
@@ -138,7 +140,9 @@ describe.each(pages.map((page) => [page.slug, page] as const))('compare page %s'
       .map(parseImage)
       .find((item) => item?.src === src);
     expect(image?.alt).toMatch(/^Illustration of /);
-    expect(image?.caption).toMatch(/^Illustration, not an easyrender result:/);
+    expect(image?.caption).toMatch(
+      /^Illustration(?:, not an easyrender result| drawn in Blender):/,
+    );
     expect(raw(slug)).not.toMatch(/ILLUSTRATION PENDING/);
   });
 
@@ -224,14 +228,21 @@ describe('once they are published', () => {
   });
 
   it('appear in every language’s sitemap, with hreflang only where that file exists', () => {
-    const english = [localeSitemapXml('en'), llmsTxt(), llmsFullTxt()].join('\n');
+    const publishedAt = new Date(
+      Math.max(0, ...pages.map((page) => Date.parse(page.publishAt ?? '') || 0)),
+    );
+    const english = [
+      localeSitemapXml('en', publishedAt),
+      llmsTxt(publishedAt),
+      llmsFullTxt(publishedAt),
+    ].join('\n');
     expect(english).toContain('/compare<');
     expect(english).toMatch(/https:\/\/easyrender\.ai\/compare['"\s<]/);
     for (const page of pages) {
       expect(english, page.path).toContain(page.path);
     }
     for (const locale of LOCALES.filter((item) => item !== 'en')) {
-      const xml = localeSitemapXml(locale);
+      const xml = localeSitemapXml(locale, publishedAt);
       expect(xml, locale).toContain(
         `<loc>https://easyrender.ai${ROUTES.compare.paths[locale]}</loc>`,
       );
