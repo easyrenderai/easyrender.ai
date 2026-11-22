@@ -51,7 +51,13 @@ export const modelExportSchema = z.object({
   filename: z.string(),
   expires_at: z.string(),
 });
-const planSchema = z.object({ price_per_month: z.number(), credits_per_month: z.number() });
+// `usd_per_*` are legacy aliases that getCreditQuote adds for USD buyers. The output schema is
+// strict, so a field it does not list makes the client reject the whole result.
+const planSchema = z.object({
+  price_per_month: z.number(),
+  usd_per_month: z.number().optional(),
+  credits_per_month: z.number(),
+});
 export const quoteSchema = {
   pricing_variant: z.enum(['control', 'test']),
   currency: z.enum(['usd', 'eur']),
@@ -66,6 +72,7 @@ export const quoteSchema = {
   plans: z.object({
     pay_as_you_go: z.object({
       price_per_credit: z.number(),
+      usd_per_credit: z.number().optional(),
       min_credits: z.number(),
       max_credits: z.number(),
     }),

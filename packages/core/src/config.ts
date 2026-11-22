@@ -6,6 +6,10 @@ export const config = {
       '',
     ),
   replicateToken: () => process.env.REPLICATE_API_TOKEN ?? '',
+  // The Agent chat is off until this is set; the rest of the app does not need it.
+  openrouterKey: () => process.env.OPENROUTER_API_KEY ?? '',
+  // OpenRouter's Anthropic-compatible endpoint. Only tests and local mocks change it.
+  openrouterUrl: () => process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api',
   // Read-only token for the private easyrenderai/harness repo. Without it the defaults are used.
   harnessToken: () => process.env.HARNESS_GITHUB_TOKEN ?? '',
   sheetEnabled: () => process.env.SHEET_ENABLED !== 'false',

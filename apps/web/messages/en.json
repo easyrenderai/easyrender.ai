@@ -804,7 +804,8 @@
     "account": "Account",
     "views": "Product photos",
     "profile": "Profile",
-    "admin": "Admin"
+    "admin": "Admin",
+    "agent": "Agent"
   },
   "AppShell": {
     "model": "Model",
@@ -847,7 +848,8 @@
       "byAgents": "By agents",
       "balance": "Balance",
       "sheet": "Angle sheet",
-      "build": "Build 3D"
+      "build": "Build 3D",
+      "agent": "Ask in plain words. Previews are free and paid steps ask first."
     },
     "toggleContext": "Toggle parts panel",
     "context": {
@@ -3666,5 +3668,91 @@
     "step1": "Upload a photo",
     "step2": "Create a free account",
     "step3": "See every angle"
+  },
+  "Agent": {
+    "metaTitle": "Agent",
+    "chats": "Chats",
+    "newChat": "New chat",
+    "noChats": "No chats yet",
+    "untitled": "New chat",
+    "deleteChat": "Delete chat",
+    "deleteTitle": "Delete this chat?",
+    "deleteBody": "The messages are removed. Renders the agent made stay in your Library.",
+    "cancel": "Cancel",
+    "emptyTitle": "What should we make?",
+    "emptyBody": "Attach a product photo and ask for a 3D model. The agent uses the same tools as any agent connected to Easy Render. Previews are free and every paid step asks you first.",
+    "suggestions": {
+      "credits": "What do my credits buy?",
+      "library": "Show my latest renders"
+    },
+    "attach": "Attach a photo",
+    "removePhoto": "Remove photo",
+    "photoAttached": "Photo attached",
+    "placeholder": "Ask the agent",
+    "send": "Send",
+    "working": "Working",
+    "composerNote": "Messages cost a fraction of a credit. Previews are free and paid steps ask first.",
+    "turnCost": "{credits, plural, one {# credit} other {# credits}} for this answer",
+    "sheetAlt": "Angle sheet of the render",
+    "openRender": "Open in Library",
+    "toolStatus": {
+      "waiting": "Waiting for you",
+      "done": "Done",
+      "error": "Failed"
+    },
+    "approvalCost": "{action} will use {credits, plural, one {# credit} other {# credits}}.",
+    "approvalFree": "{action} is free.",
+    "approve": "{action} · {credits, plural, one {# credit} other {# credits}}",
+    "approveFree": "{action}",
+    "decline": "Not now",
+    "addCredits": "Add credits",
+    "unavailableTitle": "The agent is not available yet",
+    "unavailableBody": "Chat with the agent is being set up. Everything else in the app works as usual.",
+    "toLibrary": "Open Library",
+    "errors": {
+      "insufficient_credits": {
+        "title": "You are out of credits",
+        "body": "Add credits to keep chatting. Renders you already made are still in your Library."
+      },
+      "agent_unavailable": {
+        "title": "The agent is not available",
+        "body": "Try again in a little while."
+      },
+      "rate_limit": {
+        "title": "Too many messages",
+        "body": "Wait a moment and send it again."
+      },
+      "upload_failed": {
+        "title": "The photo did not upload",
+        "body": "Use a JPEG, PNG or WebP under 4 MB and try again."
+      },
+      "chat_full": {
+        "title": "This chat is full",
+        "body": "Start a new chat to continue."
+      },
+      "internal": {
+        "title": "Something went wrong",
+        "body": "That answer did not finish. A paid step only runs after you approve it. Try again."
+      }
+    },
+    "tools": {
+      "create_render": "Create preview",
+      "get_render": "Check render",
+      "render_3d": "Build 3D model",
+      "rebuild_standard": "Rebuild at Low quality",
+      "get_credits": "Check credits",
+      "list_renders": "Find renders",
+      "set_render_visibility": "Change visibility",
+      "start_render_sheet": "Draw angle sheet",
+      "redraw_render_sheet": "Redraw angle sheet",
+      "upscale_image": "Enlarge image",
+      "get_upscale": "Check enlargement",
+      "create_product_views": "Create product photos",
+      "get_product_views": "Check product photos",
+      "list_product_views": "Find product photos",
+      "list_upscales": "Find enlargements",
+      "polish_product_view": "Fix a product photo",
+      "build_from_product_views": "Build 3D from product photos"
+    }
   }
 }

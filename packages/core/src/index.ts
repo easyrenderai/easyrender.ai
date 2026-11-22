@@ -1,3 +1,4 @@
+export * from './agent-chat';
 export * from './analytics';
 export { flushAnalyticsDeliveries } from './analytics-delivery';
 export * from './api-access';
