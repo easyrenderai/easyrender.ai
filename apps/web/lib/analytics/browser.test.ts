@@ -335,3 +335,238 @@ it('does not send GA pageviews or conversions from email token pages after clien
   page.api.gaEvent('sign_up', { method: 'email' });
   expect(page.commands().filter(([command]) => command === 'event')).toHaveLength(before);
 });
+
+it.each(['email', 'google'])(
+  'sends a real %s signup directly to Ads once, with only permitted URL fields',
+  async (method) => {
+    const page = await googleBrowser();
+    page.window.location.search = '?gclid=Allowed_123&email=private&token=private';
+    page.api.initializeGa('G-TEST000000');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(null, { status: 204 })),
+    );
+    await page.api.setBrowserTools(false, true, false, true);
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => Response.json({ method })),
+    );
+    await Promise.all([page.api.captureSignup(), page.api.captureSignup()]);
+    expect(page.commands().filter(([c, e]) => c === 'event' && e === 'conversion')).toEqual([
+      [
+        'event',
+        'conversion',
+        {
+          send_to: 'AW-18570382360/Uh3CCIiymr0dEJiYhpdF',
+          page_location: 'https://easyrender.ai/credits?gclid=Allowed_123',
+          page_referrer: 'https://external.test/path',
+        },
+      ],
+    ]);
+    expect(page.commands().filter(([c, e]) => c === 'event' && e === 'sign_up')).toContainEqual([
+      'event',
+      'sign_up',
+      expect.objectContaining({ send_to: 'G-TEST000000', method }),
+    ]);
+  },
+);
+
+it.each([
+  ['analytics only', true, false, false],
+  ['rejected', false, true, false],
+  ['GPC', false, true, true],
+] as const)(
+  'does not send a signup to Ads with %s',
+  async (_label, hasGa, hasWithdrawal, hasAds) => {
+    const page = await googleBrowser();
+    page.api.initializeGa('G-TEST000000');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => Response.json({ method: 'email' })),
+    );
+    await page.api.setBrowserTools(false, hasGa, hasWithdrawal, hasAds);
+    await page.api.captureSignup();
+    expect(page.commands().filter(([c, e]) => c === 'event' && e === 'conversion')).toEqual([]);
+  },
+);
+
+it.each(['localhost', 'preview.vercel.app'])(
+  'never sends Ads conversions from %s',
+  async (hostname) => {
+    const page = await googleBrowser();
+    page.api.initializeGa('G-TEST000000');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(null, { status: 204 })),
+    );
+    await page.api.setBrowserTools(false, true, false, true);
+    // Keep an initialized tag to exercise the send-time hostname guard too.
+    page.window.location.hostname = hostname;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => Response.json({ method: 'email' })),
+    );
+    await page.api.captureSignup();
+    expect(page.commands().filter(([c, e]) => c === 'event' && e === 'conversion')).toEqual([]);
+  },
+);
+
+it.each([
+  '/email/confirm?token=private',
+  '/email/unsubscribe?token=private',
+  '/invite/private',
+  '/reset-password/private',
+  '/verify-email?token=private',
+  '/sign-in?next=%2Finvite%2Fprivate',
+])('never sends a signup conversion from token page %s', async (path) => {
+  const page = await googleBrowser();
+  page.api.initializeGa('G-TEST000000');
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => new Response(null, { status: 204 })),
+  );
+  await page.api.setBrowserTools(false, true, false, true);
+  page.window.location.href = `https://easyrender.ai${path}`;
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => Response.json({ method: 'email' })),
+  );
+  await page.api.captureSignup();
+  expect(page.commands().filter(([c, e]) => c === 'event' && e === 'conversion')).toEqual([]);
+});
+
+it('does not repeat a claimed receipt across document reloads or invent a signup from a login', async () => {
+  const fetcher = vi
+    .fn()
+    .mockResolvedValueOnce(Response.json({ method: 'google' }))
+    .mockImplementation(async () => new Response(null, { status: 204 }));
+  vi.stubGlobal('fetch', fetcher);
+  let conversions = 0;
+  for (let reload = 0; reload < 2; reload++) {
+    const page = await googleBrowser();
+    page.api.initializeGa('G-TEST000000');
+    await page.api.setBrowserTools(false, true, false, true);
+    await page.api.captureSignup();
+    conversions += page.commands().filter(([c, e]) => c === 'event' && e === 'conversion').length;
+  }
+  expect(conversions).toBe(1);
+});
+
+it('rechecks advertising permission when an in-flight signup receipt arrives', async () => {
+  const page = await googleBrowser();
+  page.api.initializeGa('G-TEST000000');
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => new Response(null, { status: 204 })),
+  );
+  await page.api.setBrowserTools(false, true, false, true);
+  const receipt = Promise.withResolvers<Response>();
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(() => receipt.promise),
+  );
+  const capture = page.api.captureSignup();
+  await page.api.setBrowserTools(false, false, true, false);
+  receipt.resolve(Response.json({ method: 'email' }));
+  await capture;
+  expect(page.commands().filter(([c, e]) => c === 'event' && e === 'conversion')).toEqual([]);
+});
+
+it.each(['MX', 'US', 'BR', 'ES', 'DE', 'XX'])(
+  'applies the shared regional advertising default to browser signup in %s',
+  async (country) => {
+    const page = await googleBrowser();
+    const { allowsAdvertisingMeasurement } = await import('./consent');
+    const region = { ...classifyCountry(country), gpc: false, config_version: 'v1' };
+    const choice = { accepted: null, advertising: false };
+    page.api.initializeGa('G-TEST000000');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(null, { status: 204 })),
+    );
+    await page.api.setBrowserTools(
+      false,
+      isToolAllowed('ga4', region.consent_region, choice.accepted, region.gpc),
+      false,
+      allowsAdvertisingMeasurement(region, choice),
+    );
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => Response.json({ method: 'email' })),
+    );
+    await page.api.captureSignup();
+    expect(page.commands().filter(([c, e]) => c === 'event' && e === 'conversion')).toHaveLength(
+      region.consent_region === 'standard' ? 1 : 0,
+    );
+  },
+);
+
+it('does not send or throw if gtag becomes unavailable before signup completes', async () => {
+  const page = await googleBrowser();
+  page.api.initializeGa('G-TEST000000');
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => new Response(null, { status: 204 })),
+  );
+  await page.api.setBrowserTools(false, true, false, true);
+  Object.assign(page.window, { gtag: undefined });
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => Response.json({ method: 'email' })),
+  );
+  await expect(page.api.captureSignup()).resolves.toBeUndefined();
+  expect(page.commands().filter(([c, e]) => c === 'event' && e === 'conversion')).toEqual([]);
+});
+
+it.each([null, {}, { method: 'login' }, { method: 'email', status: 500 }])(
+  'does not invent an Ads signup from an invalid or failed receipt: %j',
+  async (result) => {
+    const page = await googleBrowser();
+    page.api.initializeGa('G-TEST000000');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(null, { status: 204 })),
+    );
+    await page.api.setBrowserTools(false, true, false, true);
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => Response.json(result, { status: result?.status ?? 200 })),
+    );
+    await page.api.captureSignup();
+    expect(page.commands().filter(([c, e]) => c === 'event' && e === 'conversion')).toEqual([]);
+  },
+);
+
+it('Analytics only immediately withdraws a standard-region default grant without a saved cookie', async () => {
+  const page = await googleBrowser();
+  page.api.initializeGa('G-TEST000000');
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => new Response(null, { status: 204 })),
+  );
+  await page.api.setBrowserTools(false, true, false, true);
+  Object.assign(page.window, { dispatchEvent: () => true });
+  const { chooseConsent } = await import('@/components/analytics');
+  chooseConsent(true);
+  const { readConsent } = await import('./consent');
+  expect(readConsent(document.cookie.match(/er_consent=([^;]+)/)?.[1])).toEqual({
+    accepted: true,
+    advertising: false,
+  });
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => Response.json({ method: 'email' })),
+  );
+  await page.api.captureSignup();
+  expect(page.commands().filter(([c, e]) => c === 'event' && e === 'conversion')).toEqual([]);
+  expect(
+    page
+      .commands()
+      .filter(([c, e]) => c === 'consent' && e === 'update')
+      .at(-1),
+  ).toEqual([
+    'consent',
+    'update',
+    expect.objectContaining({ ad_storage: 'denied', ad_user_data: 'denied' }),
+  ]);
+});

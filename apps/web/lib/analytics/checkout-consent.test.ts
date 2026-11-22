@@ -137,3 +137,65 @@ it('does not block the confirmed checkout URL when optional measurement persiste
   expect(response.status).toBe(200);
   expect(await response.json()).toEqual({ url: 'https://checkout.invalid', analytics: {} });
 });
+
+it.each([
+  ['MX', null, false, true],
+  ['US', null, false, true],
+  ['BR', null, false, true],
+  ['ES', null, false, false],
+  ['XX', null, false, false],
+  ['MX', false, false, false],
+  ['US', null, true, false],
+] as const)(
+  'checkout in %s with choice %s and GPC %s stores measurement: %s',
+  async (country, accepted, hasGpc, hasMeasurement) => {
+    const headers = new Headers({ 'x-vercel-ip-country': country });
+    if (hasGpc) headers.set('sec-gpc', '1');
+    if (accepted !== null)
+      headers.set(
+        'cookie',
+        `er_consent=${encodeURIComponent(JSON.stringify({ version: 'v1', date: new Date().toISOString(), accepted }))}`,
+      );
+    const response = await POST(
+      new Request('https://easyrender.ai/api/checkout', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          googleAnalytics: {
+            measurementId: 'G-TEST',
+            clientId: '123.456',
+            sessionId: '789',
+            adMeasurementAllowed: !hasMeasurement,
+            gclid: 'MUST_NOT_STORE',
+          },
+        }),
+      }),
+    );
+    expect(response.status).toBe(200);
+    if (hasMeasurement) {
+      expect(mocks.create.mock.calls[0][0].data).toMatchObject({ adMeasurementAllowed: true });
+      expect(JSON.stringify(mocks.create.mock.calls)).not.toContain('MUST_NOT_STORE');
+    } else expect(mocks.create).not.toHaveBeenCalled();
+  },
+);
+
+it('keeps standard-region analytics-only checkout contexts free of advertising permission', async () => {
+  await POST(
+    new Request('https://easyrender.ai/api/checkout', {
+      method: 'POST',
+      headers: {
+        'x-vercel-ip-country': 'MX',
+        cookie: `er_consent=${encodeURIComponent(JSON.stringify({ version: 'v1', date: new Date().toISOString(), accepted: true, advertising: false }))}`,
+      },
+      body: JSON.stringify({
+        googleAnalytics: {
+          measurementId: 'G-TEST',
+          clientId: '123.456',
+          sessionId: '789',
+          adMeasurementAllowed: true,
+        },
+      }),
+    }),
+  );
+  expect(mocks.create.mock.calls[0][0].data).toMatchObject({ adMeasurementAllowed: false });
+});

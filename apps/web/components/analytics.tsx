@@ -6,7 +6,11 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { attribution, gaPageview, initializeGa, setBrowserTools } from '@/lib/analytics/browser';
-import { type ConsentChoice, readConsent } from '@/lib/analytics/consent';
+import {
+  allowsAdvertisingMeasurement,
+  type ConsentChoice,
+  readConsent,
+} from '@/lib/analytics/consent';
 import { isMailingTokenLocation } from '@/lib/mailing-privacy';
 
 const hasPosthog = Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY);
@@ -24,10 +28,9 @@ function readChoice(): ConsentChoice {
   return readConsent(document.cookie.match(/(?:^|;\s*)er_consent=([^;]+)/)?.[1]);
 }
 export function chooseConsent(accepted: boolean, advertising = false) {
-  const previous = readChoice();
   // Stop optional sends immediately, before React effects or pending gtag callbacks run.
-  if (!accepted || (previous.advertising && !advertising))
-    void setBrowserTools(hasPosthog, false, true, false);
+  // This also withdraws an implicit standard-region grant with no saved cookie yet.
+  if (!accepted || !advertising) void setBrowserTools(hasPosthog, false, true, false);
   // biome-ignore lint/suspicious/noDocumentCookie: the Cookie Store API is missing in Safari and Firefox, and the consent cookie is written synchronously before the event below.
   document.cookie = `er_consent=${encodeURIComponent(JSON.stringify({ version: CONFIG_VERSION, date: new Date().toISOString(), accepted, advertising: accepted && advertising }))}; Path=/; Max-Age=31536000; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
   window.dispatchEvent(new Event('er-consent'));
@@ -116,7 +119,7 @@ function EnabledAnalytics() {
         ph,
         ga,
         !ga && (choice.accepted === false || region.gpc),
-        ga && choice.advertising && !region.gpc,
+        ga && allowsAdvertisingMeasurement(region, choice),
       );
     }, 100);
     return () => clearTimeout(timer);
@@ -125,8 +128,7 @@ function EnabledAnalytics() {
   useEffect(() => {
     if (pathname) gaPageview();
   }, [pathname]);
-  // Standard regions keep opt-out GA and cookie-page controls without an unsolicited prompt.
-  // Hiding the banner never grants advertising consent; that remains an explicit choice.
+  // Standard regions use opt-out Google measurement and cookie-page controls without a prompt.
   if (
     !isResolved ||
     region.consent_region !== 'strict' ||

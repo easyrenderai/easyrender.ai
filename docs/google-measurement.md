@@ -3,11 +3,16 @@
 The Google tag remains the only browser loader. Its initial consent is denied, with query and
 fragment redaction. The choices are **Analytics only**, **Analytics + ad measurement**, and
 **Reject optional**, with equal visual treatment. Existing analytics acceptance remains
-analytics-only. Advertising is never inferred from country, analytics acceptance or a checkout
-request body. Google Signals and advertising personalization remain disabled in every state.
+analytics-only. In strict regions (EU/EEA, UK, Switzerland and the other countries listed in
+`STRICT_COUNTRIES`), advertising requires the separate explicit choice. Unknown regions use
+the strict policy. In standard regions (including Mexico, the US and most of Latin America),
+advertising follows the GA4 opt-out default when no choice is saved. Rejection, **Analytics only**
+and GPC prevent advertising in every region. A checkout request body cannot grant permission.
+Google Signals and advertising personalization remain disabled in every state.
 The existing regional GA4 policy and independent cookieless PostHog policy are unchanged.
 
-After explicit advertising consent, with GA4 permitted and GPC absent, the browser grants
+When the regional advertising policy allows measurement, with GA4 permitted and GPC absent,
+the browser grants
 `ad_storage` and `ad_user_data`. Only validated `gclid`, `dclid`, `gbraid` and `wbraid` values can
 be added to Google's otherwise-redacted page location. No email, token, arbitrary query field
 or fragment accompanies them. Those click IDs never enter PostHog or operational attribution
@@ -43,6 +48,38 @@ permitted real-click and paid-purchase verification below remain release gates.
 - `purchase`: an owner-scoped paid Purchase. Browser fallback uses `transaction_id` and the
   stored charged amount/currency. It never treats a success query parameter as payment proof.
 
+## Google Ads sign-up conversion
+
+`captureSignup()` sends the real registration directly to the **Registro Easy Render** SIGNUP
+action with `send_to: AW-18570382360/Uh3CCIiymr0dEJiYhpdF`. It sends a Google Ads `conversion`
+event only after `/api/analytics/signup` returns a valid email or Google signup receipt. The
+existing GA4 `sign_up` remains routed exclusively to GA4; purchases retain their existing path.
+The Ads event carries no value, currency, email or internal account identifier.
+
+Basic consent mode gates the event: advertising must currently be allowed, the hostname must
+be exactly `easyrender.ai`, gtag must exist and the location must not be a token page. The event
+uses `advertisingUrl()` with only permitted click IDs and a redacted referrer. The gate is
+checked again after the asynchronous receipt response, so withdrawal while it is in flight
+prevents delivery. Localhost, previews, analytics-only choices, rejection and GPC never send it.
+
+The existing atomic one-use receipt prevents a second claim across reloads or tabs. The browser
+also deduplicates by Ads destination and `signup` identity in its conversion set, separately
+from GA4. No receipt means no conversion, including existing-account logins. This is at-most-once
+delivery: an interruption after claiming can lose the event; no retry or offline upload is added.
+An analytics-only claim is not replayed if advertising is permitted later.
+
+The standard-region opt-out policy was approved by Jorge on 2026-11-22. Both browser and server
+use the same helper backed by `CONSENT_CONFIG.ads`. The implementation preserves explicit
+analytics-only choices (including legacy cookies); unlike the draft formula in plan point 8,
+the default applies only when `accepted` is null. This keeps the Analytics only control usable
+for withdrawing an implicit grant. Strict-region behavior and the banner remain unchanged.
+The cookie page explains the policy in all six locales.
+
+Local tests inspect queued gtag events and stored checkout permissions without contacting
+Google. After release, use Tag Assistant on an authorized real signup to verify the destination
+and consent state, then check the Ads action diagnostics. That signup counts as a real
+conversion; local tests do not establish production delivery or click attribution.
+
 ## Optional server purchase delivery
 
 All of the following are required in the Vercel **production** environment:
@@ -60,7 +97,7 @@ production, server delivery is disabled and browser fallback continues. Do not s
 The browser asks gtag for `client_id` and `session_id` only while GA4 is allowed. A bounded
 one-second timeout cannot indefinitely hold up checkout. The checkout route independently
 checks regional consent/GPC and the measurement-ID match before storing `GoogleCheckout`.
-Its `adMeasurementAllowed` field is derived from the explicit consent cookie; the browser body
+Its `adMeasurementAllowed` field is derived from region, the consent cookie and GPC; the browser body
 cannot grant that permission. Existing rows default to false. Server purchase payloads grant
 `ad_user_data` only for a permitted, non-revoked stored context, and always deny personalization.
 No Google measurement identifiers are added to Stripe metadata. Context is eligible for a
