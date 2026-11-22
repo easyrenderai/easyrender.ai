@@ -804,7 +804,8 @@
     "account": "Account",
     "views": "Foto di prodotto",
     "profile": "Profilo",
-    "admin": "Amministrazione"
+    "admin": "Amministrazione",
+    "agent": "Agente"
   },
   "AppShell": {
     "model": "Modello",
@@ -847,7 +848,8 @@
       "byAgents": "Da agenti",
       "balance": "Saldo",
       "sheet": "Foglio angoli",
-      "build": "Crea il 3D"
+      "build": "Crea il 3D",
+      "agent": "Chiedi con parole tue. Le anteprime sono gratuite e i passaggi a pagamento chiedono prima il tuo consenso."
     },
     "toggleContext": "Mostra o nascondi il pannello delle parti",
     "context": {
@@ -3295,5 +3297,91 @@
     "step1": "Carica una foto",
     "step2": "Crea un account gratuito",
     "step3": "Guarda ogni angolazione"
+  },
+  "Agent": {
+    "metaTitle": "Agente",
+    "chats": "Chat",
+    "newChat": "Nuova chat",
+    "noChats": "Ancora nessuna chat",
+    "untitled": "Nuova chat",
+    "deleteChat": "Elimina chat",
+    "deleteTitle": "Eliminare questa chat?",
+    "deleteBody": "I messaggi vengono rimossi. I render creati dall’agente restano nella tua Libreria.",
+    "cancel": "Annulla",
+    "emptyTitle": "Cosa creiamo?",
+    "emptyBody": "Allega la foto di un prodotto e chiedi un modello 3D. L’agente usa gli stessi strumenti di qualsiasi agente collegato a Easy Render. Le anteprime sono gratuite e ogni passaggio a pagamento chiede prima il tuo consenso.",
+    "suggestions": {
+      "credits": "Cosa posso fare con i miei crediti?",
+      "library": "Mostra i miei ultimi render"
+    },
+    "attach": "Allega una foto",
+    "removePhoto": "Rimuovi la foto",
+    "photoAttached": "Foto allegata",
+    "placeholder": "Chiedi all’agente",
+    "send": "Invia",
+    "working": "In corso",
+    "composerNote": "Un messaggio costa una frazione di credito. Le anteprime sono gratuite e i passaggi a pagamento chiedono prima il consenso.",
+    "turnCost": "{credits, plural, one {# credito} other {# crediti}} per questa risposta",
+    "sheetAlt": "Tavola degli angoli del render",
+    "openRender": "Apri nella Libreria",
+    "toolStatus": {
+      "waiting": "In attesa di te",
+      "done": "Fatto",
+      "error": "Non riuscito"
+    },
+    "approvalCost": "{action} userà {credits, plural, one {# credito} other {# crediti}}.",
+    "approvalFree": "{action} è gratis.",
+    "approve": "{action} · {credits, plural, one {# credito} other {# crediti}}",
+    "approveFree": "{action}",
+    "decline": "Non ora",
+    "addCredits": "Aggiungi crediti",
+    "unavailableTitle": "L’agente non è ancora disponibile",
+    "unavailableBody": "La chat con l’agente è in preparazione. Tutto il resto dell’app funziona come sempre.",
+    "toLibrary": "Apri la Libreria",
+    "errors": {
+      "insufficient_credits": {
+        "title": "Hai finito i crediti",
+        "body": "Aggiungi crediti per continuare a chattare. I render già creati restano nella tua Libreria."
+      },
+      "agent_unavailable": {
+        "title": "L’agente non è disponibile",
+        "body": "Riprova tra un po’."
+      },
+      "rate_limit": {
+        "title": "Troppi messaggi",
+        "body": "Attendi un momento e invia di nuovo."
+      },
+      "upload_failed": {
+        "title": "La foto non è stata caricata",
+        "body": "Usa un JPEG, PNG o WebP sotto i 4 MB e riprova."
+      },
+      "chat_full": {
+        "title": "Questa chat è piena",
+        "body": "Avvia una nuova chat per continuare."
+      },
+      "internal": {
+        "title": "Qualcosa è andato storto",
+        "body": "Quella risposta non è stata completata. Un passaggio a pagamento parte solo dopo la tua approvazione. Riprova."
+      }
+    },
+    "tools": {
+      "create_render": "Crea anteprima",
+      "get_render": "Controlla render",
+      "render_3d": "Crea modello 3D",
+      "rebuild_standard": "Rifai in qualità Bassa",
+      "get_credits": "Controlla crediti",
+      "list_renders": "Cerca render",
+      "set_render_visibility": "Cambia visibilità",
+      "start_render_sheet": "Disegna tavola degli angoli",
+      "redraw_render_sheet": "Ridisegna tavola degli angoli",
+      "upscale_image": "Ingrandisci immagine",
+      "get_upscale": "Controlla ingrandimento",
+      "create_product_views": "Crea foto prodotto",
+      "get_product_views": "Controlla foto prodotto",
+      "list_product_views": "Cerca foto prodotto",
+      "list_upscales": "Cerca ingrandimenti",
+      "polish_product_view": "Correggi una foto prodotto",
+      "build_from_product_views": "Crea 3D dalle foto prodotto"
+    }
   }
 }

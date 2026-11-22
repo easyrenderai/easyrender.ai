@@ -52,6 +52,48 @@ export const PRODUCT_VIEWS_COST_USD =
 export const PRODUCT_VIEWS_CREDITS = creditsFor(PRODUCT_VIEWS_COST_USD);
 // Polishing one view: the owner describes what is wrong and that view is drawn again.
 export const VIEW_POLISH_CREDITS = creditsFor(VIEW_REDRAW_COST_USD);
+// The Agent chat. Each turn is charged at what the model provider billed, plus the same margin as
+// everything else. The model is reached through OpenRouter, which passes the provider's list price
+// per million tokens through with no markup (prompts up to 100K tokens). Whole credits are charged as the fractions add up, so a short message is never rounded
+// up to a full credit.
+export const AGENT_MODEL = {
+  id: 'anthropic/claude-haiku-5.5',
+  inputUsdPerMTok: 0.1,
+  outputUsdPerMTok: 0.5,
+  // Reading a cached prompt costs a tenth of the input price; writing one costs 25% more.
+  cacheReadFactor: 0.1,
+  cacheWriteFactor: 1.25,
+} as const;
+export const MICRO_CREDITS_PER_CREDIT = 1_000_000;
+// A turn may call tools and read their results this many times before it must answer.
+export const AGENT_MAX_ROUNDS = 8;
+export const AGENT_MAX_OUTPUT_TOKENS = 2048;
+// The messages of a chat that go back to the model with each turn.
+export const AGENT_HISTORY_MESSAGES = 30;
+
+export type AgentUsage = {
+  inputTokens: number;
+  outputTokens: number;
+  cacheReadTokens?: number;
+  cacheWriteTokens?: number;
+};
+
+export function agentCostUsd(usage: AgentUsage): number {
+  const { inputUsdPerMTok, outputUsdPerMTok, cacheReadFactor, cacheWriteFactor } = AGENT_MODEL;
+  return (
+    (usage.inputTokens * inputUsdPerMTok +
+      (usage.cacheReadTokens ?? 0) * inputUsdPerMTok * cacheReadFactor +
+      (usage.cacheWriteTokens ?? 0) * inputUsdPerMTok * cacheWriteFactor +
+      usage.outputTokens * outputUsdPerMTok) /
+    1_000_000
+  );
+}
+
+// The same rule as creditsFor, kept in millionths of a credit so it can be carried.
+export function agentMicroCredits(usage: AgentUsage): number {
+  return Math.ceil((agentCostUsd(usage) / (1 - MARGIN) / CREDIT_USD) * MICRO_CREDITS_PER_CREDIT);
+}
+
 export const BUILD_QUALITIES = ['low', 'medium', 'high'] as const;
 export type BuildQuality = (typeof BUILD_QUALITIES)[number];
 export const isBuildQuality = (value: unknown): value is BuildQuality =>

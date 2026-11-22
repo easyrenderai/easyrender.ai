@@ -804,7 +804,8 @@
     "account": "Compte",
     "views": "Photos produit",
     "profile": "Profil",
-    "admin": "Administration"
+    "admin": "Administration",
+    "agent": "Agent"
   },
   "AppShell": {
     "model": "Modèle",
@@ -847,7 +848,8 @@
       "byAgents": "Par agents",
       "balance": "Solde",
       "sheet": "Planche d’angles",
-      "build": "Créer le 3D"
+      "build": "Créer le 3D",
+      "agent": "Demandez avec vos mots. Les aperçus sont gratuits et les étapes payantes demandent votre accord."
     },
     "toggleContext": "Afficher ou masquer le panneau des éléments",
     "context": {
@@ -3295,5 +3297,91 @@
     "step1": "Importer une photo",
     "step2": "Créer un compte gratuit",
     "step3": "Voir tous les angles"
+  },
+  "Agent": {
+    "metaTitle": "Agent",
+    "chats": "Discussions",
+    "newChat": "Nouvelle discussion",
+    "noChats": "Aucune discussion pour l’instant",
+    "untitled": "Nouvelle discussion",
+    "deleteChat": "Supprimer la discussion",
+    "deleteTitle": "Supprimer cette discussion ?",
+    "deleteBody": "Les messages sont supprimés. Les rendus créés par l’agent restent dans votre Bibliothèque.",
+    "cancel": "Annuler",
+    "emptyTitle": "Que faisons-nous ?",
+    "emptyBody": "Joignez une photo de produit et demandez un modèle 3D. L’agent utilise les mêmes outils que n’importe quel agent connecté à Easy Render. Les aperçus sont gratuits et chaque étape payante vous demande votre accord avant.",
+    "suggestions": {
+      "credits": "Que puis-je faire avec mes crédits ?",
+      "library": "Montre mes derniers rendus"
+    },
+    "attach": "Joindre une photo",
+    "removePhoto": "Retirer la photo",
+    "photoAttached": "Photo jointe",
+    "placeholder": "Demander à l’agent",
+    "send": "Envoyer",
+    "working": "En cours",
+    "composerNote": "Un message coûte une fraction de crédit. Les aperçus sont gratuits et les étapes payantes demandent votre accord.",
+    "turnCost": "{credits, plural, one {# crédit} other {# crédits}} pour cette réponse",
+    "sheetAlt": "Planche d’angles du rendu",
+    "openRender": "Ouvrir dans la Bibliothèque",
+    "toolStatus": {
+      "waiting": "En attente de votre accord",
+      "done": "Terminé",
+      "error": "Échec"
+    },
+    "approvalCost": "{action} utilisera {credits, plural, one {# crédit} other {# crédits}}.",
+    "approvalFree": "{action} est gratuit.",
+    "approve": "{action} · {credits, plural, one {# crédit} other {# crédits}}",
+    "approveFree": "{action}",
+    "decline": "Pas maintenant",
+    "addCredits": "Ajouter des crédits",
+    "unavailableTitle": "L’agent n’est pas encore disponible",
+    "unavailableBody": "La discussion avec l’agent est en cours de mise en place. Le reste de l’application fonctionne normalement.",
+    "toLibrary": "Ouvrir la Bibliothèque",
+    "errors": {
+      "insufficient_credits": {
+        "title": "Vous n’avez plus de crédits",
+        "body": "Ajoutez des crédits pour continuer à discuter. Les rendus déjà créés restent dans votre Bibliothèque."
+      },
+      "agent_unavailable": {
+        "title": "L’agent n’est pas disponible",
+        "body": "Réessayez dans un moment."
+      },
+      "rate_limit": {
+        "title": "Trop de messages",
+        "body": "Patientez un instant puis renvoyez-le."
+      },
+      "upload_failed": {
+        "title": "La photo n’a pas été envoyée",
+        "body": "Utilisez un JPEG, PNG ou WebP de moins de 4 Mo et réessayez."
+      },
+      "chat_full": {
+        "title": "Cette discussion est pleine",
+        "body": "Commencez une nouvelle discussion pour continuer."
+      },
+      "internal": {
+        "title": "Une erreur s’est produite",
+        "body": "Cette réponse ne s’est pas terminée. Une étape payante ne s’exécute qu’après votre accord. Réessayez."
+      }
+    },
+    "tools": {
+      "create_render": "Créer l’aperçu",
+      "get_render": "Vérifier le rendu",
+      "render_3d": "Créer le modèle 3D",
+      "rebuild_standard": "Refaire en qualité Basse",
+      "get_credits": "Vérifier les crédits",
+      "list_renders": "Chercher des rendus",
+      "set_render_visibility": "Changer la visibilité",
+      "start_render_sheet": "Dessiner la planche d’angles",
+      "redraw_render_sheet": "Redessiner la planche d’angles",
+      "upscale_image": "Agrandir l’image",
+      "get_upscale": "Vérifier l’agrandissement",
+      "create_product_views": "Créer des photos produit",
+      "get_product_views": "Vérifier les photos produit",
+      "list_product_views": "Chercher des photos produit",
+      "list_upscales": "Chercher des agrandissements",
+      "polish_product_view": "Corriger une photo produit",
+      "build_from_product_views": "Créer la 3D depuis les photos produit"
+    }
   }
 }

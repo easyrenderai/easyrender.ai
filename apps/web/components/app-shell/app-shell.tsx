@@ -59,10 +59,11 @@ const layoutStorage = {
   },
 };
 
-type RailKind = 'overview' | 'library' | 'account';
+type RailKind = 'overview' | 'library' | 'agent' | 'account';
 const RAIL_KINDS: Record<string, RailKind> = {
   overview: 'overview',
   library: 'library',
+  agent: 'agent',
   account: 'account',
 };
 
@@ -90,6 +91,7 @@ export function AppShell({
   const { setLeftNode, setRightNode, hasLeftContext, hasRightContext, slot } = usePanelSlotState();
   const isAdmin = isAdminPath(pathname);
   const isLibrary = pathname === '/library' || pathname.startsWith('/library/');
+  const isAgent = pathname === '/agent' || pathname.startsWith('/agent/');
   // Overview is one focused upload, so it has no renders drawer (that list was a second scrollbar
   // beside the page; the Library has the renders). Admin is a full page too.
   const isOverview = pathname === '/dashboard';
@@ -299,8 +301,8 @@ export function AppShell({
                   >
                     {isSettings ? (
                       <SettingsPanel />
-                    ) : isLibrary ? (
-                      // The library draws its own filters and folders here.
+                    ) : isLibrary || isAgent ? (
+                      // The library draws its own filters and folders here, the agent its chats.
                       <div ref={setLeftNode} className="h-full overflow-y-auto" />
                     ) : hasLeftContext ? (
                       <Tabs value={leftTab} onValueChange={setLeftTab} className="h-full gap-0">
