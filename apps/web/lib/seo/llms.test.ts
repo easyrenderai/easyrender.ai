@@ -172,11 +172,12 @@ describe('llms-full.txt', () => {
   });
 
   it('stays away from noindex paths, guides included', () => {
-    for (const url of urlsIn(withoutForAgents(llmsFullTxt(new Date('2026-12-01T00:00:00Z'))))) {
-      if (new URL(url).origin !== SITE_URL) continue;
-      const path = new URL(url).pathname;
-      for (const prefix of NOINDEX_PREFIXES) expect(path.startsWith(prefix), url).toBe(false);
-    }
+    const urls = urlsIn(withoutForAgents(llmsFullTxt(new Date('2026-12-01T00:00:00Z'))));
+    const noindexUrls = urls.filter((url) => {
+      const { origin, pathname } = new URL(url);
+      return origin === SITE_URL && NOINDEX_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+    });
+    expect(noindexUrls).toEqual([]);
   });
 });
 
