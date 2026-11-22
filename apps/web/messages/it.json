@@ -855,6 +855,12 @@
     },
     "history": {
       "title": "Cronologia"
+    },
+    "settings": {
+      "title": "Impostazioni",
+      "profile": "Nome, inviti, e-mail",
+      "credits": "Saldo e pacchetti",
+      "connectors": "Agenti, negozi, automazioni"
     }
   },
   "AppHome": {

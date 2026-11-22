@@ -6,7 +6,8 @@ import { useTranslations } from 'next-intl';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SETTINGS_NAV } from './nav';
 
-// The pages behind the profile, as one row of links. They are full pages: no drawers.
+// The pages behind the profile, as one row of links. Phones only: from `md` up the left drawer
+// lists them.
 export function SettingsNav() {
   const nav = useTranslations('DashboardNav');
   const pathname = usePathname();

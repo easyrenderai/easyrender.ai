@@ -11,8 +11,8 @@ export const APP_NAV = [
 
 export const ACCOUNT_NAV = { href: '/account', key: 'account', icon: UserRound } as const;
 
-// The pages behind the profile. They are full pages with no drawers, and the Account rail item
-// stays active on every one of them.
+// The pages behind the profile. The left drawer lists them, and the Account rail item stays
+// active on every one of them.
 export const SETTINGS_NAV = [
   { href: '/account', key: 'profile' },
   { href: '/credits', key: 'credits' },

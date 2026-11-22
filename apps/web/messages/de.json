@@ -855,6 +855,12 @@
     },
     "history": {
       "title": "Verlauf"
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "profile": "Name, Empfehlungen, E-Mails",
+      "credits": "Guthaben und Pakete",
+      "connectors": "Agenten, Shops, Automatisierungen"
     }
   },
   "AppHome": {

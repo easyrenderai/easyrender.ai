@@ -855,6 +855,12 @@
     },
     "history": {
       "title": "Histórico"
+    },
+    "settings": {
+      "title": "Definições",
+      "profile": "Nome, convites, e-mails",
+      "credits": "Saldo e pacotes",
+      "connectors": "Agentes, lojas, automatizações"
     }
   },
   "AppHome": {
