@@ -53,11 +53,11 @@ export const PRODUCT_VIEWS_CREDITS = creditsFor(PRODUCT_VIEWS_COST_USD);
 // Polishing one view: the owner describes what is wrong and that view is drawn again.
 export const VIEW_POLISH_CREDITS = creditsFor(VIEW_REDRAW_COST_USD);
 // The Agent chat. Each turn is charged at what the model provider billed, plus the same margin as
-// everything else. The provider's list price per million tokens is below (prompts up to 100K
-// tokens). Whole credits are charged as the fractions add up, so a short message is never rounded
+// everything else. The model is reached through OpenRouter, which passes the provider's list price
+// per million tokens through with no markup (prompts up to 100K tokens). Whole credits are charged as the fractions add up, so a short message is never rounded
 // up to a full credit.
 export const AGENT_MODEL = {
-  id: 'claude-haiku-5-5',
+  id: 'anthropic/claude-haiku-5.5',
   inputUsdPerMTok: 0.1,
   outputUsdPerMTok: 0.5,
   // Reading a cached prompt costs a tenth of the input price; writing one costs 25% more.

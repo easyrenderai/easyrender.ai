@@ -44,10 +44,12 @@ previews run without a prompt.
 
 ### Model
 
-The model is called through the Anthropic SDK (`@anthropic-ai/sdk`) with a per-round
-`max_tokens`, at most 8 tool rounds per turn, and the system prompt kept stable so it caches.
-Which model: see the decision card. The prompt bar shows no model names, matching the render
-quality tiers.
+The model is called through OpenRouter's Anthropic-compatible endpoint with the Anthropic SDK
+(`@anthropic-ai/sdk`, key sent as a bearer token), with a per-round `max_tokens` and at most 8 tool
+rounds per turn. Vincent chose Haiku 5.5 only and OpenRouter as the route (2026-11-22). OpenRouter
+passes the provider's price through with no markup, so the price in `pricing.ts` is what a turn
+costs. The request leaves out prompt-cache and effort fields until a real turn shows OpenRouter
+passes them through. The prompt bar shows no model names, matching the render quality tiers.
 
 ### Charging
 
@@ -91,12 +93,12 @@ trimmed. Photos attach through the existing `/api/uploads`; the model gets the i
 
 ### Safety and keeping prod working
 
-- The Agent area is off until `ANTHROPIC_API_KEY` is set. Without it the page shows an
+- The Agent area is off until `OPENROUTER_API_KEY` is set. Without it the page shows an
   unavailable state and the API answers 503. Nothing else changes.
 - Tool results are data, not instructions. The system prompt says so, and the tool list is only
   the MCP tools: no shell, no web, no file access.
 - Rate limit per user on turns, reusing `consumeApiRateLimit`.
-- New env var: `ANTHROPIC_API_KEY` in `.env.example` and `turbo.json`; it must be set in Vercel.
+- New env var: `OPENROUTER_API_KEY` in `.env.example` and `turbo.json`; it must be set in Vercel.
 
 ### Not in the first version
 

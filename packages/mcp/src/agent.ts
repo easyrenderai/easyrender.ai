@@ -124,10 +124,24 @@ export async function quoteCall(
   return Math.max(0, Math.ceil(await quote(input, actor)));
 }
 
+type Validator = NonNullable<ConstructorParameters<typeof Client>[1]>['jsonSchemaValidator'];
+// A validator that accepts every answer as it is.
+const acceptAnyAnswer = {
+  getValidator: () => (input: unknown) => ({ valid: true, data: input, errorMessage: undefined }),
+} as unknown as Validator;
+
 export async function openToolbox(actor: Actor): Promise<Toolbox> {
   const server = createMcpServer(actor);
   const [clientSide, serverSide] = InMemoryTransport.createLinkedPair();
-  const client = new Client({ name: 'easyrender-agent', version: '0.1.0' });
+  // The server is this process, so its answers are trusted. The client would otherwise reject a
+  // tool's error answer, which carries `error` and not the success fields of the output schema,
+  // and the model would lose the reason the tool failed.
+  const client = new Client(
+    { name: 'easyrender-agent', version: '0.1.0' },
+    {
+      jsonSchemaValidator: acceptAnyAnswer,
+    },
+  );
   await Promise.all([server.connect(serverSide), client.connect(clientSide)]);
   const listed = await client.listTools();
   const gated = new Map<string, GatedTool>();
@@ -218,13 +232,19 @@ const asStored = (chat: Awaited<ReturnType<typeof getAgentChat>>): StoredMessage
   }));
 
 export function agentAvailable() {
-  return config.anthropicKey() !== '';
+  return config.openrouterKey() !== '';
 }
 
 function defaultClient(): ModelClient {
-  const key = config.anthropicKey();
+  const key = config.openrouterKey();
   if (!key) throw new AppError('The agent is not available right now', 503, 'agent_unavailable');
-  return new Anthropic({ apiKey: key }) as unknown as ModelClient;
+  // OpenRouter takes the key as a bearer token. `apiKey: null` stops the SDK reading
+  // ANTHROPIC_API_KEY from the environment and sending it as well.
+  return new Anthropic({
+    apiKey: null,
+    authToken: key,
+    baseURL: config.openrouterUrl(),
+  }) as unknown as ModelClient;
 }
 
 export type TurnDeps = { client?: ModelClient; toolbox?: Toolbox };
@@ -376,8 +396,6 @@ async function runTurn(turn: Turn): Promise<{ credits: number }> {
       const stream = client.messages.stream({
         model: AGENT_MODEL.id,
         max_tokens: AGENT_MAX_OUTPUT_TOKENS,
-        cache_control: { type: 'ephemeral' },
-        output_config: { effort: 'low' },
         system: AGENT_SYSTEM_PROMPT,
         tools: toolbox.tools,
         messages: toModelMessages(asStored(chat)),
