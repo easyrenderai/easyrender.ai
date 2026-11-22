@@ -37,7 +37,7 @@ La [plantilla de n8n para crear fichas en Shopify](https://n8n.io/workflows/1169
 
 Usa un producto conocido para revisar la salida que quieres obtener. En este ejemplo, la foto y el GLB públicos del jarrón permiten comprobar el tipo de archivo que llegará a la ficha. Lo que sigue es una muestra de revisión de medios, con una hoja de ángulos y un modelo existentes de easyrender.
 
-![Foto original del jarrón, hoja de ángulos y captura del modelo 3D, de izquierda a derecha](/blog/figures/n8n-product-pages-images-3d/n8n-ficha-foto-vistas-modelo.jpg "Activos de ejemplo de easyrender. La hoja contiene vistas generadas. La imagen de la derecha es una captura del modelo.")
+![Foto original del jarrón, hoja de ángulos y captura del modelo 3D, de izquierda a derecha](/blog/figures/n8n-product-pages-images-3d/photo-angles-model.jpg "Activos de ejemplo de easyrender. La hoja contiene vistas generadas. La imagen de la derecha es una captura del modelo.")
 
 | Campo a revisar           | Muestra                                               |
 | ------------------------- | ----------------------------------------------------- |

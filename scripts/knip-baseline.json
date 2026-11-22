@@ -17,7 +17,7 @@
   "apps/web/lib/blog/images.ts": ["export BLOG_MODELS", "export DIAGRAM_PREFIX"],
   "apps/web/lib/blog/markdown.tsx": ["type FaqEntry", "type Media"],
   "apps/web/lib/blog/posts.ts": ["export DEFAULT_AUTHOR", "export MIN_INDEXABLE_POSTS"],
-  "apps/web/lib/compare/pages.ts": ["export comparePath", "export parseComparePage"],
+  "apps/web/lib/compare/pages.ts": ["export comparePath"],
   "apps/web/lib/evals.ts": ["type EvalCriterionId"],
   "apps/web/lib/google-tag.ts": ["export GOOGLE_ADS_TAG_ID"],
   "apps/web/lib/oauth-http.ts": ["export CORS"],
