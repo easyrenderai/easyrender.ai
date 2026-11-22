@@ -131,8 +131,12 @@ test('a confirmed fixture payment restores French and returns to the original pr
       .getByRole('alert')
       .filter({ hasText: fr.Credits.checkoutConfirmed.replace('{credits}', '500') }),
   ).toBeVisible();
-  await page.getByRole('link', { name: fr.Credits.backToProject }).click();
-  // A cold `next dev` compiles the render page on this click, same as sign-up above.
-  await expect(page).toHaveURL(`${base}/r/demo-vase`, { timeout: 30_000 });
+  // A cold `next dev` compiles the render page on this click, same as sign-up above, and a click
+  // that lands while the page hydrates can be lost, so click again until the URL changes.
+  await expect(async () => {
+    if (!page.url().includes('/credits')) return;
+    await page.getByRole('link', { name: fr.Credits.backToProject }).click({ timeout: 5_000 });
+    await expect(page).toHaveURL(`${base}/r/demo-vase`, { timeout: 15_000 });
+  }).toPass({ timeout: 60_000 });
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
 });

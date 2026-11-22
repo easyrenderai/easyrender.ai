@@ -176,10 +176,18 @@ test('subscriber pricing pages show localized pack prices in every locale', asyn
   });
   expect(signup.ok()).toBe(true);
   await page.goto(`${base}/credits`);
-  await page.getByRole('button', { name: 'Subscribe to Pro', exact: true }).click();
-  await expect(
-    page.getByText(`You have ${proCreditsText} credits and you are on Pro.`, { exact: true }),
-  ).toBeVisible();
+  // `next dev` paints the page before it is interactive, so the first click can be lost: click
+  // again until the page shows the subscription, and never once it does.
+  const subscribed = page.getByText(`You have ${proCreditsText} credits and you are on Pro.`, {
+    exact: true,
+  });
+  await expect(async () => {
+    if (await subscribed.isVisible()) return;
+    await page.getByRole('button', { name: 'Subscribe to Pro', exact: true }).click({
+      timeout: 5_000,
+    });
+    await expect(subscribed).toBeVisible({ timeout: 10_000 });
+  }).toPass({ timeout: 60_000 });
   for (const locale of LOCALES) {
     await page.goto(`${base}${ROUTES.pricing.paths[locale]}`);
     const copy = messages[locale];

@@ -17,6 +17,7 @@ import { ACCOUNT_NAV, APP_NAV, isActivePath, isAdminPath, isSettingsPath } from 
 import { RailItem } from './rail-item';
 import { RailPreview } from './rail-preview';
 import { RendersPanel } from './renders-panel';
+import { SettingsPanel } from './settings-panel';
 import {
   MD_QUERY,
   PanelSlotProvider,
@@ -69,8 +70,9 @@ const RAIL_KINDS: Record<string, RailKind> = {
 // The signed-in app: a thin rail of destinations that peek at their page on hover, then the page
 // in one rounded block. Left drawer: the renders list. Right drawer: what a page offers as its
 // context (a render's parts). Both drawers resize by dragging, remember their width, and collapse.
-// Settings pages (Account, Credits, Connectors) are full pages with no drawers. Below `md` the
-// rail becomes a bottom bar and the drawers are hidden.
+// Settings pages (Account, Credits, Connectors) put their own list in the left drawer. Overview and
+// admin are full pages with no drawers. Below `md` the rail becomes a bottom bar and the drawers
+// are hidden.
 export function AppShell({
   data,
   account = null,
@@ -91,9 +93,10 @@ export function AppShell({
   const isLibrary = pathname === '/library' || pathname.startsWith('/library/');
   const isAgent = pathname === '/agent' || pathname.startsWith('/agent/');
   // Overview is one focused upload, so it has no renders drawer (that list was a second scrollbar
-  // beside the page; the Library has the renders). Settings and admin are full pages too.
+  // beside the page; the Library has the renders). Admin is a full page too.
   const isOverview = pathname === '/dashboard';
-  const isFullPage = isSettingsPath(pathname) || isAdmin || isOverview;
+  const isSettings = isSettingsPath(pathname);
+  const isFullPage = isAdmin || isOverview;
   const hasLeft = isMd && !isFullPage;
   const hasRight = isXl && !isFullPage && hasRightContext;
   // A render page also offers its edit history, so the left drawer gets a second tab.
@@ -296,7 +299,9 @@ export function AppShell({
                     inert={!isLeftOpen}
                     className="h-full min-w-55 overflow-hidden"
                   >
-                    {isLibrary || isAgent ? (
+                    {isSettings ? (
+                      <SettingsPanel />
+                    ) : isLibrary || isAgent ? (
                       // The library draws its own filters and folders here, the agent its chats.
                       <div ref={setLeftNode} className="h-full overflow-y-auto" />
                     ) : hasLeftContext ? (
