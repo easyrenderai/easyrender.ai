@@ -7,7 +7,7 @@ import type { ReactNode } from 'react';
 import { StatusDot } from './status-dot';
 import { displayName, type ShellData } from './types';
 
-type Kind = 'overview' | 'library' | 'account';
+type Kind = 'overview' | 'library' | 'agent' | 'account';
 
 function Kpi({ value, label }: { value: string; label: string }) {
   return (
@@ -75,6 +75,8 @@ export function RailPreview({
           meta={ago(render.createdAt)}
         />
       ));
+  } else if (kind === 'agent') {
+    caption = t('preview.agent');
   } else {
     kpis = [];
     caption = t('preview.signedIn');

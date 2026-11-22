@@ -8,6 +8,7 @@
         "VERCEL_ENV",
         "REPLICATE_API_TOKEN",
         "REPLICATE_API_BASE_URL",
+        "ANTHROPIC_API_KEY",
         "HARNESS_GITHUB_TOKEN",
         "BETTER_AUTH_*",
         "GOOGLE_CLIENT_ID",

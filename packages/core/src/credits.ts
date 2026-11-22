@@ -1,5 +1,5 @@
 import { db, type Prisma } from '@easyrender/db';
-import { REFERRAL_KICKBACK } from '@easyrender/harness';
+import { MICRO_CREDITS_PER_CREDIT, REFERRAL_KICKBACK } from '@easyrender/harness';
 import { AppError } from './errors';
 
 export async function getBalance(userId: string): Promise<number> {
@@ -153,4 +153,49 @@ export async function spendCredits(input: CreditMutation): Promise<void> {
 // Grants once per idempotency key. Returns false when the key was already used.
 export function grantCredits(input: CreditMutation): Promise<boolean> {
   return db().$transaction((tx) => grantCreditsInTransaction(tx, input));
+}
+
+// Charges one agent chat turn. `microCredits` is the turn's cost with the margin, in millionths of a
+// credit. It is added to what the user already owes, and the whole credits in the total are spent
+// through the ledger (one row, keyed by the turn). The fraction stays on the user. A user who
+// cannot cover the whole credits pays what they have: the rest is not carried, so a balance never
+// goes below zero and no debt builds up. Returns the whole credits charged.
+export async function chargeAgentTurn(input: {
+  userId: string;
+  key: string;
+  microCredits: number;
+}): Promise<number> {
+  if (!Number.isSafeInteger(input.microCredits) || input.microCredits < 0) {
+    throw new AppError('Invalid credit amount', 400, 'invalid_credits');
+  }
+  const alreadyCharged = new Error('agent turn already charged');
+  return db()
+    .$transaction(async (tx) => {
+      const user = await tx.user.update({
+        where: { id: input.userId },
+        data: { agentMicroCredits: { increment: input.microCredits } },
+        select: { agentMicroCredits: true, credits: true },
+      });
+      const owed = Math.floor(user.agentMicroCredits / MICRO_CREDITS_PER_CREDIT);
+      const charged = Math.min(owed, user.credits);
+      if (charged > 0) {
+        const isFirst = await spendCreditsInTransaction(tx, {
+          userId: input.userId,
+          amount: charged,
+          key: input.key,
+          reason: 'agent_chat',
+        });
+        // A repeated turn key rolls the whole charge back, the added fraction included.
+        if (!isFirst) throw alreadyCharged;
+      }
+      await tx.user.update({
+        where: { id: input.userId },
+        data: { agentMicroCredits: { decrement: owed * MICRO_CREDITS_PER_CREDIT } },
+      });
+      return charged;
+    })
+    .catch((error: unknown) => {
+      if (error === alreadyCharged) return 0;
+      throw error;
+    });
 }

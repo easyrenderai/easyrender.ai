@@ -804,7 +804,8 @@
     "account": "Konto",
     "views": "Produktfotos",
     "profile": "Profil",
-    "admin": "Verwaltung"
+    "admin": "Verwaltung",
+    "agent": "Agent"
   },
   "AppShell": {
     "model": "Modell",
@@ -847,7 +848,8 @@
       "byAgents": "Von Agenten",
       "balance": "Guthaben",
       "sheet": "Winkelblatt",
-      "build": "3D erstellen"
+      "build": "3D erstellen",
+      "agent": "Fragen Sie in eigenen Worten. Vorschauen sind kostenlos, kostenpflichtige Schritte fragen vorher."
     },
     "toggleContext": "Teilebereich ein- oder ausblenden",
     "context": {
@@ -3289,5 +3291,91 @@
     "step1": "Foto hochladen",
     "step2": "Kostenloses Konto erstellen",
     "step3": "Jeden Blickwinkel ansehen"
+  },
+  "Agent": {
+    "metaTitle": "Agent",
+    "chats": "Chats",
+    "newChat": "Neuer Chat",
+    "noChats": "Noch keine Chats",
+    "untitled": "Neuer Chat",
+    "deleteChat": "Chat löschen",
+    "deleteTitle": "Diesen Chat löschen?",
+    "deleteBody": "Die Nachrichten werden entfernt. Renders, die der Agent erstellt hat, bleiben in Ihrer Bibliothek.",
+    "cancel": "Abbrechen",
+    "emptyTitle": "Was sollen wir erstellen?",
+    "emptyBody": "Hängen Sie ein Produktfoto an und bitten Sie um ein 3D-Modell. Der Agent nutzt dieselben Werkzeuge wie jeder mit Easy Render verbundene Agent. Vorschauen sind kostenlos, und jeder kostenpflichtige Schritt fragt Sie vorher.",
+    "suggestions": {
+      "credits": "Was bekomme ich für meine Credits?",
+      "library": "Zeig meine letzten Renders"
+    },
+    "attach": "Foto anhängen",
+    "removePhoto": "Foto entfernen",
+    "photoAttached": "Foto angehängt",
+    "placeholder": "Den Agent fragen",
+    "send": "Senden",
+    "working": "Arbeitet",
+    "composerNote": "Eine Nachricht kostet einen Bruchteil eines Credits. Vorschauen sind kostenlos, kostenpflichtige Schritte fragen vorher.",
+    "turnCost": "{credits, plural, one {# Credit} other {# Credits}} für diese Antwort",
+    "sheetAlt": "Winkelbogen des Renders",
+    "openRender": "In der Bibliothek öffnen",
+    "toolStatus": {
+      "waiting": "Wartet auf Sie",
+      "done": "Fertig",
+      "error": "Fehlgeschlagen"
+    },
+    "approvalCost": "{action} kostet {credits, plural, one {# Credit} other {# Credits}}.",
+    "approvalFree": "{action} ist kostenlos.",
+    "approve": "{action} · {credits, plural, one {# Credit} other {# Credits}}",
+    "approveFree": "{action}",
+    "decline": "Jetzt nicht",
+    "addCredits": "Credits hinzufügen",
+    "unavailableTitle": "Der Agent ist noch nicht verfügbar",
+    "unavailableBody": "Der Chat mit dem Agent wird eingerichtet. Alles andere in der App funktioniert wie gewohnt.",
+    "toLibrary": "Bibliothek öffnen",
+    "errors": {
+      "insufficient_credits": {
+        "title": "Ihre Credits sind aufgebraucht",
+        "body": "Fügen Sie Credits hinzu, um weiterzuchatten. Bereits erstellte Renders bleiben in Ihrer Bibliothek."
+      },
+      "agent_unavailable": {
+        "title": "Der Agent ist nicht verfügbar",
+        "body": "Versuchen Sie es in Kürze noch einmal."
+      },
+      "rate_limit": {
+        "title": "Zu viele Nachrichten",
+        "body": "Warten Sie einen Moment und senden Sie erneut."
+      },
+      "upload_failed": {
+        "title": "Das Foto wurde nicht hochgeladen",
+        "body": "Nutzen Sie ein JPEG, PNG oder WebP unter 4 MB und versuchen Sie es erneut."
+      },
+      "chat_full": {
+        "title": "Dieser Chat ist voll",
+        "body": "Starten Sie einen neuen Chat, um fortzufahren."
+      },
+      "internal": {
+        "title": "Etwas ist schiefgelaufen",
+        "body": "Diese Antwort wurde nicht fertig. Ein kostenpflichtiger Schritt läuft erst nach Ihrer Freigabe. Versuchen Sie es erneut."
+      }
+    },
+    "tools": {
+      "create_render": "Vorschau erstellen",
+      "get_render": "Render prüfen",
+      "render_3d": "3D-Modell erstellen",
+      "rebuild_standard": "In niedriger Qualität neu erstellen",
+      "get_credits": "Credits prüfen",
+      "list_renders": "Renders suchen",
+      "set_render_visibility": "Sichtbarkeit ändern",
+      "start_render_sheet": "Winkelbogen zeichnen",
+      "redraw_render_sheet": "Winkelbogen neu zeichnen",
+      "upscale_image": "Bild vergrößern",
+      "get_upscale": "Vergrößerung prüfen",
+      "create_product_views": "Produktfotos erstellen",
+      "get_product_views": "Produktfotos prüfen",
+      "list_product_views": "Produktfotos suchen",
+      "list_upscales": "Vergrößerungen suchen",
+      "polish_product_view": "Produktfoto korrigieren",
+      "build_from_product_views": "3D aus Produktfotos erstellen"
+    }
   }
 }

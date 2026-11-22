@@ -28,6 +28,9 @@ model User {
   emailVerified Boolean  @default(false)
   image         String?
   credits       Int      @default(0)
+  // Agent chat cost that is not yet a whole credit, in millionths of a credit. A turn adds its
+  // cost here and whole credits are charged from it, so a short message is never rounded up.
+  agentMicroCredits Int  @default(0)
   stripeCustomerId   String? @unique
   subscriptionId     String? @unique
   subscriptionStatus String?
@@ -50,6 +53,7 @@ model User {
   catalogItems CatalogItem[]
   shopifyShops ShopifyShop[]
   viewSets  ViewSet[]
+  agentChats AgentChat[]
   libraryFolders LibraryFolder[]
   upscales  Upscale[]
   firstModelEnrollment FirstModelEnrollment?
@@ -435,6 +439,36 @@ model CreditLedger {
   createdAt  DateTime @default(now())
 
   @@index([userId, createdAt])
+}
+
+// One conversation with the agent. Private to its owner: there is no public read.
+model AgentChat {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  messages  AgentMessage[]
+
+  @@index([userId, updatedAt])
+}
+
+// One message of a chat. `content` holds the model's content blocks (text, tool calls and their
+// results) as the model API returns them, so a chat can be replayed to the model as stored.
+model AgentMessage {
+  id           String   @id @default(cuid())
+  chatId       String
+  chat         AgentChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  role         String
+  content      Json
+  inputTokens  Int      @default(0)
+  outputTokens Int      @default(0)
+  // Whole credits charged for this turn; the fraction stays on the user until it adds up.
+  credits      Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  @@index([chatId, createdAt])
 }
 
 model Purchase {

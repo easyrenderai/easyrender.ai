@@ -8,8 +8,7 @@
   "apps/web/components/ui/dialog.tsx": [
     "export DialogClose",
     "export DialogOverlay",
-    "export DialogPortal",
-    "export DialogTrigger"
+    "export DialogPortal"
   ],
   "apps/web/components/ui/table.tsx": ["export TableCaption", "export TableFooter"],
   "apps/web/i18n/config.ts": ["export INTL_LOCALE"],

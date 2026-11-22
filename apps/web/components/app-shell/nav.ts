@@ -1,4 +1,4 @@
-import { Images, LayoutDashboard, Library, UserRound } from 'lucide-react';
+import { Images, LayoutDashboard, Library, MessagesSquare, UserRound } from 'lucide-react';
 
 // The app's destinations. The rail (desktop) and the bottom bar (phones) read this list, so a new
 // page is added in one place. Labels live in messages under DashboardNav. Credits and connectors
@@ -7,6 +7,7 @@ export const APP_NAV = [
   { href: '/dashboard', key: 'overview', icon: LayoutDashboard },
   { href: '/library', key: 'library', icon: Library },
   { href: '/views', key: 'views', icon: Images },
+  { href: '/agent', key: 'agent', icon: MessagesSquare },
 ] as const;
 
 export const ACCOUNT_NAV = { href: '/account', key: 'account', icon: UserRound } as const;

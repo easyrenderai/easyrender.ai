@@ -804,7 +804,8 @@
     "account": "Cuenta",
     "views": "Fotos de producto",
     "profile": "Perfil",
-    "admin": "Admin"
+    "admin": "Admin",
+    "agent": "Agente"
   },
   "AppShell": {
     "model": "Modelo",
@@ -847,7 +848,8 @@
       "byAgents": "De agentes",
       "balance": "Saldo",
       "sheet": "Hoja de ángulos",
-      "build": "Crear 3D"
+      "build": "Crear 3D",
+      "agent": "Pide lo que necesites con tus palabras. Las vistas previas son gratis y los pasos de pago piden permiso."
     },
     "toggleContext": "Mostrar u ocultar el panel de partes",
     "context": {
@@ -3666,5 +3668,91 @@
     "step1": "Sube una foto",
     "step2": "Crea una cuenta gratis",
     "step3": "Mira todos los ángulos"
+  },
+  "Agent": {
+    "metaTitle": "Agente",
+    "chats": "Chats",
+    "newChat": "Chat nuevo",
+    "noChats": "Aún no hay chats",
+    "untitled": "Chat nuevo",
+    "deleteChat": "Eliminar chat",
+    "deleteTitle": "¿Eliminar este chat?",
+    "deleteBody": "Se borran los mensajes. Los renders que creó el agente siguen en tu Biblioteca.",
+    "cancel": "Cancelar",
+    "emptyTitle": "¿Qué hacemos hoy?",
+    "emptyBody": "Adjunta una foto de producto y pide un modelo 3D. El agente usa las mismas herramientas que cualquier agente conectado a Easy Render. Las vistas previas son gratis y cada paso de pago te pide permiso antes.",
+    "suggestions": {
+      "credits": "¿Qué puedo hacer con mis créditos?",
+      "library": "Muestra mis últimos renders"
+    },
+    "attach": "Adjuntar una foto",
+    "removePhoto": "Quitar la foto",
+    "photoAttached": "Foto adjunta",
+    "placeholder": "Pregunta al agente",
+    "send": "Enviar",
+    "working": "Trabajando",
+    "composerNote": "Cada mensaje cuesta una fracción de crédito. Las vistas previas son gratis y los pasos de pago piden permiso.",
+    "turnCost": "{credits, plural, one {# crédito} other {# créditos}} por esta respuesta",
+    "sheetAlt": "Hoja de ángulos del render",
+    "openRender": "Abrir en la Biblioteca",
+    "toolStatus": {
+      "waiting": "Esperando tu OK",
+      "done": "Hecho",
+      "error": "Falló"
+    },
+    "approvalCost": "{action} usará {credits, plural, one {# crédito} other {# créditos}}.",
+    "approvalFree": "{action} es gratis.",
+    "approve": "{action} · {credits, plural, one {# crédito} other {# créditos}}",
+    "approveFree": "{action}",
+    "decline": "Ahora no",
+    "addCredits": "Añadir créditos",
+    "unavailableTitle": "El agente aún no está disponible",
+    "unavailableBody": "Estamos preparando el chat con el agente. El resto de la app funciona con normalidad.",
+    "toLibrary": "Abrir la Biblioteca",
+    "errors": {
+      "insufficient_credits": {
+        "title": "Te has quedado sin créditos",
+        "body": "Añade créditos para seguir chateando. Los renders que ya creaste siguen en tu Biblioteca."
+      },
+      "agent_unavailable": {
+        "title": "El agente no está disponible",
+        "body": "Inténtalo de nuevo en un rato."
+      },
+      "rate_limit": {
+        "title": "Demasiados mensajes",
+        "body": "Espera un momento y vuelve a enviarlo."
+      },
+      "upload_failed": {
+        "title": "La foto no se subió",
+        "body": "Usa un JPEG, PNG o WebP de menos de 4 MB e inténtalo otra vez."
+      },
+      "chat_full": {
+        "title": "Este chat está lleno",
+        "body": "Empieza un chat nuevo para continuar."
+      },
+      "internal": {
+        "title": "Algo salió mal",
+        "body": "Esa respuesta no terminó. Un paso de pago solo se ejecuta después de que lo apruebes. Inténtalo de nuevo."
+      }
+    },
+    "tools": {
+      "create_render": "Crear vista previa",
+      "get_render": "Revisar render",
+      "render_3d": "Crear modelo 3D",
+      "rebuild_standard": "Rehacer en calidad Baja",
+      "get_credits": "Ver créditos",
+      "list_renders": "Buscar renders",
+      "set_render_visibility": "Cambiar visibilidad",
+      "start_render_sheet": "Dibujar hoja de ángulos",
+      "redraw_render_sheet": "Rehacer hoja de ángulos",
+      "upscale_image": "Ampliar imagen",
+      "get_upscale": "Revisar ampliación",
+      "create_product_views": "Crear fotos de producto",
+      "get_product_views": "Revisar fotos de producto",
+      "list_product_views": "Buscar fotos de producto",
+      "list_upscales": "Buscar ampliaciones",
+      "polish_product_view": "Corregir una foto de producto",
+      "build_from_product_views": "Crear 3D desde fotos de producto"
+    }
   }
 }
