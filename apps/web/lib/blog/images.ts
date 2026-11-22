@@ -74,7 +74,12 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   '/blog/figures/n8n-image-to-3d-workflow/polling-diagram-en.webp': { width: 1280, height: 720 },
   '/blog/figures/n8n-image-to-3d-workflow/polling-diagram-es.webp': { width: 1280, height: 720 },
 
+  '/blog/figures/product-photography-lighting/matte-setup.webp': { width: 1216, height: 510 },
+  '/blog/figures/product-photography-lighting/gloss-setup.webp': { width: 1216, height: 510 },
+  '/blog/figures/product-photography-lighting/texture-setup.webp': { width: 1216, height: 510 },
+
   // Drawn illustrations, see ILLUSTRATION_DIR below.
+  '/blog/illustrations/product-photography-lighting/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/furniture-photography/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/shopify-3d-models/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/product-photography-angles/hero.webp': { width: 1280, height: 720 },
