@@ -59,12 +59,27 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   '/blog/figures/shopify-3d-models/chair-inspection.webp': { width: 960, height: 720 },
   '/blog/figures/product-photography-angles/armchair-rear-quarter.jpg': { width: 392, height: 391 },
   '/blog/figures/3d-file-formats/blender-reopen.jpg': { width: 640, height: 480 },
+  '/blog/figures/white-background-product-photography/vase-edge.jpg': { width: 435, height: 474 },
+  '/blog/figures/glb-vs-gltf/vase-gltf-render.jpg': { width: 640, height: 480 },
+  '/blog/figures/furniture-model-from-photo/coffee-table-photo-model.jpg': {
+    width: 1280,
+    height: 545,
+  },
+  '/blog/figures/compress-glb/coffee-baseline-quarter.jpg': { width: 640, height: 480 },
+  '/blog/figures/compress-glb/coffee-decimated-quarter.jpg': { width: 640, height: 480 },
 
   // Drawn illustrations, see ILLUSTRATION_DIR below.
   '/blog/illustrations/furniture-photography/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/shopify-3d-models/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/product-photography-angles/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/3d-file-formats/hero.webp': { width: 1280, height: 720 },
+  '/blog/illustrations/white-background-product-photography/hero.webp': {
+    width: 1280,
+    height: 720,
+  },
+  '/blog/illustrations/glb-vs-gltf/hero.webp': { width: 1280, height: 720 },
+  '/blog/illustrations/furniture-model-from-photo/hero.webp': { width: 1280, height: 720 },
+  '/blog/illustrations/compress-glb/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/n8n-product-pages-images-3d/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/how-to-make-a-3d-model-from-photos/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/product-photography-for-ecommerce/hero.webp': { width: 1280, height: 720 },
