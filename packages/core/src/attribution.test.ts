@@ -38,7 +38,7 @@ describe('country and consent policy', () => {
     expect(classifyCountry('US').consent_region).toBe('standard');
   });
   it('gates optional tools, respects rejection and GPC, and defaults new tools conservatively', () => {
-    for (const tool of ['ga4']) {
+    for (const tool of ['ga4', 'ads']) {
       expect(CONSENT_CONFIG[tool]).toEqual({ strict: 'consent', standard: 'allow_unless_optout' });
       expect(isToolAllowed(tool, 'strict', null, false)).toBe(false);
       expect(isToolAllowed(tool, 'strict', true, false)).toBe(true);

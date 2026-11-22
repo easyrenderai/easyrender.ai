@@ -3,6 +3,7 @@ import { MAILING_TOKEN_CHECK_SCRIPT } from '@/lib/mailing-privacy';
 // Public Google Ads destination selected in this account's installation screen. The AW
 // prefix limits this container to Google tags. Never add a second GTM/GA loader alongside it.
 export const GOOGLE_ADS_TAG_ID = 'AW-18570382360';
+export const GOOGLE_ADS_SIGNUP_SEND_TO = `${GOOGLE_ADS_TAG_ID}/Uh3CCIiymr0dEJiYhpdF`;
 
 // The current Google snippet uses gtm.js and gtag('js'); no legacy config call is needed.
 // Denied consent is the bootstrap state, not a substitute for the separate consent/analytics
