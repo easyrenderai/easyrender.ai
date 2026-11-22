@@ -1,0 +1,108 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  easyrender.ai outage alarm. A Route 53 health check requests the production site every 30 seconds
+  from eight AWS regions. A CloudWatch alarm fires after about two minutes of failures and emails
+  an SNS topic, and emails again on recovery. Route 53 publishes health check metrics in
+  us-east-1 only, so deploy this stack there.
+
+Parameters:
+  AlarmEmail:
+    Type: String
+    Default: ""
+    Description: >-
+      Address that receives the alarm and the recovery mail. Pass it on the command line, never
+      commit it. The address has to confirm the subscription from the mail AWS sends. Empty creates
+      no subscription (only for a test stack that has to be read with the CLI).
+  Domain:
+    Type: String
+    Default: easyrender.ai
+    Description: Host name the health check requests over HTTPS.
+  ResourcePath:
+    Type: String
+    Default: /
+    Description: >-
+      Path to request. `/` answers 200 from the app itself on every request (no-store), so it
+      fails when the app is down and not only when the CDN is. A path that answers 404 makes a
+      deliberately failing check.
+  FailureThreshold:
+    Type: Number
+    Default: 2
+    MinValue: 1
+    MaxValue: 10
+    Description: Consecutive failed checks, at one every 30 seconds, before a region counts as unhealthy.
+
+Conditions:
+  HasEmail: !Not [!Equals [!Ref AlarmEmail, ""]]
+
+Resources:
+  Topic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "${AWS::StackName}-alarm"
+      DisplayName: easyrender.ai outage alarm
+
+  EmailSubscription:
+    Type: AWS::SNS::Subscription
+    Condition: HasEmail
+    Properties:
+      TopicArn: !Ref Topic
+      Protocol: email
+      Endpoint: !Ref AlarmEmail
+
+  HealthCheck:
+    Type: AWS::Route53::HealthCheck
+    Properties:
+      HealthCheckConfig:
+        Type: HTTPS
+        FullyQualifiedDomainName: !Ref Domain
+        ResourcePath: !Ref ResourcePath
+        Port: 443
+        RequestInterval: 30
+        FailureThreshold: !Ref FailureThreshold
+        EnableSNI: true
+        MeasureLatency: false
+        Regions:
+          - us-east-1
+          - us-west-1
+          - us-west-2
+          - eu-west-1
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-northeast-1
+          - sa-east-1
+      HealthCheckTags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName} ${Domain}${ResourcePath}"
+
+  Alarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${AWS::StackName}-down"
+      AlarmDescription: !Sub >-
+        https://${Domain}${ResourcePath} failed the Route 53 health check for two minutes.
+        Roll back with the Rollback workflow if a release caused it (RELEASING.md).
+      Namespace: AWS/Route53
+      MetricName: HealthCheckStatus
+      Dimensions:
+        - Name: HealthCheckId
+          Value: !Ref HealthCheck
+      Statistic: Minimum
+      Period: 60
+      EvaluationPeriods: 2
+      DatapointsToAlarm: 2
+      Threshold: 1
+      ComparisonOperator: LessThanThreshold
+      # No data means the checks stopped reporting, which is also worth an email.
+      TreatMissingData: breaching
+      AlarmActions:
+        - !Ref Topic
+      OKActions:
+        - !Ref Topic
+
+Outputs:
+  HealthCheckId:
+    Value: !Ref HealthCheck
+  AlarmName:
+    Value: !Ref Alarm
+  TopicArn:
+    Value: !Ref Topic
