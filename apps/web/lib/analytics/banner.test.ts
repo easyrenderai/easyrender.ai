@@ -2,8 +2,14 @@ import { classifyCountry } from '@easyrender/core/attribution';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterAll, expect, it, vi } from 'vitest';
+import { type ConsentChoice, readConsent } from './consent';
 
-const state = vi.hoisted(() => ({ country: 'US', isResolved: true, hasGpc: false }));
+const state = vi.hoisted(() => ({
+  country: 'US',
+  isResolved: true,
+  hasGpc: false,
+  choice: { accepted: null, advertising: false } as ConsentChoice,
+}));
 vi.stubEnv('NEXT_PUBLIC_GA_MEASUREMENT_ID', 'G-TEST000000');
 vi.mock('next/navigation', () => ({ usePathname: () => '/' }));
 vi.mock('next-intl', () => ({
@@ -11,6 +17,7 @@ vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
 }));
 vi.mock('next/link', () => ({ default: () => null }));
+vi.mock('next-intl/server', () => ({ getTranslations: async () => (key: string) => key }));
 vi.mock('react', async (original) => {
   const react = await original<typeof import('react')>();
   return {
@@ -21,7 +28,9 @@ vi.mock('react', async (original) => {
           ? state.isResolved
           : initial && typeof initial === 'object' && 'consent_region' in initial
             ? { ...initial, ...classifyCountry(state.country), gpc: state.hasGpc }
-            : initial,
+            : initial && typeof initial === 'object' && 'accepted' in initial
+              ? state.choice
+              : initial,
       ),
   };
 });
@@ -50,3 +59,37 @@ it('does not prompt while geolocation is loading or when GPC is active', () => {
   expect(renderToStaticMarkup(createElement(Analytics))).not.toContain('consent-banner');
   state.hasGpc = false;
 });
+
+it('offers only accept and reject with equal visual weight in the banner', () => {
+  state.country = 'ES';
+  const html = renderToStaticMarkup(createElement(Analytics));
+  const buttons = [...html.matchAll(/<button\b([^>]*)>(.*?)<\/button>/g)];
+  expect(buttons.map((button) => button[2])).toEqual(['accept', 'reject']);
+  expect(buttons[0]?.[1]).toBe(buttons[1]?.[1]);
+});
+
+it('keeps analytics-only available on the cookie preferences page', async () => {
+  const { CookiesPage } = await import('@/components/cookies-page');
+  const html = renderToStaticMarkup(await CookiesPage());
+  const buttons = [...html.matchAll(/<button\b[^>]*>(.*?)<\/button>/g)];
+  expect(buttons.map((button) => button[1])).toEqual(['accept', 'reject', 'analyticsOnly']);
+});
+
+it.each([undefined, false])(
+  'does not re-prompt a saved analytics-only choice (%s)',
+  (advertising) => {
+    state.country = 'ES';
+    state.choice = readConsent(
+      encodeURIComponent(
+        JSON.stringify({
+          version: 'v1',
+          date: new Date().toISOString(),
+          accepted: true,
+          advertising,
+        }),
+      ),
+    );
+    expect(renderToStaticMarkup(createElement(Analytics))).not.toContain('consent-banner');
+    state.choice = { accepted: null, advertising: false };
+  },
+);
