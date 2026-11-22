@@ -218,7 +218,7 @@ function indexableLinks(now: Date): { pages: Link[]; guides: Link[] } {
     const posts = new Map<string, BlogPost>(
       listPosts(locale, now).map((post) => [post.path, post]),
     );
-    const compares = new Map(listComparePages(locale).map((page) => [page.path, page]));
+    const compares = new Map(listComparePages(locale, now).map((page) => [page.path, page]));
     for (const entry of localeEntries(locale, now)) {
       const post = posts.get(entry.path);
       if (post) {
