@@ -469,7 +469,7 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
       ft_utm_campaign: 'req02-t1',
     });
     expect(await confirmedPurchase(userId, sessionId)).toMatchObject({
-      transaction_id: purchase.id,
+      transaction_id: sessionId,
       value: 5,
       currency: 'USD',
       items: [{ item_id: 'payg' }],
@@ -553,7 +553,7 @@ describe.skipIf(!url)('analytics through real server functions and local Postgre
         is_first_purchase: true,
       });
       expect(await confirmedPurchase(userId, invoiceId)).toMatchObject({
-        transaction_id: purchase.id,
+        transaction_id: invoiceId,
         value: amountPaid / 100,
         items: [{ item_id: invoicePlan, price: amountPaid / 100 }],
       });

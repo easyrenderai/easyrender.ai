@@ -50,3 +50,28 @@ it('never lets an analytics persistence failure fail the successful business cal
     Promise.resolve(captureServer('render_ready', 'fixture', context, {})),
   ).resolves.toBeUndefined();
 });
+
+it('keeps one delivery per purchase event across replays, preserving its browser identity and immutable payload', async () => {
+  const browser = { ...context, userId: 'owner', distinctId: 'browser', hasDeferredDelivery: true };
+  const paidAt = new Date('2026-11-21T12:00:00Z');
+  await captureServer(
+    'purchase_completed',
+    'stripe-purchase',
+    browser,
+    { $session_id: 'session', revenue: 10 },
+    undefined,
+    paidAt,
+  );
+  await captureServer(
+    'purchase_completed',
+    'stripe-purchase',
+    { ...browser, distinctId: 'different' },
+    { revenue: 99 },
+  );
+  expect(state.rows.size).toBe(1);
+  expect(state.rows.get(eventUuid('purchase_completed:stripe-purchase'))).toMatchObject({
+    distinctId: 'browser',
+    occurredAt: paidAt,
+    properties: { $session_id: 'session', revenue: 10 },
+  });
+});

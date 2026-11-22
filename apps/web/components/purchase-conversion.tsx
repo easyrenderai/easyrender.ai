@@ -3,15 +3,9 @@
 import type { confirmedPurchase } from '@easyrender/core';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { gaEvent } from '@/lib/analytics/browser';
+import { reportPurchaseConversion } from '@/lib/analytics/browser';
 
 type Confirmation = NonNullable<Awaited<ReturnType<typeof confirmedPurchase>>>;
-
-function reportConversion(result: Confirmation) {
-  if (result.server_managed) return;
-  const { server_managed: _managed, issued_credits: _credits, ...purchase } = result;
-  gaEvent('purchase', purchase, purchase.transaction_id);
-}
 
 export function PurchaseConversion({
   sessionId,
@@ -23,14 +17,15 @@ export function PurchaseConversion({
   const router = useRouter();
   // use-effect-audit: ignore polls the external checkout confirmation and refreshes the credited balance
   useEffect(() => {
-    if (initial?.server_managed) return;
     const controller = new AbortController();
     let attempts = 0;
+    let confirmation = initial;
+    let hasRefreshed = Boolean(initial);
     const poll = async () => {
       if (controller.signal.aborted || attempts++ >= 30) return;
-      if (initial) {
+      if (confirmation?.posthog && confirmation.transaction_id === sessionId) {
         // Consent and gtag may initialize after the checkout return. The event helper dedupes.
-        reportConversion(initial);
+        reportPurchaseConversion(confirmation);
         if (!controller.signal.aborted) timer = setTimeout(poll, 2000);
         return;
       }
@@ -41,9 +36,13 @@ export function PurchaseConversion({
         );
         if (response.ok) {
           const result = (await response.json()) as Confirmation | null;
-          if (result?.transaction_id) {
-            router.refresh();
-            return;
+          if (!controller.signal.aborted && result?.transaction_id === sessionId) {
+            confirmation = result;
+            reportPurchaseConversion(result);
+            if (!hasRefreshed) {
+              hasRefreshed = true;
+              router.refresh();
+            }
           }
         }
       } catch {

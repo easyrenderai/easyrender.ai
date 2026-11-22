@@ -15,11 +15,18 @@ import {
   unitAmountCents,
 } from '@easyrender/harness';
 import Stripe from 'stripe';
-import { captureServer } from './analytics';
-import { pickAttribution } from './attribution';
+import { captureServer, eventUuid } from './analytics';
+import {
+  type CheckoutAttribution,
+  checkoutAttributionFromMetadata,
+  checkoutAttributionMetadata,
+  pickAttribution,
+  sanitizeProperties,
+} from './attribution';
 import { config } from './config';
 import { grantCredits } from './credits';
 import { AppError } from './errors';
+import { isGoogleMeasurementConfigured } from './google-measurement';
 import { enqueueGooglePurchase, linkGoogleCheckout } from './google-outbox';
 import { currencyForVisitor } from './pricing-context';
 import {
@@ -190,6 +197,7 @@ export async function createCheckoutDetails(
   },
   context: {
     anonId?: string | null;
+    checkoutAttribution?: CheckoutAttribution;
     expectedVariant?: string | null;
     country?: string | null;
     locale?: Stripe.Checkout.SessionCreateParams.Locale;
@@ -206,11 +214,13 @@ export async function createCheckoutDetails(
   const request = parseCheckout(input, variant);
   const next = checkoutReturnPath(input.next);
   const returnQuery = next ? `&next=${encodeURIComponent(next)}` : '';
+  const attributionMetadata = checkoutAttributionMetadata(context.checkoutAttribution ?? {});
   let metadata: Stripe.MetadataParam = {
     userId,
     plan: request.plan,
     pricing_variant: variant,
     pricing_flag: PRICING_FLAG,
+    ...(context.locale ? { ui_locale: context.locale } : {}),
   };
   const client = stripe();
   if (!client) {
@@ -306,7 +316,7 @@ export async function createCheckoutDetails(
       client_reference_id: userId,
       ...customer,
       line_items: lineItems,
-      metadata,
+      metadata: { ...metadata, ...attributionMetadata },
       subscription_data: { metadata },
       adaptive_pricing: { enabled: false },
       ...chargeCurrency,
@@ -323,7 +333,7 @@ export async function createCheckoutDetails(
     ...customer,
     ...(user.stripeCustomerId ? {} : { customer_creation: 'always' as const }),
     line_items: lineItems,
-    metadata,
+    metadata: { ...metadata, ...attributionMetadata },
     adaptive_pricing: { enabled: false },
     ...chargeCurrency,
     ...urls,
@@ -516,7 +526,15 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session, paidAt: Dat
   // Monthly-plan credits arrive with invoice.paid, once per billing cycle.
   if (session.payment_status !== 'paid') return;
   await linkGoogleCheckout(session.id, id(session.invoice));
-  if (session.mode !== 'payment') return;
+  if (session.mode !== 'payment') {
+    const invoiceId = id(session.invoice);
+    const purchase = invoiceId
+      ? await db().purchase.findUnique({ where: { stripeSessionId: invoiceId } })
+      : null;
+    if (purchase?.status === 'paid')
+      await capturePurchase(purchase.id, false, { checkout: session });
+    return;
+  }
 
   const purchase = await db().purchase.findUnique({ where: { stripeSessionId: session.id } });
   if (!purchase) throw new Error(`unknown checkout session ${session.id}`);
@@ -540,7 +558,7 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session, paidAt: Dat
   });
   await db().purchase.updateMany({ where: { id: purchase.id, paidAt: null }, data: { paidAt } });
   await enqueueGooglePurchase(purchase.id);
-  await capturePurchase(purchase.id);
+  await capturePurchase(purchase.id, false, { checkout: session });
 }
 
 async function onInvoicePaid(invoice: Stripe.Invoice, eventAt: Date) {
@@ -580,7 +598,7 @@ async function onInvoicePaid(invoice: Stripe.Invoice, eventAt: Date) {
   });
   await db().purchase.updateMany({ where: { id: purchase.id, paidAt: null }, data: { paidAt } });
   await enqueueGooglePurchase(purchase.id);
-  await capturePurchase(purchase.id);
+  await capturePurchase(purchase.id, false, { invoice });
 }
 
 async function onSubscriptionChanged(subscription: Stripe.Subscription) {
@@ -634,13 +652,60 @@ function listRevenueUsd(purchase: { packId: string; credits: number }): number |
   return isPlanId(plan) ? unitAmountCents(plan, variant) / 100 : null;
 }
 
-export async function capturePurchase(purchaseId: string, hasDeferredDelivery = false) {
+async function purchaseCheckout(
+  stripeId: string,
+  paidInvoice?: Stripe.Invoice,
+): Promise<Stripe.Checkout.Session | null> {
+  const client = stripe();
+  if (!client) return null;
+  const options = { timeout: 5000, maxNetworkRetries: 0 };
+  if (stripeId.startsWith('cs_')) return client.checkout.sessions.retrieve(stripeId, {}, options);
+  if (!stripeId.startsWith('in_')) return null;
+  const invoice = paidInvoice ?? (await client.invoices.retrieve(stripeId, {}, options));
+  // Only the initial subscription payment belongs to the browser checkout.
+  const subscription = id(invoice.parent?.subscription_details?.subscription);
+  if (invoice.billing_reason !== 'subscription_create' || !subscription) return null;
+  const sessions = await client.checkout.sessions.list({ subscription, limit: 1 }, options);
+  const session = sessions.data.find((session) => id(session.invoice) === stripeId);
+  // invoice.paid can precede Checkout attaching its invoice. Retry via the checkout webhook/recovery.
+  if (!session) throw new Error('Checkout attribution not ready');
+  return session;
+}
+
+export async function capturePurchase(
+  purchaseId: string,
+  hasDeferredDelivery = false,
+  source: { checkout?: Stripe.Checkout.Session; invoice?: Stripe.Invoice } = {},
+) {
   if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
   try {
     const purchase = await db().purchase.findUniqueOrThrow({ where: { id: purchaseId } });
     // A signed replay can supply the real time; never invent it from mutable metadata updates.
     if (!purchase.paidAt || purchase.status !== 'paid') return;
     const user = await db().user.findUniqueOrThrow({ where: { id: purchase.userId } });
+    const resolved =
+      source.checkout ?? (await purchaseCheckout(purchase.stripeSessionId, source.invoice));
+    const session = resolved?.client_reference_id === purchase.userId ? resolved : null;
+    const touch = checkoutAttributionFromMetadata(session?.metadata);
+    const country = session?.customer_details?.address?.country;
+    const attributionProperties = {
+      ...touch,
+      has_ad_click_attribution: Boolean(touch.gclid || touch.gbraid || touch.wbraid),
+      ...Object.fromEntries(
+        Object.entries(touch)
+          .filter(([key]) => key.startsWith('utm_'))
+          .map(([key, value]) => [`ft_${key}`, value]),
+      ),
+      ...(touch.landing_path ? { ft_landing_path: touch.landing_path } : {}),
+      ...(touch.referrer_host
+        ? { ft_referrer: touch.referrer_host, $referring_domain: touch.referrer_host }
+        : {}),
+      ...(touch.posthog_session_id ? { $session_id: touch.posthog_session_id } : {}),
+      ...(country && /^[A-Z]{2}$/.test(country)
+        ? { $geoip_country_code: country, country, geo_country: country }
+        : {}),
+      ...(session?.metadata?.ui_locale ? { ui_locale: session.metadata.ui_locale } : {}),
+    };
     const [first] = await db().$queryRaw<{ id: string }[]>`
       SELECT id FROM "Purchase" WHERE "userId" = ${purchase.userId} AND status = 'paid'
       ORDER BY COALESCE("paidAt", "createdAt"), id LIMIT 1`;
@@ -653,9 +718,13 @@ export async function capturePurchase(purchaseId: string, hasDeferredDelivery = 
           previewId: null,
           source: 'web',
           hasDeferredDelivery,
+          distinctId: touch.posthog_distinct_id,
           attribution: pickAttribution(user),
         },
         {
+          ...attributionProperties,
+          stripe_session_id: session?.id ?? purchase.stripeSessionId,
+          plan: purchase.packId.split(':')[0],
           pricing_subject: await pricingSubject(purchase.userId),
           pricing_variant: purchasedVariant(purchase.packId),
           [`$feature/${PRICING_FLAG}`]: purchasedVariant(purchase.packId),
@@ -678,7 +747,12 @@ export async function capturePurchase(purchaseId: string, hasDeferredDelivery = 
 }
 
 /** Owner-scoped, DB-confirmed checkout result. Never trust success query parameters. */
-export async function confirmedPurchase(userId: string, sessionId: string) {
+export async function confirmedPurchase(
+  userId: string,
+  sessionId: string,
+  hasMeasurementConsent = false,
+  hasAdvertisingConsent = false,
+) {
   let purchase = await db().purchase.findFirst({
     where: { userId, stripeSessionId: sessionId, status: 'paid' },
   });
@@ -705,15 +779,42 @@ export async function confirmedPurchase(userId: string, sessionId: string) {
     }
   }
   if (!purchase) return null;
+  const posthog = hasMeasurementConsent
+    ? await db().posthogDelivery.findUnique({
+        where: { id: eventUuid(`purchase_completed:${purchase.id}`) },
+        select: { id: true, distinctId: true, occurredAt: true, properties: true },
+      })
+    : null;
+  const properties = posthog?.properties as Record<string, unknown> | undefined;
   return {
+    posthog:
+      posthog && typeof properties?.$session_id === 'string'
+        ? {
+            ...posthog,
+            properties: sanitizeProperties(properties ?? {}, hasAdvertisingConsent),
+            occurredAt: posthog.occurredAt.toISOString(),
+          }
+        : null,
     server_managed: Boolean(
-      await db().googlePurchaseDelivery.findUnique({
+      (await db().googlePurchaseDelivery.findUnique({
         where: { purchaseId: purchase.id },
         select: { purchaseId: true },
-      }),
+      })) ||
+        (isGoogleMeasurementConfigured() &&
+          (await db().googleCheckout.findFirst({
+            where: {
+              userId,
+              revokedAt: null,
+              expiresAt: { gte: purchase.paidAt ?? purchase.updatedAt },
+              clientId: { not: '' },
+              sessionId: { not: '' },
+              OR: [{ id: purchase.stripeSessionId }, { invoiceId: purchase.stripeSessionId }],
+            },
+            select: { id: true },
+          }))),
     ),
     pricing_variant: purchasedVariant(purchase.packId),
-    transaction_id: purchase.id,
+    transaction_id: sessionId,
     issued_credits: purchase.credits,
     value: purchase.amountCents / 100,
     currency: purchase.currency.toUpperCase(),

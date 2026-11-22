@@ -408,3 +408,29 @@ it('fails closed on an unknown or unavailable live subscription', async () => {
   );
   expect(state.session).not.toHaveBeenCalled();
 });
+
+it('carries sanitized browser attribution into Stripe without letting it overwrite billing metadata', async () => {
+  const context = {
+    locale: 'es' as const,
+    checkoutAttribution: {
+      landing_path: '/es?email=private',
+      referrer_host: 'www.google.com',
+      utm_source: 'google',
+      posthog_session_id: '019a0000-0000-7000-8000-000000000001',
+      posthog_distinct_id: 'browser-fixture',
+      gclid: 'Ad_Click_123',
+    },
+  };
+  await createCheckoutDetails('user', { plan: 'payg', credits: 500 }, context);
+  expect(state.session.mock.calls[0][0].metadata).toMatchObject({
+    userId: 'user',
+    pricing_variant: 'test',
+    ui_locale: 'es',
+    at_landing_path: '/es',
+    at_referrer_host: 'www.google.com',
+    at_utm_source: 'google',
+    at_posthog_session_id: context.checkoutAttribution.posthog_session_id,
+    at_posthog_distinct_id: 'browser-fixture',
+    at_gclid: 'Ad_Click_123',
+  });
+});
