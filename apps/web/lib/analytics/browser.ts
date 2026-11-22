@@ -8,6 +8,7 @@ import {
 } from '@easyrender/core/attribution';
 import { PRICING_FLAG, type PricingVariant } from '@easyrender/harness/pricing';
 import type { PostHog } from 'posthog-js';
+import { GOOGLE_ADS_SIGNUP_SEND_TO } from '@/lib/google-tag';
 import { isMailingTokenLocation } from '@/lib/mailing-privacy';
 import {
   AD_CLICK_KEYS,
@@ -140,6 +141,23 @@ export function gaEvent(
       window.location.href,
       isAdvertisingAllowed ? advertisingTouch : null,
     ),
+    page_referrer: googleUrl(document.referrer),
+  });
+}
+function adsConversion(sendTo: string, identity: string) {
+  if (
+    !isAdvertisingAllowed ||
+    window.location.hostname !== 'easyrender.ai' ||
+    !window.gtag ||
+    isMailingTokenLocation(window.location.href)
+  )
+    return;
+  const key = `ads:${sendTo}:${identity}`;
+  if (conversions.has(key)) return;
+  conversions.add(key);
+  window.gtag('event', 'conversion', {
+    send_to: sendTo,
+    page_location: advertisingUrl(window.location.href, advertisingTouch),
     page_referrer: googleUrl(document.referrer),
   });
 }
@@ -409,8 +427,10 @@ export async function captureSignup() {
       typeof result === 'object' &&
       'method' in result &&
       (result.method === 'email' || result.method === 'google')
-    )
+    ) {
       gaEvent('sign_up', { method: result.method });
+      adsConversion(GOOGLE_ADS_SIGNUP_SEND_TO, 'signup');
+    }
   } catch {
     /* Missing delivery is preferable to inventing a signup. */
   }

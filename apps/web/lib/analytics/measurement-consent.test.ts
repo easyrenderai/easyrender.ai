@@ -20,7 +20,7 @@ it('requires a valid explicit choice in strict/unknown regions and honors reject
   expect(allowsServerMeasurement(new Headers({ 'x-vercel-ip-country': 'US' }))).toBe(true);
 });
 
-it('advertising measurement needs a separate explicit choice, never inferred from analytics or region', async () => {
+it('advertising defaults on in standard regions but preserves explicit analytics-only choices', async () => {
   const { allowsServerAdvertisingMeasurement } = await import('./measurement-consent');
   const withChoice = (advertising: boolean, accepted = true) =>
     new Headers({
@@ -28,7 +28,7 @@ it('advertising measurement needs a separate explicit choice, never inferred fro
       cookie: `er_consent=${encodeURIComponent(JSON.stringify({ version: CONFIG_VERSION, date: new Date().toISOString(), accepted, advertising }))}`,
     });
   expect(allowsServerAdvertisingMeasurement(new Headers({ 'x-vercel-ip-country': 'US' }))).toBe(
-    false,
+    true,
   );
   expect(allowsServerAdvertisingMeasurement(new Headers({ cookie: cookie(true) }))).toBe(false);
   expect(allowsServerAdvertisingMeasurement(withChoice(true))).toBe(true);
@@ -38,3 +38,37 @@ it('advertising measurement needs a separate explicit choice, never inferred fro
   gpc.set('sec-gpc', '1');
   expect(allowsServerAdvertisingMeasurement(gpc)).toBe(false);
 });
+
+it.each(['MX', 'US', 'BR', 'AR', 'CO', 'CL'])(
+  'allows advertising by default in %s, unless rejected or GPC is present',
+  async (country) => {
+    const { allowsServerAdvertisingMeasurement } = await import('./measurement-consent');
+    const headers = new Headers({ 'x-vercel-ip-country': country });
+    expect(allowsServerAdvertisingMeasurement(headers)).toBe(true);
+    headers.set('sec-gpc', '1');
+    expect(allowsServerAdvertisingMeasurement(headers)).toBe(false);
+    headers.delete('sec-gpc');
+    headers.set('cookie', cookie(false));
+    expect(allowsServerAdvertisingMeasurement(headers)).toBe(false);
+    headers.set('cookie', cookie(true));
+    expect(allowsServerAdvertisingMeasurement(headers)).toBe(false);
+  },
+);
+
+it.each(['ES', 'DE', 'FR', 'IT', 'PT', 'GB', 'CH', 'NO', 'XX'])(
+  'still requires separate advertising consent in strict/unknown region %s',
+  async (country) => {
+    const { allowsServerAdvertisingMeasurement } = await import('./measurement-consent');
+    const headers = new Headers({ 'x-vercel-ip-country': country });
+    expect(allowsServerAdvertisingMeasurement(headers)).toBe(false);
+    headers.set('cookie', cookie(true));
+    expect(allowsServerAdvertisingMeasurement(headers)).toBe(false);
+    headers.set(
+      'cookie',
+      `er_consent=${encodeURIComponent(JSON.stringify({ version: CONFIG_VERSION, date: new Date().toISOString(), accepted: true, advertising: true }))}`,
+    );
+    expect(allowsServerAdvertisingMeasurement(headers)).toBe(true);
+    headers.set('sec-gpc', '1');
+    expect(allowsServerAdvertisingMeasurement(headers)).toBe(false);
+  },
+);

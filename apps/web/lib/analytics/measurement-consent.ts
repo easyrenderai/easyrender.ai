@@ -1,5 +1,5 @@
 import { isToolAllowed } from '@easyrender/core/attribution';
-import { readConsent } from './consent';
+import { allowsAdvertisingMeasurement, readConsent } from './consent';
 import { privacyRegion } from './privacy-region';
 
 function choice(headers: Headers) {
@@ -10,5 +10,5 @@ export function allowsServerMeasurement(headers: Headers) {
   return isToolAllowed('ga4', region.consent_region, choice(headers).accepted, region.gpc);
 }
 export function allowsServerAdvertisingMeasurement(headers: Headers) {
-  return allowsServerMeasurement(headers) && choice(headers).advertising;
+  return allowsAdvertisingMeasurement(privacyRegion(headers), choice(headers));
 }

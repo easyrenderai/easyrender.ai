@@ -1,5 +1,4 @@
 {
-  "apps/web/components/analytics.tsx": ["export chooseConsent"],
   "apps/web/components/blog/diagrams/formats.tsx": ["export CLAY_VASE_GLB"],
   "apps/web/components/blog/post-card.tsx": ["export PostMeta"],
   "apps/web/components/prompt-bar.tsx": ["export prepare"],
