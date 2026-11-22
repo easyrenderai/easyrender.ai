@@ -1,5 +1,64 @@
 # Analytics and attribution
 
+## Checkout attribution and confirmed purchases
+
+Checkout sends a bounded attribution allowlist through `/api/checkout` into Stripe Session
+metadata (`at_*` keys). Landing paths exclude queries/fragments, referrers are domains, and
+campaign values exclude URLs and email addresses. The server checks its own region, consent
+cookie and GPC header before retaining browser identifiers or advertising click IDs. Locale and
+pricing variant remain server-selected. Subscription metadata carries billing fields only;
+renewals never inherit the initial browser session.
+
+PostHog's `always` cookieless mode returns `$posthog_cookieless` and no browser session ID.
+That sentinel cannot join webhook events to a visitor. The browser therefore uses two named
+SDK instances: cookieless for the existing anonymous policy, and anonymous memory-only tracking
+when the existing regional analytics permission allows identifiers. Only the permitted instance
+can send. Neither stores SDK identifiers, creates person profiles, identifies accounts, or enables
+recordings. Withdrawal clears the consented in-memory identity. Events collected before a grant
+remain cookieless; they cannot be retroactively joined to the consented checkout.
+
+First touch uses the existing `er_campaign` sessionStorage record only when analytics storage is
+allowed, including the standard-region default without a saved choice. The original landing and
+campaign survive full navigations for thirty minutes without refreshing their expiry or replacing
+them with an internal campaign. Rejected/required-but-not-given/GPC states use memory only.
+Advertising IDs use the existing independently gated, expiring `er_ad_touch` record. No new
+persistent storage or environment variable is introduced.
+
+Paid webhooks preserve both `purchase` and `purchase_completed`. Each has one deterministic
+PosthogDelivery row per Purchase; receipt payloads and paid timestamps are immutable on replay.
+They include the checkout's `$session_id` and distinct ID when allowed, otherwise the existing
+user-ID fallback, plus revenue, currency, plan, credits, Stripe session ID, locale, pricing variant,
+first touch and Stripe billing country (`$geoip_country_code`, not the webhook IP). Validated
+`gclid`/`gbraid`/`wbraid` values are retained only for purchases whose checkout allowed advertising;
+other analytics events retain their existing click-ID redaction.
+
+The owner-scoped confirmation endpoint returns the paid PostHog receipt only with current
+analytics permission and strips click IDs without current advertising permission. The return page
+captures `purchase_completed` using the receipt's UUID, distinct ID and original payment timestamp,
+restoring the checkout session in `before_send` (the SDK otherwise overwrites `$session_id`).
+These are the same deduplication fields as the webhook. A sessionStorage receipt also suppresses
+poll/reload sends, with memory-only fallback when storage is unavailable. Build purchase dashboards
+from **one** of the two compatible event names, never the sum of both.
+
+GA4 uses the Stripe Checkout session ID as `transaction_id` for one-off and initial subscription
+payments. `server_managed` suppresses browser Google measurement whenever a delivery or eligible
+server checkout exists, including the paid-to-enqueue gap. Browser fallback purchases require
+advertising permission; existing server GA4 analytics-only measurement and Google revocation
+remain unchanged. Google Ads purchases continue through the configured **GA4 import**. The
+signup-only label in `google-tag.ts` is not a purchase destination; no second purchase label or
+website conversion is added.
+
+Recovery can retrieve Stripe metadata after a missed enqueue. First subscription invoices can
+arrive before their Checkout Session links the invoice: attribution then waits for the checkout
+webhook or recovery, rather than permanently recording an unattributed receipt. Stripe lookups
+have bounded timeouts and do not undo a credit grant on analytics failure. Existing historical
+receipts are not rewritten and past sessions without metadata cannot acquire browser attribution.
+
+Relevant SDK contracts: [cookieless tracking](https://posthog.com/docs/privacy/data-collection),
+[server session IDs](https://posthog.com/docs/data/sessions), and
+[event deduplication](https://posthog.com/docs/data/events). Ingestion deduplication is eventual;
+local tests verify payloads and receipt behavior, not production report attribution.
+
 ## November 18 tracking corrections
 
 - The automatic consent prompt is restricted to the configured strict region (EEA, UK,
@@ -28,10 +87,9 @@ receive ten nullable text columns, including an ISO UTC `first_seen_at`. No exis
 constraints or indexes change. The change is additive, so the deploy applies it without
 `DB_ACCEPT_DATA_LOSS`.
 
-The browser holds only normalized campaign/referrer values in module memory. Internal navigation
-preserves them; reloads, new tabs and non-OAuth full navigations reset them. Neither attribution
-nor PostHog uses cookies, localStorage or sessionStorage. A preview stores the supplied first
-touch; signup copies the earliest owned anonymous preview or uses the form's memory snapshot.
+The browser holds normalized campaign/referrer values in module memory, with consent-gated
+sessionStorage retention described above. A preview stores the supplied first touch; signup copies
+the earliest owned anonymous preview or uses the form's memory snapshot.
 An atomic all-columns-null predicate prevents overwriting an initialized user's first touch.
 `first_seen_at` is server receipt time, not a client-controlled timestamp.
 
@@ -153,16 +211,17 @@ allow only one terminal winner under polling/webhook races. The closed failure c
 A disabled free-sheet pipeline (`SHEET_ENABLED=false`) has no angle-sheet start/finish events
 until an explicit paid sheet generation starts. It still stores attribution on the draft row.
 
-PostHog delivery is best effort, scheduled with Next `after()`. The server SDK loads only when
-configured. Requests have a 1.5-second timeout and a 2-second shutdown deadline, with no retry
-inside a user request. Attribution remains authoritative if analytics fails; there is no durable
-analytics outbox. No delivery guarantee or live weekly reconciliation is implied by local tests.
+PostHog events are persisted in the durable PosthogDelivery outbox before scheduling delivery
+with Next `after()`. Delivery leases, retry limits and retention are defined in
+`packages/core/src/posthog-outbox.ts`; recovery repairs missing receipts from committed business
+facts. Local tests do not imply a production delivery or attribution guarantee.
 
 Events have deterministic UUIDs per event and entity, and allowlisted common/properties only.
-Server identifiers are the internal user ID or `pv_<preview-id>`; signup aliases the preview.
-Geography on completion/payment events uses the stored creation context, not the webhook
-provider's IP/location. No IP address is sent. PostHog browser `before_send` removes non-UTM
-query parameters, fragments, page titles and click IDs; its public SDK project token is retained
+Server identifiers are the internal user ID or `pv_<preview-id>`; purchases use a permitted
+browser distinct ID when available. Signup aliases the preview. Render geography uses stored
+creation context, and checkout purchases prefer Stripe billing country, never the webhook IP. No IP address is sent. PostHog browser `before_send` removes non-UTM
+query parameters, fragments, page titles and click IDs (except explicitly permitted purchase
+click fields); its public SDK project token is retained
 because ingestion requires it. Browser imports happen after paint, outside the critical path.
 
 A purchase is emitted only on a confirmed signed Stripe webhook, after granting credits and
@@ -178,10 +237,9 @@ There is no refund webhook in this repository, so `purchase_refunded` is not inv
 GA mirrors `sign_up`, `preview_ready`, `render_ready`, `begin_checkout`, and confirmed `purchase`.
 The return endpoint scopes purchases to the session owner; a `status=success` query alone cannot
 produce a conversion. Subscription returns resolve their Stripe invoice read-only, then require
-a paid database record. The browser deduplicates purchase transaction IDs within the page session.
-GA receives no application user ID. Existing pricing/accounting is USD; the export and browser
-return values use that currency. Multi-currency accounting would require storing currency on
-Purchase before enabling multi-currency prices.
+a paid database record. The browser deduplicates purchase transaction IDs across reloads within
+the tab session. GA receives no application user ID. Amount and currency come from the paid
+Purchase snapshot; analytics does not change checkout prices or convert the charged currency.
 
 ## Export (read only)
 

@@ -67,3 +67,13 @@ it('uses only recorded advertising permission and immutable paid time, never per
   expect(result.timestamp_micros).toBe(paidAt.getTime() * 1000);
   expect(parseGoogleContext({ ...checkout, adMeasurementAllowed: true }, true)).toEqual(checkout);
 });
+
+it('uses the same Stripe checkout transaction ID as browser confirmation, including the first subscription invoice', () => {
+  for (const stripeSessionId of ['cs_fixture', 'in_fixture']) {
+    const payload = googlePurchasePayload(
+      { ...purchase, stripeSessionId },
+      { ...checkout, id: 'cs_fixture' },
+    );
+    expect(payload.events[0].params.transaction_id).toBe('cs_fixture');
+  }
+});

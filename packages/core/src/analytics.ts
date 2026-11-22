@@ -17,6 +17,7 @@ type EventContext = {
   source: string;
   attribution: Attribution;
   hasDeferredDelivery?: boolean;
+  distinctId?: string;
 };
 type Scheduler = (work: () => Promise<void>) => void;
 let schedule: Scheduler = (work) => {
@@ -74,7 +75,7 @@ export async function captureServer(
       subjectId: identity,
       userId: context.userId,
       event,
-      distinctId: context.userId ?? `pv_${context.previewId}`,
+      distinctId: context.distinctId ?? context.userId ?? `pv_${context.previewId}`,
       alias: alias ?? null,
       occurredAt,
       properties: { ...eventProperties(uuid, { ...context, attribution }), ...properties },

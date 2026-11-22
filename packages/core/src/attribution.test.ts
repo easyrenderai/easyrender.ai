@@ -145,3 +145,46 @@ describe('first-touch normalization and event privacy', () => {
     );
   });
 });
+
+describe('checkout metadata', () => {
+  it('allowlists and bounds every Stripe value, strips private URL data, and rejects malformed identifiers', async () => {
+    const { checkoutAttributionMetadata, normalizeCheckoutAttribution } = await import(
+      './attribution'
+    );
+    const result = checkoutAttributionMetadata(
+      normalizeCheckoutAttribution(
+        {
+          landing_path: '/es/pricing?email=private#secret',
+          referrer_host: 'WWW.GOOGLE.COM',
+          utm_source: 'google',
+          utm_campaign: '😀'.repeat(800),
+          utm_term: 'user@example.com',
+          posthog_distinct_id: '$posthog_cookieless',
+          posthog_session_id: 'not-a-session',
+          gclid: 'bad?id',
+          gbraid: 'a'.repeat(501),
+          pricing_variant: 'forged',
+          userId: 'forged',
+          arbitrary: 'secret',
+        },
+        true,
+        true,
+      ),
+    );
+    expect(result).toEqual({
+      at_landing_path: '/es/pricing',
+      at_referrer_host: 'www.google.com',
+      at_utm_source: 'google',
+      at_utm_campaign: '😀'.repeat(250),
+    });
+    expect(Object.keys(result).length).toBeLessThan(40);
+    expect(Object.values(result).every((value) => value.length <= 500)).toBe(true);
+  });
+  it.each(['/invite/private', '//evil.test/path', '/reset-password/private', '/\\evil.test'])(
+    'drops unsafe path %s',
+    async (landing_path) => {
+      const { normalizeCheckoutAttribution } = await import('./attribution');
+      expect(normalizeCheckoutAttribution({ landing_path }, true, true)).toEqual({});
+    },
+  );
+});

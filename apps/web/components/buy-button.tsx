@@ -5,7 +5,12 @@ import { Loader2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { captureBrowser, gaEvent, googleCheckoutContext } from '@/lib/analytics/browser';
+import {
+  captureBrowser,
+  checkoutAttribution,
+  gaEvent,
+  googleCheckoutContext,
+} from '@/lib/analytics/browser';
 
 // Posts to a billing endpoint that answers with a Stripe URL, then follows it.
 export function BuyButton({
@@ -44,7 +49,10 @@ export function BuyButton({
                 ...body,
                 locale,
                 ...(endpoint === '/api/checkout'
-                  ? { googleAnalytics: await googleCheckoutContext() }
+                  ? {
+                      googleAnalytics: await googleCheckoutContext(),
+                      attribution: checkoutAttribution(),
+                    }
                   : {}),
               }),
             });

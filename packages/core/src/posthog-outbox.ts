@@ -15,7 +15,11 @@ type Event = Pick<
   properties: Record<string, string | number | boolean | null>;
 };
 export async function enqueuePosthogEvent(event: Event) {
-  const properties = sanitizeProperties(event.properties) as Prisma.InputJsonObject;
+  const properties = sanitizeProperties(
+    event.properties,
+    (event.event === 'purchase' || event.event === 'purchase_completed') &&
+      event.properties.has_ad_click_attribution === true,
+  ) as Prisma.InputJsonObject;
   if (Buffer.byteLength(JSON.stringify(properties)) > 16384 || !Number.isFinite(+event.occurredAt))
     throw new Error('Invalid analytics event');
   // Replay never rewrites the original timestamp, attribution or payload.

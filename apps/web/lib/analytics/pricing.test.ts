@@ -1,7 +1,10 @@
 import { afterEach, expect, it, vi } from 'vitest';
 
 const sdk = vi.hoisted(() => ({ init: vi.fn(), capture: vi.fn() }));
-vi.mock('posthog-js', () => ({ default: sdk }));
+vi.mock('posthog-js', () => {
+  sdk.init.mockReturnValue(sdk);
+  return { default: sdk };
+});
 afterEach(() => {
   vi.clearAllMocks();
   vi.unstubAllEnvs();
