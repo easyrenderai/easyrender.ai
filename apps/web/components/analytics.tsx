@@ -36,19 +36,21 @@ export function chooseConsent(accepted: boolean, advertising = false) {
   document.cookie = `er_consent=${encodeURIComponent(JSON.stringify({ version: CONFIG_VERSION, date: new Date().toISOString(), accepted, advertising: accepted && advertising }))}; Path=/; Max-Age=31536000; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
   window.dispatchEvent(new Event('er-consent'));
 }
-export function ConsentControls() {
+export function ConsentControls({ isGranular = false }: { isGranular?: boolean } = {}) {
   const t = useTranslations('Analytics');
   return (
     <div className="flex flex-wrap gap-2">
-      <Button variant="outline" onClick={() => chooseConsent(true)}>
-        {t('accept')}
-      </Button>
       <Button variant="outline" onClick={() => chooseConsent(true, true)}>
-        {t('acceptAdvertising')}
+        {t('accept')}
       </Button>
       <Button variant="outline" onClick={() => chooseConsent(false)}>
         {t('reject')}
       </Button>
+      {isGranular && (
+        <Button variant="outline" onClick={() => chooseConsent(true)}>
+          {t('analyticsOnly')}
+        </Button>
+      )}
     </div>
   );
 }

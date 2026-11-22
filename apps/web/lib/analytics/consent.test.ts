@@ -11,6 +11,10 @@ it('preserves legacy analytics-only acceptance and refuses stale or malformed co
     accepted: true,
     advertising: false,
   });
+  expect(readConsent(cookie({ accepted: true, advertising: false }), now)).toEqual({
+    accepted: true,
+    advertising: false,
+  });
   expect(readConsent(cookie({ accepted: true, advertising: true }), now)).toEqual({
     accepted: true,
     advertising: true,

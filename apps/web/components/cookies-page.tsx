@@ -27,7 +27,7 @@ export async function CookiesPage() {
       </dl>
       <h2 className="text-lg font-medium">{t('change')}</h2>
       <p className="text-sm text-muted-foreground">{t('withdraw')}</p>
-      <ConsentControls />
+      <ConsentControls isGranular />
     </article>
   );
 }

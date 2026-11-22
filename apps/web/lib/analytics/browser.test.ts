@@ -537,36 +537,42 @@ it.each([null, {}, { method: 'login' }, { method: 'email', status: 500 }])(
   },
 );
 
-it('Analytics only immediately withdraws a standard-region default grant without a saved cookie', async () => {
-  const page = await googleBrowser();
-  page.api.initializeGa('G-TEST000000');
-  vi.stubGlobal(
-    'fetch',
-    vi.fn(async () => new Response(null, { status: 204 })),
-  );
-  await page.api.setBrowserTools(false, true, false, true);
-  Object.assign(page.window, { dispatchEvent: () => true });
-  const { chooseConsent } = await import('@/components/analytics');
-  chooseConsent(true);
-  const { readConsent } = await import('./consent');
-  expect(readConsent(document.cookie.match(/er_consent=([^;]+)/)?.[1])).toEqual({
-    accepted: true,
-    advertising: false,
-  });
-  vi.stubGlobal(
-    'fetch',
-    vi.fn(async () => Response.json({ method: 'email' })),
-  );
-  await page.api.captureSignup();
-  expect(page.commands().filter(([c, e]) => c === 'event' && e === 'conversion')).toEqual([]);
-  expect(
-    page
-      .commands()
-      .filter(([c, e]) => c === 'consent' && e === 'update')
-      .at(-1),
-  ).toEqual([
-    'consent',
-    'update',
-    expect.objectContaining({ ad_storage: 'denied', ad_user_data: 'denied' }),
-  ]);
-});
+it.each([
+  ['Analytics only', true],
+  ['Reject', false],
+] as const)(
+  '%s immediately withdraws a standard-region default grant without a saved cookie',
+  async (_label, isAccepted) => {
+    const page = await googleBrowser();
+    page.api.initializeGa('G-TEST000000');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(null, { status: 204 })),
+    );
+    await page.api.setBrowserTools(false, true, false, true);
+    Object.assign(page.window, { dispatchEvent: () => true });
+    const { chooseConsent } = await import('@/components/analytics');
+    chooseConsent(isAccepted);
+    const { readConsent } = await import('./consent');
+    expect(readConsent(document.cookie.match(/er_consent=([^;]+)/)?.[1])).toEqual({
+      accepted: isAccepted,
+      advertising: false,
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => Response.json({ method: 'email' })),
+    );
+    await page.api.captureSignup();
+    expect(page.commands().filter(([c, e]) => c === 'event' && e === 'conversion')).toEqual([]);
+    expect(
+      page
+        .commands()
+        .filter(([c, e]) => c === 'consent' && e === 'update')
+        .at(-1),
+    ).toEqual([
+      'consent',
+      'update',
+      expect.objectContaining({ ad_storage: 'denied', ad_user_data: 'denied' }),
+    ]);
+  },
+);
