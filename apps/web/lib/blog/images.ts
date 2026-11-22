@@ -70,7 +70,10 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   '/blog/figures/n8n-image-to-3d-workflow/polling-diagram-en.webp': { width: 1280, height: 720 },
   '/blog/figures/n8n-image-to-3d-workflow/polling-diagram-es.webp': { width: 1280, height: 720 },
 
+  '/blog/figures/woocommerce-3d-models/storefront-test.webp': { width: 800, height: 584 },
+
   // Drawn illustrations, see ILLUSTRATION_DIR below.
+  '/blog/illustrations/woocommerce-3d-models/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/furniture-photography/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/shopify-3d-models/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/product-photography-angles/hero.webp': { width: 1280, height: 720 },
