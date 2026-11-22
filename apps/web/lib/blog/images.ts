@@ -67,6 +67,8 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   },
   '/blog/figures/compress-glb/coffee-baseline-quarter.jpg': { width: 640, height: 480 },
   '/blog/figures/compress-glb/coffee-decimated-quarter.jpg': { width: 640, height: 480 },
+  '/blog/figures/n8n-image-to-3d-workflow/polling-diagram-en.webp': { width: 1280, height: 720 },
+  '/blog/figures/n8n-image-to-3d-workflow/polling-diagram-es.webp': { width: 1280, height: 720 },
 
   // Drawn illustrations, see ILLUSTRATION_DIR below.
   '/blog/illustrations/furniture-photography/hero.webp': { width: 1280, height: 720 },
@@ -80,6 +82,7 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   '/blog/illustrations/glb-vs-gltf/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/furniture-model-from-photo/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/compress-glb/hero.webp': { width: 1280, height: 720 },
+  '/blog/illustrations/n8n-image-to-3d-workflow/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/n8n-product-pages-images-3d/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/how-to-make-a-3d-model-from-photos/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/product-photography-for-ecommerce/hero.webp': { width: 1280, height: 720 },
