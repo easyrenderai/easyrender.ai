@@ -19,6 +19,7 @@ import {
   signLinkState,
   writeRenderMetafields,
 } from './shopify';
+import { type ShopifyPack, settlePendingPurchases, shopifyPacks } from './shopify-billing';
 
 // What the embedded Shopify page does, step by step. Every call is for one shop, proven by a
 // session token (see ./shopify). The shop's products are read from Shopify each time; the 3D work
@@ -63,6 +64,9 @@ export type ShopifyOverview =
       quote: CatalogQuote;
       summary: CatalogSummary;
       balance: number;
+      // The credit packs sold through Shopify billing, and whether one is waiting for Shopify.
+      packs: ShopifyPack[];
+      hasPendingPurchase: boolean;
       // One row per active product: the master grid.
       products: ShopifyProductRow[];
     };
@@ -180,6 +184,8 @@ export async function shopifyOverview(
     };
   }
   const scope: CatalogScope = { userId: row.userId, platform: 'shopify', store: shop };
+  // A pack the merchant just approved in Shopify is credited before the balance is read.
+  const waitingPurchases = await settlePendingPurchases(shop, fetchImpl);
   const [products, catalog] = await Promise.all([
     listShopProducts(shop, accessToken, fetchImpl),
     // Reading the catalogue also moves its queue forward.
@@ -204,6 +210,8 @@ export async function shopifyOverview(
     quote: await quoteCatalog(row.userId, items.length),
     summary: catalog.summary,
     balance: catalog.balance,
+    packs: shopifyPacks(),
+    hasPendingPurchase: waitingPurchases > 0,
     products: buildProductRows(
       products,
       catalog.items,

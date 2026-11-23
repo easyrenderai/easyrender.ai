@@ -52,6 +52,7 @@ export {
 } from './service-email';
 export * from './shopify';
 export * from './shopify-app';
+export * from './shopify-billing';
 export * from './signup-attribution';
 export * from './signup-receipt';
 export * from './storage';

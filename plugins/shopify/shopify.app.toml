@@ -22,5 +22,9 @@ api_version = "2026-07"
   uri = "https://easyrender.ai/api/shopify/webhooks"
 
   [[webhooks.subscriptions]]
+  topics = ["app_purchases_one_time/update"]
+  uri = "https://easyrender.ai/api/shopify/webhooks"
+
+  [[webhooks.subscriptions]]
   compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
   uri = "https://easyrender.ai/api/shopify/webhooks"
