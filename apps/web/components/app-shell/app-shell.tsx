@@ -1,6 +1,6 @@
 'use client';
 
-import { PanelLeft, PanelRight } from 'lucide-react';
+import { PanelRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { cn } from '@/lib/utils';
 import { AppBreadcrumb } from './app-breadcrumb';
+import { LogoToggle } from './logo-toggle';
 import { ACCOUNT_NAV, APP_NAV, isActivePath, isAdminPath, isSettingsPath } from './nav';
 import { RailItem } from './rail-item';
 import { RailPreview } from './rail-preview';
@@ -171,11 +172,21 @@ export function AppShell({
         aria-label={t('navLabel')}
         className="relative z-30 hidden w-14 shrink-0 flex-col items-center gap-1 py-3 md:flex"
       >
-        <Button variant="ghost" size="icon" className="mb-2 size-10" asChild>
-          <Link href="/dashboard" aria-label={t('home')} title={t('home')}>
-            <BrandMark className="size-[1.375rem]" />
-          </Link>
-        </Button>
+        {/* With a drawer on the page the logo is its toggle. Overview and admin have none, so the
+            logo stays the link home there. */}
+        {hasLeft ? (
+          <LogoToggle
+            isOpen={isLeftOpen}
+            onToggle={() => toggle(leftRef)}
+            label={t(isLeftOpen ? 'collapseSidebar' : 'expandSidebar')}
+          />
+        ) : (
+          <Button variant="ghost" size="icon" className="mb-2 size-10" asChild>
+            <Link href="/dashboard" aria-label={t('home')} title={t('home')}>
+              <BrandMark className="size-[1.375rem]" />
+            </Link>
+          </Button>
+        )}
         {[...APP_NAV, accountNav].map((item) => {
           const isActive = isActivePath(pathname, item.href);
           const isBottom = item.href === accountNav.href;
@@ -224,18 +235,6 @@ export function AppShell({
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header className="flex h-12 shrink-0 items-center gap-2 px-3 md:pl-1">
-          {hasLeft && (
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => toggle(leftRef)}
-              aria-label={t('toggleSidebar')}
-              aria-pressed={isLeftOpen}
-              title={t('toggleSidebar')}
-            >
-              <PanelLeft />
-            </Button>
-          )}
           <Link
             href="/dashboard"
             aria-label={t('home')}

@@ -25,6 +25,7 @@ export async function loadHeaderAccount(userId: string, locale?: Locale): Promis
     balanceNumber: balance === null ? null : format.number(balance),
     accountLabel: t('account'),
     creditsLinkLabel: t('creditsLink'),
+    buyCreditsLabel: t('buyCredits'),
     menuLabel: t('accountMenu'),
   };
 }
