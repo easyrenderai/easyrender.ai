@@ -101,6 +101,7 @@ aws cloudformation deploy --region us-east-1 --stack-name easyrender-outage-alar
   --template-file infra/aws/outage-alarm.yml \
   --parameter-overrides AlarmEmail=<address> --no-execute-changeset
 # read the change set (four resources: topic, subscription, health check, alarm), then:
+# (a stack left in ROLLBACK_COMPLETE by a failed first attempt has to be deleted before a retry)
 aws cloudformation deploy --region us-east-1 --stack-name easyrender-outage-alarm \
   --template-file infra/aws/outage-alarm.yml --parameter-overrides AlarmEmail=<address>
 ```
@@ -119,8 +120,10 @@ aws cloudformation delete-stack --region us-east-1 --stack-name easyrender-outag
 
 To see the mail itself, set the real alarm for a moment (it returns to OK on its own when the next
 evaluation passes): `aws cloudwatch set-alarm-state --region us-east-1 --alarm-name
-easyrender-outage-alarm-down --state-value ALARM --state-reason "test"`. The first deploy can send
-one alarm mail before the first health check results arrive; a missing metric counts as down.
+easyrender-outage-alarm-down --state-value ALARM --state-reason "test"`. A new alarm reads
+`INSUFFICIENT_DATA` for its first minutes, then `OK`, which sends the recovery mail once: that is the
+sign it works. The test stack must read `ALARM` with the reason "Threshold Crossed: 2 datapoints
+[0.0, 0.0]"; "no datapoints" means it has not measured anything yet.
 
 ## Outputs the app uses
 

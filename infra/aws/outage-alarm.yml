@@ -92,8 +92,10 @@ Resources:
       DatapointsToAlarm: 2
       Threshold: 1
       ComparisonOperator: LessThanThreshold
-      # No data means the checks stopped reporting, which is also worth an email.
-      TreatMissingData: breaching
+      # A new alarm has no datapoints for its first minutes. Counting them as failures mailed a false
+      # alarm at creation (seen on the test stack). While the check runs it reports every minute,
+      # healthy or not, so a real outage always arrives as 0 and never as a gap.
+      TreatMissingData: ignore
       AlarmActions:
         - !Ref Topic
       OKActions:
