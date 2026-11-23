@@ -72,6 +72,8 @@ type Overview =
         number
       >;
       balance: number;
+      packs: { credits: number; priceCents: number }[];
+      hasPendingPurchase: boolean;
       products: ProductRow[];
     };
 
@@ -120,6 +122,7 @@ export function ShopifyApp() {
   const format = useFormatter();
   const [generateError, setGenerateError] = useState<string | null>(null);
   const [sent, setSent] = useState<number | null>(null);
+  const [buying, setBuying] = useState<number | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [ticked, setTicked] = useState<ReadonlySet<string>>(new Set());
@@ -132,6 +135,7 @@ export function ShopifyApp() {
     refetchInterval: (current) => {
       const data = current.state.data;
       if (data?.isLinked === false) return 5000;
+      if (data?.isLinked && data.hasPendingPurchase) return 4000;
       if (data?.isLinked && data.summary.queued + data.summary.drafting + data.summary.building > 0)
         return 4000;
       return false;
@@ -212,6 +216,22 @@ export function ShopifyApp() {
     }
     setSent(null);
     await query.refetch();
+  }
+
+  // The merchant approves the charge on a Shopify page, then Shopify brings them back to the app.
+  async function buy(credits: number) {
+    setBuying(credits);
+    setGenerateError(null);
+    try {
+      const { confirmationUrl } = await api<{ confirmationUrl: string }>('/api/shopify/purchase', {
+        credits,
+      });
+      captureBrowser('shopify_pack_started', { credits });
+      window.open(confirmationUrl, '_top');
+    } catch (caught) {
+      setGenerateError(caught instanceof Error ? caught.message : String(caught));
+      setBuying(null);
+    }
   }
 
   if (isNotInShopify) {
@@ -409,13 +429,31 @@ export function ShopifyApp() {
                     {missingCredits > 0 &&
                       ` · ${t('missing', { credits: format.number(missingCredits) })}`}
                   </p>
-                  {missingCredits > 0 && (
-                    <Button variant="outline" size="sm" asChild>
-                      <a href="/credits" target="_blank" rel="noopener noreferrer">
-                        <ExternalLink />
-                        {t('buy')}
-                      </a>
-                    </Button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {overview.packs.map((pack) => (
+                      <Button
+                        key={pack.credits}
+                        variant="outline"
+                        size="sm"
+                        disabled={buying !== null}
+                        onClick={() => buy(pack.credits)}
+                      >
+                        {buying === pack.credits && <Loader2 className="animate-spin" />}
+                        {t('pack', {
+                          credits: format.number(pack.credits),
+                          price: format.number(pack.priceCents / 100, {
+                            style: 'currency',
+                            currency: 'USD',
+                          }),
+                        })}
+                      </Button>
+                    ))}
+                  </div>
+                  {overview.hasPendingPurchase && (
+                    <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="size-4 animate-spin" />
+                      {t('purchasePending')}
+                    </p>
                   )}
                 </div>
               )}
