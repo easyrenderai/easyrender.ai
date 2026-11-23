@@ -31,10 +31,12 @@ export function useMediaQuery(query: string) {
 export type PanelSide = 'left' | 'right';
 
 type PanelSlot = {
-  // The elements inside the drawers that a page's content is drawn into.
-  nodes: Record<PanelSide, HTMLElement | null>;
+  // The elements a page's content is drawn into: the two drawers, and the top bar's tab slot.
+  nodes: Record<PanelSide | 'tabs', HTMLElement | null>;
   // Pages announce themselves so the shell knows whether a drawer has anything to show.
   register: (side: PanelSide) => () => void;
+  // Opens the right drawer if it was closed, so a tab in the top bar never changes hidden content.
+  reveal?: () => void;
 };
 
 const PanelSlotContext = createContext<PanelSlot | null>(null);
@@ -43,6 +45,7 @@ const PanelSlotContext = createContext<PanelSlot | null>(null);
 export function usePanelSlotState() {
   const [leftNode, setLeftNode] = useState<HTMLElement | null>(null);
   const [rightNode, setRightNode] = useState<HTMLElement | null>(null);
+  const [tabsNode, setTabsNode] = useState<HTMLElement | null>(null);
   const [counts, setCounts] = useState<Record<PanelSide, number>>({ left: 0, right: 0 });
   const register = useCallback((side: PanelSide) => {
     setCounts((current) => ({ ...current, [side]: current[side] + 1 }));
@@ -51,8 +54,12 @@ export function usePanelSlotState() {
   return {
     setLeftNode,
     setRightNode,
+    setTabsNode,
     hasRightContext: counts.right > 0,
-    slot: { nodes: { left: leftNode, right: rightNode }, register } satisfies PanelSlot,
+    slot: {
+      nodes: { left: leftNode, right: rightNode, tabs: tabsNode },
+      register,
+    } satisfies PanelSlot,
   };
 }
 
@@ -85,4 +92,20 @@ export function ShellPanel({
       {children}
     </div>
   );
+}
+
+// The tabs of a page's right drawer, drawn in the top bar where the drawer is open beside the page
+// (icons only, the bar has no text). Anywhere else, a screen too narrow for the drawer or the
+// marketing frame, they stay where they are written, above the content they switch.
+export function ShellTabs({ children }: { children: ReactNode }) {
+  const slot = useContext(PanelSlotContext);
+  const isWide = useMediaQuery(XL_QUERY);
+  const node = slot?.nodes.tabs;
+  if (node && isWide) return createPortal(children, node);
+  return children;
+}
+
+// Opens the right drawer when it is closed. A no-op outside the app shell.
+export function useRevealRight() {
+  return useContext(PanelSlotContext)?.reveal;
 }
