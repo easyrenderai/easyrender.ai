@@ -45,3 +45,13 @@ export async function lockedPreview(image: Uint8Array): Promise<Uint8Array> {
     .toBuffer();
   return new Uint8Array(output);
 }
+
+// The paid sheet for a page: the master at a given width, as WebP. The master itself stays what
+// the download link serves.
+export async function resizedPreview(image: Uint8Array, width: number): Promise<Uint8Array> {
+  const output = await sharp(image)
+    .resize({ width: Math.min(width, 2048), withoutEnlargement: true })
+    .webp({ quality: 86 })
+    .toBuffer();
+  return new Uint8Array(output);
+}

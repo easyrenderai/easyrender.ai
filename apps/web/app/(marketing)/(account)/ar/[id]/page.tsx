@@ -42,7 +42,7 @@ export default async function ArPage({ params }: PageProps<'/ar/[id]'>) {
         {t('title', { name })}
       </h1>
       <ArView
-        src={`/api/renders/${render.id}/model?v=${render.updatedAt.getTime()}`}
+        src={`/api/renders/${render.id}/model?view=1&v=${render.updatedAt.getTime()}`}
         name={name}
         qrUrl={`/api/renders/${render.id}/qr`}
       />

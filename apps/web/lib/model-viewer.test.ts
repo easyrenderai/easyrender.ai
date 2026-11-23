@@ -16,11 +16,19 @@ it('shows accessible loading feedback before the viewer library or model is down
 });
 
 it('renders an eager angle image and loading feedback together', () => {
-  const html = renderToStaticMarkup(createElement(AngleSheet, { src: '/fixture.png' }));
+  const html = renderToStaticMarkup(
+    createElement(AngleSheet, { src: '/fixture.png', isEager: true }),
+  );
   expect(html).toContain('src="/fixture.png"');
   expect(html).toContain('loading="eager"');
   expect(html).toContain('role="status"');
   expect(html).toContain('sheetLoading');
+});
+
+it('leaves an angle image below the model to load when it nears the screen', () => {
+  const html = renderToStaticMarkup(createElement(AngleSheet, { src: '/fixture.png' }));
+  expect(html).toContain('loading="lazy"');
+  expect(html).toContain('decoding="async"');
 });
 
 it('labels the main download as an action and explains which format is for Apple', async () => {

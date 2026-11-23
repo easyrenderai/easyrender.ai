@@ -104,7 +104,8 @@ export function ModelView({
             setExporting(true);
             setExportError(null);
             try {
-              save(await exportUsdz(src), `easyrender-${name}.usdz`);
+              // From the full model, not the lighter copy the viewer shows.
+              save(await exportUsdz(downloadUrl), `easyrender-${name}.usdz`);
               captureBrowser('model_exported', { format: 'usdz' });
             } catch {
               setExportError('usdz');

@@ -216,6 +216,10 @@ model Render {
   pollAfter         DateTime?
   sheetKey          String?
   glbKey            String?
+  // A lighter copy of the GLB for viewers and AR (smaller textures, fewer triangles). It equals
+  // glbKey when the file could not be made lighter, and is null until it has been made. Downloads
+  // and material edits always start from glbKey.
+  viewGlbKey        String?
   // Material changes made by the owner, as a list of { index, baseColor?, roughness?, metalness? }
   // by glTF material. The stored GLB is never rewritten: the edits are applied when it is served.
   materialEdits     Json?
