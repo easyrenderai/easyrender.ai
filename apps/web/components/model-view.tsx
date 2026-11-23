@@ -7,6 +7,7 @@ import { MaterialPanel } from '@/components/material-panel';
 import { ModelViewer } from '@/components/model-viewer';
 import { RenderNextSteps } from '@/components/render-next-steps';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { captureBrowser } from '@/lib/analytics/browser';
 
 function save(blob: Blob, filename: string) {
@@ -139,8 +140,9 @@ export function ModelView({
   ) : null;
 
   return (
-    <div className="space-y-3">
-      <div className="aspect-square w-full overflow-hidden rounded-xl border bg-gradient-to-b from-muted/30 to-muted sm:aspect-[4/3]">
+    <div className="space-y-4">
+      {/* A fixed height, not the whole column: the downloads below stay on the first screen. */}
+      <div className="h-[clamp(18rem,60svh,34rem)] w-full overflow-hidden rounded-xl border bg-gradient-to-b from-muted/30 to-muted">
         <ModelViewer
           src={src}
           alt={t('modelAlt', { name })}
@@ -150,16 +152,24 @@ export function ModelView({
           onLoad={setViewer}
         />
       </div>
-      {nextStepsHref && downloads ? (
-        <RenderNextSteps
-          downloads={downloads}
-          createHref={nextStepsHref}
-          hasExports={Boolean(exportsUrl)}
-        />
+      {downloads}
+      {editableRenderId && nextStepsHref ? (
+        <Tabs defaultValue="materials" className="gap-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="materials">{t('tabs.materials')}</TabsTrigger>
+            <TabsTrigger value="use">{t('tabs.use')}</TabsTrigger>
+          </TabsList>
+          {/* Kept mounted so an unsaved material edit survives a visit to the other tab. */}
+          <TabsContent value="materials" forceMount className="data-[state=inactive]:hidden">
+            <MaterialPanel renderId={editableRenderId} viewer={viewer} />
+          </TabsContent>
+          <TabsContent value="use">
+            <RenderNextSteps createHref={nextStepsHref} />
+          </TabsContent>
+        </Tabs>
       ) : (
-        downloads
+        editableRenderId && <MaterialPanel renderId={editableRenderId} viewer={viewer} />
       )}
-      {editableRenderId && <MaterialPanel renderId={editableRenderId} viewer={viewer} />}
     </div>
   );
 }

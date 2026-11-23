@@ -51,7 +51,6 @@ export function usePanelSlotState() {
   return {
     setLeftNode,
     setRightNode,
-    hasLeftContext: counts.left > 0,
     hasRightContext: counts.right > 0,
     slot: { nodes: { left: leftNode, right: rightNode }, register } satisfies PanelSlot,
   };
@@ -59,8 +58,8 @@ export function usePanelSlotState() {
 
 export const PanelSlotProvider = PanelSlotContext.Provider;
 
-// What a page offers for a drawer: the right one for the parts a render is made of, the left one
-// for the history of its edits. Inside the app shell, on a screen wide enough to show that drawer,
+// What a page offers for a drawer: the right one for what a render is made of and what was done to
+// it (photo, views, details, history), the left one for a page's own list (library filters, chats). Inside the app shell, on a screen wide enough to show that drawer,
 // it is drawn in the drawer. Anywhere else (a narrow screen, the marketing frame) it stays where
 // it is written, in the page (unless `isInline` is false).
 export function ShellPanel({

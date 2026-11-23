@@ -438,6 +438,12 @@
       },
       "credits": "{credits} crediti"
     },
+    "tabs": {
+      "views": "Viste",
+      "history": "Cronologia",
+      "materials": "Materiali",
+      "use": "Usalo"
+    },
     "review": {
       "title": "Cosa controllare prima di creare il 3D?",
       "shape": "La sagoma corrisponde al prodotto?",
@@ -467,9 +473,6 @@
       "refunded": "Non siamo riusciti a rigenerare le viste. L’anteprima precedente è ancora disponibile e abbiamo restituito {credits, number} crediti."
     },
     "nextSteps": {
-      "title": "Scarica e usa il tuo modello 3D",
-      "formats": "Scarica GLB per siti e scene 3D, oppure USDZ per app Apple compatibili.",
-      "formatsWithExports": "Scarica GLB per siti e scene 3D, USDZ per app Apple compatibili, oppure OBJ, FBX e BLEND per i software 3D.",
       "choose": "Dove vuoi utilizzarlo?",
       "createAnother": "Crea un altro modello",
       "web": {
@@ -854,9 +857,6 @@
     "toggleContext": "Mostra o nascondi il pannello delle parti",
     "context": {
       "title": "Parti"
-    },
-    "history": {
-      "title": "Cronologia"
     },
     "settings": {
       "title": "Impostazioni",

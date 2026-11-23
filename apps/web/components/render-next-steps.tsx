@@ -1,6 +1,5 @@
 import { ArrowUpRight, Box, Globe, Plus, ShoppingBag } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { ReactNode } from 'react';
 import { RenderJourneyVideo } from '@/components/render-journey-video';
 import { SiteLink } from '@/components/site-link';
 import {
@@ -28,28 +27,12 @@ const JOURNEYS = [
 const STEPS = ['download', 'prepare', 'use'] as const;
 
 /** Guidance for an owner's finished model. It never uploads, publishes or changes visibility. */
-export function RenderNextSteps({
-  downloads,
-  createHref,
-  hasExports = false,
-}: {
-  downloads: ReactNode;
-  createHref: string;
-  /** The downloads include OBJ, FBX and BLEND, so the intro names them too. */
-  hasExports?: boolean;
-}) {
+export function RenderNextSteps({ createHref }: { createHref: string }) {
   const t = useTranslations('Render.nextSteps');
   return (
-    <section className="render-next-steps space-y-5 rounded-xl border p-5" aria-label={t('title')}>
-      <div className="space-y-2">
-        <h2 className="text-lg font-medium tracking-tight">{t('title')}</h2>
-        <p className="text-sm text-muted-foreground">
-          {t(hasExports ? 'formatsWithExports' : 'formats')}
-        </p>
-        {downloads}
-      </div>
+    <section className="space-y-4" aria-label={t('choose')}>
       <div>
-        <p className="mb-2 text-xs text-muted-foreground">{t('choose')}</p>
+        <p className="mb-2 text-sm text-muted-foreground">{t('choose')}</p>
         <Accordion type="multiple">
           {JOURNEYS.map(({ key, Icon, href }) => (
             <AccordionItem key={key} value={key}>

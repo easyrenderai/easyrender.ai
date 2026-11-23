@@ -10,7 +10,6 @@ import { AppLocalePicker } from '@/components/app-locale-picker';
 import { BrandMark } from '@/components/brand-mark';
 import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { AppBreadcrumb } from './app-breadcrumb';
 import { ACCOUNT_NAV, APP_NAV, isActivePath, isAdminPath, isSettingsPath } from './nav';
@@ -88,7 +87,7 @@ export function AppShell({
   const pathname = usePathname();
   const isMd = useMediaQuery(MD_QUERY);
   const isXl = useMediaQuery(XL_QUERY);
-  const { setLeftNode, setRightNode, hasLeftContext, hasRightContext, slot } = usePanelSlotState();
+  const { setLeftNode, setRightNode, hasRightContext, slot } = usePanelSlotState();
   const isAdmin = isAdminPath(pathname);
   const isLibrary = pathname === '/library' || pathname.startsWith('/library/');
   const isAgent = pathname === '/agent' || pathname.startsWith('/agent/');
@@ -99,8 +98,6 @@ export function AppShell({
   const isFullPage = isAdmin || isOverview;
   const hasLeft = isMd && !isFullPage;
   const hasRight = isXl && !isFullPage && hasRightContext;
-  // A render page also offers its edit history, so the left drawer gets a second tab.
-  const [leftTab, setLeftTab] = useState('history');
 
   const leftRef = usePanelRef();
   const rightRef = usePanelRef();
@@ -304,24 +301,6 @@ export function AppShell({
                     ) : isLibrary || isAgent ? (
                       // The library draws its own filters and folders here, the agent its chats.
                       <div ref={setLeftNode} className="h-full overflow-y-auto" />
-                    ) : hasLeftContext ? (
-                      <Tabs value={leftTab} onValueChange={setLeftTab} className="h-full gap-0">
-                        <TabsList className="m-2 grid grid-cols-2">
-                          <TabsTrigger value="renders">{t('panel.title')}</TabsTrigger>
-                          <TabsTrigger value="history">{t('history.title')}</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="renders" className="min-h-0">
-                          <RendersPanel renders={data.renders} now={data.now} />
-                        </TabsContent>
-                        {/* Kept mounted so the page can draw its history into it. */}
-                        <TabsContent
-                          value="history"
-                          forceMount
-                          className="min-h-0 overflow-y-auto data-[state=inactive]:hidden"
-                        >
-                          <div ref={setLeftNode} />
-                        </TabsContent>
-                      </Tabs>
                     ) : (
                       <RendersPanel renders={data.renders} now={data.now} />
                     )}

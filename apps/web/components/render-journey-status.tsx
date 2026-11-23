@@ -31,8 +31,8 @@ export function RenderJourneyStatus({
           : status;
   const current = status === 'ready' || status === 'rendering' ? 2 : 1;
   return (
-    <section className="space-y-4" aria-label={t(`${stage}Title`)}>
-      <ol className="grid grid-cols-3 gap-3 text-xs sm:text-sm">
+    <section className="space-y-3" aria-label={t(`${stage}Title`)}>
+      <ol className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
         {(['photo', 'angles', 'model'] as const).map((key, index) => {
           const isDone =
             index === 0 ||
@@ -43,28 +43,33 @@ export function RenderJourneyStatus({
               key={key}
               aria-current={index === current && status !== 'failed' ? 'step' : undefined}
               className={cn(
-                'flex items-center gap-2 border-t-2 pt-3',
-                isDone || index === current
-                  ? 'border-foreground'
-                  : 'border-muted text-muted-foreground',
+                'flex items-center gap-2',
+                !isDone && index !== current && 'text-muted-foreground',
               )}
             >
-              {isDone ? (
-                <Check className="size-3.5 shrink-0" aria-hidden />
-              ) : (
-                <span className="font-mono" aria-hidden>
-                  {index + 1}
-                </span>
-              )}
+              <span
+                className={cn(
+                  'grid size-4 shrink-0 place-items-center rounded-full border font-mono text-xs leading-none',
+                  isDone ? 'border-foreground bg-foreground text-background' : 'border-border',
+                  !isDone && index === current && 'border-foreground',
+                )}
+                aria-hidden
+              >
+                {isDone ? <Check className="size-3" /> : index + 1}
+              </span>
               {t(key)}
             </li>
           );
         })}
       </ol>
+      {/* A finished model needs no banner: the step row says it, and the viewer is the news. */}
       <div
         role="status"
         aria-live="polite"
-        className="flex items-start gap-3 rounded-xl bg-muted/40 p-4"
+        className={cn(
+          'flex items-start gap-3 rounded-xl bg-muted/40 p-4',
+          status === 'ready' && !hasConnectionError && 'sr-only',
+        )}
       >
         {isRunning && (
           <Loader2

@@ -9,7 +9,6 @@ import { useRouter } from 'next/navigation';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { AngleSheet } from '@/components/angle-sheet';
-import { ShellPanel } from '@/components/app-shell/shell-context';
 import { BuildQualityPicker } from '@/components/build-quality-picker';
 import { ModelView } from '@/components/model-view';
 import { DATE_FORMAT, RenderDetail } from '@/components/render-detail';
@@ -555,6 +554,34 @@ export function RenderView({
     </div>
   );
 
+  const galleryToggle =
+    signedIn && owner && !isGated && render.status !== 'failed' ? (
+      <div className="flex items-center gap-2">
+        <Label htmlFor="public" className="text-muted-foreground">
+          {t('showInGallery')}
+        </Label>
+        <Switch
+          id="public"
+          checked={render.isPublic}
+          disabled={saving}
+          onCheckedChange={setPublic}
+          aria-describedby="public-hint"
+        />
+        <span id="public-hint" className="sr-only">
+          {t('finishedOnly')}
+        </span>
+      </div>
+    ) : undefined;
+
+  // The owner's action card is only drawn when something in it shows: a finished model with nothing
+  // to rebuild has no actions left, and an empty card would be a stray box.
+  const hasActions =
+    isGated ||
+    !owner ||
+    render.status === 'preview_ready' ||
+    render.status === 'failed' ||
+    (render.status === 'ready' && render.buildQuality !== 'low') ||
+    Boolean(error);
   const actions = isGated ? (
     gate
   ) : owner ? (
@@ -606,20 +633,6 @@ export function RenderView({
           <SiteLink href={newHref}>{t('tryAnother')}</SiteLink>
         </Button>
       )}
-      {signedIn && render.status !== 'failed' && (
-        <div className="flex items-center justify-between gap-3 rounded-lg border p-3">
-          <Label htmlFor="public" className="flex-col items-start gap-1">
-            <span>{t('showInGallery')}</span>
-            <span className="text-xs font-normal text-muted-foreground">{t('finishedOnly')}</span>
-          </Label>
-          <Switch
-            id="public"
-            checked={render.isPublic}
-            disabled={saving}
-            onCheckedChange={setPublic}
-          />
-        </div>
-      )}
       {error && (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
@@ -646,67 +659,59 @@ export function RenderView({
   );
 
   return (
-    <>
-      <RenderDetail
-        isInApp={signedIn}
-        isReviewingAngles={render.status === 'preview_ready'}
-        activity={
-          owner ? (
-            <RenderJourneyStatus
-              status={render.status}
-              hasPreview={render.hasPreview}
-              isCorrecting={isCorrecting}
-              isPaidSheet={isPaidSheet}
-              isPhotoOnly={render.status === 'preview_ready' && !render.hasSheet}
-              hasConnectionError={hasConnectionError}
-            />
-          ) : undefined
-        }
-        title={title}
-        prompt={render.prompt}
-        badges={[statusLabel]}
-        viewer={viewer}
-        isViewerFirst={render.status === 'ready'}
-        input={`${base}/source`}
-        angles={angles}
-        anglesUrl={
-          render.hasPreview && !isGated ? `${base}/preview?v=${render.modelVersion}` : null
-        }
-        meta={[
-          {
-            label: t('meta.status'),
-            value: (
-              <span className="inline-flex items-center gap-1.5">
-                {RUNNING.has(render.status) && <Loader2 className="size-3.5 animate-spin" />}
-                {statusLabel}
-              </span>
-            ),
-          },
-          ...(render.status === 'ready' ? [{ label: t('meta.formats'), value: 'GLB · USDZ' }] : []),
-          ...(owner
-            ? [{ label: t('meta.creditsUsed'), value: format.number(render.credits) }]
-            : []),
-          {
-            label: t('meta.visibility'),
-            value: (
-              <span className="inline-flex items-center gap-1.5">
-                {render.isPublic ? <Globe className="size-3.5" /> : <Lock className="size-3.5" />}
-                {render.isPublic ? t('public') : t('private')}
-              </span>
-            ),
-          },
-          {
-            label: t('meta.created'),
-            value: format.dateTime(new Date(render.createdAt), DATE_FORMAT),
-          },
-        ]}
-        actions={actions}
-      />
-      {signedIn && owner && (
-        <ShellPanel side="left">
-          <RenderHistory edits={edits} now={now} />
-        </ShellPanel>
-      )}
-    </>
+    <RenderDetail
+      isInApp={signedIn}
+      isReviewingAngles={render.status === 'preview_ready'}
+      activity={
+        owner ? (
+          <RenderJourneyStatus
+            status={render.status}
+            hasPreview={render.hasPreview}
+            isCorrecting={isCorrecting}
+            isPaidSheet={isPaidSheet}
+            isPhotoOnly={render.status === 'preview_ready' && !render.hasSheet}
+            hasConnectionError={hasConnectionError}
+          />
+        ) : undefined
+      }
+      title={title}
+      prompt={render.prompt}
+      badges={[statusLabel]}
+      viewer={viewer}
+      isViewerFirst={render.status === 'ready'}
+      input={`${base}/source`}
+      angles={angles}
+      anglesUrl={render.hasPreview && !isGated ? `${base}/preview?v=${render.modelVersion}` : null}
+      meta={[
+        {
+          label: t('meta.status'),
+          value: (
+            <span className="inline-flex items-center gap-1.5">
+              {RUNNING.has(render.status) && <Loader2 className="size-3.5 animate-spin" />}
+              {statusLabel}
+            </span>
+          ),
+        },
+        ...(render.status === 'ready' ? [{ label: t('meta.formats'), value: 'GLB · USDZ' }] : []),
+        ...(owner ? [{ label: t('meta.creditsUsed'), value: format.number(render.credits) }] : []),
+        {
+          label: t('meta.visibility'),
+          value: (
+            <span className="inline-flex items-center gap-1.5">
+              {render.isPublic ? <Globe className="size-3.5" /> : <Lock className="size-3.5" />}
+              {render.isPublic ? t('public') : t('private')}
+            </span>
+          ),
+        },
+        {
+          label: t('meta.created'),
+          value: format.dateTime(new Date(render.createdAt), DATE_FORMAT),
+        },
+      ]}
+      actions={hasActions ? actions : undefined}
+      toolbar={galleryToggle}
+      history={signedIn && owner ? <RenderHistory edits={edits} now={now} /> : undefined}
+      historyCount={edits.length}
+    />
   );
 }
