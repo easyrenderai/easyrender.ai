@@ -7,6 +7,7 @@ import { isKnownStatus } from '@/components/app-shell/types';
 import { Button } from '@/components/ui/button';
 import { isAgentToolName, type Row, type ToolView } from '@/lib/agent-model';
 import { cn } from '@/lib/utils';
+import { AgentMarkdown } from './agent-markdown';
 
 export type Approval = {
   toolUseId: string;
@@ -67,7 +68,7 @@ export function AgentRow({ row }: { row: Row }) {
   const format = useFormatter();
   if (row.role === 'user') {
     return (
-      <div className="flex flex-col items-end gap-1.5">
+      <div className="flex min-w-0 flex-col items-end gap-1.5">
         {row.hasPhoto && (
           <span className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-muted-foreground">
             <ImageIcon className="size-3.5" />
@@ -75,7 +76,7 @@ export function AgentRow({ row }: { row: Row }) {
           </span>
         )}
         {row.text && (
-          <p className="max-w-[85%] rounded-2xl bg-muted px-3.5 py-2 text-sm whitespace-pre-wrap">
+          <p className="max-w-[85%] rounded-2xl bg-muted px-3.5 py-2 text-sm break-words whitespace-pre-wrap [overflow-wrap:anywhere]">
             {row.text}
           </p>
         )}
@@ -83,12 +84,10 @@ export function AgentRow({ row }: { row: Row }) {
     );
   }
   return (
-    <div className="flex flex-col items-start gap-2">
+    <div className="flex min-w-0 flex-col items-start gap-2">
       {row.parts.map((part) =>
         part.kind === 'text' ? (
-          <p key={part.text} className="max-w-[85%] text-sm whitespace-pre-wrap">
-            {part.text}
-          </p>
+          <AgentMarkdown key={part.text} text={part.text} className="w-full" />
         ) : part.tool.status === 'waiting' ? null : (
           <ToolCard key={part.tool.id} tool={part.tool} />
         ),
@@ -106,8 +105,8 @@ export function LiveRow({ text, tools }: { text: string; tools: LiveTool[] }) {
   const t = useTranslations('Agent');
   const label = useToolLabel();
   return (
-    <div className="flex flex-col items-start gap-2" role="status" aria-live="polite">
-      {text && <p className="max-w-[85%] text-sm whitespace-pre-wrap">{text}</p>}
+    <div className="flex min-w-0 flex-col items-start gap-2" role="status" aria-live="polite">
+      {text && <AgentMarkdown text={text} className="w-full" />}
       {tools.map((tool) => (
         <div
           key={tool.id}
