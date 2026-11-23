@@ -438,6 +438,12 @@
       },
       "credits": "{credits} créditos"
     },
+    "tabs": {
+      "views": "Vistas",
+      "history": "Histórico",
+      "materials": "Materiais",
+      "use": "Usar"
+    },
     "review": {
       "title": "O que verificar antes de criar o 3D?",
       "shape": "A silhueta corresponde ao produto?",
@@ -467,9 +473,6 @@
       "refunded": "Não conseguimos gerar novas vistas. Manténs a pré-visualização anterior e devolvemos {credits, number} créditos."
     },
     "nextSteps": {
-      "title": "Descarrega e usa o teu modelo 3D",
-      "formats": "Descarregue GLB para sites e cenas 3D, ou USDZ para apps Apple compatíveis.",
-      "formatsWithExports": "Descarregue GLB para sites e cenas 3D, USDZ para apps Apple compatíveis, ou OBJ, FBX e BLEND para software 3D.",
       "choose": "Onde pretende utilizá-lo?",
       "createAnother": "Criar outro modelo",
       "web": {
@@ -854,9 +857,6 @@
     "toggleContext": "Mostrar ou ocultar o painel de partes",
     "context": {
       "title": "Partes"
-    },
-    "history": {
-      "title": "Histórico"
     },
     "settings": {
       "title": "Definições",

@@ -438,6 +438,12 @@
       },
       "credits": "{credits} Credits"
     },
+    "tabs": {
+      "views": "Ansichten",
+      "history": "Verlauf",
+      "materials": "Materialien",
+      "use": "Verwenden"
+    },
     "review": {
       "title": "Was sollte ich vor dem 3D-Aufbau prüfen?",
       "shape": "Passt die Silhouette zum Produkt?",
@@ -467,9 +473,6 @@
       "refunded": "Die Ansichten konnten nicht neu erstellt werden. Deine bisherige Vorschau bleibt erhalten. Wir haben {credits, number} Credits erstattet."
     },
     "nextSteps": {
-      "title": "Dein 3D-Modell herunterladen und nutzen",
-      "formats": "Lade GLB für Websites und 3D-Szenen oder USDZ für kompatible Apple-Apps herunter.",
-      "formatsWithExports": "Lade GLB für Websites und 3D-Szenen, USDZ für kompatible Apple-Apps oder OBJ, FBX und BLEND für 3D-Software herunter.",
       "choose": "Wo möchtest du es verwenden?",
       "createAnother": "Weiteres Modell erstellen",
       "web": {
@@ -854,9 +857,6 @@
     "toggleContext": "Teilebereich ein- oder ausblenden",
     "context": {
       "title": "Teile"
-    },
-    "history": {
-      "title": "Verlauf"
     },
     "settings": {
       "title": "Einstellungen",

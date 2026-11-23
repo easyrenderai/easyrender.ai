@@ -438,6 +438,12 @@
       },
       "credits": "{credits} credits"
     },
+    "tabs": {
+      "views": "Views",
+      "history": "History",
+      "materials": "Materials",
+      "use": "Use it"
+    },
     "review": {
       "title": "What should I check before building?",
       "shape": "Does the silhouette match your product?",
@@ -467,9 +473,6 @@
       "refunded": "We couldn’t regenerate the views. Your previous preview is still there and we returned {credits, number} credits."
     },
     "nextSteps": {
-      "title": "Download and use your 3D model",
-      "formats": "Download GLB for websites and 3D scenes, or USDZ for compatible Apple apps.",
-      "formatsWithExports": "Download GLB for websites and 3D scenes, USDZ for compatible Apple apps, or OBJ, FBX and BLEND for 3D software.",
       "choose": "How would you like to use it?",
       "createAnother": "Create another model",
       "web": {
@@ -854,9 +857,6 @@
     "toggleContext": "Toggle parts panel",
     "context": {
       "title": "Parts"
-    },
-    "history": {
-      "title": "History"
     },
     "settings": {
       "title": "Settings",

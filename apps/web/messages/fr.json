@@ -438,6 +438,12 @@
       },
       "credits": "{credits} crédits"
     },
+    "tabs": {
+      "views": "Vues",
+      "history": "Historique",
+      "materials": "Matériaux",
+      "use": "L’utiliser"
+    },
     "review": {
       "title": "Que vérifier avant de créer le modèle 3D ?",
       "shape": "La silhouette correspond-elle au produit ?",
@@ -467,9 +473,6 @@
       "refunded": "Nous n’avons pas pu recréer les vues. Vous conservez l’aperçu précédent et nous avons recrédité {credits, number} crédits."
     },
     "nextSteps": {
-      "title": "Télécharger et utiliser votre modèle 3D",
-      "formats": "Téléchargez le GLB pour les sites et scènes 3D, ou le USDZ pour les apps Apple compatibles.",
-      "formatsWithExports": "Téléchargez le GLB pour les sites et scènes 3D, le USDZ pour les apps Apple compatibles, ou OBJ, FBX et BLEND pour les logiciels 3D.",
       "choose": "Où souhaitez-vous l’utiliser ?",
       "createAnother": "Créer un autre modèle",
       "web": {
@@ -854,9 +857,6 @@
     "toggleContext": "Afficher ou masquer le panneau des éléments",
     "context": {
       "title": "Éléments"
-    },
-    "history": {
-      "title": "Historique"
     },
     "settings": {
       "title": "Réglages",
