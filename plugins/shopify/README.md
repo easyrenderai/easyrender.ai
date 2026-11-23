@@ -57,10 +57,21 @@ whole-catalogue run, the stale-price refusal, queueing, writing the metafield on
 cleanup. Live smoke test of the routes in `next dev`: security headers on `/shopify`, App Bridge tags in
 the head, 401 for bad tokens, webhook signature accepted and refused.
 
-**Not verified against a real Shopify store:** the GraphQL queries against Shopify's live schema, the
-token exchange call, App Bridge inside the Shopify admin iframe, the Liquid block in a theme (Shopify's
-theme-check was not run), and AR on a phone. Run steps 1 to 4 on a development store before anything is
-shared.
+**Run on a real development store (pilot, November 2026):** the app was installed from the Dev
+Dashboard, opened inside the Shopify admin (App Bridge session token, token exchange), linked to an
+easyrender account, listed the store's products through the Admin GraphQL API, generated models for
+two products, wrote the `easyrender.render_id` metafield, and the "View in your room" block showed
+the button and the QR code on the product page. The AR page and the GLB it loads were served with the
+right content type.
+
+**Not verified:**
+- AR opening on a real phone from the product page. The AR page is covered by its own checks (device
+  detection, a generated USDZ and a `rel="ar"` link in an emulated iPhone), but not in real iOS Safari
+  or Android Chrome.
+- The `app/uninstalled` cleanup against a real uninstall (it is tested in `packages/core` with
+  Shopify's API faked; a real uninstall would also remove the link to the easyrender account).
+- Shopify's `theme-check` on the Liquid block.
+- A live storefront: the dev-store products were not published to the Online Store.
 
 ## Not in this version
 
