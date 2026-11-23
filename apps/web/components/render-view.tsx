@@ -286,7 +286,7 @@ export function RenderView({
   const viewer =
     render.status === 'ready' ? (
       <ModelView
-        src={`${base}/model?v=${render.modelVersion}`}
+        src={`${base}/model?view=1&v=${render.modelVersion}`}
         name={render.id}
         downloadUrl={owner ? `${base}/model?download=1` : null}
         exportsUrl={owner && signedIn && canExport ? `${base}/exports` : null}
@@ -336,7 +336,10 @@ export function RenderView({
   const isGated = !signedIn && owner && render.status === 'preview_ready' && render.hasPreview;
   const sheet = render.hasPreview ? (
     <div className="relative">
-      <AngleSheet src={`${base}/preview?v=${render.modelVersion}`} />
+      <AngleSheet
+        src={`${base}/preview?w=1536&v=${render.modelVersion}`}
+        isEager={render.status !== 'ready'}
+      />
       {isGated && (
         <div className="absolute inset-0 grid place-items-center rounded-lg bg-black/30">
           <Badge variant="secondary" className="gap-1.5 px-3 py-1.5 text-sm">
