@@ -87,7 +87,7 @@ export function AppShell({
   const pathname = usePathname();
   const isMd = useMediaQuery(MD_QUERY);
   const isXl = useMediaQuery(XL_QUERY);
-  const { setLeftNode, setRightNode, hasRightContext, slot } = usePanelSlotState();
+  const { setLeftNode, setRightNode, setTabsNode, hasRightContext, slot } = usePanelSlotState();
   const isAdmin = isAdminPath(pathname);
   const isLibrary = pathname === '/library' || pathname.startsWith('/library/');
   const isAgent = pathname === '/agent' || pathname.startsWith('/agent/');
@@ -133,6 +133,12 @@ export function AppShell({
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [toggle, leftRef]);
+
+  // A tab in the top bar switches what the right drawer shows, so it opens the drawer first.
+  const reveal = useCallback(() => {
+    if (rightRef.current?.isCollapsed()) toggle(rightRef);
+  }, [toggle, rightRef]);
+  const panelSlot = { ...slot, reveal };
 
   const inFlight = data.renders.filter((render) => isInFlight(render.status)).length;
   const accountNav = ACCOUNT_NAV;
@@ -237,10 +243,12 @@ export function AppShell({
           >
             <BrandMark className="size-[1.375rem]" />
           </Link>
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 xl:basis-0">
             <AppBreadcrumb />
           </div>
-          <div className="flex shrink-0 items-center gap-1">
+          {/* Page tabs, centred. Pages that have none leave it empty. */}
+          <div ref={setTabsNode} className="shrink-0 empty:hidden" />
+          <div className="flex shrink-0 items-center justify-end gap-1 xl:flex-1 xl:basis-0">
             {account}
             {!isAdmin && (
               <div className="relative">
@@ -265,7 +273,7 @@ export function AppShell({
         </header>
 
         <div className="flex min-h-0 flex-1 overflow-hidden border-t bg-background md:mr-2 md:mb-2 md:rounded-lg md:border">
-          <PanelSlotProvider value={slot}>
+          <PanelSlotProvider value={panelSlot}>
             {isMd && !isFullPage ? (
               <ResizablePanelGroup
                 orientation="horizontal"

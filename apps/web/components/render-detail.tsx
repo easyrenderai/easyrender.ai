@@ -172,15 +172,13 @@ export function RenderDetail({
           </Card>
         )}
         {!isViewerFirst && !isReviewingAngles && viewer}
-        <ShellPanel>
-          <div className="xl:p-4">
-            {history ? (
-              <RenderContextTabs views={views} history={history} historyCount={historyCount} />
-            ) : (
-              <div className="space-y-4">{views}</div>
-            )}
-          </div>
-        </ShellPanel>
+        {history ? (
+          <RenderContextTabs views={views} history={history} historyCount={historyCount} />
+        ) : (
+          <ShellPanel>
+            <div className="space-y-4 xl:p-4">{views}</div>
+          </ShellPanel>
+        )}
       </div>
     );
   }
