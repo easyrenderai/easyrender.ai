@@ -29,6 +29,7 @@
     "account": "Mein Konto",
     "accountMenu": "Kontomenü",
     "creditsLink": "Credits",
+    "buyCredits": "Credits kaufen",
     "creditsBalance": "{count, plural, one {# Credit} other {# Credits}}"
   },
   "Footer": {
@@ -814,7 +815,8 @@
     "model": "Modell",
     "navLabel": "App-Navigation",
     "sidebar": "Seitenleiste",
-    "toggleSidebar": "Seitenleiste ein- oder ausblenden",
+    "collapseSidebar": "Seitenleiste ausblenden",
+    "expandSidebar": "Seitenleiste einblenden",
     "home": "Easy Render Startseite",
     "newModel": "Neues 3D-Modell",
     "untitled": "Ohne Titel",

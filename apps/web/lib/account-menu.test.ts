@@ -8,6 +8,7 @@ const copy = (balance: { label: string; number: string } | null): AccountMenuCop
   balanceNumber: balance?.number ?? null,
   accountLabel: 'My account',
   creditsLinkLabel: 'Credits',
+  buyCreditsLabel: 'Buy credits',
   menuLabel: 'Account menu',
 });
 
@@ -23,7 +24,9 @@ describe('account menu', () => {
     expect(html).toContain('>120 credits</span>');
     expect(html).toContain('>120</span>');
     expect(html).toContain('href="/credits"');
-    expect(html).toContain('href="/account"');
+    expect(html).toContain('href="/credits#payg"');
+    expect(html).toContain('aria-label="Buy credits"');
+    expect(html).not.toContain('href="/account"');
     expect(html).toContain('aria-label="120 credits"');
     expect(html).toContain('hidden sm:inline');
     expect(html).toMatch(/data-placement="app"[^>]*class="relative"/);
@@ -37,6 +40,8 @@ describe('account menu', () => {
     expect(html).toContain('md:hidden');
     expect(html).toContain('hidden md:inline');
     expect(html).toContain('aria-label="My account, 1 credit"');
+    expect(html).toContain('href="/account"');
+    expect(html).not.toContain('href="/credits#payg"');
   });
 
   it('hides the pill when the balance is missing and still links to credits', () => {
