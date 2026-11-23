@@ -426,6 +426,19 @@
       "resetDone": "L’aspect d’origine a été rétabli.",
       "saveFailed": "Impossible d’enregistrer les modifications. Réessayez."
     },
+    "size": {
+      "title": "Taille réelle",
+      "widthCm": "Largeur (cm)",
+      "depthCm": "Profondeur (cm)",
+      "heightCm": "Hauteur (cm)",
+      "save": "Enregistrer la taille",
+      "remove": "Retirer la taille",
+      "saved": "Taille enregistrée",
+      "removed": "Taille retirée",
+      "saveFailed": "Impossible d'enregistrer la taille. Utilisez des côtés de 1 à 10000 cm.",
+      "loading": "Lecture de la taille",
+      "loadFailed": "Impossible de lire la taille."
+    },
     "details": "Détails",
     "history": {
       "empty": "Aucune modification pour l'instant. La planche d'angles, ses redessins, les changements de matière et la création 3D apparaissent ici.",
@@ -443,7 +456,8 @@
       "views": "Vues",
       "history": "Historique",
       "materials": "Matériaux",
-      "use": "L’utiliser"
+      "use": "L’utiliser",
+      "size": "Taille"
     },
     "review": {
       "title": "Que vérifier avant de créer le modèle 3D ?",

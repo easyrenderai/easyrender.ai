@@ -19,7 +19,7 @@ class Easyrender_Catalog {
 	/**
 	 * One API item from a plain product record, or null when it has no usable photo.
 	 *
-	 * @param array{id:int,name:string,image_url:string} $product
+	 * @param array{id:int,name:string,image_url:string,size_cm?:array} $product size_cm: width, depth and height in cm.
 	 */
 	public static function item_from_product( array $product ): ?array {
 		$url = (string) $product['image_url'];
@@ -27,11 +27,23 @@ class Easyrender_Catalog {
 		if ( 0 !== strpos( $url, 'https://' ) ) {
 			return null;
 		}
-		return array(
+		$item = array(
 			'externalId' => (string) $product['id'],
 			'title'      => (string) $product['name'],
 			'imageUrl'   => $url,
 		);
+		// The product's size becomes the model's real size in AR. Blank and zero sides are left out.
+		$size = array();
+		foreach ( array( 'widthCm', 'depthCm', 'heightCm' ) as $side ) {
+			$value = (float) ( $product['size_cm'][ $side ] ?? 0 );
+			if ( $value >= 1 && $value <= 10000 ) {
+				$size[ $side ] = round( $value, 1 );
+			}
+		}
+		if ( $size ) {
+			$item['sizeCm'] = $size;
+		}
+		return $item;
 	}
 
 	/**
@@ -62,6 +74,12 @@ class Easyrender_Catalog {
 					'id'        => (int) $id,
 					'name'      => $product ? $product->get_name() : (string) $id,
 					'image_url' => (string) $image_url,
+					// WooCommerce calls the depth "length". wc_get_dimension converts the shop's unit to cm.
+					'size_cm'   => $product ? array(
+						'widthCm'  => wc_get_dimension( (float) $product->get_width(), 'cm' ),
+						'depthCm'  => wc_get_dimension( (float) $product->get_length(), 'cm' ),
+						'heightCm' => wc_get_dimension( (float) $product->get_height(), 'cm' ),
+					) : array(),
 				)
 			);
 			if ( $item ) {

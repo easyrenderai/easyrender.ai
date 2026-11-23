@@ -200,23 +200,31 @@ configured. There is **no REST USDZ/STL export or conversion contract**.
 Color is RGB; color components, roughness and metalness are 0–1. The list replaces all edits;
 `{edits:[]}` resets the generated look. Inspect existing material indices before writing.
 
+`GET .../{id}/size` reads the real size of the piece, `{size:{widthCm?,depthCm?,heightCm?}|null}`.
+`PUT .../{id}/size` accepts `{size:{...}}` with sides from 1 to 10000 cm, or `{size:null}` to remove
+it. No credits. The model route then serves the GLB at that size (scaled from the height, or from
+the larger floor side when there is no height), so the AR page, GLB and USDZ downloads and the
+OBJ/FBX/BLEND exports match. `GET .../{id}/model` without a query on a render with no size is the
+stored file; the stored GLB is never rewritten, and the MCP `model_glb` tool reads the stored
+file, so it is not scaled.
+
 ## Product views, upscales and store catalogs
 
-| Endpoint                                             | Behavior                                                                                                                   |
-| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `POST /api/product-views`                            | Paid image-to-view-set creation; returns 201 and a view-set ID.                                                            |
-| `GET /api/product-views`                             | Recent owned sets and balance. This collection is not cursor-paginated.                                                    |
-| `GET /api/product-views/{id}`                        | Poll a view set; includes per-view readiness and operation costs.                                                          |
-| `POST .../{id}/views/{view}/polish`                  | Paid revision of one view, with `{note}`.                                                                                  |
-| `GET .../{id}/views/{view}` or `.../{id}/zip`        | Download a finished image or ZIP.                                                                                          |
-| `POST /api/product-views/{id}/render`                | Create/reuse a render draft from final views; returns `{renderId}`. Does not itself pay for/build the model.               |
-| `POST /api/upscales`                                 | `{kind:"sheet",renderId}` or `{kind:"view",viewSetId,view}`; returns 202. Reuses an existing upscale of that same picture. |
-| `GET /api/upscales?renderId=...` or `?viewSetId=...` | List owned enlargements.                                                                                                   |
-| `GET /api/upscales/{id}` and `.../{id}/image`        | Poll and download.                                                                                                         |
-| `GET /api/catalog/quote?items=N`                     | Live estimate, balance, missing credits and per-request batch limit.                                                       |
-| `POST /api/catalog`                                  | `{platform,store,maxCredits,items:[{externalId,title,imageUrl,note?}]}`; approve and queue up to 100 store products.       |
-| `GET /api/catalog?platform=...&store=...`            | Items, summary and balance; advances the already authorized queue.                                                         |
-| `DELETE /api/catalog?platform=...&store=...`         | Forget store references; keeps existing renders.                                                                           |
+| Endpoint                                             | Behavior                                                                                                                     |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `POST /api/product-views`                            | Paid image-to-view-set creation; returns 201 and a view-set ID.                                                              |
+| `GET /api/product-views`                             | Recent owned sets and balance. This collection is not cursor-paginated.                                                      |
+| `GET /api/product-views/{id}`                        | Poll a view set; includes per-view readiness and operation costs.                                                            |
+| `POST .../{id}/views/{view}/polish`                  | Paid revision of one view, with `{note}`.                                                                                    |
+| `GET .../{id}/views/{view}` or `.../{id}/zip`        | Download a finished image or ZIP.                                                                                            |
+| `POST /api/product-views/{id}/render`                | Create/reuse a render draft from final views; returns `{renderId}`. Does not itself pay for/build the model.                 |
+| `POST /api/upscales`                                 | `{kind:"sheet",renderId}` or `{kind:"view",viewSetId,view}`; returns 202. Reuses an existing upscale of that same picture.   |
+| `GET /api/upscales?renderId=...` or `?viewSetId=...` | List owned enlargements.                                                                                                     |
+| `GET /api/upscales/{id}` and `.../{id}/image`        | Poll and download.                                                                                                           |
+| `GET /api/catalog/quote?items=N`                     | Live estimate, balance, missing credits and per-request batch limit.                                                         |
+| `POST /api/catalog`                                  | `{platform,store,maxCredits,items:[{externalId,title,imageUrl,note?,sizeCm?}]}`; approve and queue up to 100 store products. |
+| `GET /api/catalog?platform=...&store=...`            | Items, summary and balance; advances the already authorized queue.                                                           |
+| `DELETE /api/catalog?platform=...&store=...`         | Forget store references; keeps existing renders.                                                                             |
 
 Catalog platforms: `shopify`, `woocommerce`, `prestashop`, `other`. Images must be public HTTPS.
 `maxCredits` is the approved total for that submission; insufficient approval is rejected. Model
