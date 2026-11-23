@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { MaterialPanel } from '@/components/material-panel';
 import { ModelViewer } from '@/components/model-viewer';
 import { RenderNextSteps } from '@/components/render-next-steps';
+import { SizePanel } from '@/components/size-panel';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { captureBrowser } from '@/lib/analytics/browser';
@@ -55,6 +56,8 @@ export function ModelView({
   nextStepsHref?: string;
 }) {
   const t = useTranslations('Render');
+  // Set when the owner saves a size: the model is then loaded again at that size.
+  const [sizeVersion, setSizeVersion] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
   const [converting, setConverting] = useState<ExportFormat | null>(null);
   const [exportError, setExportError] = useState<'usdz' | 'converted' | null>(null);
@@ -145,7 +148,9 @@ export function ModelView({
       {/* A fixed height, not the whole column: the downloads below stay on the first screen. */}
       <div className="h-[clamp(18rem,60svh,34rem)] w-full overflow-hidden rounded-xl border bg-gradient-to-b from-muted/30 to-muted">
         <ModelViewer
-          src={src}
+          src={
+            sizeVersion === null ? src : `${src}${src.includes('?') ? '&' : '?'}size=${sizeVersion}`
+          }
           alt={t('modelAlt', { name })}
           interactive
           ar
@@ -156,20 +161,29 @@ export function ModelView({
       {downloads}
       {editableRenderId && nextStepsHref ? (
         <Tabs defaultValue="materials" className="gap-4">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="materials">{t('tabs.materials')}</TabsTrigger>
+            <TabsTrigger value="size">{t('tabs.size')}</TabsTrigger>
             <TabsTrigger value="use">{t('tabs.use')}</TabsTrigger>
           </TabsList>
           {/* Kept mounted so an unsaved material edit survives a visit to the other tab. */}
           <TabsContent value="materials" forceMount className="data-[state=inactive]:hidden">
             <MaterialPanel renderId={editableRenderId} viewer={viewer} />
           </TabsContent>
+          <TabsContent value="size">
+            <SizePanel renderId={editableRenderId} onSaved={setSizeVersion} />
+          </TabsContent>
           <TabsContent value="use">
             <RenderNextSteps createHref={nextStepsHref} />
           </TabsContent>
         </Tabs>
       ) : (
-        editableRenderId && <MaterialPanel renderId={editableRenderId} viewer={viewer} />
+        editableRenderId && (
+          <>
+            <MaterialPanel renderId={editableRenderId} viewer={viewer} />
+            <SizePanel renderId={editableRenderId} onSaved={setSizeVersion} />
+          </>
+        )
       )}
     </div>
   );

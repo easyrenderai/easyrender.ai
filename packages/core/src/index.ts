@@ -39,6 +39,7 @@ export * from './remote-image';
 export * from './render-edits';
 export * from './render-materials';
 export * from './render-quality';
+export * from './render-size';
 export * from './render-view-model';
 export * from './renders';
 export * from './report';

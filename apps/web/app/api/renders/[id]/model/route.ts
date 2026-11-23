@@ -4,6 +4,7 @@ import {
   getFileStream,
   getRender,
   isListed,
+  isServedChanged,
   isShared,
   notFound,
   servedModel,
@@ -23,7 +24,7 @@ export const GET = (request: Request, { params }: RouteContext<'/api/renders/[id
     // Owners download their model; anyone can view a render that is in the public gallery.
     const owner = canAccess(render, actor) && Boolean(actor.userId);
     if (!owner && !isListed(render) && !isShared(render)) throw notFound();
-    const isEdited = Array.isArray(render.materialEdits) && render.materialEdits.length > 0;
+    const isEdited = isServedChanged(render);
     const query = new URL(request.url).searchParams;
     const download = query.get('download') === '1';
     // The default is the generated file itself: API clients and downloads get the full model.
@@ -33,7 +34,7 @@ export const GET = (request: Request, { params }: RouteContext<'/api/renders/[id
     return new Response(body as BodyInit, {
       headers: {
         'content-type': 'model/gltf-binary',
-        // An edited model must show the edit at once, so it is revalidated instead of cached.
+        // An edited or resized model must show the change at once, so it is revalidated instead of cached.
         'cache-control': isEdited
           ? 'no-cache'
           : owner

@@ -426,6 +426,19 @@
       "resetDone": "De vuelta al aspecto generado.",
       "saveFailed": "No se pudieron guardar los cambios. Inténtalo de nuevo."
     },
+    "size": {
+      "title": "Tamaño real",
+      "widthCm": "Ancho (cm)",
+      "depthCm": "Fondo (cm)",
+      "heightCm": "Alto (cm)",
+      "save": "Guardar tamaño",
+      "remove": "Quitar tamaño",
+      "saved": "Tamaño guardado",
+      "removed": "Tamaño quitado",
+      "saveFailed": "No se pudo guardar el tamaño. Usa medidas de 1 a 10000 cm.",
+      "loading": "Leyendo el tamaño",
+      "loadFailed": "No se pudo leer el tamaño."
+    },
     "details": "Detalles",
     "history": {
       "empty": "Aún no hay cambios. Aquí aparecen la hoja de ángulos, sus redibujos, los cambios de material y la creación 3D.",
@@ -443,7 +456,8 @@
       "views": "Vistas",
       "history": "Historial",
       "materials": "Materiales",
-      "use": "Usarlo"
+      "use": "Usarlo",
+      "size": "Tamaño"
     },
     "review": {
       "title": "¿Qué conviene revisar antes de crear el 3D?",

@@ -426,6 +426,19 @@
       "resetDone": "Aspetto originale ripristinato.",
       "saveFailed": "Non è stato possibile salvare le modifiche. Riprova."
     },
+    "size": {
+      "title": "Dimensioni reali",
+      "widthCm": "Larghezza (cm)",
+      "depthCm": "Profondità (cm)",
+      "heightCm": "Altezza (cm)",
+      "save": "Salva dimensioni",
+      "remove": "Rimuovi dimensioni",
+      "saved": "Dimensioni salvate",
+      "removed": "Dimensioni rimosse",
+      "saveFailed": "Impossibile salvare le dimensioni. Usa misure da 1 a 10000 cm.",
+      "loading": "Lettura delle dimensioni",
+      "loadFailed": "Impossibile leggere le dimensioni."
+    },
     "details": "Dettagli",
     "history": {
       "empty": "Ancora nessuna modifica. Qui compaiono la tavola degli angoli, i suoi ridisegni, i cambi di materiale e la creazione 3D.",
@@ -443,7 +456,8 @@
       "views": "Viste",
       "history": "Cronologia",
       "materials": "Materiali",
-      "use": "Usalo"
+      "use": "Usalo",
+      "size": "Dimensioni"
     },
     "review": {
       "title": "Cosa controllare prima di creare il 3D?",

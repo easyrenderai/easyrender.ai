@@ -426,6 +426,19 @@
       "resetDone": "Back to the generated look.",
       "saveFailed": "Could not save the changes. Try again."
     },
+    "size": {
+      "title": "Real size",
+      "widthCm": "Width (cm)",
+      "depthCm": "Depth (cm)",
+      "heightCm": "Height (cm)",
+      "save": "Save size",
+      "remove": "Remove size",
+      "saved": "Size saved",
+      "removed": "Size removed",
+      "saveFailed": "Could not save the size. Use sides from 1 to 10000 cm.",
+      "loading": "Reading the size",
+      "loadFailed": "Could not read the size."
+    },
     "details": "Details",
     "history": {
       "empty": "No edits yet. Drawing the angle sheet, redrawing it, changing a material or building in 3D shows up here.",
@@ -443,7 +456,8 @@
       "views": "Views",
       "history": "History",
       "materials": "Materials",
-      "use": "Use it"
+      "use": "Use it",
+      "size": "Size"
     },
     "review": {
       "title": "What should I check before building?",

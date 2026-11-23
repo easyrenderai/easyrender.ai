@@ -426,6 +426,19 @@
       "resetDone": "Das ursprüngliche Aussehen wurde wiederhergestellt.",
       "saveFailed": "Die Änderungen konnten nicht gespeichert werden. Versuche es erneut."
     },
+    "size": {
+      "title": "Echte Größe",
+      "widthCm": "Breite (cm)",
+      "depthCm": "Tiefe (cm)",
+      "heightCm": "Höhe (cm)",
+      "save": "Größe speichern",
+      "remove": "Größe entfernen",
+      "saved": "Größe gespeichert",
+      "removed": "Größe entfernt",
+      "saveFailed": "Die Größe konnte nicht gespeichert werden. Nutze Maße von 1 bis 10000 cm.",
+      "loading": "Größe wird gelesen",
+      "loadFailed": "Die Größe konnte nicht gelesen werden."
+    },
     "details": "Details",
     "history": {
       "empty": "Noch keine Änderungen. Hier erscheinen die Winkelübersicht, ihre Neuzeichnungen, Materialänderungen und der 3D-Build.",
@@ -443,7 +456,8 @@
       "views": "Ansichten",
       "history": "Verlauf",
       "materials": "Materialien",
-      "use": "Verwenden"
+      "use": "Verwenden",
+      "size": "Größe"
     },
     "review": {
       "title": "Was sollte ich vor dem 3D-Aufbau prüfen?",

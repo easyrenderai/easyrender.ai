@@ -182,6 +182,22 @@ run('catalogue runs (real database)', () => {
     expect(isListed(render)).toBe(false);
   });
 
+  it("gives the model the product's size from the store, and keeps it on the render", async () => {
+    const catalog = await load();
+    const userId = await newUser(RENDER_CREDITS * 2);
+    const sized = { ...product(1), sizeCm: { widthCm: 70, depthCm: 85, heightCm: 77 } };
+    await catalog.submitCatalog(scopeFor(userId), [sized, product(2)], RENDER_CREDITS * 2);
+    const withSize = await itemState(userId, 'p1');
+    const withoutSize = await itemState(userId, 'p2');
+    expect(withSize.sizeCm).toEqual({ widthCm: 70, depthCm: 85, heightCm: 77 });
+    const render = await db().render.findUniqueOrThrow({ where: { id: withSize.renderId ?? '' } });
+    expect(render.sizeCm).toEqual({ widthCm: 70, depthCm: 85, heightCm: 77 });
+    const other = await db().render.findUniqueOrThrow({
+      where: { id: withoutSize.renderId ?? '' },
+    });
+    expect(other.sizeCm).toBeNull();
+  });
+
   it('starts waiting products once the owner adds credits', async () => {
     const catalog = await load();
     const userId = await newUser(RENDER_CREDITS);
