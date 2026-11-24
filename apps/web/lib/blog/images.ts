@@ -59,6 +59,10 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   '/blog/figures/n8n-product-pages-images-3d/workflow-fr.webp': { width: 1280, height: 720 },
   '/blog/figures/n8n-product-pages-images-3d/workflow-it.webp': { width: 1280, height: 720 },
   '/blog/figures/n8n-product-pages-images-3d/workflow-pt.webp': { width: 1280, height: 720 },
+  '/blog/figures/augmented-reality-furniture/desktop-en.webp': { width: 1000, height: 588 },
+  '/blog/figures/augmented-reality-furniture/desktop-es.webp': { width: 1000, height: 588 },
+  '/blog/figures/augmented-reality-furniture/phone-en.webp': { width: 780, height: 990 },
+  '/blog/figures/augmented-reality-furniture/phone-es.webp': { width: 780, height: 990 },
   '/blog/figures/furniture-photography/table-source.jpg': { width: 660, height: 660 },
   '/blog/figures/shopify-3d-models/chair-inspection.webp': { width: 960, height: 720 },
   '/blog/figures/product-photography-angles/armchair-rear-quarter.jpg': { width: 392, height: 391 },
@@ -106,6 +110,7 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   },
   '/blog/illustrations/glb-file/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/how-to-make-a-3d-model/hero.webp': { width: 1280, height: 720 },
+  '/blog/illustrations/augmented-reality-furniture/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/usdz-file/hero.webp': { width: 1280, height: 720 },
 
   // Style A2 heroes for the compare review pages. Same 16:9 1280x720 WebP convention
