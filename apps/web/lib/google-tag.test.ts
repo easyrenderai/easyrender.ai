@@ -17,6 +17,7 @@ function browser(hostname = 'easyrender.ai') {
   };
   const context = {
     window,
+    navigator: { userAgent: 'Mozilla/5.0 Chrome/130.0', webdriver: false },
     document: {
       referrer: 'https://example.com/?token=private',
       createElement: () => ({}),
@@ -71,7 +72,7 @@ describe('Google Ads base tag', () => {
     expect(commands(page.dataLayer).some(([command]) => command === 'event')).toBe(false);
   });
 
-  it('uses URLs without query strings or fragments', () => {
+  it('uses URLs without private query strings or fragments', () => {
     const page = browser();
     page.run();
     expect(commands(page.dataLayer)).toContainEqual([
@@ -85,4 +86,19 @@ describe('Google Ads base tag', () => {
     ]);
     expect(JSON.stringify(commands(page.dataLayer))).not.toContain('private');
   });
+});
+
+it('keeps campaign parameters in the denied-consent bootstrap while stripping click IDs', () => {
+  const page = browser();
+  page.context.window.location.search =
+    '?utm_source=google&utm_medium=cpc&utm_campaign=niche&utm_content=ad&utm_term=model&gclid=Click_1&gbraid=Click_2&wbraid=Click_3&email=private&token=secret';
+  page.run();
+  expect(commands(page.dataLayer)).toContainEqual([
+    'set',
+    expect.objectContaining({
+      page_location:
+        'https://easyrender.ai/es?utm_source=google&utm_medium=cpc&utm_campaign=niche&utm_content=ad&utm_term=model',
+    }),
+  ]);
+  expect(JSON.stringify(commands(page.dataLayer))).not.toMatch(/Click_|private|secret/);
 });

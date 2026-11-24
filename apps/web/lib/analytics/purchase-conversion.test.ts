@@ -67,7 +67,10 @@ async function browser(
       },
     },
   });
-  vi.stubGlobal('navigator', { globalPrivacyControl: options.hasGpc === true });
+  vi.stubGlobal('navigator', {
+    userAgent: 'Mozilla/5.0 Chrome/130.0',
+    globalPrivacyControl: options.hasGpc === true,
+  });
   const choice = { accepted: options.accepted ?? null, advertising: options.advertising ?? false };
   const document = {
     cookie:
@@ -222,6 +225,7 @@ it('closes PostHog and GA once across polling and reloads, using the verified ev
       });
       expect(event.properties.$session_id).toBe(sdk.get_session_id());
       expect(event.properties.distinct_id).toBe('browser-fixture');
+      expect(event.properties).not.toHaveProperty('gclid');
     }
   }
   expect(sdk.capture.mock.calls.filter(([event]) => event === 'purchase_completed')).toHaveLength(

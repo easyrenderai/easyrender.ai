@@ -109,3 +109,58 @@ it('mints the anonymous id on a priced page only while the experiment is live', 
   expect(guide.headers.get('set-cookie')).toBeNull();
   vi.unstubAllGlobals();
 });
+
+const acquisition =
+  'utm_source=google&utm_medium=cpc&utm_campaign=niche&utm_content=ad&utm_term=3d+model&gclid=Ad_1&dclid=Ad_2&gbraid=Ad_3&wbraid=Ad_4';
+it.each(['es', 'fr', 'de', 'it', 'pt'] as const)(
+  'preserves attribution through the %s home 307',
+  async (locale) => {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await proxy(
+        new NextRequest(`https://easyrender.ai/?${acquisition}`, {
+          method,
+          headers: {
+            'user-agent': 'Mozilla/5.0 Chrome/130.0',
+            'x-vercel-ip-country': locale.toUpperCase(),
+          },
+        }),
+      );
+      expect(response.status).toBe(307);
+      expect(response.headers.get('location')).toBe(
+        `https://easyrender.ai/${locale}?${acquisition}`,
+      );
+    }
+  },
+);
+it.each([
+  ['www.easyrender.ai', '/'],
+  ['easyrenderai.vercel.app', '/'],
+  ['easyrender-landing.vercel.app', '/es'],
+])('preserves attribution through the canonical-host 301 from %s', async (host, path) => {
+  vi.stubEnv('VERCEL_ENV', 'production');
+  const response = await proxy(
+    new NextRequest(`https://${host}/?${acquisition}`, { headers: { host } }),
+  );
+  expect(response.status).toBe(301);
+  expect(response.headers.get('location')).toBe(`https://easyrender.ai${path}?${acquisition}`);
+});
+it('preserves attribution through the public pricing-path 308', async () => {
+  const response = await proxy(request(`/p/usd.control/pricing?${acquisition}`));
+  expect(response.status).toBe(308);
+  expect(response.headers.get('location')).toBe(`https://easyrender.ai/pricing?${acquisition}`);
+});
+
+it.each(['es', 'fr', 'de', 'it', 'pt'] as const)(
+  'preserves attribution through a legacy %s guide alias',
+  async (locale) => {
+    const { listPosts } = await import('@/lib/blog/posts');
+    const { guideAlias } = await import('@/lib/guide-alias');
+    const post = listPosts('en').find((post) => guideAlias(locale, post.slug));
+    expect(post).toBeDefined();
+    const response = await proxy(request(`/${locale}/learn/${post?.slug}?${acquisition}`));
+    expect(response.status).toBe(308);
+    expect(response.headers.get('location')).toBe(
+      `https://easyrender.ai${guideAlias(locale, post?.slug ?? '')}?${acquisition}`,
+    );
+  },
+);
