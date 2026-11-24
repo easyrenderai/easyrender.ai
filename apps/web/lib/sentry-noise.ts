@@ -14,6 +14,15 @@ export const EXPECTED_SERVER_ERRORS: RegExp[] = [
   // The sheet quality gate in packages/core refusing a bad generation (repeated views, inconsistent
   // structure). The render fails and is refunded by design, with no retry, so it is not a bug.
   /^(?:Error: )?sheet rejected \(/,
+  // A provider's content moderation refusing a photo or prompt (Replicate E005, Gemini
+  // IMAGE_SAFETY and PROHIBITED_CONTENT). The render fails and is refunded, the buyer sees it.
+  /\(E005\)|(?:flagged|blocked) by safety filters/,
+  // A scanner or broken client sending MCP `initialize` with empty params. The SDK answers with
+  // a JSON-RPC error that lists the missing fields, so the caller learns what to fix.
+  /"path":\s*\[\s*"params",\s*"(?:protocolVersion|capabilities|clientInfo)"\s*\]/,
+  // A Server Actions POST whose Origin is `null` (a privacy browser, a sandboxed frame or a
+  // scanner probing the home page). Next refuses it by design.
+  /^(?:Error: )?Invalid Server Actions request/,
 ];
 
 // Wallet and address-autofill extensions patch the page and throw from their own injected script.
@@ -27,6 +36,14 @@ export const BROWSER_EXTENSION_URLS: RegExp[] = [/\/injected\/injected\.js/];
 export const WEBGL_UNAVAILABLE_ERRORS: RegExp[] = [
   /Error creating WebGL context/,
   /WebGL is not available/,
+];
+
+// Errors the browser raises on its own, with nothing of ours in the stack. A fast navigation aborts
+// the page's in-flight fetch (the viewer call): the AbortError reaches `unhandledrejection` with no
+// message of ours. A bare `Event` rejection carries no stack or message at all, so it cannot be fixed.
+export const BROWSER_ABORT_ERRORS: RegExp[] = [
+  /AbortError: signal is aborted without reason/,
+  /Event `Event` \(type=error\) captured as promise rejection/,
 ];
 
 // The 3D viewer reads its embedded textures back through in-memory blob: URLs. They are not network
