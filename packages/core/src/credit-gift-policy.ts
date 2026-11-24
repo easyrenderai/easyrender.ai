@@ -2,6 +2,7 @@ import { RENDER_CREDITS } from '@easyrender/harness/pricing';
 
 export const MAX_GIFT_MODELS = 15;
 export const MAX_GIFT_CREDITS = MAX_GIFT_MODELS * RENDER_CREDITS;
+export const MAX_CREDIT_INVITE_BATCH = 1_000;
 
 export function isCreditInviteId(value: unknown): value is string {
   return (

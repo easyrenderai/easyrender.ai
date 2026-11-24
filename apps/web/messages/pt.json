@@ -1835,6 +1835,17 @@
     "error": "Não foi possível ligar a loja."
   },
   "CreditInvite": {
+    "quantity": "Quantidade",
+    "linksCreated": "Ligações criadas",
+    "download": "Descarregar ligações pendentes",
+    "findCampaign": "Filtrar pelo início da campanha",
+    "filter": "Filtrar",
+    "clearFilter": "Limpar",
+    "campaignSummary": "{total, number} emitidas · {redeemed, number} resgatadas · {completed, number} primeiros modelos",
+    "pageNumber": "Página {page, number} de {pages, number}",
+    "previous": "Anterior",
+    "next": "Seguinte",
+    "invalid_quantity": "Introduza uma quantidade entre 1 e {max, number}.",
     "invalid_amount": "Introduz entre 1 e {max, number} créditos.",
     "invalid_key": "Atualiza a página e tenta criar a ligação novamente.",
     "adminTitle": "Convites com créditos",

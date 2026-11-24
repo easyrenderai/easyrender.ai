@@ -9,8 +9,15 @@ export async function generateMetadata() {
   return { title: t('title') };
 }
 
-export default async function GiftCreditsPage() {
+export default async function GiftCreditsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ campaign?: string | string[]; page?: string | string[] }>;
+}) {
   await requireAdmin();
+  const query = await searchParams;
+  const campaign = typeof query.campaign === 'string' ? query.campaign.trim().slice(0, 120) : '';
+  const page = typeof query.page === 'string' ? Number(query.page) : 1;
   const t = await getTranslations('AdminGift');
   const messages = await getMessages();
   const labels = messages.AdminAnalytics.labels as Record<string, string>;
@@ -29,7 +36,7 @@ export default async function GiftCreditsPage() {
         </span>
       </header>
       <AdminNavigation labels={labels} section="giftCredits" />
-      <OutreachInvites />
+      <OutreachInvites campaign={campaign} page={page} />
       <GiftCreditsPanel />
     </div>
   );

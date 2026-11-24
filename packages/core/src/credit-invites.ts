@@ -1,8 +1,15 @@
+import { createHmac } from 'node:crypto';
 import { db, type Prisma } from '@easyrender/db';
-import { isCreditInviteId, MAX_GIFT_CREDITS, normalizedGiftEmail } from './credit-gift-policy';
+import {
+  isCreditInviteId,
+  MAX_CREDIT_INVITE_BATCH,
+  MAX_GIFT_CREDITS,
+  normalizedGiftEmail,
+} from './credit-gift-policy';
 import { grantCreditsInTransaction } from './credits';
 
 const INVITE_LIFETIME_MS = 30 * 86_400_000;
+const INVITES_PER_PAGE = 50;
 // Previously issued invitations always stored a valid email. Empty is an unbound code.
 const UNBOUND_RECIPIENT_EMAIL = '';
 const inviteDetails = {
@@ -25,17 +32,26 @@ function inviteState(invite: Invite, now: Date): InviteState {
   return invite.expiresAt <= now ? 'expired' : 'pending';
 }
 
-export async function issueCreditInvite(input: {
+type InviteRequest = {
   id: string;
   issuerId: string;
   amount: number;
   campaign: string;
-}) {
+};
+
+function validateInvite(input: InviteRequest) {
   if (!isCreditInviteId(input.id)) return { status: 'invalid_key' as const };
   if (!Number.isInteger(input.amount) || input.amount < 1 || input.amount > MAX_GIFT_CREDITS)
     return { status: 'invalid_amount' as const };
   const campaign = typeof input.campaign === 'string' ? input.campaign.trim() : '';
   if (!campaign || campaign.length > 120) return { status: 'invalid_campaign' as const };
+  return { status: 'valid' as const, campaign };
+}
+
+export async function issueCreditInvite(input: InviteRequest) {
+  const validation = validateInvite(input);
+  if (validation.status !== 'valid') return validation;
+  const { campaign } = validation;
 
   const id = input.id.toLowerCase();
   await db().creditInvite.createMany({
@@ -58,6 +74,54 @@ export async function issueCreditInvite(input: {
   )
     return { status: 'invalid_key' as const };
   return { status: 'issued' as const, id };
+}
+
+function batchInviteId(requestId: string, index: number) {
+  // Keep retries stable while making sibling links unpredictable from any individual link.
+  const hex = createHmac('sha256', requestId).update(String(index)).digest('hex').slice(0, 32);
+  const variant = ((Number.parseInt(hex.charAt(16), 16) & 3) | 8).toString(16);
+  return [
+    hex.slice(0, 8),
+    hex.slice(8, 12),
+    `4${hex.slice(13, 16)}`,
+    variant + hex.slice(17, 20),
+    hex.slice(20),
+  ].join('-');
+}
+
+class InviteBatchConflict extends Error {}
+
+export async function issueCreditInviteBatch(input: InviteRequest & { quantity: number }) {
+  const validation = validateInvite(input);
+  if (validation.status !== 'valid') return validation;
+  if (
+    !Number.isInteger(input.quantity) ||
+    input.quantity < 2 ||
+    input.quantity > MAX_CREDIT_INVITE_BATCH
+  )
+    return { status: 'invalid_quantity' as const };
+
+  const { campaign } = validation;
+  const { amount, issuerId } = input;
+  const ids = Array.from({ length: input.quantity }, (_, index) =>
+    batchInviteId(input.id.toLowerCase(), index),
+  );
+  const values = { issuerId, amount, campaign, recipientEmail: UNBOUND_RECIPIENT_EMAIL };
+  const expiresAt = new Date(Date.now() + INVITE_LIFETIME_MS);
+  try {
+    await db().$transaction(async (tx) => {
+      await tx.creditInvite.createMany({
+        data: ids.map((id) => ({ ...values, id, expiresAt })),
+        skipDuplicates: true,
+      });
+      const matching = await tx.creditInvite.count({ where: { ...values, id: { in: ids } } });
+      if (matching !== ids.length) throw new InviteBatchConflict();
+    });
+  } catch (error) {
+    if (error instanceof InviteBatchConflict) return { status: 'invalid_key' as const };
+    throw error;
+  }
+  return { status: 'issued' as const, ids };
 }
 
 export async function publicCreditInvite(id: string) {
@@ -162,9 +226,53 @@ export async function revokeCreditInvite(id: string) {
 }
 
 export async function listCreditInvites() {
+  return (await listCreditInvitePage({ campaign: '', page: 1 })).invites;
+}
+
+function campaignPrefix(campaign: string) {
+  return campaign
+    .trim()
+    .slice(0, 120)
+    .replace(/[\\%_]/g, '\\$&');
+}
+
+export async function listPendingCreditInvites(campaign: string) {
+  const prefix = campaignPrefix(campaign);
+  if (!prefix) return [];
+  return db().creditInvite.findMany({
+    where: {
+      campaign: { startsWith: prefix, mode: 'insensitive' },
+      expiresAt: { gt: new Date() },
+      redeemedAt: null,
+      revokedAt: null,
+    },
+    orderBy: [{ campaign: 'asc' }, { id: 'asc' }],
+    select: { campaign: true, id: true, amount: true, expiresAt: true },
+  });
+}
+
+export async function listCreditInvitePage({ campaign, page }: { campaign: string; page: number }) {
+  const prefix = campaignPrefix(campaign);
+  const pattern = `${prefix}%`;
+  const [summary] = await db().$queryRaw<{ total: number; redeemed: number; completed: number }[]>`
+    SELECT COUNT(*)::int AS total,
+           COUNT(i."redeemedAt")::int AS redeemed,
+           COUNT(*) FILTER (WHERE EXISTS (
+             SELECT 1 FROM "Render" r
+             WHERE r."userId" = i."redeemedById" AND r.status = 'ready'
+               AND r."glbKey" IS NOT NULL AND r."completedAt" >= i."redeemedAt"
+           ))::int AS completed
+      FROM "CreditInvite" i
+      WHERE i.campaign ILIKE ${pattern}
+  `;
+  const { total, redeemed, completed } = summary ?? { total: 0, redeemed: 0, completed: 0 };
+  const pages = Math.max(1, Math.ceil(total / INVITES_PER_PAGE));
+  const current = Number.isSafeInteger(page) ? Math.min(pages, Math.max(1, page)) : 1;
   const invites = await db().creditInvite.findMany({
+    where: { campaign: { startsWith: prefix, mode: 'insensitive' } },
     orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-    take: 50,
+    skip: (current - 1) * INVITES_PER_PAGE,
+    take: INVITES_PER_PAGE,
     select: { ...inviteDetails, campaign: true, redeemedBy: { select: { email: true } } },
   });
   const claimed = invites.flatMap(({ redeemedAt, redeemedById }) =>
@@ -179,10 +287,17 @@ export async function listCreditInvites() {
     : [];
   const firstModel = new Map(models.map((row) => [row.userId, row._min.completedAt]));
   const now = new Date();
-  return invites.map(({ redeemedBy, redeemedById, ...invite }) => ({
-    ...invite,
-    recipientEmail: redeemedBy?.email ?? (invite.recipientEmail || null),
-    status: inviteState({ ...invite, redeemedById }, now),
-    firstModelAt: firstModel.get(redeemedById) ?? null,
-  }));
+  return {
+    invites: invites.map(({ redeemedBy, redeemedById, ...invite }) => ({
+      ...invite,
+      recipientEmail: redeemedBy?.email ?? (invite.recipientEmail || null),
+      status: inviteState({ ...invite, redeemedById }, now),
+      firstModelAt: firstModel.get(redeemedById) ?? null,
+    })),
+    total,
+    redeemed,
+    completed,
+    page: current,
+    pages,
+  };
 }
