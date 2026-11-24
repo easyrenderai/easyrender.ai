@@ -5,6 +5,8 @@ import { afterAll, describe, expect, it } from 'vitest';
 import {
   creditInviteForUser,
   issueCreditInvite,
+  issueCreditInviteBatch,
+  listCreditInvitePage,
   listCreditInvites,
   redeemCreditInvite,
   revokeCreditInvite,
@@ -41,6 +43,53 @@ describe.skipIf(!scratch)('outreach credit invites with scratch Postgres', () =>
     await db().creditInvite.deleteMany({ where: { issuerId } });
     await db().user.deleteMany({ where: { email: { endsWith: `@${run}.example.test` } } });
     await db().$disconnect();
+  });
+
+  it('issues a retriable batch, tracks models across pages, and leaves balances untouched until claim', async () => {
+    const campaign = `Studio batch ${run}`;
+    const request = {
+      id: randomUUID(),
+      issuerId,
+      amount: RENDER_CREDITS,
+      campaign,
+      quantity: 53,
+    };
+    const first = await issueCreditInviteBatch(request);
+    expect(first.status).toBe('issued');
+    if (first.status !== 'issued') throw Error(first.status);
+    expect(new Set(first.ids)).toHaveProperty('size', 53);
+    expect(await issueCreditInviteBatch(request)).toEqual(first);
+    expect(await issueCreditInviteBatch({ ...request, quantity: 1001 })).toEqual({
+      status: 'invalid_quantity',
+    });
+
+    const page = await listCreditInvitePage({ campaign, page: 2 });
+    expect(page).toMatchObject({ total: 53, page: 2, pages: 2, redeemed: 0, completed: 0 });
+    expect(page.invites).toHaveLength(3);
+    const invite = page.invites[0];
+    if (!invite) throw Error('Missing invitation on page 2');
+    const user = await createUser(`batch@${run}.example.test`);
+    expect(await db().creditLedger.count({ where: { userId: user.id } })).toBe(0);
+    expect(await redeemCreditInvite(invite.id, user.id)).toBe('redeemed');
+    await db().render.create({
+      data: {
+        userId: user.id,
+        sourceKey: 'fixture',
+        glbKey: 'fixture',
+        status: 'ready',
+        completedAt: new Date(),
+      },
+    });
+    expect(await listCreditInvitePage({ campaign, page: 1 })).toMatchObject({
+      total: 53,
+      redeemed: 1,
+      completed: 1,
+    });
+    expect(await listCreditInvitePage({ campaign: 'no-match', page: 9 })).toMatchObject({
+      total: 0,
+      page: 1,
+      invites: [],
+    });
   });
 
   it('issues a unique code without an email and only grants it to one new verified account', async () => {

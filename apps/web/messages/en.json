@@ -2139,6 +2139,17 @@
     }
   },
   "CreditInvite": {
+    "quantity": "Quantity",
+    "linksCreated": "Links created",
+    "download": "Download pending links",
+    "findCampaign": "Filter by campaign prefix",
+    "filter": "Filter",
+    "clearFilter": "Clear",
+    "campaignSummary": "{total, number} issued · {redeemed, number} redeemed · {completed, number} first models",
+    "pageNumber": "Page {page, number} of {pages, number}",
+    "previous": "Previous",
+    "next": "Next",
+    "invalid_quantity": "Enter a quantity between 1 and {max, number}.",
     "invalid_amount": "Enter between 1 and {max, number} credits.",
     "invalid_key": "Reload the page and try creating the link again.",
     "adminTitle": "Outreach invitations",

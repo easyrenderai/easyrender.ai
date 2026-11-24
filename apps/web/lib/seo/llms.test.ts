@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it, vi } from 'vitest';
 import { LOCALES } from '@/i18n/config';
 import { FAQ_KEYS } from '@/lib/faq';
 import de from '@/messages/de.json';
@@ -14,6 +14,10 @@ import { absoluteUrl, SITE_URL } from './site';
 import { localeEntries } from './sitemap';
 
 // llms.txt has to say what the sitemaps say and what claims.md allows, nothing more.
+
+// Mirror the production route's parsed article cache when traversing the published corpus.
+vi.stubEnv('NODE_ENV', 'production');
+afterAll(() => vi.unstubAllEnvs());
 
 const urlsIn = (text: string) =>
   [...text.matchAll(/\]\((https:\/\/[^)]+)\)/g)].map((match) => match[1] as string);
@@ -143,6 +147,12 @@ describe('llms.txt', () => {
     expect(text).toMatch(/coming soon/);
     for (const pattern of FORBIDDEN) expect(text, String(pattern)).not.toMatch(pattern);
   });
+
+  it('offers one monthly plan and explicitly describes subscriber top-ups', () => {
+    expect(text).toContain('monthly plan: Pro');
+    expect(text).toContain('without changing plans');
+    expect(text).not.toMatch(/Creator|Scale/);
+  });
 });
 
 // Every case renders the whole llms-full.txt, guides included, so it grows with each blog batch. About
@@ -215,11 +225,3 @@ describe('the home FAQ copy', () => {
     expect(answers).not.toMatch(/product queue|pedida al producto|link-only|solo con enlace/i);
   });
 });
-
-it('offers one monthly plan and explicitly describes subscriber top-ups', () => {
-  // Rendered once: each call walks the whole content corpus.
-  const text = llmsTxt();
-  expect(text).toContain('monthly plan: Pro');
-  expect(text).toContain('without changing plans');
-  expect(text).not.toMatch(/Creator|Scale/);
-}, 20_000);
