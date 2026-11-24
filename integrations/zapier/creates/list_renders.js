@@ -39,7 +39,7 @@ module.exports = {
     },
     sample: { renders: [sample], nextCursor: 'opaque_next_page' },
     outputFields: [
-      { key: 'renders', label: 'Renders', children: renderOutput },
+      ...renderOutput.map((field) => ({ ...field, key: `renders[]${field.key}` })),
       { key: 'nextCursor', label: 'Next Cursor' },
     ],
   },

@@ -16,10 +16,24 @@ module.exports = {
       type: 'string',
       required: true,
       helpText:
-        'A recognizable label for your easyrender account, such as your team name. Do not enter your API key here.',
+        'Use a short display name, not a domain, URL or API key. This labels your connection only, such as your team name. Manage connections on the [easyrender Connectors page](https://easyrender.ai/connectors).',
     },
   ],
   test: async (z, bundle) => {
+    const label = bundle.authData.accountLabel?.trim() || '';
+    const isUrl = label.includes('://') || label.startsWith('//');
+    const hasDomain = label
+      .split(/[^\p{L}\d.-]+/u)
+      .some((token) =>
+        token.split('.').some((part, index, parts) => parts[index - 1] && /^\p{L}{2}/u.test(part)),
+      );
+    const hasAddress = /\b(?:\d{1,3}\.){3}\d{1,3}\b/.test(label);
+    const hasApiKey = /\ber_/i.test(label);
+    if (!label || isUrl || hasDomain || hasAddress || hasApiKey)
+      throw new z.errors.Error(
+        'Use a short display name, not a domain, URL or API key.',
+        'InvalidAccountLabel',
+      );
     await request(z, bundle, '/credits');
     return { accountLabel: bundle.authData.accountLabel };
   },

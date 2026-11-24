@@ -4,7 +4,9 @@ const renderInput = [
     label: 'Render ID',
     type: 'string',
     required: true,
-    helpText: 'The ID returned by Create Render or shown in easyrender.',
+    dynamic: 'list_render_ids.id.name',
+    helpText:
+      'Choose a recent render or enter a custom ID returned by Create Render or shown in easyrender.',
   },
 ];
 const renderOutput = [

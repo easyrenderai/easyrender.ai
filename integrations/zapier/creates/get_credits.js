@@ -4,7 +4,7 @@ module.exports = {
   noun: 'Credit Quote',
   display: {
     label: 'Get Credits',
-    description: 'Gets the current account balance and live quote.',
+    description: 'Returns account usage information.',
   },
   operation: {
     perform: (z, bundle) => request(z, bundle, '/credits'),
