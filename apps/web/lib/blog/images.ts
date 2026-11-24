@@ -67,6 +67,7 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   '/blog/figures/shopify-3d-models/chair-inspection.webp': { width: 960, height: 720 },
   '/blog/figures/product-photography-angles/armchair-rear-quarter.jpg': { width: 392, height: 391 },
   '/blog/figures/3d-file-formats/blender-reopen.jpg': { width: 640, height: 480 },
+  '/blog/figures/3d-modeling-cost/source-and-review.webp': { width: 1280, height: 468 },
   '/blog/figures/white-background-product-photography/vase-edge.jpg': { width: 435, height: 474 },
   '/blog/figures/glb-vs-gltf/vase-gltf-render.jpg': { width: 640, height: 480 },
   '/blog/figures/furniture-model-from-photo/coffee-table-photo-model.jpg': {
@@ -93,6 +94,7 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   '/blog/illustrations/shopify-3d-models/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/product-photography-angles/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/3d-file-formats/hero.webp': { width: 1280, height: 720 },
+  '/blog/illustrations/3d-modeling-cost/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/white-background-product-photography/hero.webp': {
     width: 1280,
     height: 720,
