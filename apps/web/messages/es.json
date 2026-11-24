@@ -2139,6 +2139,17 @@
     }
   },
   "CreditInvite": {
+    "quantity": "Cantidad",
+    "linksCreated": "Enlaces creados",
+    "download": "Descargar enlaces pendientes",
+    "findCampaign": "Filtrar por inicio de campaña",
+    "filter": "Filtrar",
+    "clearFilter": "Limpiar",
+    "campaignSummary": "{total, number} emitidos · {redeemed, number} canjeados · {completed, number} primeros modelos",
+    "pageNumber": "Página {page, number} de {pages, number}",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "invalid_quantity": "Introduce una cantidad entre 1 y {max, number}.",
     "invalid_amount": "Introduce entre 1 y {max, number} créditos.",
     "invalid_key": "Recarga la página e intenta crear el enlace de nuevo.",
     "adminTitle": "Invitaciones con créditos",

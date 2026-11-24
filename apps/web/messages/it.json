@@ -1835,6 +1835,17 @@
     "error": "Impossibile collegare il negozio."
   },
   "CreditInvite": {
+    "quantity": "Quantità",
+    "linksCreated": "Link creati",
+    "download": "Scarica i link in attesa",
+    "findCampaign": "Filtra per prefisso della campagna",
+    "filter": "Filtra",
+    "clearFilter": "Azzera",
+    "campaignSummary": "{total, number} emessi · {redeemed, number} riscattati · {completed, number} primi modelli",
+    "pageNumber": "Pagina {page, number} di {pages, number}",
+    "previous": "Precedente",
+    "next": "Successiva",
+    "invalid_quantity": "Inserisci una quantità compresa tra 1 e {max, number}.",
     "invalid_amount": "Inserisci da 1 a {max, number} crediti.",
     "invalid_key": "Ricarica la pagina e prova a creare di nuovo il link.",
     "adminTitle": "Inviti con crediti",

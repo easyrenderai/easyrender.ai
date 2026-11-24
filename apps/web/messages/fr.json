@@ -1835,6 +1835,17 @@
     "error": "Impossible de connecter la boutique."
   },
   "CreditInvite": {
+    "quantity": "Quantité",
+    "linksCreated": "Liens créés",
+    "download": "Télécharger les liens en attente",
+    "findCampaign": "Filtrer par début de campagne",
+    "filter": "Filtrer",
+    "clearFilter": "Effacer",
+    "campaignSummary": "{total, number} émises · {redeemed, number} utilisées · {completed, number} premiers modèles",
+    "pageNumber": "Page {page, number} sur {pages, number}",
+    "previous": "Précédente",
+    "next": "Suivante",
+    "invalid_quantity": "Saisissez une quantité comprise entre 1 et {max, number}.",
     "invalid_amount": "Saisissez entre 1 et {max, number} crédits.",
     "invalid_key": "Rechargez la page et réessayez de créer le lien.",
     "adminTitle": "Invitations avec crédits",

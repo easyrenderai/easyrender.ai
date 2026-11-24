@@ -1835,6 +1835,17 @@
     "error": "Der Shop konnte nicht verbunden werden."
   },
   "CreditInvite": {
+    "quantity": "Anzahl",
+    "linksCreated": "Erstellte Links",
+    "download": "Offene Links herunterladen",
+    "findCampaign": "Nach Kampagnenanfang filtern",
+    "filter": "Filtern",
+    "clearFilter": "Zurücksetzen",
+    "campaignSummary": "{total, number} erstellt · {redeemed, number} eingelöst · {completed, number} erste Modelle",
+    "pageNumber": "Seite {page, number} von {pages, number}",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "invalid_quantity": "Gib eine Anzahl zwischen 1 und {max, number} ein.",
     "invalid_amount": "Gib zwischen 1 und {max, number} Credits ein.",
     "invalid_key": "Lade die Seite neu und versuche, den Link erneut zu erstellen.",
     "adminTitle": "Einladungen mit Guthaben",
