@@ -1,0 +1,37 @@
+{
+  "checkedOn": "2026-11-24",
+  "endpoint": "https://easyrender.ai/api/mcp",
+  "method": "tools/list",
+  "totalTools": 17,
+  "selectedSchemas": {
+    "create_render": {
+      "parameters": [
+        "content_type",
+        "idempotency_key",
+        "image_base64",
+        "image_url",
+        "is_public",
+        "name",
+        "prompt",
+        "upload_id"
+      ],
+      "required": []
+    },
+    "get_render": {
+      "parameters": ["export_format", "id"],
+      "required": ["id"]
+    },
+    "render_3d": {
+      "parameters": ["id", "max_credits", "quality"],
+      "required": ["id"]
+    },
+    "get_credits": {
+      "parameters": [],
+      "required": []
+    },
+    "set_render_visibility": {
+      "parameters": ["id", "is_public"],
+      "required": ["id", "is_public"]
+    }
+  }
+}
