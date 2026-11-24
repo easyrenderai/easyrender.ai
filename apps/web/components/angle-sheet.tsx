@@ -5,11 +5,13 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
-export function AngleSheet({ src }: { src: string }) {
-  return <AngleSheetImage key={src} src={src} />;
+// The sheet loads when it comes near the screen. Pass `isEager` where it is the first thing a
+// page shows (a preview waiting for review), so it does not wait for the scroll.
+export function AngleSheet({ src, isEager = false }: { src: string; isEager?: boolean }) {
+  return <AngleSheetImage key={src} src={src} isEager={isEager} />;
 }
 
-function AngleSheetImage({ src }: { src: string }) {
+function AngleSheetImage({ src, isEager }: { src: string; isEager: boolean }) {
   const t = useTranslations('Render');
   const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
   return (
@@ -24,7 +26,8 @@ function AngleSheetImage({ src }: { src: string }) {
         }}
         src={src}
         alt={t('previewAlt')}
-        loading="eager"
+        loading={isEager ? 'eager' : 'lazy'}
+        decoding="async"
         onLoad={() => setStatus('loaded')}
         onError={() => setStatus('error')}
         className={cn('size-full object-contain', status !== 'loaded' && 'opacity-0')}

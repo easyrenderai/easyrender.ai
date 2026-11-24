@@ -29,6 +29,7 @@
     "account": "Mein Konto",
     "accountMenu": "Kontomenü",
     "creditsLink": "Credits",
+    "buyCredits": "Credits kaufen",
     "creditsBalance": "{count, plural, one {# Credit} other {# Credits}}"
   },
   "Footer": {
@@ -425,6 +426,19 @@
       "resetDone": "Das ursprüngliche Aussehen wurde wiederhergestellt.",
       "saveFailed": "Die Änderungen konnten nicht gespeichert werden. Versuche es erneut."
     },
+    "size": {
+      "title": "Echte Größe",
+      "widthCm": "Breite (cm)",
+      "depthCm": "Tiefe (cm)",
+      "heightCm": "Höhe (cm)",
+      "save": "Größe speichern",
+      "remove": "Größe entfernen",
+      "saved": "Größe gespeichert",
+      "removed": "Größe entfernt",
+      "saveFailed": "Die Größe konnte nicht gespeichert werden. Nutze Maße von 1 bis 10000 cm.",
+      "loading": "Größe wird gelesen",
+      "loadFailed": "Die Größe konnte nicht gelesen werden."
+    },
     "details": "Details",
     "history": {
       "empty": "Noch keine Änderungen. Hier erscheinen die Winkelübersicht, ihre Neuzeichnungen, Materialänderungen und der 3D-Build.",
@@ -437,6 +451,13 @@
         "rebuild_standard": "In Standard neu erstellt, Credits erstattet"
       },
       "credits": "{credits} Credits"
+    },
+    "tabs": {
+      "views": "Ansichten",
+      "history": "Verlauf",
+      "materials": "Materialien",
+      "use": "Verwenden",
+      "size": "Größe"
     },
     "review": {
       "title": "Was sollte ich vor dem 3D-Aufbau prüfen?",
@@ -467,9 +488,6 @@
       "refunded": "Die Ansichten konnten nicht neu erstellt werden. Deine bisherige Vorschau bleibt erhalten. Wir haben {credits, number} Credits erstattet."
     },
     "nextSteps": {
-      "title": "Dein 3D-Modell herunterladen und nutzen",
-      "formats": "Lade GLB für Websites und 3D-Szenen oder USDZ für kompatible Apple-Apps herunter.",
-      "formatsWithExports": "Lade GLB für Websites und 3D-Szenen, USDZ für kompatible Apple-Apps oder OBJ, FBX und BLEND für 3D-Software herunter.",
       "choose": "Wo möchtest du es verwenden?",
       "createAnother": "Weiteres Modell erstellen",
       "web": {
@@ -811,7 +829,8 @@
     "model": "Modell",
     "navLabel": "App-Navigation",
     "sidebar": "Seitenleiste",
-    "toggleSidebar": "Seitenleiste ein- oder ausblenden",
+    "collapseSidebar": "Seitenleiste ausblenden",
+    "expandSidebar": "Seitenleiste einblenden",
     "home": "Easy Render Startseite",
     "newModel": "Neues 3D-Modell",
     "untitled": "Ohne Titel",
@@ -854,9 +873,6 @@
     "toggleContext": "Teilebereich ein- oder ausblenden",
     "context": {
       "title": "Teile"
-    },
-    "history": {
-      "title": "Verlauf"
     },
     "settings": {
       "title": "Einstellungen",
@@ -1768,7 +1784,8 @@
     "starting": "Produkte werden gesendet… {count} gesendet",
     "balance": "Guthaben: {credits} Credits",
     "missing": "{credits} weitere Credits nötig",
-    "buy": "Credits kaufen",
+    "pack": "{credits} Credits · {price}",
+    "purchasePending": "Warte auf die Bestätigung deines Kaufs durch Shopify…",
     "progress": "{ready} fertig, {running} in Arbeit, {missing} fehlen noch",
     "themeTitle": "Auf Ihren Produktseiten anzeigen",
     "themeBody": "Öffnen Sie den Theme-Editor, gehen Sie zu einer Produktseite, fügen Sie den Block „In deinem Zuhause ansehen“ hinzu und speichern Sie. Produkte mit fertigem Modell zeigen einen Button und einen QR-Code.",

@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, Coins, UserRound } from 'lucide-react';
+import { ChevronDown, Coins, Plus, UserRound } from 'lucide-react';
 import Link from 'next/link';
 import type { KeyboardEvent, ReactNode } from 'react';
 import { MenuTrigger, useMenu } from '@/components/menu-trigger';
@@ -18,6 +18,8 @@ export type AccountMenuCopy = {
   accountLabel: string;
   /** Static credits link used when the balance itself could not be read. */
   creditsLinkLabel: string;
+  /** Buy action in the app menu, where the account page is already in the left drawer. */
+  buyCreditsLabel: string;
   menuLabel: string;
 };
 
@@ -56,7 +58,8 @@ function MenuLink({
 }
 
 // The signed-in account control: a pill with the balance, and a menu whose first line links to
-// Credits. A failed balance read leaves the pill out and keeps the Credits link, with no error.
+// Credits. The second line buys more in the app and opens the account page in the marketing header.
+// A failed balance read leaves the pill out and keeps the Credits link, with no error.
 export function AccountMenu({
   copy,
   placement,
@@ -143,10 +146,23 @@ export function AccountMenu({
           <Coins aria-hidden className="size-4" />
           <span className="font-mono tabular-nums">{creditsLabel}</span>
         </MenuLink>
-        <MenuLink href="/account" label={copy.accountLabel} onChoose={() => setIsOpen(false)}>
-          <UserRound aria-hidden className="size-4" />
-          {copy.accountLabel}
-        </MenuLink>
+        {placement === 'app' ? (
+          // Pay-as-you-go is the quickest way to add credits. The account page is one click away in
+          // the left drawer, so the app menu spends its second line on buying.
+          <MenuLink
+            href="/credits#payg"
+            label={copy.buyCreditsLabel}
+            onChoose={() => setIsOpen(false)}
+          >
+            <Plus aria-hidden className="size-4" />
+            {copy.buyCreditsLabel}
+          </MenuLink>
+        ) : (
+          <MenuLink href="/account" label={copy.accountLabel} onChoose={() => setIsOpen(false)}>
+            <UserRound aria-hidden className="size-4" />
+            {copy.accountLabel}
+          </MenuLink>
+        )}
       </div>
     </div>
   );

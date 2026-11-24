@@ -85,6 +85,9 @@ check( 'a product with an http photo is skipped', null === Easyrender_Catalog::i
 check( 'a product with no photo is skipped', null === Easyrender_Catalog::item_from_product( array( 'id' => 1, 'name' => 'A', 'image_url' => '' ) ) );
 $item = Easyrender_Catalog::item_from_product( array( 'id' => 12, 'name' => 'Oak chair', 'image_url' => 'https://x/a.jpg' ) );
 check( 'a product with an https photo becomes an item', array( 'externalId' => '12', 'title' => 'Oak chair', 'imageUrl' => 'https://x/a.jpg' ) === $item, $item );
+$sized = Easyrender_Catalog::item_from_product( array( 'id' => 12, 'name' => 'Oak chair', 'image_url' => 'https://x/a.jpg', 'size_cm' => array( 'widthCm' => 50.04, 'depthCm' => 0, 'heightCm' => 90 ) ) );
+check( 'a product size becomes sizeCm, without the blank sides', array( 'widthCm' => 50.0, 'heightCm' => 90.0 ) === ( $sized['sizeCm'] ?? null ), $sized );
+check( 'a product with every side blank sends no size', ! isset( Easyrender_Catalog::item_from_product( array( 'id' => 1, 'name' => 'A', 'image_url' => 'https://x/a.jpg', 'size_cm' => array( 'widthCm' => 0, 'depthCm' => 0, 'heightCm' => 0 ) ) )['sizeCm'] ) );
 
 $summary = Easyrender_Catalog::apply(
 	array(

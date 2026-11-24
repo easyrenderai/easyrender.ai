@@ -1,6 +1,6 @@
 'use client';
 
-import { PanelLeft, PanelRight } from 'lucide-react';
+import { PanelRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -10,9 +10,9 @@ import { AppLocalePicker } from '@/components/app-locale-picker';
 import { BrandMark } from '@/components/brand-mark';
 import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { AppBreadcrumb } from './app-breadcrumb';
+import { LogoToggle } from './logo-toggle';
 import { ACCOUNT_NAV, APP_NAV, isActivePath, isAdminPath, isSettingsPath } from './nav';
 import { RailItem } from './rail-item';
 import { RailPreview } from './rail-preview';
@@ -88,7 +88,7 @@ export function AppShell({
   const pathname = usePathname();
   const isMd = useMediaQuery(MD_QUERY);
   const isXl = useMediaQuery(XL_QUERY);
-  const { setLeftNode, setRightNode, hasLeftContext, hasRightContext, slot } = usePanelSlotState();
+  const { setLeftNode, setRightNode, setTabsNode, hasRightContext, slot } = usePanelSlotState();
   const isAdmin = isAdminPath(pathname);
   const isLibrary = pathname === '/library' || pathname.startsWith('/library/');
   const isAgent = pathname === '/agent' || pathname.startsWith('/agent/');
@@ -99,8 +99,6 @@ export function AppShell({
   const isFullPage = isAdmin || isOverview;
   const hasLeft = isMd && !isFullPage;
   const hasRight = isXl && !isFullPage && hasRightContext;
-  // A render page also offers its edit history, so the left drawer gets a second tab.
-  const [leftTab, setLeftTab] = useState('history');
 
   const leftRef = usePanelRef();
   const rightRef = usePanelRef();
@@ -137,6 +135,12 @@ export function AppShell({
     return () => window.removeEventListener('keydown', onKey);
   }, [toggle, leftRef]);
 
+  // A tab in the top bar switches what the right drawer shows, so it opens the drawer first.
+  const reveal = useCallback(() => {
+    if (rightRef.current?.isCollapsed()) toggle(rightRef);
+  }, [toggle, rightRef]);
+  const panelSlot = { ...slot, reveal };
+
   const inFlight = data.renders.filter((render) => isInFlight(render.status)).length;
   const accountNav = ACCOUNT_NAV;
 
@@ -168,11 +172,21 @@ export function AppShell({
         aria-label={t('navLabel')}
         className="relative z-30 hidden w-14 shrink-0 flex-col items-center gap-1 py-3 md:flex"
       >
-        <Button variant="ghost" size="icon" className="mb-2 size-10" asChild>
-          <Link href="/dashboard" aria-label={t('home')} title={t('home')}>
-            <BrandMark className="size-[1.375rem]" />
-          </Link>
-        </Button>
+        {/* With a drawer on the page the logo is its toggle. Overview and admin have none, so the
+            logo stays the link home there. */}
+        {hasLeft ? (
+          <LogoToggle
+            isOpen={isLeftOpen}
+            onToggle={() => toggle(leftRef)}
+            label={t(isLeftOpen ? 'collapseSidebar' : 'expandSidebar')}
+          />
+        ) : (
+          <Button variant="ghost" size="icon" className="mb-2 size-10" asChild>
+            <Link href="/dashboard" aria-label={t('home')} title={t('home')}>
+              <BrandMark className="size-[1.375rem]" />
+            </Link>
+          </Button>
+        )}
         {[...APP_NAV, accountNav].map((item) => {
           const isActive = isActivePath(pathname, item.href);
           const isBottom = item.href === accountNav.href;
@@ -221,18 +235,6 @@ export function AppShell({
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header className="flex h-12 shrink-0 items-center gap-2 px-3 md:pl-1">
-          {hasLeft && (
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => toggle(leftRef)}
-              aria-label={t('toggleSidebar')}
-              aria-pressed={isLeftOpen}
-              title={t('toggleSidebar')}
-            >
-              <PanelLeft />
-            </Button>
-          )}
           <Link
             href="/dashboard"
             aria-label={t('home')}
@@ -240,10 +242,12 @@ export function AppShell({
           >
             <BrandMark className="size-[1.375rem]" />
           </Link>
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 xl:basis-0">
             <AppBreadcrumb />
           </div>
-          <div className="flex shrink-0 items-center gap-1">
+          {/* Page tabs, centred. Pages that have none leave it empty. */}
+          <div ref={setTabsNode} className="shrink-0 empty:hidden" />
+          <div className="flex shrink-0 items-center justify-end gap-1 xl:flex-1 xl:basis-0">
             {account}
             {!isAdmin && (
               <div className="relative">
@@ -268,7 +272,7 @@ export function AppShell({
         </header>
 
         <div className="flex min-h-0 flex-1 overflow-hidden border-t bg-background md:mr-2 md:mb-2 md:rounded-lg md:border">
-          <PanelSlotProvider value={slot}>
+          <PanelSlotProvider value={panelSlot}>
             {isMd && !isFullPage ? (
               <ResizablePanelGroup
                 orientation="horizontal"
@@ -304,24 +308,6 @@ export function AppShell({
                     ) : isLibrary || isAgent ? (
                       // The library draws its own filters and folders here, the agent its chats.
                       <div ref={setLeftNode} className="h-full overflow-y-auto" />
-                    ) : hasLeftContext ? (
-                      <Tabs value={leftTab} onValueChange={setLeftTab} className="h-full gap-0">
-                        <TabsList className="m-2 grid grid-cols-2">
-                          <TabsTrigger value="renders">{t('panel.title')}</TabsTrigger>
-                          <TabsTrigger value="history">{t('history.title')}</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="renders" className="min-h-0">
-                          <RendersPanel renders={data.renders} now={data.now} />
-                        </TabsContent>
-                        {/* Kept mounted so the page can draw its history into it. */}
-                        <TabsContent
-                          value="history"
-                          forceMount
-                          className="min-h-0 overflow-y-auto data-[state=inactive]:hidden"
-                        >
-                          <div ref={setLeftNode} />
-                        </TabsContent>
-                      </Tabs>
                     ) : (
                       <RendersPanel renders={data.renders} now={data.now} />
                     )}

@@ -28,7 +28,7 @@ export async function getGallery(size = 8): Promise<GalleryItem[]> {
         ? t('items.table.title')
         : render.name?.trim() || render.prompt?.trim() || t('untitled'),
     photo: `/api/renders/${render.id}/source`,
-    model: `/api/renders/${render.id}/model`,
+    model: `/api/renders/${render.id}/model?view=1`,
     label: t('model3d'),
   }));
   const demos = SHOWCASE.map((demo) => ({

@@ -114,6 +114,9 @@ function makeRunner(&$calls, $products, $state = null, $perModel = 64)
 
 check('a product without an https photo has no item', Easyrender3dRunner::itemFromProduct(array('id' => 1, 'name' => 'A', 'image_url' => 'http://x/a.jpg')) === null);
 check('a product with an https photo becomes an item', Easyrender3dRunner::itemFromProduct(array('id' => 5, 'name' => 'Chair', 'image_url' => 'https://x/a.jpg')) === array('externalId' => '5', 'title' => 'Chair', 'imageUrl' => 'https://x/a.jpg'));
+$sized = Easyrender3dRunner::itemFromProduct(array('id' => 5, 'name' => 'Chair', 'image_url' => 'https://x/a.jpg', 'size_cm' => array('widthCm' => 50.04, 'depthCm' => 0, 'heightCm' => 90)));
+check('a product size becomes sizeCm, without the blank sides', $sized['sizeCm'] === array('widthCm' => 50.0, 'heightCm' => 90.0));
+check('inches and millimetres become centimetres', Easyrender3dRunner::toCm(10, 'in') === 25.4 && Easyrender3dRunner::toCm(250, 'mm') === 25.0 && Easyrender3dRunner::toCm(3, 'cm') === 3.0 && Easyrender3dRunner::toCm(3, 'furlong') === 3.0);
 
 $products = array(
     array('id' => 1, 'name' => 'Ready', 'image_url' => 'https://x/1.jpg'),

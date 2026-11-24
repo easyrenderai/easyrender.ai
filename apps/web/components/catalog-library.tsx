@@ -1021,7 +1021,7 @@ function ModelPane({
     return viewerReady ? (
       <div className="absolute inset-0 bg-muted">
         <model-viewer
-          src={`/api/renders/${item.id}/model`}
+          src={`/api/renders/${item.id}/model?view=1`}
           alt={t('modelAlt', { name: item.name ?? t('untitled') })}
           loading="lazy"
           camera-controls

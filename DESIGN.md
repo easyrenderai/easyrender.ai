@@ -140,7 +140,10 @@ chrome accents. Chart series also use labels, legends and dashed previous-period
 - The signed-in app has its own shell (`components/app-shell`): a thin icon rail (Overview,
   Library, Product views, Account), a left drawer with the renders list (thumbnails, grouped by
   state), the page in one rounded block, and a right drawer that a page may fill with its context
-  (a render's parts: photo, angle sheet, details) through `ShellPanel`. It has no marketing
+  (a render's Views tab: photo, angle sheet, details; and its History tab) through `ShellPanel`. The left
+  drawer on a render page is only the renders list. A page's tabs for that drawer are icons, centred in
+  the top bar (`ShellTabs`, the bar has no text) where the drawer is open, and labelled tabs above the
+  content where it is not. Choosing one opens a closed drawer. It has no marketing
   header; below `md` the rail becomes a bottom bar and the drawers are hidden (a page's context
   then follows the page content). Both drawers resize by dragging the handle (shadcn
   `Resizable`, widths in pixels, saved per browser), snap shut when dragged below their minimum,

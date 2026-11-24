@@ -145,41 +145,48 @@ describe('llms.txt', () => {
   });
 });
 
-describe('llms-full.txt', () => {
-  const text = llmsFullTxt();
+// Every case renders the whole llms-full.txt, guides included, so it grows with each blog batch. About
+// 2 s on a laptop, but the CI runner shares its cores with the other suites, where the 5 s default timed out.
+const LLMS_FULL_TEST_TIMEOUT_MS = 30_000;
 
-  it('carries the same agent entry points before the FAQs', () => {
-    expect(sectionIn(text, 'For agents')).toBe(sectionIn(llmsTxt(), 'For agents'));
-    expect(text.indexOf('## For agents')).toBeLessThan(text.indexOf('## FAQ (English)'));
-  });
+describe(
+  'llms-full.txt',
+  () => {
+    const text = llmsFullTxt();
 
-  it('carries every FAQ answer of every home, with prices filled in', () => {
-    for (const locale of LOCALES) {
-      for (const item of faqText(locale)) {
-        expect(text).toContain(item.question);
-        expect(text).toContain(item.answer);
-        expect(item.answer, item.question).not.toMatch(/\{\w+\}/);
-      }
-    }
-  });
-
-  // claims.md binds what easyrender says about itself. The guides go live on their own dates and
-  // discuss other formats and 3D printing as topics, so the product copy is read with `now` pinned
-  // before the first guide, and the guides get their claims review in the blog pipeline.
-  it('keeps the product copy within claims.md', () => {
-    const productCopy = llmsFullTxt(new Date('2026-11-01T00:00:00Z'));
-    for (const pattern of FORBIDDEN) expect(productCopy, String(pattern)).not.toMatch(pattern);
-  });
-
-  it('stays away from noindex paths, guides included', () => {
-    const urls = urlsIn(withoutForAgents(llmsFullTxt(new Date('2026-12-01T00:00:00Z'))));
-    const noindexUrls = urls.filter((url) => {
-      const { origin, pathname } = new URL(url);
-      return origin === SITE_URL && NOINDEX_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+    it('carries the same agent entry points before the FAQs', () => {
+      expect(sectionIn(text, 'For agents')).toBe(sectionIn(llmsTxt(), 'For agents'));
+      expect(text.indexOf('## For agents')).toBeLessThan(text.indexOf('## FAQ (English)'));
     });
-    expect(noindexUrls).toEqual([]);
-  });
-});
+
+    it('carries every FAQ answer of every home, with prices filled in', () => {
+      for (const locale of LOCALES) {
+        for (const item of faqText(locale)) {
+          expect(text).toContain(item.question);
+          expect(text).toContain(item.answer);
+          expect(item.answer, item.question).not.toMatch(/\{\w+\}/);
+        }
+      }
+    });
+
+    // claims.md binds what easyrender says about itself. The guides go live on their own dates and
+    // discuss other formats and 3D printing as topics, so the product copy is read with `now` pinned
+    // before the first guide, and the guides get their claims review in the blog pipeline.
+    it('keeps the product copy within claims.md', () => {
+      const productCopy = llmsFullTxt(new Date('2026-11-01T00:00:00Z'));
+      for (const pattern of FORBIDDEN) expect(productCopy, String(pattern)).not.toMatch(pattern);
+    });
+
+    it('stays away from noindex paths, guides included', () => {
+      for (const url of urlsIn(withoutForAgents(llmsFullTxt(new Date('2026-12-01T00:00:00Z'))))) {
+        if (new URL(url).origin !== SITE_URL) continue;
+        const path = new URL(url).pathname;
+        for (const prefix of NOINDEX_PREFIXES) expect(path.startsWith(prefix), url).toBe(false);
+      }
+    });
+  },
+  LLMS_FULL_TEST_TIMEOUT_MS,
+);
 
 describe('llms-full.txt once every week 1 guide is out', () => {
   const text = llmsFullTxt(new Date('2026-12-01T00:00:00Z'));

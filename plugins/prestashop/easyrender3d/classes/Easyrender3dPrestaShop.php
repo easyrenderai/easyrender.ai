@@ -16,7 +16,7 @@ class Easyrender3dDbProducts implements Easyrender3dProductSource
         $idLang = (int) $context->language->id;
         $link = $context->link;
         $rows = Db::getInstance()->executeS(
-            'SELECT p.`id_product`, pl.`name`, pl.`link_rewrite`, i.`id_image`
+            'SELECT p.`id_product`, p.`width`, p.`depth`, p.`height`, pl.`name`, pl.`link_rewrite`, i.`id_image`
              FROM `' . _DB_PREFIX_ . 'product` p
              INNER JOIN `' . _DB_PREFIX_ . 'product_shop` ps ON (ps.`id_product` = p.`id_product` AND ps.`id_shop` = ' . $idShop . ' AND ps.`active` = 1)
              INNER JOIN `' . _DB_PREFIX_ . 'product_lang` pl ON (pl.`id_product` = p.`id_product` AND pl.`id_shop` = ' . $idShop . ' AND pl.`id_lang` = ' . $idLang . ')
@@ -24,6 +24,7 @@ class Easyrender3dDbProducts implements Easyrender3dProductSource
              LEFT JOIN `' . _DB_PREFIX_ . 'image` i ON (i.`id_image` = ish.`id_image`)
              ORDER BY p.`id_product` ASC'
         );
+        $unit = (string) Configuration::get('PS_DIMENSION_UNIT');
         $products = array();
         foreach ((array) $rows as $row) {
             $url = '';
@@ -34,7 +35,16 @@ class Easyrender3dDbProducts implements Easyrender3dProductSource
                     $url = 'https:' . $url;
                 }
             }
-            $products[] = array('id' => (int) $row['id_product'], 'name' => (string) $row['name'], 'image_url' => $url);
+            $products[] = array(
+                'id' => (int) $row['id_product'],
+                'name' => (string) $row['name'],
+                'image_url' => $url,
+                'size_cm' => array(
+                    'widthCm' => Easyrender3dRunner::toCm($row['width'], $unit),
+                    'depthCm' => Easyrender3dRunner::toCm($row['depth'], $unit),
+                    'heightCm' => Easyrender3dRunner::toCm($row['height'], $unit),
+                ),
+            );
         }
 
         return $products;

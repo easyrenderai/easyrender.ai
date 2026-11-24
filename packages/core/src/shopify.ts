@@ -114,7 +114,8 @@ export function decryptToken(stored: string): string {
   return Buffer.concat([decipher.update(data), decipher.final()]).toString('utf8');
 }
 
-type Fetch = typeof fetch;
+export type ShopifyGraphqlFetch = typeof fetch;
+type Fetch = ShopifyGraphqlFetch;
 
 // Trades the session token for an offline Admin API token (Shopify's token exchange, which needs
 // no redirect flow because the app is installed with managed installation).

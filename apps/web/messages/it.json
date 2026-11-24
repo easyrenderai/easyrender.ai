@@ -29,6 +29,7 @@
     "account": "Il mio account",
     "accountMenu": "Menu account",
     "creditsLink": "Crediti",
+    "buyCredits": "Acquista crediti",
     "creditsBalance": "{count, plural, one {# credito} other {# crediti}}"
   },
   "Footer": {
@@ -425,6 +426,19 @@
       "resetDone": "Aspetto originale ripristinato.",
       "saveFailed": "Non è stato possibile salvare le modifiche. Riprova."
     },
+    "size": {
+      "title": "Dimensioni reali",
+      "widthCm": "Larghezza (cm)",
+      "depthCm": "Profondità (cm)",
+      "heightCm": "Altezza (cm)",
+      "save": "Salva dimensioni",
+      "remove": "Rimuovi dimensioni",
+      "saved": "Dimensioni salvate",
+      "removed": "Dimensioni rimosse",
+      "saveFailed": "Impossibile salvare le dimensioni. Usa misure da 1 a 10000 cm.",
+      "loading": "Lettura delle dimensioni",
+      "loadFailed": "Impossibile leggere le dimensioni."
+    },
     "details": "Dettagli",
     "history": {
       "empty": "Ancora nessuna modifica. Qui compaiono la tavola degli angoli, i suoi ridisegni, i cambi di materiale e la creazione 3D.",
@@ -437,6 +451,13 @@
         "rebuild_standard": "Rifatto in Standard, crediti restituiti"
       },
       "credits": "{credits} crediti"
+    },
+    "tabs": {
+      "views": "Viste",
+      "history": "Cronologia",
+      "materials": "Materiali",
+      "use": "Usalo",
+      "size": "Dimensioni"
     },
     "review": {
       "title": "Cosa controllare prima di creare il 3D?",
@@ -467,9 +488,6 @@
       "refunded": "Non siamo riusciti a rigenerare le viste. L’anteprima precedente è ancora disponibile e abbiamo restituito {credits, number} crediti."
     },
     "nextSteps": {
-      "title": "Scarica e usa il tuo modello 3D",
-      "formats": "Scarica GLB per siti e scene 3D, oppure USDZ per app Apple compatibili.",
-      "formatsWithExports": "Scarica GLB per siti e scene 3D, USDZ per app Apple compatibili, oppure OBJ, FBX e BLEND per i software 3D.",
       "choose": "Dove vuoi utilizzarlo?",
       "createAnother": "Crea un altro modello",
       "web": {
@@ -811,7 +829,8 @@
     "model": "Modello",
     "navLabel": "Navigazione dell’app",
     "sidebar": "Barra laterale",
-    "toggleSidebar": "Mostra o nascondi la barra laterale",
+    "collapseSidebar": "Nascondi la barra laterale",
+    "expandSidebar": "Mostra la barra laterale",
     "home": "Home di Easy Render",
     "newModel": "Nuovo modello 3D",
     "untitled": "Senza titolo",
@@ -854,9 +873,6 @@
     "toggleContext": "Mostra o nascondi il pannello delle parti",
     "context": {
       "title": "Parti"
-    },
-    "history": {
-      "title": "Cronologia"
     },
     "settings": {
       "title": "Impostazioni",
@@ -1768,7 +1784,8 @@
     "starting": "Invio dei prodotti… {count} inviati",
     "balance": "Saldo: {credits} crediti",
     "missing": "Servono altri {credits} crediti",
-    "buy": "Acquista crediti",
+    "pack": "{credits} crediti · {price}",
+    "purchasePending": "In attesa che Shopify confermi il tuo acquisto…",
     "progress": "{ready} pronti, {running} in corso, {missing} ancora mancanti",
     "themeTitle": "Mostralo nelle schede prodotto",
     "themeBody": "Apri l'editor del tema, vai a una scheda prodotto, aggiungi il blocco «Guardalo a casa tua» e salva. I prodotti con un modello pronto mostrano un pulsante e un codice QR.",

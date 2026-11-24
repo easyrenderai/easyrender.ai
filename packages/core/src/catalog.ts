@@ -1,5 +1,11 @@
-import { type CatalogItem, db } from '@easyrender/db';
-import { RENDER_CREDITS } from '@easyrender/harness';
+import { type CatalogItem, db, Prisma } from '@easyrender/db';
+import {
+  MAX_SIDE_CM,
+  MIN_SIDE_CM,
+  RENDER_CREDITS,
+  type RealSize,
+  sanitizeRealSize,
+} from '@easyrender/harness';
 import { actorForApiKey, assertActorScope } from './api-access';
 import { config } from './config';
 import { getBalance } from './credits';
@@ -32,7 +38,27 @@ export const MAX_CATALOG_BATCH = 100;
 const MAX_CONCURRENT = 8;
 const MAX_ADVANCE_PER_TICK = 20;
 
-export type CatalogInput = { externalId: string; title: string; imageUrl: string; note?: string };
+export type CatalogInput = {
+  externalId: string;
+  title: string;
+  imageUrl: string;
+  note?: string;
+  // The product's size in the store. It becomes the real size of the model in AR.
+  sizeCm?: RealSize;
+};
+
+// A store's dimensions are whatever the merchant typed: keep the sides that make sense and drop
+// the rest, so a blank or zero field never fails a whole batch of products.
+function cleanSize(value: unknown): RealSize | undefined {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return undefined;
+  const record = value as Record<string, unknown>;
+  const sides: Record<string, number> = {};
+  for (const key of ['widthCm', 'depthCm', 'heightCm']) {
+    const side = record[key];
+    if (typeof side === 'number' && side >= MIN_SIDE_CM && side <= MAX_SIDE_CM) sides[key] = side;
+  }
+  return sanitizeRealSize(sides) ?? undefined;
+}
 
 export type CatalogScope = { userId: string; platform: CatalogPlatform; store: string };
 
@@ -88,7 +114,14 @@ export function parseCatalogItems(value: unknown): CatalogInput[] {
       throw new AppError(`Product ${externalId} needs an https imageUrl`, 400, 'bad_items');
     }
     const note = typeof item.note === 'string' ? item.note.trim().slice(0, 500) : '';
-    return { externalId, title: title || externalId, imageUrl, ...(note ? { note } : {}) };
+    const sizeCm = cleanSize(item.sizeCm);
+    return {
+      externalId,
+      title: title || externalId,
+      imageUrl,
+      ...(note ? { note } : {}),
+      ...(sizeCm ? { sizeCm } : {}),
+    };
   });
 }
 
@@ -166,6 +199,7 @@ export async function submitCatalog(
         title: item.title,
         imageUrl: item.imageUrl,
         note: item.note ?? null,
+        sizeCm: item.sizeCm ?? Prisma.DbNull,
       };
       // A concurrent submission may already have queued or started this externalId since
       // the quote read. Never overwrite that generation or its retained authorization.
@@ -251,6 +285,9 @@ async function startItem(item: CatalogItem): Promise<void> {
       source: 'api',
       isLinkShared: true,
     });
+    // The product's size in the store is the model's real size, until its owner changes it.
+    const size = sanitizeRealSize(item.sizeCm);
+    if (size) await db().render.update({ where: { id: render.id }, data: { sizeCm: size } });
     await db().catalogItem.update({
       where: { id: item.id },
       data: { renderId: render.id, state: 'drafting', error: null },

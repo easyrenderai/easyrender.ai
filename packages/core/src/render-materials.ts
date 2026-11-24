@@ -1,10 +1,12 @@
 import { db, type Render } from '@easyrender/db';
 import {
   applyMaterialEdits,
+  applyRealSize,
   type GlbMaterial,
   type MaterialEdit,
   readGlbMaterials,
   sanitizeMaterialEdits,
+  sanitizeRealSize,
 } from '@easyrender/harness';
 import { AppError, notFound } from './errors';
 import { recordEdit } from './render-edits';
@@ -26,10 +28,27 @@ export function storedEdits(render: Pick<Render, 'materialEdits'>, materialCount
   return sanitizeMaterialEdits(render.materialEdits ?? [], materialCount) ?? [];
 }
 
-// The GLB a viewer or a download gets: the original with the owner's material edits applied.
-export function servedModel(render: Pick<Render, 'materialEdits'>, original: Uint8Array) {
+// The size stored on a render, or none when the stored value is not a size.
+export function storedSize(render: Pick<Render, 'sizeCm'>) {
+  return sanitizeRealSize(render.sizeCm) ?? null;
+}
+
+// True when the file a viewer gets differs from the stored original, so it must not be cached.
+export function isServedChanged(render: Pick<Render, 'materialEdits' | 'sizeCm'>) {
+  const hasEdits = Array.isArray(render.materialEdits) && render.materialEdits.length > 0;
+  return hasEdits || storedSize(render) !== null;
+}
+
+// The GLB a viewer or a download gets: the original with the owner's material edits applied, at
+// the real size when the render has one.
+export function servedModel(
+  render: Pick<Render, 'materialEdits' | 'sizeCm'>,
+  original: Uint8Array,
+) {
   const edits = storedEdits(render, readGlbMaterials(original).length);
-  return applyMaterialEdits(original, edits);
+  const edited = applyMaterialEdits(original, edits);
+  const size = storedSize(render);
+  return size ? applyRealSize(edited, size) : edited;
 }
 
 async function readOriginal(render: Render): Promise<Uint8Array> {

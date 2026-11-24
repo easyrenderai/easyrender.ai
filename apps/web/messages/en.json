@@ -22,6 +22,7 @@
     "account": "My account",
     "accountMenu": "Account menu",
     "creditsLink": "Credits",
+    "buyCredits": "Buy credits",
     "creditsBalance": "{count, plural, one {# credit} other {# credits}}",
     "signIn": "Sign in",
     "connect": "Connect",
@@ -425,6 +426,19 @@
       "resetDone": "Back to the generated look.",
       "saveFailed": "Could not save the changes. Try again."
     },
+    "size": {
+      "title": "Real size",
+      "widthCm": "Width (cm)",
+      "depthCm": "Depth (cm)",
+      "heightCm": "Height (cm)",
+      "save": "Save size",
+      "remove": "Remove size",
+      "saved": "Size saved",
+      "removed": "Size removed",
+      "saveFailed": "Could not save the size. Use sides from 1 to 10000 cm.",
+      "loading": "Reading the size",
+      "loadFailed": "Could not read the size."
+    },
     "details": "Details",
     "history": {
       "empty": "No edits yet. Drawing the angle sheet, redrawing it, changing a material or building in 3D shows up here.",
@@ -437,6 +451,13 @@
         "rebuild_standard": "Rebuilt in Standard, credits returned"
       },
       "credits": "{credits} credits"
+    },
+    "tabs": {
+      "views": "Views",
+      "history": "History",
+      "materials": "Materials",
+      "use": "Use it",
+      "size": "Size"
     },
     "review": {
       "title": "What should I check before building?",
@@ -467,9 +488,6 @@
       "refunded": "We couldn’t regenerate the views. Your previous preview is still there and we returned {credits, number} credits."
     },
     "nextSteps": {
-      "title": "Download and use your 3D model",
-      "formats": "Download GLB for websites and 3D scenes, or USDZ for compatible Apple apps.",
-      "formatsWithExports": "Download GLB for websites and 3D scenes, USDZ for compatible Apple apps, or OBJ, FBX and BLEND for 3D software.",
       "choose": "How would you like to use it?",
       "createAnother": "Create another model",
       "web": {
@@ -811,7 +829,8 @@
     "model": "Model",
     "navLabel": "App navigation",
     "sidebar": "Sidebar",
-    "toggleSidebar": "Toggle sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
     "home": "Easy Render home",
     "newModel": "New 3D model",
     "untitled": "Untitled",
@@ -854,9 +873,6 @@
     "toggleContext": "Toggle parts panel",
     "context": {
       "title": "Parts"
-    },
-    "history": {
-      "title": "History"
     },
     "settings": {
       "title": "Settings",
@@ -1768,7 +1784,8 @@
     "starting": "Sending products… {count} sent",
     "balance": "Balance: {credits} credits",
     "missing": "{credits} more credits needed",
-    "buy": "Buy credits",
+    "pack": "{credits} credits · {price}",
+    "purchasePending": "Waiting for Shopify to confirm your purchase…",
     "progress": "{ready} ready, {running} in progress, {missing} still missing",
     "themeTitle": "Show it on your product pages",
     "themeBody": "Open the theme editor, go to a product page, add the \"View in your room\" block and save. Products with a finished model show a button and a QR code.",

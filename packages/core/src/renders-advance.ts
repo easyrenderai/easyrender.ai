@@ -15,6 +15,7 @@ import { captureRender } from './analytics';
 import { config } from './config';
 import { finishMaterialFidelity } from './render-fidelity';
 import { storedQuality, withQuality } from './render-quality';
+import { storeViewModel } from './render-view-model';
 import { fail, TerminalRenderError } from './renders-fail';
 import { DAY_MS, harness, isUncertainStart, renderStage, replicate } from './renders-shared';
 import { startSheetPrediction } from './renders-sheet';
@@ -166,6 +167,8 @@ export async function advance(id: string): Promise<Render | null> {
         throw new TerminalRenderError(`model rejected (${quality.code}): ${quality.message}`);
       const finished = await finishMaterialFidelity(glb, render);
       const glbKey = await putFile('models/model.glb', finished.bytes, 'model/gltf-binary');
+      // The copy viewers load. A failure here leaves it null and the first view makes it.
+      const viewGlbKey = await storeViewModel(finished.bytes, glbKey);
       const completedAt = render.completedAt ?? new Date();
       const { count } = await db().$transaction(async (tx) => {
         const result = await tx.render.updateMany({
@@ -174,6 +177,7 @@ export async function advance(id: string): Promise<Render | null> {
             status: 'ready',
             completedAt,
             glbKey,
+            viewGlbKey,
             quality: withQuality(render, {
               glb: { ...quality.measures, bytes: finished.bytes.byteLength },
               fidelity: finished.fidelity,

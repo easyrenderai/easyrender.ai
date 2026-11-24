@@ -319,6 +319,28 @@ export const openapi = {
         requestBody: jsonBody(object({ edits: array(ref('MaterialEdit')) })),
       },
     },
+    '/api/renders/{id}/size': {
+      get: {
+        ...operation(
+          'getRenderSize',
+          'Read the real size of the piece in centimetres, or null when none is set',
+          ['read'],
+          ref('RenderSize'),
+        ),
+        security: [{ bearerAuth: [] }, {}],
+        parameters: [id],
+      },
+      put: {
+        ...operation(
+          'setRenderSize',
+          'Set the real size; AR and downloads then show the piece at that size. Send null to remove it',
+          ['write'],
+          ref('RenderSize'),
+        ),
+        parameters: [id],
+        requestBody: jsonBody(object({ size: { oneOf: [ref('RealSize'), { type: 'null' }] } })),
+      },
+    },
     '/api/renders/{id}/exports': {
       post: {
         ...operation(
@@ -590,6 +612,18 @@ export const openapi = {
         edits: array(ref('MaterialEdit')),
         version: integer,
       }),
+      RealSize: object(
+        {
+          widthCm: { type: 'number', minimum: 1, maximum: 10000 },
+          depthCm: { type: 'number', minimum: 1, maximum: 10000 },
+          heightCm: { type: 'number', minimum: 1, maximum: 10000 },
+        },
+        [],
+      ),
+      RenderSize: object({
+        size: { oneOf: [ref('RealSize'), { type: 'null' }] },
+        version: integer,
+      }),
       ModelExport: object({
         format: { type: 'string', enum: ['obj', 'fbx', 'blend'] },
         url: string,
@@ -664,6 +698,7 @@ export const openapi = {
               title: { type: 'string', minLength: 1, maxLength: 120 },
               imageUrl: { type: 'string', format: 'uri', pattern: '^https://', maxLength: 2048 },
               note: { type: 'string', maxLength: 500 },
+              sizeCm: ref('RealSize'),
             },
             ['externalId', 'title', 'imageUrl'],
           ),

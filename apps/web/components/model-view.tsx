@@ -6,7 +6,9 @@ import { useState } from 'react';
 import { MaterialPanel } from '@/components/material-panel';
 import { ModelViewer } from '@/components/model-viewer';
 import { RenderNextSteps } from '@/components/render-next-steps';
+import { SizePanel } from '@/components/size-panel';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { captureBrowser } from '@/lib/analytics/browser';
 
 function save(blob: Blob, filename: string) {
@@ -54,6 +56,8 @@ export function ModelView({
   nextStepsHref?: string;
 }) {
   const t = useTranslations('Render');
+  // Set when the owner saves a size: the model is then loaded again at that size.
+  const [sizeVersion, setSizeVersion] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
   const [converting, setConverting] = useState<ExportFormat | null>(null);
   const [exportError, setExportError] = useState<'usdz' | 'converted' | null>(null);
@@ -103,7 +107,8 @@ export function ModelView({
             setExporting(true);
             setExportError(null);
             try {
-              save(await exportUsdz(src), `easyrender-${name}.usdz`);
+              // From the full model, not the lighter copy the viewer shows.
+              save(await exportUsdz(downloadUrl), `easyrender-${name}.usdz`);
               captureBrowser('model_exported', { format: 'usdz' });
             } catch {
               setExportError('usdz');
@@ -139,10 +144,13 @@ export function ModelView({
   ) : null;
 
   return (
-    <div className="space-y-3">
-      <div className="aspect-square w-full overflow-hidden rounded-xl border bg-gradient-to-b from-muted/30 to-muted sm:aspect-[4/3]">
+    <div className="space-y-4">
+      {/* A fixed height, not the whole column: the downloads below stay on the first screen. */}
+      <div className="h-[clamp(18rem,60svh,34rem)] w-full overflow-hidden rounded-xl border bg-gradient-to-b from-muted/30 to-muted">
         <ModelViewer
-          src={src}
+          src={
+            sizeVersion === null ? src : `${src}${src.includes('?') ? '&' : '?'}size=${sizeVersion}`
+          }
           alt={t('modelAlt', { name })}
           interactive
           ar
@@ -150,16 +158,33 @@ export function ModelView({
           onLoad={setViewer}
         />
       </div>
-      {nextStepsHref && downloads ? (
-        <RenderNextSteps
-          downloads={downloads}
-          createHref={nextStepsHref}
-          hasExports={Boolean(exportsUrl)}
-        />
+      {downloads}
+      {editableRenderId && nextStepsHref ? (
+        <Tabs defaultValue="materials" className="gap-4">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="materials">{t('tabs.materials')}</TabsTrigger>
+            <TabsTrigger value="size">{t('tabs.size')}</TabsTrigger>
+            <TabsTrigger value="use">{t('tabs.use')}</TabsTrigger>
+          </TabsList>
+          {/* Kept mounted so an unsaved material edit survives a visit to the other tab. */}
+          <TabsContent value="materials" forceMount className="data-[state=inactive]:hidden">
+            <MaterialPanel renderId={editableRenderId} viewer={viewer} />
+          </TabsContent>
+          <TabsContent value="size">
+            <SizePanel renderId={editableRenderId} onSaved={setSizeVersion} />
+          </TabsContent>
+          <TabsContent value="use">
+            <RenderNextSteps createHref={nextStepsHref} />
+          </TabsContent>
+        </Tabs>
       ) : (
-        downloads
+        editableRenderId && (
+          <>
+            <MaterialPanel renderId={editableRenderId} viewer={viewer} />
+            <SizePanel renderId={editableRenderId} onSaved={setSizeVersion} />
+          </>
+        )
       )}
-      {editableRenderId && <MaterialPanel renderId={editableRenderId} viewer={viewer} />}
     </div>
   );
 }

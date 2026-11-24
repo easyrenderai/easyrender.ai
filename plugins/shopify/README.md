@@ -17,6 +17,14 @@ shopper's phone.
 - **Paying:** the merchant links the shop to an easyrender account in a new tab (the iframe cannot sign
   in). That account's credits pay for the models. The price is shown on the button before the click, and
   the click carries it, so a run that would cost more is refused.
+- **Buying credits:** inside the app, through Shopify billing (`packages/core/src/shopify-billing.ts`).
+  Each pack is a one-time app purchase (`appPurchaseOneTimeCreate`; Shopify App Pricing has no one-time
+  purchases). Packs and prices come from the pay-as-you-go rule in `pricing.ts`. The merchant approves the
+  charge on a Shopify page; the credits are granted once, through the ledger, when Shopify reports the
+  charge active. The app reads the charge back from Shopify (on the `app_purchases_one_time/update`
+  webhook and each time the page opens) and never trusts a payload. Development stores are not billed by
+  Shopify, so a test charge credits at most one pack per easyrender account. The app has no link to buy
+  credits on easyrender.ai: requirement 1.2 of the App Store rules bars off-platform billing.
 - **The work:** the shared catalogue queue (`packages/core/src/catalog.ts`) with platform `shopify` and
   the shop's domain as the store: free draft, then the paid 3D build, refund on failure.
 - **Showing it:** when a model is ready the server writes the product metafield
@@ -57,15 +65,26 @@ whole-catalogue run, the stale-price refusal, queueing, writing the metafield on
 cleanup. Live smoke test of the routes in `next dev`: security headers on `/shopify`, App Bridge tags in
 the head, 401 for bad tokens, webhook signature accepted and refused.
 
-**Not verified against a real Shopify store:** the GraphQL queries against Shopify's live schema, the
-token exchange call, App Bridge inside the Shopify admin iframe, the Liquid block in a theme (Shopify's
-theme-check was not run), and AR on a phone. Run steps 1 to 4 on a development store before anything is
-shared.
+**Run on a real development store (pilot, November 2026):** the app was installed from the Dev
+Dashboard, opened inside the Shopify admin (App Bridge session token, token exchange), linked to an
+easyrender account, listed the store's products through the Admin GraphQL API, generated models for
+two products, wrote the `easyrender.render_id` metafield, and the "View in your room" block showed
+the button and the QR code on the product page. The AR page and the GLB it loads were served with the
+right content type.
+
+**Not verified:**
+- AR opening on a real phone from the product page. The AR page is covered by its own checks (device
+  detection, a generated USDZ and a `rel="ar"` link in an emulated iPhone), but not in real iOS Safari
+  or Android Chrome.
+- The `app/uninstalled` cleanup against a real uninstall (it is tested in `packages/core` with
+  Shopify's API faked; a real uninstall would also remove the link to the easyrender account).
+- Shopify's `theme-check` on the Liquid block.
+- A live storefront: the dev-store products were not published to the Online Store.
 
 ## Not in this version
 
-- **Shopify Billing API.** Charges go through easyrender credits. A public App Store listing requires
-  Shopify's own billing (tracked in #14), so until then distribute as a custom or unlisted app.
+- **Monthly plans through Shopify App Pricing** (the rest of #14). Only credit packs are billed by
+  Shopify so far.
 - Uploading the GLB/USDZ into product media (#9) so Shopify's own viewer and the Shop app show it.
 - Auto-drafting new and changed products via webhooks (#13), a batch approval grid (#12), a bulk
   operation for very large catalogues (#11): products are read page by page, up to 5,000.

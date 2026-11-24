@@ -29,6 +29,7 @@
     "account": "Mon compte",
     "accountMenu": "Menu du compte",
     "creditsLink": "Crédits",
+    "buyCredits": "Acheter des crédits",
     "creditsBalance": "{count, plural, =0 {# crédits} one {# crédit} other {# crédits}}"
   },
   "Footer": {
@@ -425,6 +426,19 @@
       "resetDone": "L’aspect d’origine a été rétabli.",
       "saveFailed": "Impossible d’enregistrer les modifications. Réessayez."
     },
+    "size": {
+      "title": "Taille réelle",
+      "widthCm": "Largeur (cm)",
+      "depthCm": "Profondeur (cm)",
+      "heightCm": "Hauteur (cm)",
+      "save": "Enregistrer la taille",
+      "remove": "Retirer la taille",
+      "saved": "Taille enregistrée",
+      "removed": "Taille retirée",
+      "saveFailed": "Impossible d'enregistrer la taille. Utilisez des côtés de 1 à 10000 cm.",
+      "loading": "Lecture de la taille",
+      "loadFailed": "Impossible de lire la taille."
+    },
     "details": "Détails",
     "history": {
       "empty": "Aucune modification pour l'instant. La planche d'angles, ses redessins, les changements de matière et la création 3D apparaissent ici.",
@@ -437,6 +451,13 @@
         "rebuild_standard": "Refait en Standard, crédits remboursés"
       },
       "credits": "{credits} crédits"
+    },
+    "tabs": {
+      "views": "Vues",
+      "history": "Historique",
+      "materials": "Matériaux",
+      "use": "L’utiliser",
+      "size": "Taille"
     },
     "review": {
       "title": "Que vérifier avant de créer le modèle 3D ?",
@@ -467,9 +488,6 @@
       "refunded": "Nous n’avons pas pu recréer les vues. Vous conservez l’aperçu précédent et nous avons recrédité {credits, number} crédits."
     },
     "nextSteps": {
-      "title": "Télécharger et utiliser votre modèle 3D",
-      "formats": "Téléchargez le GLB pour les sites et scènes 3D, ou le USDZ pour les apps Apple compatibles.",
-      "formatsWithExports": "Téléchargez le GLB pour les sites et scènes 3D, le USDZ pour les apps Apple compatibles, ou OBJ, FBX et BLEND pour les logiciels 3D.",
       "choose": "Où souhaitez-vous l’utiliser ?",
       "createAnother": "Créer un autre modèle",
       "web": {
@@ -811,7 +829,8 @@
     "model": "Modèle",
     "navLabel": "Navigation de l’app",
     "sidebar": "Barre latérale",
-    "toggleSidebar": "Afficher ou masquer la barre latérale",
+    "collapseSidebar": "Masquer la barre latérale",
+    "expandSidebar": "Afficher la barre latérale",
     "home": "Accueil Easy Render",
     "newModel": "Nouveau modèle 3D",
     "untitled": "Sans titre",
@@ -854,9 +873,6 @@
     "toggleContext": "Afficher ou masquer le panneau des éléments",
     "context": {
       "title": "Éléments"
-    },
-    "history": {
-      "title": "Historique"
     },
     "settings": {
       "title": "Réglages",
@@ -1768,7 +1784,8 @@
     "starting": "Envoi des produits… {count} envoyés",
     "balance": "Solde : {credits} crédits",
     "missing": "Il manque {credits} crédits",
-    "buy": "Acheter des crédits",
+    "pack": "{credits} crédits · {price}",
+    "purchasePending": "En attente de la confirmation de ton achat par Shopify…",
     "progress": "{ready} prêts, {running} en cours, {missing} encore manquants",
     "themeTitle": "Affichez-le sur vos fiches produit",
     "themeBody": "Ouvrez l'éditeur de thème, allez sur une fiche produit, ajoutez le bloc « Voir chez vous » et enregistrez. Les produits avec un modèle terminé affichent un bouton et un QR code.",

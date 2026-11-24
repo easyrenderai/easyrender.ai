@@ -52,6 +52,7 @@ model User {
   apiKeys   ApiKey[]
   catalogItems CatalogItem[]
   shopifyShops ShopifyShop[]
+  shopifyPurchases ShopifyPurchase[]
   viewSets  ViewSet[]
   agentChats AgentChat[]
   libraryFolders LibraryFolder[]
@@ -216,9 +217,16 @@ model Render {
   pollAfter         DateTime?
   sheetKey          String?
   glbKey            String?
+  // A lighter copy of the GLB for viewers and AR (smaller textures, fewer triangles). It equals
+  // glbKey when the file could not be made lighter, and is null until it has been made. Downloads
+  // and material edits always start from glbKey.
+  viewGlbKey        String?
   // Material changes made by the owner, as a list of { index, baseColor?, roughness?, metalness? }
   // by glTF material. The stored GLB is never rewritten: the edits are applied when it is served.
   materialEdits     Json?
+  // The piece's real size, { widthCm?, depthCm?, heightCm? }, from its owner or its store. The
+  // stored GLB is never rewritten: the size is applied when it is served, so AR shows it true.
+  sizeCm            Json?
   // What the guardrails measured at each stage (photo, draft sheet, final sheet, model), for
   // comparing quality across renders. Never read to decide anything; see render-quality.ts.
   quality           Json?
@@ -553,6 +561,8 @@ model CatalogItem {
   title      String
   imageUrl   String
   note       String?
+  // The product's size in the store, { widthCm?, depthCm?, heightCm? }; it becomes the render's.
+  sizeCm     Json?
   renderId   String?
   // queued | drafting | building | ready | needs_credits | needs_info | failed
   state      String   @default("queued")
@@ -577,6 +587,33 @@ model ShopifyShop {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([userId])
+}
+
+// A credit pack bought inside the Shopify app and billed by Shopify (appPurchaseOneTimeCreate). The
+// row is written when the charge is created and settled by re-reading the charge from Shopify: the
+// credits are granted once, when Shopify says it is active, through the ledger key
+// `shopify:purchase:<chargeId>`. The shop is not a relation so the record outlives an uninstall.
+model ShopifyPurchase {
+  id          String    @id @default(cuid())
+  shop        String
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // The charge's global id (gid://shopify/AppPurchaseOneTime/...).
+  chargeId    String    @unique
+  credits     Int
+  amountCents Int
+  currency    String    @default("usd")
+  // pending, active, declined, expired. Active means Shopify invoiced it.
+  status      String    @default("pending")
+  // A charge on a development store: Shopify does not bill it.
+  isTest      Boolean   @default(false)
+  // Set once the credits are in the wallet. A test charge past the per-account limit has none.
+  creditedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([shop, status])
   @@index([userId])
 }
 

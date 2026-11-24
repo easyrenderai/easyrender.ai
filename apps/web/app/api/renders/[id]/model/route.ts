@@ -4,9 +4,11 @@ import {
   getFileStream,
   getRender,
   isListed,
+  isServedChanged,
   isShared,
   notFound,
   servedModel,
+  viewModelKey,
 } from '@easyrender/core';
 import { resolveActor } from '@/lib/actor';
 import { apiHandle, apiOptions } from '@/lib/api-http';
@@ -22,15 +24,17 @@ export const GET = (request: Request, { params }: RouteContext<'/api/renders/[id
     // Owners download their model; anyone can view a render that is in the public gallery.
     const owner = canAccess(render, actor) && Boolean(actor.userId);
     if (!owner && !isListed(render) && !isShared(render)) throw notFound();
-    const isEdited = Array.isArray(render.materialEdits) && render.materialEdits.length > 0;
-    const body = isEdited
-      ? servedModel(render, await getFile(render.glbKey))
-      : await getFileStream(render.glbKey);
-    const download = new URL(request.url).searchParams.get('download') === '1';
+    const isEdited = isServedChanged(render);
+    const query = new URL(request.url).searchParams;
+    const download = query.get('download') === '1';
+    // The default is the generated file itself: API clients and downloads get the full model.
+    // Viewers ask for ?view=1 and get the lighter copy of it (smaller textures, fewer triangles).
+    const key = query.get('view') === '1' && !download ? await viewModelKey(render) : render.glbKey;
+    const body = isEdited ? servedModel(render, await getFile(key)) : await getFileStream(key);
     return new Response(body as BodyInit, {
       headers: {
         'content-type': 'model/gltf-binary',
-        // An edited model must show the edit at once, so it is revalidated instead of cached.
+        // An edited or resized model must show the change at once, so it is revalidated instead of cached.
         'cache-control': isEdited
           ? 'no-cache'
           : owner

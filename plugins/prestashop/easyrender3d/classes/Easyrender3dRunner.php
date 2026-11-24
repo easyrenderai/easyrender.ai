@@ -55,7 +55,29 @@ class Easyrender3dRunner
             return null;
         }
 
-        return array('externalId' => (string) $product['id'], 'title' => (string) $product['name'], 'imageUrl' => $url);
+        $item = array('externalId' => (string) $product['id'], 'title' => (string) $product['name'], 'imageUrl' => $url);
+        // The product's size becomes the model's real size in AR. Blank and zero sides are left out.
+        $size = array();
+        foreach (array('widthCm', 'depthCm', 'heightCm') as $side) {
+            $value = isset($product['size_cm'][$side]) ? (float) $product['size_cm'][$side] : 0.0;
+            if ($value >= 1 && $value <= 10000) {
+                $size[$side] = round($value, 1);
+            }
+        }
+        if ($size) {
+            $item['sizeCm'] = $size;
+        }
+
+        return $item;
+    }
+
+    /** A length typed in the shop's dimension unit, in centimetres. An unknown unit counts as cm. */
+    public static function toCm($value, $unit)
+    {
+        $factors = array('mm' => 0.1, 'cm' => 1, 'm' => 100, 'in' => 2.54, 'ft' => 30.48, 'yd' => 91.44);
+        $unit = strtolower(trim((string) $unit));
+
+        return (float) $value * (isset($factors[$unit]) ? $factors[$unit] : 1);
     }
 
     /** Products that still need a model, as API items, and how many were skipped for lack of a photo. */
