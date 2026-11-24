@@ -31,7 +31,7 @@
       "name": "getCredits",
       "label": "Get Credits",
       "type": "action",
-      "description": "Retrieves the current account balance and live quote.",
+      "description": "Returns account usage information",
       "connection": "easyrender"
     },
     {

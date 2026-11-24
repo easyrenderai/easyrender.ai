@@ -1,7 +1,7 @@
 # n8n-nodes-easyrender
 
-Connect easyrender product photos and 3D model workflows to n8n. This is the
-source package for a community node submission; it is not yet published or verified.
+Connect easyrender product photos and 3D model workflows to n8n. This package is
+published on npm as `n8n-nodes-easyrender`. n8n community verification is pending.
 
 ## Requirements and credentials
 
@@ -11,8 +11,8 @@ create an `er_` API key with `read` and `write` scopes. In n8n, create an
 `GET /api/credits`; it does not submit a render. Read-only workflows need only `read`.
 The key is sent as `Authorization: Bearer …` to `https://easyrender.ai/api`.
 
-**Deployment prerequisite:** deploy this PR's REST `image_url` support before using
-Create Render. See the [API contract](../../docs/api.md). No base URL override is exposed.
+Create Render requires REST `image_url` support. See the [API contract](../../docs/api.md).
+No base URL override is exposed.
 
 ## Operations
 
@@ -123,7 +123,7 @@ never contacts production. For a hosted/editor smoke test, use the example above
 an authorized test key. Source follows the [n8n starter](https://github.com/n8n-io/n8n-nodes-starter).
 The package has no runtime dependencies, environment access or filesystem access in its nodes.
 
-After publication, self-hosted users can install `n8n-nodes-easyrender` via Settings →
+Self-hosted users can install `n8n-nodes-easyrender` via Settings →
 Community Nodes. Cloud discovery requires n8n verification; do not claim that status
 until approved. See [listing and release instructions](../../docs/integrations/LISTING.md).
 
