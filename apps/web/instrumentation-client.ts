@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/nextjs';
 import {
   BLOB_URL_SPANS,
+  BROWSER_ABORT_ERRORS,
   BROWSER_EXTENSION_ERRORS,
   BROWSER_EXTENSION_URLS,
   WEBGL_UNAVAILABLE_ERRORS,
@@ -11,7 +12,7 @@ import { browserPrivacyOptions } from './lib/sentry-privacy';
 Sentry.init({
   ...browserPrivacyOptions(() => window.location.href),
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  ignoreErrors: [...BROWSER_EXTENSION_ERRORS, ...WEBGL_UNAVAILABLE_ERRORS],
+  ignoreErrors: [...BROWSER_ABORT_ERRORS, ...BROWSER_EXTENSION_ERRORS, ...WEBGL_UNAVAILABLE_ERRORS],
   ignoreSpans: BLOB_URL_SPANS,
   denyUrls: BROWSER_EXTENSION_URLS,
   environment: process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV,

@@ -122,7 +122,9 @@ export function PromptBar() {
         onClick={() => input.current?.click()}
       >
         {isBusy ? <Loader2 className="animate-spin" /> : <ImagePlus />}
-        {isBusy ? t('uploadingReal') : t('startPreview')}
+        {/* A span, not a bare text node: browser translation replaces text nodes, and React then
+            fails to insert the swapped icon before one that is gone (insertBefore NotFoundError). */}
+        <span>{isBusy ? t('uploadingReal') : t('startPreview')}</span>
       </Button>
       <p className="text-center text-xs leading-relaxed text-muted-foreground">{t('tryNote')}</p>
       {isBusy && (
