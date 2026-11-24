@@ -69,6 +69,7 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
   '/blog/figures/3d-file-formats/blender-reopen.jpg': { width: 640, height: 480 },
   '/blog/figures/3d-modeling-cost/source-and-review.webp': { width: 1280, height: 468 },
   '/blog/figures/white-background-product-photography/vase-edge.jpg': { width: 435, height: 474 },
+  '/blog/figures/blender-export-glb/base-color-test.webp': { width: 1608, height: 600 },
   '/blog/figures/glb-vs-gltf/vase-gltf-render.jpg': { width: 640, height: 480 },
   '/blog/figures/furniture-model-from-photo/coffee-table-photo-model.jpg': {
     width: 1280,
@@ -99,6 +100,7 @@ export const BLOG_IMAGES: Record<string, BlogImage> = {
     width: 1280,
     height: 720,
   },
+  '/blog/illustrations/blender-export-glb/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/glb-vs-gltf/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/furniture-model-from-photo/hero.webp': { width: 1280, height: 720 },
   '/blog/illustrations/compress-glb/hero.webp': { width: 1280, height: 720 },
