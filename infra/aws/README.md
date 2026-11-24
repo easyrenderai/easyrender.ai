@@ -8,6 +8,7 @@ deploy or by a merge: a change to a template reaches AWS only when someone deplo
 | `storage.yml`         | `easyrenderai-storage`       | eu-west-1 | Assets bucket, exports bucket, the CloudFront distribution, the Vercel OIDC role            |
 | `cdn-certificate.yml` | `easyrender-cdn-certificate` | us-east-1 | The certificate for `cdn.easyrender.ai` (CloudFront reads certificates from us-east-1 only) |
 | `exports.yml`         | `easyrender-exports`         | eu-west-1 | The Blender converter as an on-demand Lambda function, its image registry, its roles        |
+| `outage-alarm.yml`    | `easyrender-outage-alarm`    | us-east-1 | Route 53 health check on the production site, CloudWatch alarm, SNS email topic             |
 
 ## What is public and what is private
 
@@ -81,6 +82,48 @@ with; pass the current one when you deploy a template change.
 
 The converter's own role can only read and write `exports/*` in the exports bucket. The Vercel
 role gains two rights here: write the model to convert under `exports/*`, and start the function.
+
+## Outage alarm
+
+`outage-alarm.yml` emails when production is down. A Route 53 health check requests
+`https://easyrender.ai/` every 30 seconds from eight AWS regions. `/` answers from the app itself
+on every request (it is not cached), so the check fails when the app is down and not only when the
+CDN is. The alarm goes red after two minutes of failures and mails again on recovery. Route 53
+publishes health check metrics in us-east-1 only, so the stack, the alarm and the SNS topic live
+there. It runs beside the daily `prod-smoke.yml`, which keeps the deeper checks: this one only says
+that the site answers, within a few minutes.
+
+The address is a parameter and is never committed. AWS mails it a confirmation link; **until the
+link is clicked the alarm mails nobody**.
+
+```bash
+aws cloudformation deploy --region us-east-1 --stack-name easyrender-outage-alarm \
+  --template-file infra/aws/outage-alarm.yml \
+  --parameter-overrides AlarmEmail=<address> --no-execute-changeset
+# read the change set (four resources: topic, subscription, health check, alarm), then:
+# (a stack left in ROLLBACK_COMPLETE by a failed first attempt has to be deleted before a retry)
+aws cloudformation deploy --region us-east-1 --stack-name easyrender-outage-alarm \
+  --template-file infra/aws/outage-alarm.yml --parameter-overrides AlarmEmail=<address>
+```
+
+Prove it after a change to the template. A second stack watches a path that answers 404, so its
+check fails on purpose. It needs no subscription, because the alarm state can be read directly:
+
+```bash
+aws cloudformation deploy --region us-east-1 --stack-name easyrender-outage-alarm-test \
+  --template-file infra/aws/outage-alarm.yml --parameter-overrides ResourcePath=/alarm-test-404
+# within about four minutes the alarm reads ALARM
+aws cloudwatch describe-alarms --region us-east-1 --alarm-names easyrender-outage-alarm-test-down \
+  --query 'MetricAlarms[0].[StateValue,StateReason]'
+aws cloudformation delete-stack --region us-east-1 --stack-name easyrender-outage-alarm-test
+```
+
+To see the mail itself, set the real alarm for a moment (it returns to OK on its own when the next
+evaluation passes): `aws cloudwatch set-alarm-state --region us-east-1 --alarm-name
+easyrender-outage-alarm-down --state-value ALARM --state-reason "test"`. A new alarm reads
+`INSUFFICIENT_DATA` for its first minutes, then `OK`, which sends the recovery mail once: that is the
+sign it works. The test stack must read `ALARM` with the reason "Threshold Crossed: 2 datapoints
+[0.0, 0.0]"; "no datapoints" means it has not measured anything yet.
 
 ## Outputs the app uses
 
