@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it, vi } from 'vitest';
 import { LOCALES } from '@/i18n/config';
 import { BLOG_IMAGES, parseImage, schemaImage } from '@/lib/blog/images';
 import { heroSource, parseBlocks } from '@/lib/blog/markdown';
@@ -22,6 +22,11 @@ import {
 // The published English comparisons: written to the same bar as the guides, now indexable.
 // If one of these fails, either the copy broke a rule or a compare URL is missing from the
 // sitemap, llms.txt or the places we chose to link it from.
+
+// The production routes reuse parsed articles. Use that cache when checking the full sitemap
+// and llms corpus so each alternate link does not reread every guide from disk.
+vi.stubEnv('NODE_ENV', 'production');
+afterAll(() => vi.unstubAllEnvs());
 
 const REVIEW_SLUGS = [
   '360-vs-3d',
@@ -249,8 +254,6 @@ describe('once they are published', () => {
       // The English hub is an alternate of the localized hub, not a second canonical.
       expect(xml, locale).toContain('hreflang="en" href="https://easyrender.ai/compare"');
     }
-    // Renders every language's sitemap and both llms files, which is the whole corpus several
-    // times over. It takes about 1.5 s alone and has passed 5 s on a busy CI runner.
   }, 20_000);
 
   it('are linked from the English guides hub and from related guides, not from chrome', () => {
