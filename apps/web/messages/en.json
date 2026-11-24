@@ -2135,7 +2135,8 @@
       "previewWithoutCheckout": "Preview without credit checkout",
       "checkoutWithoutPayment": "Credit checkout without later payment",
       "paidAfterCheckout": "Accounts with later payment",
-      "paidSignupFunnelScope": "New paid-search accounts in the selected window, grouped by first-touch campaign. Counts unique accounts through period end. A claimed preview may precede signup. Checkout means a credit-purchase session created after signup and preview; it does not prove Stripe was opened. Subscription checkout starts are not stored here. Later payment means any positive payment after that credit checkout, not necessarily payment for that session. No anonymous-visitor conversion rate is inferred."
+      "paidSignupFunnelScope": "New paid-search accounts in the selected window, grouped by first-touch campaign. Counts unique accounts through period end. A claimed preview may precede signup. Checkout means a credit-purchase session created after signup and preview; it does not prove Stripe was opened. Subscription checkout starts are not stored here. Later payment means any positive payment after that credit checkout, not necessarily payment for that session. No anonymous-visitor conversion rate is inferred.",
+      "renderGallery": "Renders gallery"
     }
   },
   "CreditInvite": {
@@ -3788,5 +3789,47 @@
       "polish_product_view": "Fix a product photo",
       "build_from_product_views": "Build 3D from product photos"
     }
+  },
+  "AdminInventory": {
+    "renders": "Renders gallery",
+    "buyers": "Buyers · lifetime",
+    "buyerEmail": "Masked email",
+    "buyerPurchases": "Purchases",
+    "buyerPurchased": "Purchased credits",
+    "buyerGifted": "Gifted credits (net)",
+    "buyerOther": "Other grants / test credits",
+    "buyerUsed": "Used credits (gross)",
+    "buyerRefunded": "Refunded credits",
+    "buyerRemaining": "Current balance",
+    "buyerPaid": "Recorded amount by currency",
+    "buyerUnknownAmounts": "Payments without amount",
+    "buyerFirst": "First purchase",
+    "buyerLast": "Last purchase",
+    "drafting": "Preparing preview",
+    "preview_ready": "Preview ready",
+    "rendering": "Building 3D",
+    "ready": "Succeeded",
+    "failed": "Failed",
+    "statusFilter": "Filter by status",
+    "previewAlt": "Render preview",
+    "noPreview": "No preview available",
+    "imageError": "Preview unavailable or link expired",
+    "retry": "Retry",
+    "anonymous": "Anonymous / deleted account",
+    "viewModel": "View 3D / USDZ",
+    "downloadGlb": "GLB",
+    "downloadSheet": "Angle sheet",
+    "downloadSource": "Input image",
+    "modelTitle": "3D model",
+    "emptyRenders": "No renders match this filter.",
+    "pagination": "Pagination",
+    "loading": "Loading renders…",
+    "loadError": "Renders could not be loaded.",
+    "rendersNote": "All accounts and all dates, including previews and failed attempts. Credit charges are the stored render charge, not net wallet usage after refunds.",
+    "buyersNote": "All accounts, all time; independent of chart filters. Purchases exclude gifts and tests. Usage is before credit refunds; balances include all sources. Recorded gross payments and Shopify invoices stay separate by currency. Missing amounts are flagged.",
+    "modelNote": "Stored model, before material or size edits. USDZ is converted locally from the original GLB. Download links are renewed on click.",
+    "charged": "{credits} credits charged",
+    "renderCount": "{total} renders",
+    "pageCount": "Page {page} of {pages}"
   }
 }

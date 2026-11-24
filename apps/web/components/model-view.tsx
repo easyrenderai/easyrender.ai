@@ -44,6 +44,7 @@ export function ModelView({
   exportsUrl,
   editableRenderId,
   nextStepsHref,
+  isArEnabled = true,
 }: {
   src: string;
   name: string;
@@ -54,6 +55,8 @@ export function ModelView({
   editableRenderId?: string;
   /** Only the owner of a finished render gets the usage walkthrough. */
   nextStepsHref?: string;
+  /** Admin asset links require a browser session, which native AR apps cannot carry. */
+  isArEnabled?: boolean;
 }) {
   const t = useTranslations('Render');
   // Set when the owner saves a size: the model is then loaded again at that size.
@@ -153,7 +156,7 @@ export function ModelView({
           }
           alt={t('modelAlt', { name })}
           interactive
-          ar
+          ar={isArEnabled}
           lazy={false}
           onLoad={setViewer}
         />

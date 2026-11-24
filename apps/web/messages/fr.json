@@ -2219,7 +2219,8 @@
       "previewWithoutCheckout": "Aperçu sans paiement de crédits initié",
       "checkoutWithoutPayment": "Paiement de crédits initié sans règlement ultérieur",
       "paidAfterCheckout": "Comptes avec règlement ultérieur",
-      "paidSignupFunnelScope": "Nouveaux comptes issus de la recherche payante sur la période, par campagne de premier contact. Comptes uniques jusqu’à la fin de la période. Un aperçu revendiqué peut précéder l’inscription. Une session de paiement de crédits est créée après l’inscription et l’aperçu ; cela ne prouve pas que Stripe a été ouvert. Les débuts de paiement d’abonnement ne sont pas enregistrés ici. Un règlement ultérieur désigne tout paiement positif après cette session, pas forcément pour celle-ci. Aucun taux de conversion des visiteurs anonymes n’est déduit."
+      "paidSignupFunnelScope": "Nouveaux comptes issus de la recherche payante sur la période, par campagne de premier contact. Comptes uniques jusqu’à la fin de la période. Un aperçu revendiqué peut précéder l’inscription. Une session de paiement de crédits est créée après l’inscription et l’aperçu ; cela ne prouve pas que Stripe a été ouvert. Les débuts de paiement d’abonnement ne sont pas enregistrés ici. Un règlement ultérieur désigne tout paiement positif après cette session, pas forcément pour celle-ci. Aucun taux de conversion des visiteurs anonymes n’est déduit.",
+      "renderGallery": "Galerie des rendus"
     }
   },
   "McpLanding": {
@@ -3411,5 +3412,47 @@
       "polish_product_view": "Corriger une photo produit",
       "build_from_product_views": "Créer la 3D depuis les photos produit"
     }
+  },
+  "AdminInventory": {
+    "renders": "Galerie des rendus",
+    "buyers": "Acheteurs · historique",
+    "buyerEmail": "E-mail masqué",
+    "buyerPurchases": "Achats",
+    "buyerPurchased": "Crédits achetés",
+    "buyerGifted": "Crédits offerts (nets)",
+    "buyerOther": "Autres crédits / tests",
+    "buyerUsed": "Crédits utilisés (bruts)",
+    "buyerRefunded": "Crédits remboursés",
+    "buyerRemaining": "Solde actuel",
+    "buyerPaid": "Montant enregistré par devise",
+    "buyerUnknownAmounts": "Paiements sans montant",
+    "buyerFirst": "Premier achat",
+    "buyerLast": "Dernier achat",
+    "drafting": "Préparation de l’aperçu",
+    "preview_ready": "Aperçu prêt",
+    "rendering": "Création 3D",
+    "ready": "Réussi",
+    "failed": "Échec",
+    "statusFilter": "Filtrer par statut",
+    "previewAlt": "Aperçu du rendu",
+    "noPreview": "Aucun aperçu disponible",
+    "imageError": "Aperçu indisponible ou lien expiré",
+    "retry": "Réessayer",
+    "anonymous": "Anonyme / compte supprimé",
+    "viewModel": "Voir 3D / USDZ",
+    "downloadGlb": "GLB",
+    "downloadSheet": "Planche de vues",
+    "downloadSource": "Image d’origine",
+    "modelTitle": "Modèle 3D",
+    "emptyRenders": "Aucun rendu ne correspond à ce filtre.",
+    "pagination": "Pagination",
+    "loading": "Chargement des rendus…",
+    "loadError": "Impossible de charger les rendus.",
+    "rendersNote": "Tous les comptes et toutes les dates, y compris les aperçus et les échecs. Les crédits correspondent au débit enregistré du rendu, avant remboursement.",
+    "buyersNote": "Tous les comptes et toutes les dates, indépendamment des filtres du graphique. Achats hors cadeaux et tests. Utilisation avant remboursement ; solde de toutes les sources. Paiements bruts et factures Shopify par devise. Les montants manquants sont signalés.",
+    "modelNote": "Modèle stocké avant modification des matériaux ou dimensions. Le fichier USDZ est converti localement depuis le GLB original. Les liens sont renouvelés au clic.",
+    "charged": "{credits} crédits débités",
+    "renderCount": "{total} rendus",
+    "pageCount": "Page {page} sur {pages}"
   }
 }

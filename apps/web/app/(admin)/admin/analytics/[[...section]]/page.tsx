@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
+import { BuyersTable } from '@/components/admin-analytics/buyers';
 import { OverviewChart } from '@/components/admin-analytics/charts';
 import {
   AdminControls,
@@ -189,6 +190,11 @@ export default async function AnalyticsPage({
       {section === 'overview' && (
         <Suspense fallback={<OverviewSkeleton />}>
           <Overview range={range} labels={labels} />
+        </Suspense>
+      )}
+      {section === 'overview' && (
+        <Suspense fallback={<Skeleton />}>
+          <BuyersTable labels={labels} />
         </Suspense>
       )}
       {section === 'overview' && (
