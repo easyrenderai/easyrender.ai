@@ -4,7 +4,7 @@ group: "shopify-3d-models"
 title: "How to add 3D models to Shopify products"
 description: "Upload a product model in Shopify, check your theme and test how shoppers see it on web and mobile."
 date: 2026-11-20
-updated: 2026-11-20
+updated: 2026-11-24
 author: Jorge Rodríguez
 authorType: person
 keyword: "shopify 3d models"
@@ -19,13 +19,13 @@ Add a GLB or USDZ to the media gallery of a Shopify product and preview it with 
 
 Pick one existing product with clear photos. Open the model in a standalone viewer to check orientation, surfaces and texture. Record the file size and choose a thumbnail that shows what the model adds.
 
-Check the current supported formats and upload limits in Shopify’s media guide. The theme must support 3D product media or be adapted to display it. Confirm this on a draft product or a development theme first.
+Check the supported formats and upload limits in Shopify’s media guide. Upload to a draft product first, then use the theme preview to see if your theme displays 3D media.
 
 ## How do you find a missing viewer?
 
-Open the product in Shopify admin and add the file under Media. [Shopify’s upload steps](https://help.shopify.com/en/manual/products/product-media/add-media). Save after processing finishes, then open the storefront preview. Select the model and turn it to the back and underside.
+Open the draft product in Shopify admin and [add the file under Media](https://help.shopify.com/en/manual/products/product-media/add-media). Save after processing finishes, then open the storefront preview. Select the model and turn it to the back and underside.
 
-If the model works in the admin but not the storefront, inspect the theme’s product-media section first. Check a mobile view and a fresh session. Where you enable AR, open it on a compatible device and go back to the shop.
+If the model works in the admin but not the storefront, inspect the theme’s product-media section first. Check the draft preview on a phone and use a private window if you have a visitor preview link. Where you enable AR, open it on a compatible device and go back to the shop.
 
 ## What should you check before publishing?
 
@@ -52,11 +52,11 @@ If the model works in the admin but not the storefront, inspect the theme’s pr
 
 ## Run the customer checks
 
-| Session                 | Expected result                                                     |
-| ----------------------- | ------------------------------------------------------------------- |
-| Desktop, signed out     | Lead photo appears and the 3D item can rotate                       |
-| Phone, fresh session    | The model loads after selection and the reader can return to photos |
-| Compatible Apple device | Quick Look opens where enabled and returns to the listing           |
+| Session                               | Expected result                                                     |
+| ------------------------------------- | ------------------------------------------------------------------- |
+| Desktop, visitor preview if available | Lead photo appears and the 3D item can rotate                       |
+| Phone, fresh session                  | The model loads after selection and the reader can return to photos |
+| Compatible Apple device               | Quick Look opens where enabled and returns to the listing           |
 
 **Source** [Shopify · product media](https://help.shopify.com/en/manual/products/product-media), [Shopify · media types](https://help.shopify.com/en/manual/products/product-media/product-media-types), [Shopify · managing product media](https://shopify.dev/docs/apps/build/product-merchandising/products-and-collections/manage-media), [Apple · Quick Look](https://developer.apple.com/quick-look-gallery/).
 

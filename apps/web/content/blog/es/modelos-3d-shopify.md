@@ -4,7 +4,7 @@ group: "shopify-3d-models"
 title: "Cómo añadir modelos 3D a productos de Shopify"
 description: "Sube un modelo 3D a Shopify y comprueba el tema, el visor de producto y la experiencia móvil."
 date: 2026-11-20
-updated: 2026-11-20
+updated: 2026-11-24
 author: Jorge Rodríguez
 authorType: person
 keyword: "modelos 3d shopify"
@@ -19,7 +19,7 @@ Añade un archivo GLB o USDZ a la galería de un producto en Shopify y abre la v
 
 Elige un producto con fotos claras. Abre el modelo en un visor independiente y comprueba orientación, superficies y textura. Anota el peso del archivo y elige una miniatura que ayude a reconocer la vista interactiva.
 
-Consulta los formatos y límites vigentes de Shopify. El tema debe admitir medios 3D o adaptarse para mostrarlos. Compruébalo en un producto en borrador o un tema de pruebas.
+Consulta los formatos y límites vigentes de Shopify. El tema debe admitir medios 3D o adaptarse para mostrarlos. Haz la primera subida en un producto en borrador y revisa cómo se ve en la vista previa del tema.
 
 ## ¿Cómo subes el modelo de un producto?
 
@@ -27,7 +27,7 @@ Abre el producto en el administrador y añade el archivo en Contenido multimedia
 
 ## ¿Qué haces si el visor no aparece?
 
-Si se abre en el administrador y falta en la ficha, revisa la sección de medios del tema. Haz la prueba en móvil y con una sesión nueva. Si habilitas RA, ábrela en un dispositivo compatible y comprueba el regreso a la tienda.
+Si se abre en el administrador y falta en la ficha, revisa la sección de medios del tema. Abre la vista previa del borrador en móvil y, si tienes un enlace para visitantes, compruébalo también en una ventana privada. Si habilitas RA, ábrela en un dispositivo compatible y comprueba el regreso a la tienda.
 
 ## ¿Qué deberías revisar antes de publicar?
 
