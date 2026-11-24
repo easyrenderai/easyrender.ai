@@ -1,10 +1,11 @@
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 const sdk = vi.hoisted(() => ({ init: vi.fn(), capture: vi.fn(), identify: vi.fn() }));
 vi.mock('posthog-js', () => {
   sdk.init.mockReturnValue(sdk);
   return { default: sdk };
 });
+beforeEach(() => vi.stubGlobal('navigator', { userAgent: 'Mozilla/5.0 Chrome/130.0' }));
 afterEach(() => {
   vi.clearAllMocks();
   vi.unstubAllEnvs();

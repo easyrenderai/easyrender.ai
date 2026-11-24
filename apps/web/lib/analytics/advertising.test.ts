@@ -54,3 +54,16 @@ describe('explicit advertising attribution', () => {
     ).toBeNull();
   });
 });
+
+it.each([false, true])(
+  'keeps all UTMs while allowing click IDs only with permission=%s',
+  (isAllowed) => {
+    const utms =
+      'utm_source=google&utm_medium=cpc&utm_campaign=niche&utm_content=ad&utm_term=model';
+    const url = `https://easyrender.ai/es?${utms}&gclid=Ad_1&dclid=Ad_2&gbraid=Ad_3&wbraid=Ad_4&fbclid=private&email=private&token=secret#private`;
+    const touch = readAdvertisingTouch(url, null, isAllowed, now);
+    expect(advertisingUrl(url, touch, now)).toBe(
+      `https://easyrender.ai/es?${utms}${isAllowed ? '&gclid=Ad_1&dclid=Ad_2&gbraid=Ad_3&wbraid=Ad_4' : ''}`,
+    );
+  },
+);

@@ -1,6 +1,6 @@
 # Google measurement: delivery and release checks
 
-The Google tag remains the only browser loader. Its initial consent is denied, with query and
+The Google tag remains the only browser loader. Its initial consent is denied, with non-UTM query and
 fragment redaction. The choices are **Analytics only**, **Analytics + ad measurement**, and
 **Reject optional**, with equal visual treatment. Existing analytics acceptance remains
 analytics-only. In strict regions (EU/EEA, UK, Switzerland and the other countries listed in
@@ -14,8 +14,10 @@ The existing regional GA4 policy and independent cookieless PostHog policy are u
 When the regional advertising policy allows measurement, with GA4 permitted and GPC absent,
 the browser grants
 `ad_storage` and `ad_user_data`. Only validated `gclid`, `dclid`, `gbraid` and `wbraid` values can
-be added to Google's otherwise-redacted page location. No email, token, arbitrary query field
-or fragment accompanies them. Those click IDs never enter PostHog or operational attribution
+be added to Google's page location alongside the five allowlisted `utm_*` parameters.
+GA4 config, pageviews and global `gtag('set', { page_location })` retain the landing campaign,
+even when advertising is denied. Click IDs require advertising permission; UTMs do not. No email,
+token, arbitrary query field or fragment accompanies them. Those click IDs never enter PostHog or operational attribution
 records. The app's `er_ad_touch` session record expires after a fixed 30 minutes, without extending
 on navigation; an expiry timer deletes it while the page stays open and stale records are
 removed on a later load. Captured IDs are removed from the address to prevent a reload renewing
@@ -58,7 +60,7 @@ The Ads event carries no value, currency, email or internal account identifier.
 
 Basic consent mode gates the event: advertising must currently be allowed, the hostname must
 be exactly `easyrender.ai`, gtag must exist and the location must not be a token page. The event
-uses `advertisingUrl()` with only permitted click IDs and a redacted referrer. The gate is
+uses a UTM-preserving page location with only permitted click IDs and a redacted referrer. The gate is
 checked again after the asynchronous receipt response, so withdrawal while it is in flight
 prevents delivery. Localhost, previews, analytics-only choices, rejection and GPC never send it.
 

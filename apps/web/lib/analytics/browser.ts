@@ -10,6 +10,7 @@ import {
 } from '@easyrender/core/attribution';
 import { PRICING_FLAG, type PricingVariant } from '@easyrender/harness/pricing';
 import type { PostHog } from 'posthog-js';
+import { isBrowserBot } from '@/lib/bot';
 import { GOOGLE_ADS_SIGNUP_SEND_TO } from '@/lib/google-tag';
 import { isMailingTokenLocation } from '@/lib/mailing-privacy';
 import {
@@ -70,16 +71,16 @@ export function attributionHeaders(): Record<string, string> {
 export function beforeSend<T extends { event?: string; properties: Record<string, unknown> }>(
   event: T,
 ): T {
-  const properties = sanitizeProperties(
-    {
-      ui_locale: typeof document === 'undefined' ? undefined : document.documentElement?.lang,
-      pricing_subject: browserPricingSubject(),
-      pricing_variant: browserPricingVariant(),
-      [`$feature/${PRICING_FLAG}`]: browserPricingVariant(),
-      ...event.properties,
-    },
-    event.event === 'purchase_completed' && allowsCheckoutAdvertising(),
-  );
+  const touch = attribution();
+  const properties = sanitizeProperties({
+    ui_locale: typeof document === 'undefined' ? undefined : document.documentElement?.lang,
+    pricing_subject: browserPricingSubject(),
+    pricing_variant: browserPricingVariant(),
+    [`$feature/${PRICING_FLAG}`]: browserPricingVariant(),
+    ...event.properties,
+    // Runs even for a history pageview captured during init, before landing_view.
+    ...Object.fromEntries(UTM_KEYS.flatMap((key) => (touch?.[key] ? [[key, touch[key]]] : []))),
+  });
   // The SDK overwrites $session_id during capture. Use the verified checkout session on return.
   if (
     event.event === 'purchase_completed' &&
@@ -96,6 +97,7 @@ export function initializeGa(id: string) {
   // The beforeInteractive bootstrap owns consent defaults, the queue and the only loader.
   // Keep its exact production hostname guard; previews and localhost never start Google tags.
   if (
+    isBrowserBot() ||
     !id ||
     window.location.hostname !== 'easyrender.ai' ||
     !window.__erGoogleTagLoaded ||
@@ -112,12 +114,20 @@ function googleUrl(value: string) {
     return '';
   }
 }
+function googlePageLocation() {
+  const url = new URL(
+    advertisingUrl(window.location.href, isAdvertisingAllowed ? advertisingTouch : null),
+  );
+  const touch = attribution();
+  for (const key of UTM_KEYS) if (touch?.[key]) url.searchParams.set(key, touch[key]);
+  return url.toString();
+}
 export function gaPageview() {
   if (!isGaAllowed || !gaId || !window.gtag || isMailingTokenLocation(window.location.href)) return;
   const page = googleUrl(window.location.href);
   if (lastGaPage === page) return;
   lastGaPage = page;
-  const url = advertisingUrl(window.location.href, isAdvertisingAllowed ? advertisingTouch : null);
+  const url = googlePageLocation();
   if (!hasGaConfigured) {
     hasGaConfigured = true;
     const touch = attribution();
@@ -156,10 +166,7 @@ export function gaEvent(
     pricing_variant: browserPricingVariant(),
     ...properties,
     send_to: gaId,
-    page_location: advertisingUrl(
-      window.location.href,
-      isAdvertisingAllowed ? advertisingTouch : null,
-    ),
+    page_location: googlePageLocation(),
     page_referrer: googleUrl(document.referrer),
   });
 }
@@ -176,7 +183,7 @@ function adsConversion(sendTo: string, identity: string) {
   conversions.add(key);
   window.gtag('event', 'conversion', {
     send_to: sendTo,
-    page_location: advertisingUrl(window.location.href, advertisingTouch),
+    page_location: googlePageLocation(),
     page_referrer: googleUrl(document.referrer),
   });
 }
@@ -196,6 +203,8 @@ export async function setBrowserTools(
   allowAdvertising = false,
   hasAnalyticsPermission: boolean | null = allowGa,
 ) {
+  if (isBrowserBot()) return;
+  attribution();
   isAnalyticsIdentityAllowed = hasAnalyticsPermission === true && !hasWithdrawal;
   if (hasAnalyticsPermission === false || hasWithdrawal) {
     try {
@@ -245,7 +254,7 @@ export async function setBrowserTools(
           } catch {
             /* Storage unavailable. */
           }
-          window.gtag?.('set', { page_location: googleUrl(window.location.href) });
+          window.gtag?.('set', { page_location: googlePageLocation() });
         },
         Math.max(0, advertisingTouch.expiresAt - Date.now()),
       );
@@ -280,10 +289,7 @@ export async function setBrowserTools(
     // Clear redaction/URL state before consent updates; personalization is never granted.
     window.gtag?.('set', 'ads_data_redaction', !isAdvertisingAllowed);
     window.gtag?.('set', {
-      page_location: advertisingUrl(
-        window.location.href,
-        isAdvertisingAllowed ? advertisingTouch : null,
-      ),
+      page_location: googlePageLocation(),
     });
     if (gaId) Object.assign(window, { [`ga-disable-${gaId}`]: !isGaAllowed });
     window.gtag?.('consent', 'update', {

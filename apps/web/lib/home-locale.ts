@@ -1,4 +1,5 @@
 import { isRoutableLocale, type Locale, type RoutableLocale } from '@/i18n/config';
+import { isBot } from '@/lib/bot';
 import { isPublished, ROUTES } from '@/lib/seo/routes';
 
 // The first-visit language redirect of the marketing home, and nothing else (Jorge, 10-nov-2026).
@@ -13,6 +14,7 @@ import { isPublished, ROUTES } from '@/lib/seo/routes';
 // country, or from a country we do not map, is re-checked on the next visit and still gets
 // English. The app remembers its interface language separately in proxy.ts.
 
+export { isBot } from '@/lib/bot';
 export { HOME_LOCALE_COOKIE, HOME_LOCALE_MAX_AGE, HOME_VARY } from './home-locale-constants';
 
 /** The country header Vercel sets at the edge. Absent locally and on other hosts. */
@@ -40,17 +42,6 @@ const COUNTRY_LOCALE: Record<string, Locale> = {
 export function localeForCountry(country: string | null | undefined): Locale | null {
   if (!country) return null;
   return COUNTRY_LOCALE[country.trim().toUpperCase()] ?? null;
-}
-
-// Search engines, AI crawlers, link unfurlers and generic HTTP clients. A bot asking for / gets
-// the English home with its full hreflang block, which is how it finds the other five.
-const BOT_PATTERN =
-  /bot\b|bot\/|crawl|spider|slurp|googlebot|google-inspectiontool|googleother|google-extended|storebot|adsbot|mediapartners|apis-google|feedfetcher|bingbot|bingpreview|msnbot|duckduckbot|duckassist|yandex|baiduspider|sogou|exabot|petalbot|applebot|gptbot|chatgpt-user|oai-searchbot|claudebot|claude-user|claude-searchbot|claude-web|anthropic-ai|perplexitybot|perplexity-user|bytespider|ccbot|cohere-ai|diffbot|amazonbot|meta-externalagent|meta-externalfetcher|facebookexternalhit|facebookbot|facebot|twitterbot|linkedinbot|slackbot|discordbot|telegrambot|whatsapp|pinterest|redditbot|embedly|semrush|ahrefs|mj12bot|dotbot|seznambot|ia_archiver|archive\.org|headlesschrome|lighthouse|pagespeed|chrome-lighthouse|curl\/|wget\/|python-requests|python-urllib|httpx|aiohttp|go-http-client|okhttp|java\/|node-fetch|undici|axios|libwww|scrapy|preview/i;
-
-/** True for any crawler or non-browser client, and for a request with no user agent at all. */
-export function isBot(userAgent: string | null | undefined): boolean {
-  if (!userAgent?.trim()) return true;
-  return BOT_PATTERN.test(userAgent);
 }
 
 /** A home that answers 200 today: routable and published, never English (that is `/` itself). */

@@ -121,6 +121,18 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(target, 308);
   }
 
+  // Resolve legacy guide aliases before the cached page's path-only redirect can drop queries.
+  const alias = /^\/([^/]+)\/learn\/([^/]+)\/?$/.exec(requested);
+  if (alias && isRoutableLocale(alias[1]) && alias[1] !== 'en') {
+    const { guideAlias } = await import('./lib/guide-alias');
+    const path = guideAlias(alias[1], alias[2]);
+    if (path) {
+      const target = request.nextUrl.clone();
+      target.pathname = path;
+      return NextResponse.redirect(target, 308);
+    }
+  }
+
   const headers = new Headers(request.headers);
   const { pathname, searchParams } = request.nextUrl;
   const isApp = isAppLocalePath(pathname);

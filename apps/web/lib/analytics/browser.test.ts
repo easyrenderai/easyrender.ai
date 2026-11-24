@@ -4,7 +4,11 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { GOOGLE_TAG_BOOTSTRAP } from '../google-tag';
 import { beforeSend } from './browser';
 
+const sdk = vi.hoisted(() => ({ init: vi.fn(), capture: vi.fn() }));
+vi.mock('posthog-js', () => ({ default: sdk }));
+
 afterEach(() => {
+  vi.clearAllMocks();
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
 });
@@ -34,19 +38,26 @@ it('before_send retains the public SDK project key required for ingestion and st
   });
 });
 
-async function googleBrowser(hostname = 'easyrender.ai') {
+async function googleBrowser(
+  hostname = 'easyrender.ai',
+  navigator: { userAgent?: string; webdriver?: boolean } = {
+    userAgent: 'Mozilla/5.0 Chrome/130.0',
+  },
+) {
   vi.resetModules();
   const scripts: Array<{ src?: string }> = [];
   const dataLayer: unknown[] = [{ event: 'existing-event' }];
   const location = new URL(`https://${hostname}/credits?utm_source=test&email=private#secret`);
   const window = { location, dataLayer };
+  vi.stubGlobal('navigator', navigator);
   const document = {
     referrer: 'https://external.test/path?token=private#secret',
     cookie: '',
     createElement: () => ({}),
     head: { appendChild: (script: { src?: string }) => scripts.push(script) },
   };
-  const bootstrap = () => runInNewContext(GOOGLE_TAG_BOOTSTRAP, { window, document, URL });
+  const bootstrap = () =>
+    runInNewContext(GOOGLE_TAG_BOOTSTRAP, { window, document, navigator, URL });
   bootstrap();
   vi.stubGlobal('window', window);
   vi.stubGlobal('document', document);
@@ -87,7 +98,7 @@ it('reuses the bootstrap queue and sole loader, sanitizes GA URLs and routes con
         pricing_variant: 'control',
         transaction_id: 'invoice-1',
         send_to: 'G-TEST000000',
-        page_location: 'https://easyrender.ai/credits',
+        page_location: 'https://easyrender.ai/credits?utm_source=test',
         page_referrer: 'https://external.test/path',
       },
     ],
@@ -97,13 +108,13 @@ it('reuses the bootstrap queue and sole loader, sanitizes GA URLs and routes con
     'G-TEST000000',
     {
       send_page_view: false,
-      page_location: 'https://easyrender.ai/credits',
+      page_location: 'https://easyrender.ai/credits?utm_source=test',
       page_referrer: 'https://external.test/path',
       allow_google_signals: false,
       allow_ad_personalization_signals: false,
     },
   ]);
-  expect(JSON.stringify(page.commands())).not.toMatch(/private|secret|utm_source/);
+  expect(JSON.stringify(page.commands())).not.toMatch(/private|secret/);
   expect(page.commands()).toContainEqual(['set', 'ads_data_redaction', true]);
 });
 it.each([
@@ -576,3 +587,134 @@ it.each([
     ]);
   },
 );
+
+const campaign = {
+  utm_source: 'google',
+  utm_medium: 'cpc',
+  utm_campaign: 'er_s_es_es_niche',
+  utm_content: 'ad-1',
+  utm_term: 'product model',
+};
+const campaignQuery = new URLSearchParams(campaign).toString();
+
+it('adds first-touch UTMs to the pageview emitted inside PostHog init and later events', async () => {
+  const page = await googleBrowser();
+  page.window.location.search = `?${campaignQuery}&gclid=Click_123&email=private`;
+  vi.stubEnv('NEXT_PUBLIC_POSTHOG_KEY', 'phc_localtest');
+  const sent: Array<{ properties: Record<string, unknown> }> = [];
+  sdk.init.mockImplementationOnce((_key, config) => {
+    sent.push(
+      config.before_send({
+        event: '$pageview',
+        properties: {
+          $current_url: page.window.location.href,
+          utm_source: null,
+          utm_medium: null,
+          gclid: 'Click_123',
+          dclid: 'Click_123',
+          gbraid: 'Click_123',
+          wbraid: 'Click_123',
+          fbclid: 'Click_123',
+          email: 'private@example.com',
+        },
+      }),
+    );
+    return sdk;
+  });
+  await page.api.setBrowserTools(true, false);
+  expect(sent[0].properties).toMatchObject(campaign);
+  expect(JSON.stringify(sent)).not.toMatch(/Click_123|private|gclid|dclid|gbraid|wbraid|fbclid/);
+  page.window.location.href = 'https://easyrender.ai/pricing?utm_source=later&utm_medium=organic';
+  expect(
+    page.api.beforeSend({ event: '$pageview', properties: { utm_source: 'later' } }).properties,
+  ).toMatchObject(campaign);
+  expect(page.api.beforeSend({ event: 'photo_selected', properties: {} }).properties).toMatchObject(
+    campaign,
+  );
+  expect(sdk.init.mock.calls[0][1]).toMatchObject({
+    cookieless_mode: 'always',
+    persistence: 'memory',
+    disable_persistence: true,
+    person_profiles: 'never',
+  });
+});
+
+it.each([false, true])(
+  'keeps UTMs in Google page locations with advertising allowed=%s',
+  async (isAllowed) => {
+    const page = await googleBrowser();
+    page.window.location.search = `?${campaignQuery}&gclid=Click_123&gbraid=Braid_123&wbraid=Web_123&dclid=Display_123&email=private&token=secret&foo=bar`;
+    page.api.initializeGa('G-TEST000000');
+    await page.api.setBrowserTools(false, true, false, isAllowed);
+    const expected = `https://easyrender.ai/credits?${campaignQuery}${isAllowed ? '&gclid=Click_123&dclid=Display_123&gbraid=Braid_123&wbraid=Web_123' : ''}`;
+    expect(page.commands()).toContainEqual(['set', { page_location: expected }]);
+    expect(page.commands()).toContainEqual([
+      'config',
+      'G-TEST000000',
+      expect.objectContaining({ page_location: expected }),
+    ]);
+    expect(page.commands()).toContainEqual([
+      'event',
+      'page_view',
+      expect.objectContaining({ page_location: expected }),
+    ]);
+    expect(JSON.stringify(page.commands())).not.toMatch(/email=|token=|foo=|private|secret/);
+  },
+);
+
+it.each([
+  { userAgent: 'Mozilla/5.0 Chrome/130.0', webdriver: true },
+  ...[
+    'HeadlessChrome',
+    'Playwright',
+    'Puppeteer',
+    'Selenium',
+    'PhantomJS',
+    'Googlebot',
+    'curl/8.0',
+    '',
+    '   ',
+  ].map((userAgent) => ({ userAgent })),
+  {},
+])('does not bootstrap analytics for automation %j', async (navigator) => {
+  const page = await googleBrowser('easyrender.ai', navigator);
+  vi.stubEnv('NEXT_PUBLIC_POSTHOG_KEY', 'phc_localtest');
+  sdk.init.mockReturnValueOnce(sdk);
+  page.api.initializeGa('G-TEST000000');
+  await page.api.setBrowserTools(true, true, false, true);
+  page.api.gaPageview();
+  expect(sdk.init).not.toHaveBeenCalled();
+  expect(page.scripts).toEqual([]);
+  expect(page.commands()).toEqual([]);
+});
+
+it.each([
+  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/18.0 Safari/605.1.15',
+  'Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0',
+])('initializes both analytics tools for a normal browser: %s', async (userAgent) => {
+  const page = await googleBrowser('easyrender.ai', { userAgent, webdriver: false });
+  vi.stubEnv('NEXT_PUBLIC_POSTHOG_KEY', 'phc_localtest');
+  sdk.init.mockReturnValueOnce(sdk);
+  page.api.initializeGa('G-TEST000000');
+  await page.api.setBrowserTools(true, true, false, true);
+  expect(sdk.init).toHaveBeenCalledTimes(1);
+  expect(page.scripts).toHaveLength(1);
+  expect(page.commands()).toContainEqual(['event', 'page_view', expect.any(Object)]);
+});
+
+it('keeps the landing campaign in GA page locations after navigation removes query params', async () => {
+  const page = await googleBrowser();
+  page.window.location.search = `?${campaignQuery}&gclid=Ad_1`;
+  page.api.attribution();
+  page.window.location.href = 'https://easyrender.ai/pricing';
+  page.api.initializeGa('G-TEST000000');
+  await page.api.setBrowserTools(false, true);
+  expect(page.commands()).toContainEqual([
+    'event',
+    'page_view',
+    expect.objectContaining({
+      page_location: `https://easyrender.ai/pricing?${campaignQuery}`,
+    }),
+  ]);
+});

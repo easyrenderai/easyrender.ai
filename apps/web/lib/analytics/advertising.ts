@@ -1,3 +1,5 @@
+import { analyticsUrl } from '@easyrender/core/attribution';
+
 /** Google-only click attribution, never part of general product analytics. */
 export const AD_CLICK_KEYS = ['gclid', 'dclid', 'gbraid', 'wbraid'] as const;
 export const AD_TOUCH_TTL = 30 * 60 * 1000;
@@ -46,7 +48,7 @@ export function advertisingUrl(value: string, touch: AdvertisingTouch | null, no
   try {
     const url = new URL(value);
     if (!['http:', 'https:'].includes(url.protocol)) return '';
-    const clean = new URL(url.origin + url.pathname);
+    const clean = new URL(analyticsUrl(value));
     if (touch && touch.expiresAt > now && touch.expiresAt <= now + AD_TOUCH_TTL)
       for (const [key, value] of Object.entries(ids(touch.ids))) clean.searchParams.set(key, value);
     return clean.toString();

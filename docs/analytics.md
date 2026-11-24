@@ -172,18 +172,21 @@ verified against Vercel. The app follows the documented platform-header contract
 
 ## Shared Google bootstrap (#96)
 
-`layout.tsx` keeps `easyrender-google-tag` with `beforeInteractive`. The unchanged
+`layout.tsx` keeps `easyrender-google-tag` with `beforeInteractive`.
 `lib/google-tag.ts` is the sole application-owned loader and sole Consent Mode v2 `default`
 call: all four consent categories are denied before any external script. Its exact hostname
 guard remains `easyrender.ai`; localhost, preview hosts and lookalikes load no Google tag.
 The analytics client preserves the bootstrap's `dataLayer` and `gtag` and sends only consent
 `update` commands. Strict EU/UK/CH/unknown regions stay denied until acceptance; US analytics
-is granted unless rejected or GPC is present. Advertising storage, user data and personalization
-always stay denied; `ads_data_redaction=true` and `url_passthrough=false` remain in force.
+is granted unless rejected or GPC is present. Advertising storage and user data follow the
+separate advertising permission; personalization always stays denied and `url_passthrough=false` remains in force.
 GA4 is configured once per document, only when the resolved measurement ID is nonempty and analytics is allowed.
-GA URLs use the bootstrap's origin + pathname sanitization (no query or fragment, including
-UTMs); PostHog still keeps allowlisted UTMs. Analytics events use `send_to` with the GA ID so
-that they do not become Ads conversions through the shared queue.
+GA4 `page_location` (config, pageviews and the global `set`) keeps allowlisted `utm_*`
+parameters. Browser events retain the first-touch campaign across navigation. Valid Google click
+IDs are included only while advertising measurement is allowed; emails, tokens, unrelated query
+parameters and fragments are removed. The denied-consent bootstrap keeps UTMs but no click IDs.
+Analytics events use `send_to` with the GA ID so that they do not become Ads conversions through
+the shared queue.
 
 **Loader exception verified with the real vendor runtime:** the existing
 `gtm.js?id=AW-18570382360` processes `gtag('config', 'G-…', …)` by dynamically fetching one
@@ -220,8 +223,8 @@ Events have deterministic UUIDs per event and entity, and allowlisted common/pro
 Server identifiers are the internal user ID or `pv_<preview-id>`; purchases use a permitted
 browser distinct ID when available. Signup aliases the preview. Render geography uses stored
 creation context, and checkout purchases prefer Stripe billing country, never the webhook IP. No IP address is sent. PostHog browser `before_send` removes non-UTM
-query parameters, fragments, page titles and click IDs (except explicitly permitted purchase
-click fields); its public SDK project token is retained
+query parameters, fragments, page titles and click IDs, including on browser purchase events;
+its public SDK project token is retained
 because ingestion requires it. Browser imports happen after paint, outside the critical path.
 
 A purchase is emitted only on a confirmed signed Stripe webhook, after granting credits and
@@ -299,3 +302,19 @@ preference and authentication storage also remain unchanged. `/cookies` is avail
 locales and linked from every footer, the banner and auth forms. `/privacy` and `/terms` are not
 published in this checkout. No legal entity, tax ID, address or privacy policy has been invented;
 Jorge's approved legal text and the `er_anon` decision remain separate work.
+
+## First-touch pageviews and automation
+
+PostHog's `before_send` attaches the five first-touch `utm_*` properties to every browser event,
+including a `$pageview` emitted during SDK initialization before `landing_view`. Later history
+changes retain the original campaign. The existing cookieless, memory-only and no-person-profile
+settings are unchanged. Raw click IDs stay out of browser PostHog payloads and their URLs.
+
+The Google bootstrap and browser analytics initialization share the home redirect's bot detector.
+They skip empty user agents, known crawlers, HeadlessChrome, Playwright, Puppeteer, Selenium,
+PhantomJS and `navigator.webdriver === true`. Ordinary Linux Chrome and Firefox, and Safari,
+remain eligible under the existing consent policy. This is a known-automation filter, not a way
+to identify crawlers that present themselves as ordinary browsers. Historical data is unchanged.
+
+Language-home, canonical-host, pricing-path and legacy guide redirects preserve attribution query
+strings. Guide aliases resolve in the proxy before the cached page's path-only redirect.
