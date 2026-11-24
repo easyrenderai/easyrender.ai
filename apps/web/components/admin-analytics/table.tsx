@@ -31,15 +31,19 @@ const percentColumns = new Set([
 export function AnalyticsTable({
   table,
   labels,
+  initialSort,
 }: {
   table: DataTable;
   labels: Record<string, string>;
+  initialSort?: { key: string; direction: number };
 }) {
   const label = (key: string) => labels[key] ?? key;
-  const [sort, setSort] = useState<{ key: string; direction: number }>({
-    key: table.columns.includes('revenue') ? 'revenue' : table.columns[0],
-    direction: table.columns.includes('revenue') ? -1 : 1,
-  });
+  const [sort, setSort] = useState<{ key: string; direction: number }>(
+    initialSort ?? {
+      key: table.columns.includes('revenue') ? 'revenue' : table.columns[0],
+      direction: table.columns.includes('revenue') ? -1 : 1,
+    },
+  );
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);

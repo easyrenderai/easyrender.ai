@@ -2208,7 +2208,8 @@
       "previewWithoutCheckout": "Vorschau ohne Credit-Checkout",
       "checkoutWithoutPayment": "Credit-Checkout ohne spätere Zahlung",
       "paidAfterCheckout": "Konten mit späterer Zahlung",
-      "paidSignupFunnelScope": "Neue Konten aus bezahlter Suche im Zeitraum, nach Erstkontakt-Kampagne. Eindeutige Konten bis zum Zeitraumende. Eine übernommene Vorschau kann vor der Registrierung liegen. Checkout bedeutet eine nach Registrierung und Vorschau erstellte Sitzung zum Credit-Kauf; ein Öffnen von Stripe ist damit nicht belegt. Starts von Abo-Checkouts fehlen hier. Spätere Zahlung bedeutet jede positive Zahlung nach diesem Checkout, nicht zwingend für dieselbe Sitzung. Keine abgeleitete Konversionsrate anonymer Besucher."
+      "paidSignupFunnelScope": "Neue Konten aus bezahlter Suche im Zeitraum, nach Erstkontakt-Kampagne. Eindeutige Konten bis zum Zeitraumende. Eine übernommene Vorschau kann vor der Registrierung liegen. Checkout bedeutet eine nach Registrierung und Vorschau erstellte Sitzung zum Credit-Kauf; ein Öffnen von Stripe ist damit nicht belegt. Starts von Abo-Checkouts fehlen hier. Spätere Zahlung bedeutet jede positive Zahlung nach diesem Checkout, nicht zwingend für dieselbe Sitzung. Keine abgeleitete Konversionsrate anonymer Besucher.",
+      "renderGallery": "Render-Galerie"
     }
   },
   "McpLanding": {
@@ -3400,5 +3401,47 @@
       "polish_product_view": "Produktfoto korrigieren",
       "build_from_product_views": "3D aus Produktfotos erstellen"
     }
+  },
+  "AdminInventory": {
+    "renders": "Render-Galerie",
+    "buyers": "Käufer · gesamter Zeitraum",
+    "buyerEmail": "Maskierte E-Mail",
+    "buyerPurchases": "Käufe",
+    "buyerPurchased": "Gekaufte Credits",
+    "buyerGifted": "Geschenkte Credits (netto)",
+    "buyerOther": "Sonstige / Test-Credits",
+    "buyerUsed": "Verbrauchte Credits (brutto)",
+    "buyerRefunded": "Erstattete Credits",
+    "buyerRemaining": "Aktuelles Guthaben",
+    "buyerPaid": "Erfasster Betrag je Währung",
+    "buyerUnknownAmounts": "Zahlungen ohne Betrag",
+    "buyerFirst": "Erster Kauf",
+    "buyerLast": "Letzter Kauf",
+    "drafting": "Vorschau wird erstellt",
+    "preview_ready": "Vorschau bereit",
+    "rendering": "3D wird erstellt",
+    "ready": "Erfolgreich",
+    "failed": "Fehlgeschlagen",
+    "statusFilter": "Nach Status filtern",
+    "previewAlt": "Render-Vorschau",
+    "noPreview": "Keine Vorschau verfügbar",
+    "imageError": "Vorschau nicht verfügbar oder Link abgelaufen",
+    "retry": "Erneut versuchen",
+    "anonymous": "Anonym / gelöschtes Konto",
+    "viewModel": "3D / USDZ anzeigen",
+    "downloadGlb": "GLB",
+    "downloadSheet": "Ansichtenblatt",
+    "downloadSource": "Ausgangsbild",
+    "modelTitle": "3D-Modell",
+    "emptyRenders": "Keine Renderings für diesen Filter.",
+    "pagination": "Seitennavigation",
+    "loading": "Renderings werden geladen…",
+    "loadError": "Renderings konnten nicht geladen werden.",
+    "rendersNote": "Alle Konten und Zeiträume, einschließlich Vorschauen und fehlgeschlagener Versuche. Die Credits entsprechen der gespeicherten Render-Belastung vor Erstattungen.",
+    "buyersNote": "Alle Konten und Zeiträume, unabhängig von Diagrammfiltern. Käufe ohne Geschenke und Tests. Verbrauch vor Erstattungen; Guthaben aus allen Quellen. Erfasste Bruttozahlungen und Shopify-Rechnungen je Währung getrennt. Fehlende Beträge sind markiert.",
+    "modelNote": "Gespeichertes Modell vor Material- oder Größenänderungen. USDZ wird lokal aus der Original-GLB erstellt. Downloadlinks werden beim Klicken erneuert.",
+    "charged": "{credits} Credits berechnet",
+    "renderCount": "{total} Renderings",
+    "pageCount": "Seite {page} von {pages}"
   }
 }

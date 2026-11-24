@@ -12,6 +12,7 @@ export const CLIENT_NAMESPACES = [
   'Agent',
   'Analytics',
   'AdminGift',
+  'AdminInventory',
   'ShopifyApp',
   'ShopifyConnect',
   'Ar',

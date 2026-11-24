@@ -20,18 +20,21 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 describe('admin HTTP access before streaming', () => {
-  it('returns an actual 404 to signed-in non-admins', async () => {
-    vi.stubEnv('ADMIN_EMAILS', 'admin@example.test');
-    session.user = { email: 'reader@example.test' };
-    const response = await proxy(
-      new NextRequest('http://localhost:3207/admin/analytics', {
-        headers: { cookie: 'better-auth.session_token=local-fixture' },
-      }),
-    );
-    expect(response.status).toBe(404);
-    expect(response.headers.get('x-robots-tag')).toBe('noindex, nofollow');
-    expect(response.headers.get('cache-control')).toBe('private, no-store');
-  });
+  it.each(['/admin/analytics', '/admin/renders'])(
+    'returns an actual 404 to signed-in non-admins on %s',
+    async (path) => {
+      vi.stubEnv('ADMIN_EMAILS', 'admin@example.test');
+      session.user = { email: 'reader@example.test' };
+      const response = await proxy(
+        new NextRequest(`http://localhost:3207${path}`, {
+          headers: { cookie: 'better-auth.session_token=local-fixture' },
+        }),
+      );
+      expect(response.status).toBe(404);
+      expect(response.headers.get('x-robots-tag')).toBe('noindex, nofollow');
+      expect(response.headers.get('cache-control')).toBe('private, no-store');
+    },
+  );
   it('returns an actual 404 to non-admins on the gift credits page', async () => {
     vi.stubEnv('ADMIN_EMAILS', 'admin@example.test');
     session.user = { email: 'reader@example.test', emailVerified: true };
