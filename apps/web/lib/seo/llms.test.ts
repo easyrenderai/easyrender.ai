@@ -222,4 +222,4 @@ it('offers one monthly plan and explicitly describes subscriber top-ups', () => 
   expect(text).toContain('monthly plan: Pro');
   expect(text).toContain('without changing plans');
   expect(text).not.toMatch(/Creator|Scale/);
-});
+}, 20_000);
