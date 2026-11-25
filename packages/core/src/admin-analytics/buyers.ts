@@ -106,6 +106,8 @@ export function aggregateBuyers(
   for (const row of ledger) {
     const buyer = buyers.get(row.userId);
     if (!buyer) continue;
+    // Taking back a refunded pack: the pack is no longer a purchase, so the reclaim is not use either.
+    if (row.reason === 'shopify_refund') continue;
     if (row.reason === 'referral_kickback_reversed') buyer.gifted += row.delta;
     else if (row.delta < 0) buyer.used -= row.delta;
     else if (row.reason.endsWith('_failed') || row.reason === 'build_quality_refund')

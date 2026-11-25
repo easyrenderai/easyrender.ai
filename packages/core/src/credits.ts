@@ -145,6 +145,35 @@ export async function grantCreditsInTransaction(
   return true;
 }
 
+// Takes back credits that were granted for a payment that was refunded. It takes at most what the
+// wallet still holds, so the balance never goes below zero, and returns how many it took. It is not
+// a spend: no API key budget and no referral kickback move with it. A second call with the same key
+// takes nothing and returns 0.
+export async function reclaimCreditsInTransaction(
+  tx: Prisma.TransactionClient,
+  input: CreditMutation,
+): Promise<number> {
+  validateAmount(input.amount);
+  // Serialize with concurrent spends and grants of this wallet.
+  await tx.$queryRaw`SELECT id FROM "user" WHERE id = ${input.userId} FOR UPDATE`;
+  const user = await tx.user.findUnique({ where: { id: input.userId }, select: { credits: true } });
+  const taken = Math.min(input.amount, Math.max(0, user?.credits ?? 0));
+  if (taken === 0) return 0;
+  const inserted = await tx.creditLedger.createMany({
+    data: {
+      userId: input.userId,
+      delta: -taken,
+      reason: input.reason,
+      idempotencyKey: input.key,
+      purchaseId: input.purchaseId,
+    },
+    skipDuplicates: true,
+  });
+  if (!inserted.count) return 0;
+  await tx.user.update({ where: { id: input.userId }, data: { credits: { decrement: taken } } });
+  return taken;
+}
+
 // Spends once per idempotency key: a second call with the same key is a no-op.
 export async function spendCredits(input: CreditMutation): Promise<void> {
   await db().$transaction((tx) => spendCreditsInTransaction(tx, input));

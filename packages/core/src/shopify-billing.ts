@@ -1,6 +1,6 @@
 import { db } from '@easyrender/db';
 import { PAYG, paygPriceCents } from '@easyrender/harness';
-import { grantCreditsInTransaction } from './credits';
+import { grantCreditsInTransaction, reclaimCreditsInTransaction } from './credits';
 import { AppError } from './errors';
 import {
   decryptToken,
@@ -21,6 +21,7 @@ import {
 // once, through the ledger, when Shopify says the charge is active.
 
 const SHOPIFY_PURCHASE_REASON = 'shopify_purchase';
+const SHOPIFY_REFUND_REASON = 'shopify_refund';
 
 // Shopify does not bill a development store, and anyone can open any number of them. A test charge
 // therefore grants credits only once per easyrender account, enough to try the app and to pass
@@ -132,10 +133,11 @@ export async function createShopifyPurchase(
 export async function settleShopifyPurchase(
   chargeId: string,
   fetchImpl: ShopifyGraphqlFetch = fetch,
-): Promise<'unknown' | 'pending' | 'active' | 'declined' | 'expired'> {
+): Promise<'unknown' | 'pending' | 'active' | 'declined' | 'expired' | 'refunded'> {
   const purchase = await db().shopifyPurchase.findUnique({ where: { chargeId } });
   if (!purchase) return 'unknown';
-  if (purchase.status !== 'pending') return purchase.status as 'active' | 'declined' | 'expired';
+  if (purchase.status !== 'pending')
+    return purchase.status as 'active' | 'declined' | 'expired' | 'refunded';
 
   const data = await shopifyGraphql<{
     node: {
@@ -209,4 +211,42 @@ export async function settlePendingPurchases(
     }
   }
   return waiting;
+}
+
+// Shopify has no refunded status for a one-time app purchase (an AppPurchaseOneTime stays `active`
+// after it is refunded) and sends no webhook for it, so a refund cannot be polled for. An admin
+// calls this after refunding the charge in the Partner Dashboard. It takes back the unspent part of
+// the pack through the ledger, never below a zero balance, and marks the purchase `refunded` so a
+// later settle of the same charge cannot credit it again. A second call changes nothing.
+export async function refundShopifyPurchase(
+  chargeId: string,
+): Promise<{ chargeId: string; credits: number; reclaimed: number; isAlreadyRefunded: boolean }> {
+  return db().$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM "ShopifyPurchase" WHERE "chargeId" = ${chargeId} FOR UPDATE`;
+    const purchase = await tx.shopifyPurchase.findUnique({ where: { chargeId } });
+    if (!purchase) throw new AppError('No Shopify purchase with that charge id', 404, 'not_found');
+    if (purchase.status === 'refunded') {
+      return {
+        chargeId,
+        credits: purchase.credits,
+        reclaimed: 0,
+        isAlreadyRefunded: true,
+      };
+    }
+    // Only a charge Shopify invoiced can be refunded: a pending, declined or expired one was never paid.
+    if (purchase.status !== 'active') {
+      throw new AppError('Only an active purchase can be refunded', 409, 'not_refundable');
+    }
+    // A test charge past the per-account limit was never credited: there is nothing to take back.
+    const reclaimed = purchase.creditedAt
+      ? await reclaimCreditsInTransaction(tx, {
+          userId: purchase.userId,
+          amount: purchase.credits,
+          key: `shopify:refund:${chargeId}`,
+          reason: SHOPIFY_REFUND_REASON,
+        })
+      : 0;
+    await tx.shopifyPurchase.update({ where: { chargeId }, data: { status: 'refunded' } });
+    return { chargeId, credits: purchase.credits, reclaimed, isAlreadyRefunded: false };
+  });
 }
