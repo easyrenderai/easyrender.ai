@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { itemOf } from '@/lib/studio/catalog';
+import { itemOf, photoUrl } from '@/lib/studio/catalog';
 import { createFormat } from '@/lib/studio/format';
 import { cn } from '@/lib/utils';
 import { TriMark } from './icons';
@@ -31,6 +31,13 @@ export function HeroStack({ className }: { className?: string }) {
   return (
     <div ref={ref} className={cn('hero-stack', className)}>
       <div className="stack" data-er="stack" role="img" aria-label={t('stackLabel')}>
+        {/* The first object as a still, shown at once and faded out when the live 3D is ready. The
+            status names what is loading and never a percentage. */}
+        <div className="stack__poster">
+          {/* biome-ignore lint/performance/noImgElement: a static poster of the first object, fading out when the 3D is ready */}
+          <img src={photoUrl(FIRST.id)} alt="" width={720} height={720} decoding="async" />
+          <p className="stack__loading">{t('loading3d')}</p>
+        </div>
         <figure className="card card--photo">
           {/* No src in the markup: the card is invisible until the 3D code fades the stack in, and
               that code sets the photo when it does (or when WebGL is missing), so the first paint

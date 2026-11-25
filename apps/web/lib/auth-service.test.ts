@@ -20,7 +20,9 @@ const mocks = vi.hoisted(() => ({
     Record<string, unknown>[]
   >,
   scheduled: [] as Array<() => Promise<void>>,
+  botVerdict: { isBot: false, isVerifiedBot: false } as { isBot: boolean; isVerifiedBot: boolean },
 }));
+vi.mock('botid/server', () => ({ checkBotId: async () => mocks.botVerdict }));
 vi.mock('server-only', () => ({}));
 vi.mock('@better-auth/infra', () => ({ dash: () => ({ id: 'test-no-dashboard' }) }));
 vi.mock('@easyrender/db', () => ({ db: () => ({}) }));
@@ -265,5 +267,39 @@ describe('service email integration with real Better Auth handlers', () => {
       ).status,
     ).toBe(503);
     mocks.hasQueueFailure = false;
+  });
+  it('refuses a sign-up or sign-in that BotID calls a bot, before any account or session exists', async () => {
+    const users = mocks.database.user.length;
+    const queued = mocks.queued.length;
+    const ip = { 'x-forwarded-for': '192.0.2.77' };
+    mocks.botVerdict = { isBot: true, isVerifiedBot: false };
+    try {
+      const signup = await request(
+        'sign-up/email',
+        {
+          email: 'bot-farm@example.invalid',
+          name: 'Bot',
+          password: 'local-password-123',
+        },
+        ip,
+      );
+      expect(signup.status).toBe(403);
+      expect((await signup.json()).code).toBe('BOT_DETECTED');
+      expect(signup.headers.get('set-cookie')).toBeNull();
+      expect(mocks.database.user).toHaveLength(users);
+      expect(mocks.queued).toHaveLength(queued);
+      const signin = await request(
+        'sign-in/email',
+        {
+          email: 'local-auth@example.invalid',
+          password: 'local-password-123',
+        },
+        ip,
+      );
+      expect(signin.status).toBe(403);
+      expect(signin.headers.get('set-cookie')).toBeNull();
+    } finally {
+      mocks.botVerdict = { isBot: false, isVerifiedBot: false };
+    }
   });
 });

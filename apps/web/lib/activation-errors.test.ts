@@ -12,3 +12,9 @@ it('uses the screen fallback for unknown API failures', () => {
   expect(activationErrorKey({ code: 'toString', error: 'Internal message' })).toBeNull();
   expect(activationErrorKey({ error: 'Internal message' })).toBeNull();
 });
+
+it('shows the browser-check message when BotID refuses a free-preview upload', () => {
+  expect(activationErrorKey({ code: 'bot_detected', error: 'We could not verify' })).toBe(
+    'botBlocked',
+  );
+});

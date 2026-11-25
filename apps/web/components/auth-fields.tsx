@@ -71,9 +71,11 @@ export function AuthFields({
       setError(
         result.error.status === 429
           ? t('errors.rateLimited')
-          : mode === 'sign-in' && result.error.status === 401
-            ? t('errors.credentials')
-            : t('errors.generic'),
+          : result.error.code === 'BOT_DETECTED'
+            ? t('errors.botBlocked')
+            : mode === 'sign-in' && result.error.status === 401
+              ? t('errors.credentials')
+              : t('errors.generic'),
       );
       setBusy(false);
       return;

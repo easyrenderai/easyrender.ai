@@ -3,7 +3,17 @@
 import type { FirstModelOffer, RenderEditView, RenderView as View } from '@easyrender/core';
 import type { BuildQuality } from '@easyrender/harness/pricing';
 import { useQuery } from '@tanstack/react-query';
-import { Box, Download, Globe, Grid3x3, Loader2, Lock, RefreshCw, Sparkles } from 'lucide-react';
+import {
+  Box,
+  Download,
+  Globe,
+  Grid3x3,
+  Loader2,
+  Lock,
+  RefreshCw,
+  Save,
+  Sparkles,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
@@ -14,6 +24,7 @@ import { ModelView } from '@/components/model-view';
 import { DATE_FORMAT, RenderDetail } from '@/components/render-detail';
 import { RenderHistory } from '@/components/render-history';
 import { RenderJourneyStatus } from '@/components/render-journey-status';
+import { SavePreviewDialog } from '@/components/save-preview-dialog';
 import { SiteLink } from '@/components/site-link';
 import { TrialBuildAction } from '@/components/trial-build-action';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -86,6 +97,7 @@ export function RenderView({
   const [note, setNote] = useState(initial.sheetNote ?? '');
   const [issues, setIssues] = useState<SheetIssue[]>([]);
   const [isConfirmingCorrection, setIsConfirmingCorrection] = useState(false);
+  const [isSavePanelOpen, setIsSavePanelOpen] = useState(false);
   const correction = correctionNote(
     issues.map((issue) => t(`correction.instructions.${issue}`)),
     note,
@@ -104,10 +116,8 @@ export function RenderView({
         : `status.${render.status}`,
   );
   // Signing up or buying credits comes back to this page with the chosen quality still selected.
-  const next = encodeURIComponent(
-    `/r/${render.id}${quality === 'low' ? '' : `?quality=${quality}`}`,
-  );
-  const signupHref = `${localizedAuthPath(locale, '/sign-up')}?next=${next}`;
+  const returnPath = `/r/${render.id}${quality === 'low' ? '' : `?quality=${quality}`}`;
+  const next = encodeURIComponent(returnPath);
   const signinHref = `${localizedAuthPath(locale, '/sign-in')}?next=${next}`;
   // The first-model offer is created once when the preview is ready. The POST is not repeated on
   // reconnect or on a later mount of the same page.
@@ -337,7 +347,7 @@ export function RenderView({
   const sheet = render.hasPreview ? (
     <div className="relative">
       <AngleSheet
-        src={`${base}/preview?w=1536&v=${render.modelVersion}`}
+        src={`${base}/preview?w=1536&v=${render.modelVersion}${signedIn ? '&u=1' : ''}`}
         isEager={render.status !== 'ready'}
       />
       {isGated && (
@@ -509,11 +519,13 @@ export function RenderView({
         </p>
       )}
       {!signedIn ? (
-        <Button size="lg" className="h-auto min-h-11 w-full whitespace-normal" asChild>
-          <SiteLink href={signupHref}>
-            <Sparkles />
-            {t('signUpToRender')}
-          </SiteLink>
+        <Button
+          size="lg"
+          className="h-auto min-h-11 w-full whitespace-normal"
+          onClick={() => setIsSavePanelOpen(true)}
+        >
+          <Box />
+          {t('render3d', { credits: format.number(owed) })}
         </Button>
       ) : balance < owed ? (
         <>
@@ -541,19 +553,26 @@ export function RenderView({
     </>
   );
 
+  // A finished preview that nobody has claimed: saving it is the primary action, and building
+  // opens the same panel, since an account is needed either way.
   const gate = (
     <div className="space-y-3">
-      <div className="space-y-1">
-        <p className="text-base font-medium">{t('gate.title')}</p>
-        <p className="text-sm text-muted-foreground">{t('gate.description')}</p>
-      </div>
-      <Button size="lg" className="h-auto min-h-11 w-full whitespace-normal" asChild>
-        <SiteLink href={signupHref}>{t('gate.signUp')}</SiteLink>
+      <Button
+        size="lg"
+        className="h-auto min-h-11 w-full whitespace-normal"
+        onClick={() => setIsSavePanelOpen(true)}
+      >
+        <Save />
+        {t('gate.save')}
       </Button>
-      <Button variant="outline" className="w-full" asChild>
-        <SiteLink href={signinHref}>{t('gate.signIn')}</SiteLink>
+      <Button
+        variant="outline"
+        className="h-auto min-h-11 w-full whitespace-normal"
+        onClick={() => setIsSavePanelOpen(true)}
+      >
+        <Box />
+        {t('render3d', { credits: format.number(owed) })}
       </Button>
-      <p className="text-xs text-muted-foreground">{t('gate.note')}</p>
     </div>
   );
 
@@ -662,59 +681,74 @@ export function RenderView({
   );
 
   return (
-    <RenderDetail
-      isInApp={signedIn}
-      isReviewingAngles={render.status === 'preview_ready'}
-      activity={
-        owner ? (
-          <RenderJourneyStatus
-            status={render.status}
-            hasPreview={render.hasPreview}
-            isCorrecting={isCorrecting}
-            isPaidSheet={isPaidSheet}
-            isPhotoOnly={render.status === 'preview_ready' && !render.hasSheet}
-            hasConnectionError={hasConnectionError}
-          />
-        ) : undefined
-      }
-      title={title}
-      prompt={render.prompt}
-      badges={[statusLabel]}
-      viewer={viewer}
-      isViewerFirst={render.status === 'ready'}
-      input={`${base}/source`}
-      angles={angles}
-      anglesUrl={render.hasPreview && !isGated ? `${base}/preview?v=${render.modelVersion}` : null}
-      meta={[
-        {
-          label: t('meta.status'),
-          value: (
-            <span className="inline-flex items-center gap-1.5">
-              {RUNNING.has(render.status) && <Loader2 className="size-3.5 animate-spin" />}
-              {statusLabel}
-            </span>
-          ),
-        },
-        ...(render.status === 'ready' ? [{ label: t('meta.formats'), value: 'GLB · USDZ' }] : []),
-        ...(owner ? [{ label: t('meta.creditsUsed'), value: format.number(render.credits) }] : []),
-        {
-          label: t('meta.visibility'),
-          value: (
-            <span className="inline-flex items-center gap-1.5">
-              {render.isPublic ? <Globe className="size-3.5" /> : <Lock className="size-3.5" />}
-              {render.isPublic ? t('public') : t('private')}
-            </span>
-          ),
-        },
-        {
-          label: t('meta.created'),
-          value: format.dateTime(new Date(render.createdAt), DATE_FORMAT),
-        },
-      ]}
-      actions={hasActions ? actions : undefined}
-      toolbar={galleryToggle}
-      history={signedIn && owner ? <RenderHistory edits={edits} now={now} /> : undefined}
-      historyCount={edits.length}
-    />
+    <>
+      <RenderDetail
+        isInApp={signedIn}
+        isReviewingAngles={render.status === 'preview_ready'}
+        activity={
+          owner ? (
+            <RenderJourneyStatus
+              status={render.status}
+              hasPreview={render.hasPreview}
+              isCorrecting={isCorrecting}
+              isPaidSheet={isPaidSheet}
+              isPhotoOnly={render.status === 'preview_ready' && !render.hasSheet}
+              hasConnectionError={hasConnectionError}
+            />
+          ) : undefined
+        }
+        title={title}
+        prompt={render.prompt}
+        badges={[statusLabel]}
+        viewer={viewer}
+        isViewerFirst={render.status === 'ready'}
+        input={`${base}/source`}
+        angles={angles}
+        anglesUrl={
+          render.hasPreview && !isGated ? `${base}/preview?v=${render.modelVersion}` : null
+        }
+        meta={[
+          {
+            label: t('meta.status'),
+            value: (
+              <span className="inline-flex items-center gap-1.5">
+                {RUNNING.has(render.status) && <Loader2 className="size-3.5 animate-spin" />}
+                {statusLabel}
+              </span>
+            ),
+          },
+          ...(render.status === 'ready' ? [{ label: t('meta.formats'), value: 'GLB · USDZ' }] : []),
+          ...(owner
+            ? [{ label: t('meta.creditsUsed'), value: format.number(render.credits) }]
+            : []),
+          {
+            label: t('meta.visibility'),
+            value: (
+              <span className="inline-flex items-center gap-1.5">
+                {render.isPublic ? <Globe className="size-3.5" /> : <Lock className="size-3.5" />}
+                {render.isPublic ? t('public') : t('private')}
+              </span>
+            ),
+          },
+          {
+            label: t('meta.created'),
+            value: format.dateTime(new Date(render.createdAt), DATE_FORMAT),
+          },
+        ]}
+        actions={hasActions ? actions : undefined}
+        toolbar={galleryToggle}
+        history={signedIn && owner ? <RenderHistory edits={edits} now={now} /> : undefined}
+        historyCount={edits.length}
+      />
+      {!signedIn && (
+        <SavePreviewDialog
+          isOpen={isSavePanelOpen}
+          onOpenChange={setIsSavePanelOpen}
+          next={returnPath}
+          project={`/r/${render.id}`}
+          signInHref={signinHref}
+        />
+      )}
+    </>
   );
 }

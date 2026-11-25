@@ -340,11 +340,9 @@
     "downloadAngles": "Télécharger la planche d’angles",
     "gate": {
       "locked": "Aperçu prêt",
-      "title": "Votre aperçu 3D est prêt",
-      "description": "Créez un compte gratuit pour voir tous les angles de votre photo et la transformer en modèle 3D.",
-      "signUp": "Créer un compte gratuit",
-      "signIn": "Se connecter",
-      "note": "Aucune carte requise."
+      "save": "Enregistrer ce modèle",
+      "panelDescription": "Continuez avec Google ou votre e-mail.",
+      "signIn": "Se connecter"
     },
     "prompt": "Description",
     "noPrompt": "Photo seule, sans description",
@@ -1225,7 +1223,8 @@
       "generic": "Impossible de continuer. Réessayez.",
       "oauth": "La connexion avec Google a été interrompue. Réessayez ou utilisez votre adresse e-mail.",
       "credentials": "L’adresse e-mail ou le mot de passe est incorrect.",
-      "rateLimited": "Trop de tentatives. Patientez quelques minutes avant de réessayer."
+      "rateLimited": "Trop de tentatives. Patientez quelques minutes avant de réessayer.",
+      "botBlocked": "Nous n’avons pas pu vérifier ce navigateur. Rechargez la page et réessayez."
     },
     "google": "Continuer avec Google",
     "or": "ou",
@@ -1275,6 +1274,7 @@
       "render": "Rendu PBR",
       "element": "Élément",
       "hint": "Glisse pour tourner",
+      "loading3d": "Chargement de la 3D",
       "subtitle": "Vérifiez les angles gratuitement. Payez le modèle 3D téléchargeable lorsque la forme vous convient.",
       "benefit": "Transformez la photo de votre produit en modèle 3D."
     },
@@ -3083,7 +3083,8 @@
     "verifyEmail": "Vérifiez votre adresse e-mail pour profiter du modèle gratuit.",
     "offerUnavailable": "Le modèle gratuit n’est plus disponible pour cet aperçu. Consultez les options ci-dessous.",
     "staleState": "Ce projet a changé. Actualisez la page, puis réessayez.",
-    "rateLimit": "Trop de demandes. Attendez une minute et réessayez."
+    "rateLimit": "Trop de demandes. Attendez une minute et réessayez.",
+    "botBlocked": "Nous n’avons pas pu vérifier ce navigateur. Rechargez la page et réessayez."
   },
   "Viewer": {
     "metaTitle": "Visionneuse 3D en ligne : ouvrez des fichiers GLB, OBJ, FBX et STL · Easy Render",
