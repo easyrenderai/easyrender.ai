@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  type BuildQuality,
   type ChargeCurrency,
   displayPricing,
   isValidPaygCredits,
@@ -19,11 +20,14 @@ import { cn } from '@/lib/utils';
 
 export function PaygPicker({
   next,
+  inlineQuality,
   pricingVariant = 'control',
   currency = 'usd',
   rate = topupPricing(null, pricingVariant, currency),
 }: {
   next?: string | null;
+  /** Set when the packs sit above a build button: checkout then returns to `next` with this quality. */
+  inlineQuality?: BuildQuality;
   pricingVariant?: PricingVariant;
   currency?: ChargeCurrency;
   rate?: ReturnType<typeof topupPricing>;
@@ -96,6 +100,7 @@ export function PaygPicker({
         body={{
           plan: 'payg',
           next,
+          ...(inlineQuality ? { inline: true, quality: inlineQuality } : {}),
           credits,
           expectedAmountCents: topupAmountCents(credits, rate),
           expectedCurrency: rate.currency,

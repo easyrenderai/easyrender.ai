@@ -8,6 +8,10 @@ vi.mock('@easyrender/core', async (original) => ({
   getRender: state.getRender,
 }));
 vi.mock('@/lib/actor', () => ({ resolveViewerActor: async () => ({}) }));
+vi.mock('@/lib/pricing', () => ({
+  viewerPricing: async () => ({}),
+  currentTopupPricing: async () => ({}),
+}));
 vi.mock('next/navigation', () => ({
   notFound: () => {
     throw new Error('404');

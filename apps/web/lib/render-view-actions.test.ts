@@ -23,6 +23,18 @@ vi.mock('@/lib/analytics/browser', () => ({
 vi.mock('@/lib/auth-client', () => ({ authClient: {} }));
 vi.mock('@/components/analytics', () => ({ cookiesPath: () => '/cookies' }));
 vi.mock('@/components/use-viewer', () => ({ useViewer: () => ({ data: undefined }) }));
+// The first-model offer is a query; here it has resolved to "no offer", so the paid build action shows.
+vi.mock('@tanstack/react-query', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@tanstack/react-query')>()),
+  useQuery: () => ({
+    data: null,
+    isSuccess: true,
+    isFetching: false,
+    isError: false,
+    refetch: vi.fn(),
+  }),
+}));
+vi.mock('@/components/purchase-conversion', () => ({ PurchaseConversion: () => null }));
 vi.mock('@/components/render-detail', () => ({
   DATE_FORMAT: {},
   RenderDetail: ({ actions }: { actions?: React.ReactNode }) =>
@@ -55,7 +67,12 @@ const preview = {
   createdAt: '2026-11-25T00:00:00.000Z',
 } as const;
 
-function markup(isSignedIn: boolean) {
+const packs = {
+  variant: 'control',
+  rate: { plan: null, variant: 'control', currency: 'usd', priceCents: 1, creditsPerUnit: 1 },
+} as const;
+
+function markup(isSignedIn: boolean, balance = 0, options: { hasPacks?: boolean } = {}) {
   return renderToStaticMarkup(
     createElement(
       QueryClientProvider,
@@ -65,8 +82,9 @@ function markup(isSignedIn: boolean) {
         edits: [],
         now: 0,
         signedIn: isSignedIn,
-        balance: 0,
+        balance,
         owner: true,
+        ...(options.hasPacks ? { packs } : {}),
       }),
     ),
   );
@@ -82,4 +100,45 @@ it('offers saving a finished anonymous preview, with building behind the same pa
 
 it('does not ask a signed-in owner to save their own preview', () => {
   expect(markup(true)).not.toContain('gate.save');
+});
+
+it('opens the credit packs in place when the balance is short for the build', () => {
+  const html = markup(true, 10, { hasPacks: true });
+  expect(html).toContain('addCreditsToBuild');
+  expect(html).toContain('aria-expanded="false"');
+  expect(html).not.toContain('/credits?next');
+  // Nothing is charged or opened until the button is pressed.
+  expect(html).not.toContain('id="build-packs"');
+});
+
+it('links to Credits when the packs could not be loaded', () => {
+  const html = markup(true, 10);
+  expect(html).toContain('buyToRender');
+  expect(html).toContain('/credits?next');
+});
+
+it('builds as before when the balance covers the quote', () => {
+  const html = markup(true, 500, { hasPacks: true });
+  expect(html).toContain('render3d');
+  expect(html).not.toContain('addCreditsToBuild');
+});
+
+it('tells the owner what happened after paying, from the confirmed purchase only', () => {
+  const confirmed = { issued_credits: 1000 } as never;
+  const html = renderToStaticMarkup(
+    createElement(
+      QueryClientProvider,
+      { client: new QueryClient() },
+      createElement(RenderView, {
+        initial: { ...preview },
+        edits: [],
+        now: 0,
+        signedIn: true,
+        balance: 1000,
+        owner: true,
+        checkout: { status: 'success', sessionId: 'cs_test_1', confirmed },
+      }),
+    ),
+  );
+  expect(html).toContain('purchase.confirmed');
 });

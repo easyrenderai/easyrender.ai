@@ -53,6 +53,7 @@ test('a visitor signs up, previews, pays, builds and downloads a 3D model', asyn
   await page.getByRole('button', { name: 'Save this model' }).click();
   const panel = page.getByRole('dialog');
   await expect(panel).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath('1b-save-panel.png'), animations: 'disabled' });
   await panel.getByLabel('Email').fill(`paid-flow-${crypto.randomUUID()}@example.invalid`);
   await panel.getByLabel('Password').fill('paid-flow-password-123');
   await panel.getByRole('button', { name: 'Create account', exact: true }).click();
@@ -65,9 +66,8 @@ test('a visitor signs up, previews, pays, builds and downloads a 3D model', asyn
   };
   expect(owned.renders.map((render) => render.id)).toContain(renderId);
 
-  // 4. No credits yet: the build button is a link to buy them.
-  await page.getByRole('link', { name: 'Buy credits to create the 3D model' }).click();
-  await expect(page).toHaveURL(/\/credits\?next=/);
+  // 4. No credits yet: the build button offers the packs in place, above it. No pricing page detour.
+  await page.getByRole('button', { name: 'Add credits to build' }).click();
   // `next dev` paints the picker before it is interactive. Pick the pack until the page shows it
   // selected, so the one purchase below is the pack this test chose and not the default.
   const pack = displayPricing('control', 'usd').payg.presets.at(-1) as number;
@@ -77,20 +77,14 @@ test('a visitor signs up, previews, pays, builds and downloads a 3D model', asyn
     await preset.click();
     await expect(preset).toHaveAttribute('aria-pressed', 'true', { timeout: 2_000 });
   }).toPass({ timeout: 30_000 });
-  // The dev checkout grants the credits and redirects back to the credits page, as Stripe would.
-  // This page is already /credits, so wait for that redirect itself and not for a matching URL.
-  const returned = page.waitForResponse(
-    (response) => response.request().redirectedFrom()?.url().includes('/api/dev/checkout') === true,
-    { timeout: 60_000 },
-  );
+  await page.screenshot({ path: testInfo.outputPath('1c-packs-inline.png') });
+  // The dev checkout grants the credits and redirects back to this render, as Stripe would.
   await page.getByRole('button', { name: `Buy ${packText} credits`, exact: true }).click();
-  await returned;
-  await page.waitForLoadState('load');
+  await page.waitForURL(`${app}/r/${renderId}?purchase=success`, { timeout: 60_000 });
   await expect.poll(() => balanceOf(page), { timeout: 15_000 }).toBe(pack);
   const funded = await balanceOf(page);
 
-  // 5. Back on the preview the build button states its price. Press it.
-  await page.goto(`${app}/r/${renderId}`);
+  // 5. The build button is back, with its price. Press it.
   const build = page.getByRole('button', { name: /^Create 3D model · [\d,.]+ credits$/ });
   await expect(build).toBeVisible({ timeout: 30_000 });
   await build.click();
