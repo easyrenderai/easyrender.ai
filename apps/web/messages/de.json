@@ -340,11 +340,9 @@
     "downloadAngles": "Winkelblatt herunterladen",
     "gate": {
       "locked": "Vorschau bereit",
-      "title": "Ihre 3D-Vorschau ist fertig",
-      "description": "Erstellen Sie ein kostenloses Konto, um jeden Winkel Ihres Fotos zu sehen und daraus ein 3D-Modell zu machen.",
-      "signUp": "Kostenloses Konto erstellen",
-      "signIn": "Anmelden",
-      "note": "Keine Karte nötig."
+      "save": "Dieses Modell speichern",
+      "panelDescription": "Weiter mit Google oder E-Mail.",
+      "signIn": "Anmelden"
     },
     "prompt": "Beschreibung",
     "noPrompt": "Nur Foto, keine Beschreibung",
@@ -1275,6 +1273,7 @@
       "render": "PBR-Rendering",
       "element": "Element",
       "hint": "Zum Drehen ziehen",
+      "loading3d": "3D wird geladen",
       "subtitle": "Prüfe die Ansichten kostenlos. Bezahle das herunterladbare 3D-Modell, wenn die Form passt.",
       "benefit": "Verwandle dein Produktfoto in ein 3D-Modell."
     },
