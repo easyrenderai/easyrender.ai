@@ -117,7 +117,7 @@ The six models on our showcase run from 14,590 triangles for a clay vase to 69,9
 
 A GLB opens in Blender (File, Import, glTF 2.0) and in free browser viewers such as the [Babylon.js Sandbox](https://sandbox.babylonjs.com/). In Blender, turn on Statistics in the viewport overlays to read the triangle count. Open the file once before you use it anywhere, and spin it slowly.
 
-easyrender gives you both files for every finished model. The USDZ is converted from the GLB in your browser when you download it, so the two always match. AR is coming soon, and AR viewers place a model at the size stored in its file, so keep the real dimensions in the listing.
+easyrender gives you both files for every finished model. The USDZ is converted from the GLB in your browser when you download it, so the two always match. AR is included, and AR viewers place a model at the size stored in its file, so keep the real dimensions in the listing.
 
 What is inside each file is explained in [what a GLB file is](/learn/glb-file) and [what a USDZ file is](/learn/usdz-file).
 

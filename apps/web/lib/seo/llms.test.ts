@@ -144,7 +144,8 @@ describe('llms.txt', () => {
   it('describes the product within claims.md', () => {
     expect(text).toContain('GLB and USDZ');
     expect(text).toMatch(/angle sheet/);
-    expect(text).toMatch(/coming soon/);
+    expect(text).toMatch(/Quick Look/);
+    expect(text).not.toMatch(/coming soon/i);
     for (const pattern of FORBIDDEN) expect(text, String(pattern)).not.toMatch(pattern);
   });
 

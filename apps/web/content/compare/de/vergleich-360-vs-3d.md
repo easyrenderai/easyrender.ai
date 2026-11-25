@@ -96,7 +96,7 @@ Er passt auch, wenn du schon ein Drehteller-Studio hast, deine Produkte klein ge
 
 ## Wann ist ein 3D-Modell die bessere Wahl?
 
-Wenn eine Datei an mehreren Orten funktionieren soll: in deinem Shopify-Shop, in Amazons „View in 3D“ und in AR am Handy. Bei easyrender kommt die Ansicht im eigenen Raum am Handy bald.
+Wenn eine Datei an mehreren Orten funktionieren soll: in deinem Shopify-Shop, in Amazons „View in 3D“ und in AR am Handy. Bei easyrender ist die Ansicht im eigenen Raum am Handy dabei.
 
 Ein Modell bietet sich auch an, wenn das Produkt nicht bei dir ist. Ein Spin braucht das Stück auf dem Drehteller. Ein Modell aus einem Foto braucht nur das Katalogfoto des Lieferanten, etwa von einem Bouclé-Loungesessel, den du verkaufst, aber nie auf Lager hast. Es eignet sich auch für große Möbel, die kein Drehteller in deinen Räumen trägt.
 

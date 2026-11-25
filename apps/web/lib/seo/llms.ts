@@ -26,7 +26,7 @@ import { localeEntries, sitemapLocales } from './sitemap';
 // appears on the day it is published, with no deploy. Agent entry points are listed separately.
 //
 // Every product statement here follows decisiones/claims.md: one photo, a free angle sheet, a 3D
-// model as GLB and USDZ, AR coming soon. No real-world size or scale, no other formats, no
+// model as GLB and USDZ, AR on a phone. No real-world size or scale, no other formats, no
 // timings, no own figures. Prices come from the harness, like the pricing page.
 
 type FaqMessages = { Landing: { faq: { items: Record<string, { q: string; a: string }> } } };
@@ -182,7 +182,7 @@ function summary(): string[] {
     '- Free step: an angle sheet that draws the object from every side, so you can check the shape before paying.',
     `- Paid step: a finished, textured 3D model for ${RENDER_CREDITS} credits (${modelPrice}). Credits cost ${usd(CREDIT_USD)} each, from ${PAYG.min.toLocaleString('en-US')} credits; monthly plan: ${plans}. Enterprise offers custom volume pricing by contacting the team. Monthly subscribers can top up at the displayed pay-as-you-go rate from Credits without changing plans. Credits never expire. If a 3D build fails, its credits are refunded.`,
     '- Downloads: GLB and USDZ.',
-    '- Augmented reality (see the model in your room from a phone) is coming soon.',
+    '- Augmented reality: open the model in your room from a phone (iPhone and iPad through Quick Look, Android through Scene Viewer).',
     '- Limits: one object at a time, not whole interior rooms. The model keeps shape and materials, not real-world measurements or scale.',
     '- Web-created models appear in the public gallery by default. New API and MCP renders are private unless explicitly shared.',
     '- For agents: easyrender is also an MCP server, so Claude, Cursor, VS Code and other MCP clients can create models with an API key.',

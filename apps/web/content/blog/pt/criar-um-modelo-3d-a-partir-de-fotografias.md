@@ -119,7 +119,7 @@ Um GLB abre-se no Blender (Ficheiro, Importar, glTF 2.0) e em visualizadores gra
 
 O easyrender entrega os dois ficheiros em cada modelo pronto. O USDZ é convertido a partir do GLB no seu navegador, ao descarregar, por isso os dois representam o mesmo modelo.
 
-A realidade aumentada chega em breve. Use-a para observar o aspeto da peça e mantenha as medidas tiradas no objeto na ficha do produto.
+A realidade aumentada está incluída. Use-a para observar o aspeto da peça e mantenha as medidas tiradas no objeto na ficha do produto.
 
 O que há dentro de cada ficheiro explica-se em [o que é um ficheiro GLB](/pt/guias/ficheiro-glb) e [o que é um ficheiro USDZ](/pt/guias/ficheiro-usdz).
 

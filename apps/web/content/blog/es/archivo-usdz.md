@@ -52,7 +52,7 @@ Reality Converter de Apple, una aplicación gratis para Mac, convierte archivos 
 
 Si partes de una foto, algunas herramientas de imagen a 3D exportan el USDZ junto al GLB, y te ahorras la conversión. Los pasos están en [cómo generar un modelo 3D a partir de fotos](/es/guias/como-crear-un-modelo-3d-a-partir-de-fotos).
 
-easyrender te entrega los dos archivos en cada modelo terminado. La realidad aumentada llegará pronto: podrás abrir la pieza en el móvil y verla en tu casa. El modelo muestra la forma y los materiales; las dimensiones de la pieza deben consultarse por separado.
+easyrender te entrega los dos archivos en cada modelo terminado. La realidad aumentada está incluida: abre la pieza en el móvil y mírala en tu casa. El modelo muestra la forma y los materiales; las dimensiones de la pieza deben consultarse por separado.
 
 ## Un ejemplo práctico: una mesita de roble en un iPhone
 
