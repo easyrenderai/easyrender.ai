@@ -1,4 +1,6 @@
 import * as Sentry from '@sentry/nextjs';
+import { initBotId } from 'botid/client/core';
+import { BOTID_PROTECTED_ROUTES } from './lib/botid-routes';
 import {
   BLOB_URL_SPANS,
   BROWSER_ABORT_ERRORS,
@@ -18,5 +20,8 @@ Sentry.init({
   environment: process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV,
   tracesSampleRate: 0.1,
 });
+
+// Attaches the BotID proof to sign-up, sign-in and the free-preview upload (see lib/botid-routes.ts).
+initBotId({ protect: BOTID_PROTECTED_ROUTES });
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

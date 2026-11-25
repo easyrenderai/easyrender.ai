@@ -1,6 +1,9 @@
 import * as Sentry from '@sentry/nextjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+// The BotID client needs a real browser window; this suite is about what reaches Sentry.
+vi.mock('botid/client/core', () => ({ initBotId: () => {} }));
+
 const TOKEN = 'a1b2c3d4-0000-4000-8000-5ec2e7000001';
 const ORIGIN = 'https://easyrender.ai';
 

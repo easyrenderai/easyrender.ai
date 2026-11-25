@@ -17,6 +17,11 @@ export const AI_CRAWLERS = [
   'Google-Extended',
 ] as const;
 
+// The MCP endpoint is the one `/api/` route that AI agents are meant to call. The longer match
+// wins over `Disallow: /api/`, so this opens `/api/mcp` and its discovery files, nothing else.
+// The OAuth discovery documents live under `/.well-known`, which no group disallows.
+export const AI_AGENT_ALLOWED_PATHS = ['/api/mcp'] as const;
+
 // What crawlers may fetch. For search engines, staying out of the index is a meta robots job,
 // not a Disallow one: a page blocked here can still be indexed from a link, and a blocked page's
 // noindex is never read. So /explore, /r/ and /lp/ are crawlable for `*` and carry noindex, and
@@ -32,7 +37,7 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: '*', allow: '/', disallow: [...DISALLOWED_PREFIXES] },
       {
         userAgent: [...AI_CRAWLERS],
-        allow: '/',
+        allow: ['/', ...AI_AGENT_ALLOWED_PATHS],
         disallow: [...DISALLOWED_PREFIXES, ...NOINDEX_PREFIXES],
       },
     ],

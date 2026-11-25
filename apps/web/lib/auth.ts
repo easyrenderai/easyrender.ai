@@ -22,6 +22,7 @@ import {
 } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
 import { privacyRegion } from '@/lib/analytics/privacy-region';
+import { BOT_BLOCKED_CODE, BOT_BLOCKED_MESSAGE, isBlockedBot } from '@/lib/bot-check';
 import { queueAuthServiceEmail } from '@/lib/service-email';
 
 const cookieValue = (headers: Headers, name: string) =>
@@ -65,6 +66,16 @@ function createAuth() {
     },
     hooks: {
       before: createAuthMiddleware(async (ctx) => {
+        // Automated clients cannot create accounts or guess passwords in bulk. Runs before the
+        // email is looked up, so a blocked request creates nothing and tells nothing.
+        if (
+          (ctx.path === '/sign-up/email' || ctx.path === '/sign-in/email') &&
+          (await isBlockedBot())
+        )
+          throw new APIError('FORBIDDEN', {
+            code: BOT_BLOCKED_CODE.toUpperCase(),
+            message: BOT_BLOCKED_MESSAGE,
+          });
         if (ctx.path === '/link-social' && ctx.body?.provider === 'google') {
           const session = await getSessionFromCtx(ctx);
           if (!session)

@@ -85,6 +85,23 @@ const table = (
 function planForGrant(credits: number) {
   return PLAN_IDS.find((id) => SUBSCRIPTION_PLANS[id].monthlyCredits === credits);
 }
+// Credit packs sold through Shopify billing. They are revenue next to Stripe, marked by the product
+// `shopify` so reports can tell them apart. Shopify takes no revenue share on the first $1M of app
+// revenue (see shopify-billing.ts), so there is no fee to subtract.
+export function shopifyPayments(snapshot: Snapshot): Payment[] {
+  return snapshot.shopifyPurchases.map((p) => ({
+    id: `shopify-${p.id}`,
+    userId: p.userId,
+    at: iso(p.creditedAt ?? p.createdAt),
+    product: 'shopify',
+    currency: p.currency.toUpperCase(),
+    gross: p.amountCents / 100,
+    refunds: 0,
+    fees: 0,
+    country: 'unknown',
+    credits: p.credits,
+  }));
+}
 export function databaseFinance(snapshot: Snapshot): Finance {
   const country = new Map(snapshot.attribution.map((a) => [a.id, a.geo_country ?? 'unknown']));
   const payments: Payment[] = snapshot.purchases
@@ -101,6 +118,7 @@ export function databaseFinance(snapshot: Snapshot): Finance {
       country: country.get(p.userId) ?? 'unknown',
       credits: p.credits,
     }));
+  payments.push(...shopifyPayments(snapshot));
   for (const [i, l] of snapshot.ledger.entries()) {
     // #88 records invoices as purchases; infer only legacy grants without a purchase link.
     if (l.reason !== 'subscription' || l.delta <= 0 || l.purchaseId) continue;

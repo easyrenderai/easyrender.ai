@@ -148,6 +148,79 @@ run('shopify billing (real database)', () => {
       delta: pack,
       idempotencyKey: `shopify:purchase:${row.chargeId}`,
     });
+    // A Shopify pack is not a Stripe purchase: no Purchase row, so nothing is queued for Stripe,
+    // PostHog or Google purchase delivery, which all start from a Purchase.
+    expect(await db().purchase.count({ where: { userId } })).toBe(0);
+  });
+
+  async function buyPack(userId: string) {
+    const { createShopifyPurchase, settleShopifyPurchase } = await import('./shopify-billing');
+    const shopify = fakeShopify();
+    await openShop(shopify, userId);
+    await createShopifyPurchase(SHOP, sessionToken(), { credits: pack }, shopify.impl);
+    const row = await db().shopifyPurchase.findFirstOrThrow({ where: { shop: SHOP } });
+    chargeOf(shopify, row.chargeId).status = 'ACTIVE';
+    await settleShopifyPurchase(row.chargeId, shopify.impl);
+    return { chargeId: row.chargeId, shopify };
+  }
+
+  it('a refunded pack takes its credits back once, marks the purchase and cannot be credited again', async () => {
+    const { refundShopifyPurchase, settleShopifyPurchase } = await import('./shopify-billing');
+    const userId = await newUser(10);
+    const { chargeId, shopify } = await buyPack(userId);
+    expect(await balance(userId)).toBe(10 + pack);
+
+    expect(await refundShopifyPurchase(chargeId)).toEqual({
+      chargeId,
+      credits: pack,
+      reclaimed: pack,
+      isAlreadyRefunded: false,
+    });
+    expect(await balance(userId)).toBe(10);
+    expect(await db().shopifyPurchase.findUniqueOrThrow({ where: { chargeId } })).toMatchObject({
+      status: 'refunded',
+    });
+    const taken = await db().creditLedger.findMany({ where: { userId, reason: 'shopify_refund' } });
+    expect(taken).toHaveLength(1);
+    expect(taken[0]).toMatchObject({ delta: -pack, idempotencyKey: `shopify:refund:${chargeId}` });
+
+    // A second refund and a late settle (Shopify still says ACTIVE) change nothing.
+    expect(await refundShopifyPurchase(chargeId)).toMatchObject({
+      reclaimed: 0,
+      isAlreadyRefunded: true,
+    });
+    expect(await settleShopifyPurchase(chargeId, shopify.impl)).toBe('refunded');
+    expect(await balance(userId)).toBe(10);
+  });
+
+  it('a refund takes only what is left and never takes the balance below zero', async () => {
+    const { refundShopifyPurchase } = await import('./shopify-billing');
+    const userId = await newUser();
+    const { chargeId } = await buyPack(userId);
+    // The merchant spent most of the pack before it was refunded.
+    const left = 7;
+    await db().user.update({ where: { id: userId }, data: { credits: left } });
+
+    expect(await refundShopifyPurchase(chargeId)).toMatchObject({ reclaimed: left });
+    expect(await balance(userId)).toBe(0);
+    const taken = await db().creditLedger.findMany({ where: { userId, reason: 'shopify_refund' } });
+    expect(taken.map((row) => row.delta)).toEqual([-left]);
+  });
+
+  it('refuses to refund a purchase that was never paid or does not exist', async () => {
+    const { createShopifyPurchase, refundShopifyPurchase } = await import('./shopify-billing');
+    const userId = await newUser();
+    const shopify = fakeShopify();
+    await openShop(shopify, userId);
+    await createShopifyPurchase(SHOP, sessionToken(), { credits: pack }, shopify.impl);
+    const row = await db().shopifyPurchase.findFirstOrThrow({ where: { shop: SHOP } });
+    await expect(refundShopifyPurchase(row.chargeId)).rejects.toMatchObject({
+      code: 'not_refundable',
+    });
+    await expect(
+      refundShopifyPurchase('gid://shopify/AppPurchaseOneTime/missing'),
+    ).rejects.toMatchObject({ code: 'not_found' });
+    expect(await balance(userId)).toBe(0);
   });
 
   it('credits nothing for a declined or expired charge', async () => {

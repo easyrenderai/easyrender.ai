@@ -123,6 +123,26 @@ describe('lifetime buyers', () => {
       amounts: { USD: 250 },
     });
   });
+  it('does not count a refunded Shopify pack as bought, and its take-back is not use', () => {
+    const rows = aggregateBuyers(
+      users,
+      [purchase('stripe')],
+      [
+        ledger(100, 'purchase', { purchaseId: 'stripe' }),
+        ledger(100, 'shopify_purchase'),
+        ledger(-60, 'shopify_refund'),
+      ],
+      [
+        {
+          ...purchase('refunded'),
+          status: 'refunded',
+          creditedAt: at(8),
+          isTest: false,
+        },
+      ],
+    );
+    expect(rows[0]).toMatchObject({ purchases: 1, purchased: 100, used: 0, other: 0 });
+  });
   it('does not treat gift, dev, test-only or orphaned ledger accounts as buyers', () => {
     expect(
       aggregateBuyers(
