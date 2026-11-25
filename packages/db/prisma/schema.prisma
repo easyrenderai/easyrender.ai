@@ -604,7 +604,8 @@ model ShopifyPurchase {
   credits     Int
   amountCents Int
   currency    String    @default("usd")
-  // pending, active, declined, expired. Active means Shopify invoiced it.
+  // pending, active, declined, expired, refunded. Active means Shopify invoiced it; refunded is set
+  // by an admin after the charge was refunded in Shopify, which has no such status of its own.
   status      String    @default("pending")
   // A charge on a development store: Shopify does not bill it.
   isTest      Boolean   @default(false)
