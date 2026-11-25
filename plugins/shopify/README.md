@@ -72,13 +72,16 @@ two products, wrote the `easyrender.render_id` metafield, and the "View in your 
 the button and the QR code on the product page. The AR page and the GLB it loads were served with the
 right content type.
 
+**Theme check (25 Nov 2026):** `@shopify/theme-check-node` 4.0.2 on `plugins/shopify/extensions/easyrender-ar`
+reports no errors. Its one finding is a `RemoteAsset` warning for the QR image served from
+`easyrender.ai`, which is expected (the code is generated per product and cannot be a theme asset).
+
 **Not verified:**
 - AR opening on a real phone from the product page. The AR page is covered by its own checks (device
   detection, a generated USDZ and a `rel="ar"` link in an emulated iPhone), but not in real iOS Safari
   or Android Chrome.
 - The `app/uninstalled` cleanup against a real uninstall (it is tested in `packages/core` with
   Shopify's API faked; a real uninstall would also remove the link to the easyrender account).
-- Shopify's `theme-check` on the Liquid block.
 - A live storefront: the dev-store products were not published to the Online Store.
 
 ## Not in this version
