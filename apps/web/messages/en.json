@@ -340,11 +340,9 @@
     "downloadAngles": "Download angle sheet",
     "gate": {
       "locked": "Preview ready",
-      "title": "Your 3D preview is ready",
-      "description": "Create a free account to see every angle of your photo and turn it into a 3D model.",
-      "signUp": "Create free account",
-      "signIn": "Sign in",
-      "note": "No card needed."
+      "save": "Save this model",
+      "panelDescription": "Continue with Google or email.",
+      "signIn": "Sign in"
     },
     "prompt": "Prompt",
     "noPrompt": "No prompt, photo only",
@@ -1275,6 +1273,7 @@
       "render": "PBR render",
       "element": "Element",
       "hint": "Drag to turn",
+      "loading3d": "Loading 3D",
       "subtitle": "Check the angles for free. Pay to build the downloadable 3D model when the shape looks right.",
       "benefit": "Turn a product photo into a 3D model."
     },

@@ -445,7 +445,8 @@ body:has(.er-studio) {
   }
   @media (prefers-reduced-motion: reduce) {
     .ambient,
-    .ambient__view {
+    .ambient__view,
+    .stack__poster {
       transition: none;
     }
   }
@@ -588,6 +589,47 @@ body:has(.er-studio) {
   .hud dd {
     text-align: right;
     white-space: nowrap;
+  }
+  /* The still of the first object while the live 3D loads; it fades out as the cards come in. */
+  .stack__poster {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    transition: opacity 0.5s var(--ease);
+  }
+  .stack__poster img {
+    width: min(60%, 22rem);
+    aspect-ratio: 1;
+    object-fit: cover;
+    background: #fff;
+    box-shadow:
+      0 0 0 1px rgba(236, 235, 231, 0.07),
+      0 30px 60px -24px rgba(0, 0, 0, 0.9);
+  }
+  .stack__loading {
+    position: absolute;
+    left: 0;
+    bottom: 2%;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-stretch: 87.5%;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--smoke);
+  }
+  .stack:not(.is-in) .stack__hint {
+    opacity: 0;
+  }
+  .stack.is-in .stack__poster,
+  .stack.is-fallback .stack__poster {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.5s var(--ease),
+      visibility 0s 0.5s;
   }
   .stack__hint {
     position: absolute;

@@ -340,11 +340,9 @@
     "downloadAngles": "Télécharger la planche d’angles",
     "gate": {
       "locked": "Aperçu prêt",
-      "title": "Votre aperçu 3D est prêt",
-      "description": "Créez un compte gratuit pour voir tous les angles de votre photo et la transformer en modèle 3D.",
-      "signUp": "Créer un compte gratuit",
-      "signIn": "Se connecter",
-      "note": "Aucune carte requise."
+      "save": "Enregistrer ce modèle",
+      "panelDescription": "Continuez avec Google ou votre e-mail.",
+      "signIn": "Se connecter"
     },
     "prompt": "Description",
     "noPrompt": "Photo seule, sans description",
@@ -1275,6 +1273,7 @@
       "render": "Rendu PBR",
       "element": "Élément",
       "hint": "Glisse pour tourner",
+      "loading3d": "Chargement de la 3D",
       "subtitle": "Vérifiez les angles gratuitement. Payez le modèle 3D téléchargeable lorsque la forme vous convient.",
       "benefit": "Transformez la photo de votre produit en modèle 3D."
     },

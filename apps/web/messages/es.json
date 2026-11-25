@@ -340,11 +340,9 @@
     "downloadAngles": "Descargar hoja de ángulos",
     "gate": {
       "locked": "Vista previa lista",
-      "title": "Tu vista previa 3D está lista",
-      "description": "Crea una cuenta gratis para ver todos los ángulos de tu foto y convertirla en un modelo 3D.",
-      "signUp": "Crear cuenta gratis",
-      "signIn": "Iniciar sesión",
-      "note": "No hace falta tarjeta."
+      "save": "Guardar este modelo",
+      "panelDescription": "Continúa con Google o con tu correo.",
+      "signIn": "Iniciar sesión"
     },
     "prompt": "Prompt",
     "noPrompt": "Sin prompt, solo la foto",
@@ -1275,6 +1273,7 @@
       "render": "Render PBR",
       "element": "Elemento",
       "hint": "Arrastra para girar",
+      "loading3d": "Cargando 3D",
       "subtitle": "Revisa los ángulos gratis. Paga por crear el modelo 3D descargable cuando la forma te convenza.",
       "benefit": "Convierte la foto de tu producto en un modelo 3D."
     },

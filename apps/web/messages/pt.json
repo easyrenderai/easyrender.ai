@@ -340,11 +340,9 @@
     "downloadAngles": "Descarregar folha de ângulos",
     "gate": {
       "locked": "Pré-visualização pronta",
-      "title": "A sua pré-visualização 3D está pronta",
-      "description": "Crie uma conta gratuita para ver todos os ângulos da sua foto e transformá-la num modelo 3D.",
-      "signUp": "Criar conta gratuita",
-      "signIn": "Iniciar sessão",
-      "note": "Não é preciso cartão."
+      "save": "Guardar este modelo",
+      "panelDescription": "Continue com o Google ou com o e-mail.",
+      "signIn": "Iniciar sessão"
     },
     "prompt": "Descrição",
     "noPrompt": "Apenas fotografia, sem descrição",
@@ -1275,6 +1273,7 @@
       "render": "Render PBR",
       "element": "Elemento",
       "hint": "Arrasta para rodar",
+      "loading3d": "A carregar 3D",
       "subtitle": "Verifica os ângulos grátis. Paga pelo modelo 3D descarregável quando a forma te convencer.",
       "benefit": "Transforma a foto do teu produto num modelo 3D."
     },

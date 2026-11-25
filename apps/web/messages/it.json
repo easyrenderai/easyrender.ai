@@ -340,11 +340,9 @@
     "downloadAngles": "Scarica la tavola degli angoli",
     "gate": {
       "locked": "Anteprima pronta",
-      "title": "La tua anteprima 3D è pronta",
-      "description": "Crea un account gratuito per vedere ogni angolazione della tua foto e trasformarla in un modello 3D.",
-      "signUp": "Crea un account gratuito",
-      "signIn": "Accedi",
-      "note": "Nessuna carta richiesta."
+      "save": "Salva questo modello",
+      "panelDescription": "Continua con Google o con l'e-mail.",
+      "signIn": "Accedi"
     },
     "prompt": "Descrizione",
     "noPrompt": "Solo foto, senza descrizione",
@@ -1275,6 +1273,7 @@
       "render": "Render PBR",
       "element": "Elemento",
       "hint": "Trascina per ruotare",
+      "loading3d": "Caricamento 3D",
       "subtitle": "Controlla le angolazioni gratis. Paga il modello 3D scaricabile quando la forma ti convince.",
       "benefit": "Trasforma la foto del tuo prodotto in un modello 3D."
     },
