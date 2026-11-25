@@ -49,16 +49,21 @@ test('a visitor signs up, previews, pays, builds and downloads a 3D model', asyn
   expect(seen.filter((request) => request.method === 'POST')).toHaveLength(1);
   await page.screenshot({ path: testInfo.outputPath('1-preview.png') });
 
-  // 3. Building needs an account: sign up and come back to the same preview.
-  // The sign-up page can take a while to compile under `next dev` on a CI runner, so wait for
-  // the navigation itself instead of the default five seconds.
-  await page.getByRole('link', { name: 'Create free account' }).click();
-  await expect(page).toHaveURL(/\/sign-up\?next=/, { timeout: 45_000 });
-  await page.getByLabel('Email').fill(`paid-flow-${crypto.randomUUID()}@example.invalid`);
-  await page.getByLabel('Password').fill('paid-flow-password-123');
-  await page.getByRole('button', { name: 'Create account', exact: true }).click();
-  await page.waitForURL(`${app}/r/${renderId}`, { timeout: 60_000 });
-  expect(await balanceOf(page)).toBe(0);
+  // 3. Saving the preview needs an account: one panel opens over the same page, no sign-up route.
+  await page.getByRole('button', { name: 'Save this model' }).click();
+  const panel = page.getByRole('dialog');
+  await expect(panel).toBeVisible();
+  await panel.getByLabel('Email').fill(`paid-flow-${crypto.randomUUID()}@example.invalid`);
+  await panel.getByLabel('Password').fill('paid-flow-password-123');
+  await panel.getByRole('button', { name: 'Create account', exact: true }).click();
+  await expect(panel).toBeHidden({ timeout: 60_000 });
+  expect(page.url()).toBe(`${app}/r/${renderId}`);
+  await expect.poll(() => balanceOf(page), { timeout: 15_000 }).toBe(0);
+  // The preview now belongs to the account: it is in the owner's list.
+  const owned = (await (await page.request.get(`${app}/api/renders`)).json()) as {
+    renders: { id: string }[];
+  };
+  expect(owned.renders.map((render) => render.id)).toContain(renderId);
 
   // 4. No credits yet: the build button is a link to buy them.
   await page.getByRole('link', { name: 'Buy credits to create the 3D model' }).click();
