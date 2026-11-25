@@ -148,6 +148,9 @@ run('shopify billing (real database)', () => {
       delta: pack,
       idempotencyKey: `shopify:purchase:${row.chargeId}`,
     });
+    // A Shopify pack is not a Stripe purchase: no Purchase row, so nothing is queued for Stripe,
+    // PostHog or Google purchase delivery, which all start from a Purchase.
+    expect(await db().purchase.count({ where: { userId } })).toBe(0);
   });
 
   it('credits nothing for a declined or expired charge', async () => {

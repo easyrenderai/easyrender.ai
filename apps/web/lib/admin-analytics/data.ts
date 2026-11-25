@@ -16,6 +16,7 @@ import {
   type Section,
   type SourceHealth,
   sheetCompletedAt,
+  shopifyPayments,
   type Traffic,
   type View,
 } from '@easyrender/core/admin-analytics';
@@ -102,6 +103,7 @@ const reportCached = unstable_cache(
           ? postgres.users.length +
             postgres.renders.length +
             postgres.purchases.length +
+            postgres.shopifyPurchases.length +
             postgres.ledger.length +
             postgres.keys.length +
             postgres.viewSets.length +
@@ -136,21 +138,24 @@ const reportCached = unstable_cache(
         id && ids.has(id) ? id : customer ? (byCustomer.get(customer) ?? null) : null;
       finance = {
         isStripe: true,
-        payments: stripe.transactions.flatMap((p) => {
-          const userId = resolve(p.userId, p.customerId);
-          if (!range.includeTeam && !userId) return [];
-          return [
-            {
-              ...p,
-              userId,
-              credits: null,
-              country:
-                p.country === 'unknown'
-                  ? (s.attribution.find((a) => a.id === userId)?.geo_country ?? 'unknown')
-                  : p.country,
-            },
-          ];
-        }),
+        payments: [
+          ...stripe.transactions.flatMap((p) => {
+            const userId = resolve(p.userId, p.customerId);
+            if (!range.includeTeam && !userId) return [];
+            return [
+              {
+                ...p,
+                userId,
+                credits: null,
+                country:
+                  p.country === 'unknown'
+                    ? (s.attribution.find((a) => a.id === userId)?.geo_country ?? 'unknown')
+                    : p.country,
+              },
+            ];
+          }),
+          ...shopifyPayments(s),
+        ],
         refunds: stripe.refunds.flatMap((r) => {
           const userId = resolve(null, r.customerId);
           return !range.includeTeam && !userId ? [] : [{ ...r, userId }];

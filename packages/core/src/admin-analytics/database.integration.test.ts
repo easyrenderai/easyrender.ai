@@ -31,6 +31,38 @@ describe.skipIf(!url)('read-only analytics against Postgres', () => {
     expect(view.notes).toContain('attributionMissing');
     expect(view.tables).toHaveLength(0);
   });
+  it('loads only invoiced, credited, non-test Shopify packs as revenue', async () => {
+    const id = `analytics-shopify-${crypto.randomUUID()}`;
+    await db().user.create({
+      data: { id, name: 'Shopify buyer', email: `${id}@example.invalid` },
+    });
+    const charge = (name: string, fields: Record<string, unknown>) =>
+      db().shopifyPurchase.create({
+        data: {
+          shop: 'analytics.myshopify.com',
+          userId: id,
+          chargeId: `gid://shopify/AppPurchaseOneTime/${id}-${name}`,
+          credits: 2000,
+          amountCents: 1900,
+          ...fields,
+        },
+      });
+    try {
+      const at = new Date();
+      await charge('real', { status: 'active', creditedAt: at });
+      await charge('test', { status: 'active', isTest: true, creditedAt: at });
+      await charge('pending', {});
+      await charge('declined', { status: 'declined' });
+      const columns = await attributionColumns();
+      const s = await loadDatabase(true, [], columns);
+      const mine = databaseFinance(s).payments.filter((p) => p.userId === id);
+      expect(mine).toEqual([
+        expect.objectContaining({ product: 'shopify', gross: 19, currency: 'USD', credits: 2000 }),
+      ]);
+    } finally {
+      await db().user.delete({ where: { id } });
+    }
+  });
   it('loads deployed attribution without changing schema', async () => {
     const id = `analytics-${crypto.randomUUID()}`;
     await db().user.create({
