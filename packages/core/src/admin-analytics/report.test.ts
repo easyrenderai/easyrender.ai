@@ -19,6 +19,7 @@ const snapshot: Snapshot = {
   upscales: [],
   adSpend: [],
   purchases: [],
+  shopifyPurchases: [],
   ledger: [],
   keys: [],
   attribution: [],
@@ -90,6 +91,26 @@ describe('admin reports observed output', () => {
     };
     expect(databaseFinance(s).payments).toMatchObject([{ id: 'invoice', gross: 12.34 }]);
     expect(databaseFinance(s).payments).toHaveLength(1);
+  });
+  it('counts credited Shopify packs as revenue marked shopify, and leaves out test charges', () => {
+    const at = new Date('2026-11-01T00:00:00Z');
+    const pack = { userId: 'u', credits: 2000, amountCents: 1900, currency: 'usd', createdAt: at };
+    const s: Snapshot = {
+      ...snapshot,
+      // The loader already filters to active, credited, non-test charges: only those reach a report.
+      shopifyPurchases: [{ ...pack, id: 'charge', creditedAt: at }],
+    };
+    expect(databaseFinance(s).payments).toEqual([
+      expect.objectContaining({
+        id: 'shopify-charge',
+        product: 'shopify',
+        gross: 19,
+        currency: 'USD',
+        credits: 2000,
+      }),
+    ]);
+    const report = buildReport('overview', s, range, databaseFinance(s), traffic);
+    expect(report.metrics.find((m) => m.key === 'gross')?.value).toBe(19);
   });
   it('retains legacy subscription grants without a Purchase link', () => {
     const s: Snapshot = {

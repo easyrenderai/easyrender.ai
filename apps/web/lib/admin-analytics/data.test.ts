@@ -58,6 +58,7 @@ vi.mock('@easyrender/core/admin-analytics', async (importOriginal) => ({
       viewSets: [],
       upscales: [],
       adSpend: [],
+      shopifyPurchases: [],
       keys: [],
       attribution: [],
       renderAttribution: [],
