@@ -1,9 +1,4 @@
-import {
-  ENTERPRISE_BOOKING_URL,
-  PUBLIC_PLAN_IDS,
-  RENDER_CREDITS,
-  rendersFor,
-} from '@easyrender/harness';
+import { ENTERPRISE_BOOKING_URL, PUBLIC_PLAN_IDS, rendersFor } from '@easyrender/harness';
 import { Check } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { SiteLink as Link } from '@/components/site-link';
@@ -33,8 +28,12 @@ export async function PlanCards() {
   const plans = [
     {
       name: t('payg.name'),
-      price: usd(RENDER_CREDITS * pricing.creditPrice * 100),
-      note: t('perModel'),
+      // One cost reference for this offer: the credit rate. What a model costs is in credits.
+      price: formatMoney(locale, pricing.creditPrice, pricing.currency, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 4,
+      }),
+      note: t('payg.note'),
       audience: t('payg.audience'),
       features: [
         t('payg.features.min', {

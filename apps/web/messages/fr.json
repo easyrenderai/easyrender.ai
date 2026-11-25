@@ -152,7 +152,7 @@
   "Landing": {
     "pricing": {
       "title": "Payez au modèle. Les crédits n’expirent pas.",
-      "description": "Les aperçus sont gratuits. Un modèle 3D terminé coûte {credits} crédits ({price}).",
+      "description": "Les aperçus sont gratuits. Un modèle 3D terminé coûte {credits} crédits.",
       "seeAll": "Voir tous les tarifs",
       "bestValue": "Le plus avantageux",
       "payg": {
@@ -193,8 +193,7 @@
         "audience": "Pour les grands catalogues avec accompagnement."
       },
       "tryFree": "Essayer l’aperçu gratuit",
-      "noCard": "Aucun compte ni carte bancaire requis pour l’aperçu.",
-      "perModel": "par modèle 3D"
+      "noCard": "Aucun compte ni carte bancaire requis pour l’aperçu."
     },
     "faq": {
       "title": "Questions fréquentes",
@@ -233,7 +232,7 @@
         },
         "cost": {
           "q": "Combien coûte un modèle 3D ?",
-          "a": "Les aperçus sont gratuits. Un modèle 3D terminé coûte {credits} crédits et chaque crédit coûte {unit}, soit {price} par modèle. Les crédits n'expirent pas. Tous les packs figurent sur la page Tarifs."
+          "a": "Les aperçus sont gratuits. Un modèle 3D terminé coûte {credits} crédits et chaque crédit coûte {unit}. Les crédits n'expirent pas. Tous les packs figurent sur la page Tarifs."
         },
         "what": {
           "q": "Qu'est-ce qu'easyrender ?",
@@ -1044,7 +1043,7 @@
   "Credits": {
     "eyebrow": "Tarifs",
     "title": "Crédits",
-    "description": "Le premier aperçu est gratuit. Un modèle 3D terminé coûte {credits} crédits ({price}). Les crédits n’expirent pas.",
+    "description": "Le premier aperçu est gratuit. Un modèle 3D terminé coûte {credits} crédits. Les crédits n’expirent pas.",
     "balance": "Vous avez {credits} crédits.",
     "balancePro": "Vous avez {credits} crédits avec votre offre {plan}.",
     "signUpToBuy": "Créer un compte pour acheter",
@@ -1055,7 +1054,7 @@
     "bestValue": "Meilleur tarif",
     "payg": {
       "title": "À l’usage",
-      "description": "Achetez des crédits selon vos besoins, à partir de {price}.",
+      "description": "Achetez des crédits selon vos besoins.",
       "note": "par crédit",
       "features": {
         "downloads": "Téléchargements GLB et USDZ",
@@ -1106,7 +1105,7 @@
     "breadcrumb": "Tarifs",
     "eyebrow": "Tarifs",
     "title": "Aperçu gratuit, paiement par modèle 3D",
-    "description": "Un modèle 3D téléchargeable coûte {credits} crédits ({price} au tarif à l’usage). Achetez des crédits selon vos besoins ou choisissez Pro pour payer moins cher par crédit. Les crédits n’expirent pas.",
+    "description": "Un modèle 3D téléchargeable coûte {credits} crédits. Achetez des crédits selon vos besoins ou choisissez Pro pour payer moins cher par crédit. Les crédits n’expirent pas.",
     "note": "Les crédits n’expirent jamais. Si la création d’un modèle 3D échoue, ses crédits sont remboursés.",
     "compare": {
       "title": "Comparer les formules",
@@ -1128,7 +1127,7 @@
       },
       "build": {
         "title": "Créez le modèle pour {credits} crédits",
-        "body": "Soit {price} au tarif à l’usage. Le bouton affiche le coût avant confirmation. Vous pouvez télécharger le modèle en GLB ou USDZ."
+        "body": "Le bouton affiche le coût avant confirmation. Vous pouvez télécharger le modèle en GLB ou USDZ."
       },
       "refund": {
         "title": "Les créations échouées sont remboursées",
@@ -1140,7 +1139,7 @@
       "items": {
         "cost": {
           "q": "Combien coûte un modèle 3D ?",
-          "a": "Les aperçus sont gratuits. Un modèle 3D terminé coûte {credits} crédits. À l’usage, un crédit coûte {unit}, soit {price} par modèle. Pro réduit le prix par crédit."
+          "a": "Les aperçus sont gratuits. Un modèle 3D terminé coûte {credits} crédits. À l’usage, un crédit coûte {unit}. Pro réduit le prix par crédit."
         },
         "freePreview": {
           "q": "Que comprend l’aperçu gratuit ?",
@@ -1173,7 +1172,6 @@
       }
     },
     "topUpTitle": "Recharger des crédits",
-    "minimum": "Achat minimum de {price} en crédits, de quoi créer {count} modèles 3D standard.",
     "calculator": {
       "title": "Estimez le coût de votre catalogue 3D",
       "count": "Nombre de modèles 3D",

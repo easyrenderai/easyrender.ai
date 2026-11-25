@@ -152,7 +152,7 @@
   "Landing": {
     "pricing": {
       "title": "Pay per model. Credits never expire.",
-      "description": "Previews are free. A finished 3D model costs {credits} credits ({price}).",
+      "description": "Previews are free. A finished 3D model costs {credits} credits.",
       "seeAll": "See all pricing",
       "bestValue": "Best value",
       "payg": {
@@ -193,8 +193,7 @@
         "audience": "For large catalogs and assisted onboarding."
       },
       "tryFree": "Try a free preview",
-      "noCard": "No account or credit card required for the preview.",
-      "perModel": "per 3D model"
+      "noCard": "No account or credit card required for the preview."
     },
     "faq": {
       "title": "Questions, answered",
@@ -233,7 +232,7 @@
         },
         "cost": {
           "q": "How much does a 3D model cost?",
-          "a": "Previews are free. A finished 3D model costs {credits} credits, and credits cost {unit} each, so a model is {price}. Credits never expire. The pricing page lists every pack."
+          "a": "Previews are free. A finished 3D model costs {credits} credits, and credits cost {unit} each. Credits never expire. The pricing page lists every pack."
         },
         "what": {
           "q": "What is easyrender?",
@@ -1044,7 +1043,7 @@
   "Credits": {
     "eyebrow": "Pricing",
     "title": "Credits",
-    "description": "The initial preview is free. A finished 3D model costs {credits} credits ({price}). Credits never expire.",
+    "description": "The initial preview is free. A finished 3D model costs {credits} credits. Credits never expire.",
     "balance": "You have {credits} credits.",
     "balancePro": "You have {credits} credits and you are on {plan}.",
     "signUpToBuy": "Sign up to buy",
@@ -1055,7 +1054,7 @@
     "bestValue": "Best value",
     "payg": {
       "title": "Pay as you go",
-      "description": "Buy the credits you need, from {price}.",
+      "description": "Buy the credits you need.",
       "note": "per credit",
       "features": {
         "downloads": "GLB and USDZ downloads",
@@ -1106,7 +1105,7 @@
     "breadcrumb": "Pricing",
     "eyebrow": "Pricing",
     "title": "Free preview. Pay per 3D model.",
-    "description": "A downloadable 3D model costs {credits} credits ({price} at the pay-as-you-go rate). Buy credits as needed or choose Pro for a lower price per credit. Credits never expire.",
+    "description": "A downloadable 3D model costs {credits} credits. Buy credits as needed or choose Pro for a lower price per credit. Credits never expire.",
     "note": "Credits never expire. If a 3D build fails, its credits are refunded.",
     "compare": {
       "title": "Compare plans",
@@ -1128,7 +1127,7 @@
       },
       "build": {
         "title": "A 3D model costs {credits} credits",
-        "body": "That is {price}. The button shows the cost before you click, and you download the model as GLB and USDZ."
+        "body": "The button shows the cost before you click, and you download the model as GLB and USDZ."
       },
       "refund": {
         "title": "Failed builds are refunded",
@@ -1140,7 +1139,7 @@
       "items": {
         "cost": {
           "q": "How much does a 3D model cost?",
-          "a": "Previews are free. A finished 3D model costs {credits} credits. On pay as you go a credit costs {unit}, so a model is {price}. Pro makes each credit cheaper."
+          "a": "Previews are free. A finished 3D model costs {credits} credits. On pay as you go a credit costs {unit}. Pro makes each credit cheaper."
         },
         "freePreview": {
           "q": "What does the free preview include?",
@@ -1173,7 +1172,6 @@
       }
     },
     "topUpTitle": "Top up credits",
-    "minimum": "Minimum purchase: {price} in credits, enough for {count} standard 3D models.",
     "calculator": {
       "title": "Estimate your 3D catalogue cost",
       "count": "Number of 3D models",

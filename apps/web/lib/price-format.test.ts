@@ -41,7 +41,8 @@ describe('price formatting', () => {
     const answers = faqText('pt')
       .map((item) => plain(item.answer))
       .join('\n');
-    expect(answers).toContain(plain(formatUsd('pt', RENDER_CREDITS * CREDIT_USD)));
+    // The FAQ gives the credit rate, not a per-model conversion.
+    expect(answers).not.toContain(plain(formatUsd('pt', RENDER_CREDITS * CREDIT_USD)));
     expect(answers).toContain('0,01 US$');
     expect(answers).not.toMatch(/US\$\s?\d/);
   });

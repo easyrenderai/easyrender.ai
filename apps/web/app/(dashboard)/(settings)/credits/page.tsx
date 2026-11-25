@@ -199,12 +199,7 @@ export default async function CreditsPage({ searchParams }: PageProps<'/credits'
           <>
             <Badge variant="outline">{t('eyebrow')}</Badge>
             <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
-            <p className="text-muted-foreground">
-              {t('description', {
-                credits: RENDER_CREDITS,
-                price: usd(RENDER_CREDITS * pricing.creditPrice * 100),
-              })}
-            </p>
+            <p className="text-muted-foreground">{t('description', { credits: RENDER_CREDITS })}</p>
           </>
         )}
         {user && (
@@ -243,7 +238,6 @@ export default async function CreditsPage({ searchParams }: PageProps<'/credits'
           id="payg"
           title={t(topup.plan ? 'topUp.title' : 'payg.title')}
           description={t(topup.plan ? 'topUp.description' : 'payg.description', {
-            price: usd(pricing.payg.min * pricing.creditPrice * 100),
             plan: topup.plan ? SUBSCRIPTION_PLANS[topup.plan].label : '',
           })}
           price={number(topup.priceCents / topup.creditsPerUnit / 100, {

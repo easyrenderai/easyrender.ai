@@ -152,7 +152,7 @@
   "Landing": {
     "pricing": {
       "title": "Paga por modelo. Los créditos no caducan.",
-      "description": "Las vistas previas son gratis. Un modelo 3D terminado cuesta {credits} créditos ({price}).",
+      "description": "Las vistas previas son gratis. Un modelo 3D terminado cuesta {credits} créditos.",
       "seeAll": "Ver todos los precios",
       "bestValue": "Mejor precio",
       "payg": {
@@ -193,8 +193,7 @@
         "audience": "Para catálogos grandes y puesta en marcha asistida."
       },
       "tryFree": "Probar la vista previa gratis",
-      "noCard": "No necesitas cuenta ni tarjeta para la vista previa.",
-      "perModel": "por modelo 3D"
+      "noCard": "No necesitas cuenta ni tarjeta para la vista previa."
     },
     "faq": {
       "title": "Tus preguntas, respondidas",
@@ -233,7 +232,7 @@
         },
         "cost": {
           "q": "¿Cuánto cuesta un modelo 3D?",
-          "a": "La vista previa es gratis. Un modelo 3D descargable cuesta {credits} créditos. En pago por uso, cada crédito cuesta {unit}, así que el modelo sale por {price}. Los créditos no caducan. Consulta los paquetes en Precios."
+          "a": "La vista previa es gratis. Un modelo 3D descargable cuesta {credits} créditos. En pago por uso, cada crédito cuesta {unit}. Los créditos no caducan. Consulta los paquetes en Precios."
         },
         "what": {
           "q": "¿Qué es easyrender?",
@@ -1044,7 +1043,7 @@
   "Credits": {
     "eyebrow": "Precios",
     "title": "Créditos",
-    "description": "La vista previa inicial es gratis. Un modelo 3D terminado cuesta {credits} créditos ({price}). Los créditos no caducan.",
+    "description": "La vista previa inicial es gratis. Un modelo 3D terminado cuesta {credits} créditos. Los créditos no caducan.",
     "balance": "Tienes {credits} créditos.",
     "balancePro": "Tienes {credits} créditos y estás en el plan {plan}.",
     "signUpToBuy": "Regístrate para comprar",
@@ -1055,7 +1054,7 @@
     "bestValue": "Mejor precio",
     "payg": {
       "title": "Pago por uso",
-      "description": "Compra los créditos que necesitas, desde {price}.",
+      "description": "Compra los créditos que necesitas.",
       "note": "por crédito",
       "features": {
         "downloads": "Descargas en GLB y USDZ",
@@ -1106,7 +1105,7 @@
     "breadcrumb": "Precios",
     "eyebrow": "Precios",
     "title": "Vista previa gratis. Paga por modelo 3D.",
-    "description": "Un modelo 3D descargable cuesta {credits} créditos ({price} con pago por uso). Compra créditos cuando los necesites o elige Pro para pagar menos por crédito. Los créditos no caducan.",
+    "description": "Un modelo 3D descargable cuesta {credits} créditos. Compra créditos cuando los necesites o elige Pro para pagar menos por crédito. Los créditos no caducan.",
     "note": "Los créditos no caducan. Si falla la creación de un modelo 3D, se devuelven los créditos.",
     "compare": {
       "title": "Compara los planes",
@@ -1128,7 +1127,7 @@
       },
       "build": {
         "title": "Un modelo 3D cuesta {credits} créditos",
-        "body": "Con pago por uso, el coste equivale a {price}. El botón indica los créditos antes de confirmar. Puedes descargar el modelo en GLB y USDZ."
+        "body": "El botón indica los créditos antes de confirmar. Puedes descargar el modelo en GLB y USDZ."
       },
       "refund": {
         "title": "Los modelos fallidos se reembolsan",
@@ -1140,7 +1139,7 @@
       "items": {
         "cost": {
           "q": "¿Cuánto cuesta un modelo 3D?",
-          "a": "Las vistas previas son gratis. Un modelo 3D terminado cuesta {credits} créditos. Con el pago por uso cada crédito cuesta {unit}, así que un modelo sale por {price}. Pro abarata cada crédito."
+          "a": "Las vistas previas son gratis. Un modelo 3D terminado cuesta {credits} créditos. Con el pago por uso cada crédito cuesta {unit}. Pro abarata cada crédito."
         },
         "freePreview": {
           "q": "¿Qué incluye la vista previa gratis?",
@@ -1173,7 +1172,6 @@
       }
     },
     "topUpTitle": "Recargar créditos",
-    "minimum": "Compra mínima de {price} en créditos, suficientes para {count} modelos 3D estándar.",
     "calculator": {
       "title": "Estima el coste de tu catálogo en 3D",
       "count": "Número de modelos 3D",

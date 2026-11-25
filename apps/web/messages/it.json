@@ -152,7 +152,7 @@
   "Landing": {
     "pricing": {
       "title": "Paghi per ogni modello. I crediti non scadono.",
-      "description": "Le anteprime sono gratis. Un modello 3D finito costa {credits} crediti ({price}).",
+      "description": "Le anteprime sono gratis. Un modello 3D finito costa {credits} crediti.",
       "seeAll": "Vedi tutti i prezzi",
       "bestValue": "Più conveniente",
       "payg": {
@@ -193,8 +193,7 @@
         "audience": "Per grandi cataloghi con avvio assistito."
       },
       "tryFree": "Prova l’anteprima gratuita",
-      "noCard": "Per l’anteprima non servono account né carta di credito.",
-      "perModel": "per modello 3D"
+      "noCard": "Per l’anteprima non servono account né carta di credito."
     },
     "faq": {
       "title": "Domande frequenti",
@@ -233,7 +232,7 @@
         },
         "cost": {
           "q": "Quanto costa un modello 3D?",
-          "a": "L'anteprima è gratis. Un modello 3D finito costa {credits} crediti e ogni credito costa {unit}, quindi un modello costa {price}. I crediti non scadono. Tutti i pacchetti sono nella pagina dei prezzi."
+          "a": "L'anteprima è gratis. Un modello 3D finito costa {credits} crediti e ogni credito costa {unit}. I crediti non scadono. Tutti i pacchetti sono nella pagina dei prezzi."
         },
         "what": {
           "q": "Che cos'è easyrender?",
@@ -1044,7 +1043,7 @@
   "Credits": {
     "eyebrow": "Prezzi",
     "title": "Crediti",
-    "description": "L’anteprima iniziale è gratuita. Un modello 3D completo costa {credits} crediti ({price}). I crediti non scadono.",
+    "description": "L’anteprima iniziale è gratuita. Un modello 3D completo costa {credits} crediti. I crediti non scadono.",
     "balance": "Hai {credits} crediti.",
     "balancePro": "Hai {credits} crediti con il piano {plan}.",
     "signUpToBuy": "Registrati per acquistare",
@@ -1055,7 +1054,7 @@
     "bestValue": "Più conveniente",
     "payg": {
       "title": "A consumo",
-      "description": "Acquista i crediti che ti servono, a partire da {price}.",
+      "description": "Acquista i crediti che ti servono.",
       "note": "per credito",
       "features": {
         "downloads": "Download in GLB e USDZ",
@@ -1106,7 +1105,7 @@
     "breadcrumb": "Prezzi",
     "eyebrow": "Prezzi",
     "title": "Anteprima gratuita. Paghi per ogni modello 3D.",
-    "description": "Un modello 3D da scaricare costa {credits} crediti ({price} con la tariffa a consumo). Acquista crediti quando ti servono o scegli Pro per pagare meno ogni credito. I crediti non scadono.",
+    "description": "Un modello 3D da scaricare costa {credits} crediti. Acquista crediti quando ti servono o scegli Pro per pagare meno ogni credito. I crediti non scadono.",
     "note": "I crediti non scadono mai. Se la creazione di un modello 3D non riesce, i crediti vengono rimborsati.",
     "compare": {
       "title": "Confronta i piani",
@@ -1128,7 +1127,7 @@
       },
       "build": {
         "title": "Un modello 3D costa {credits} crediti",
-        "body": "Sono {price}. Il pulsante mostra il costo prima del clic e puoi scaricare il modello in GLB e USDZ."
+        "body": "Il pulsante mostra il costo prima del clic e puoi scaricare il modello in GLB e USDZ."
       },
       "refund": {
         "title": "Le creazioni non riuscite vengono rimborsate",
@@ -1140,7 +1139,7 @@
       "items": {
         "cost": {
           "q": "Quanto costa un modello 3D?",
-          "a": "Le anteprime sono gratuite. Un modello 3D completo costa {credits} crediti. A consumo, un credito costa {unit}, quindi un modello costa {price}. Pro riduce il prezzo per credito."
+          "a": "Le anteprime sono gratuite. Un modello 3D completo costa {credits} crediti. A consumo, un credito costa {unit}. Pro riduce il prezzo per credito."
         },
         "freePreview": {
           "q": "Cosa include l’anteprima gratuita?",
@@ -1173,7 +1172,6 @@
       }
     },
     "topUpTitle": "Ricarica crediti",
-    "minimum": "Acquisto minimo di {price} in crediti, sufficienti per {count} modelli 3D standard.",
     "calculator": {
       "title": "Stima il costo del tuo catalogo 3D",
       "count": "Numero di modelli 3D",

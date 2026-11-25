@@ -46,12 +46,16 @@ describe('public pricing copy', () => {
     expect(html).not.toContain('href="#try"');
     state.locale = 'en';
   });
-  it('shows €0.35 for a pay-as-you-go model on the shared pricing card', async () => {
+  it('shows one cost reference for pay as you go, the €0.01 credit rate, on the shared card', async () => {
     const { PlanCards } = await vi.importActual<typeof import('@/components/pricing/plan-cards')>(
       '@/components/pricing/plan-cards',
     );
     const html = renderToStaticMarkup(await PlanCards());
-    expect(html).toContain('€0.35');
+    expect(html).toContain('€0.01');
+    expect(html).toContain('per credit');
+    // What a model costs in money is not repeated on the card: the cost of a model is in credits.
+    expect(html).not.toContain('€0.35');
+    expect(html).not.toContain('per 3D model');
   });
 
   it('structured offers match the EUR price shown on the pricing page', () => {
