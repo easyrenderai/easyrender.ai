@@ -17,6 +17,7 @@ import { resolveActor } from '@/lib/actor';
 import { privacyRegion } from '@/lib/analytics/privacy-region';
 import { apiHandle, apiOptions } from '@/lib/api-http';
 import { parseApiPhoto } from '@/lib/api-upload';
+import { assertNotBot } from '@/lib/bot-check';
 
 export const maxDuration = 60;
 
@@ -24,6 +25,8 @@ export const maxDuration = 60;
 export const POST = (request: Request) =>
   apiHandle(request, async () => {
     const actor = await resolveActor(request.headers, 'write');
+    // Before the upload is read or a preview drawn: each one is a real sheet generation.
+    await assertNotBot({ isApiCaller: Boolean(actor.apiKeyId) });
     const photo = await parseApiPhoto(request, actor);
     if (photo.isPublic) assertActorScope(actor, 'share');
     let attribution: unknown = photo.attribution ?? null;

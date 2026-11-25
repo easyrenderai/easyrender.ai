@@ -17,6 +17,7 @@ const keys = {
   trial_unavailable: 'offerUnavailable',
   bad_state: 'staleState',
   rate_limit: 'rateLimit',
+  bot_detected: 'botBlocked',
 } as const;
 
 export function activationErrorKey(data: unknown) {
