@@ -96,7 +96,7 @@ Our verdict: if you edit models, export from Blender and check the result in Qui
 
 If you start from a photo, some image-to-3D tools export USDZ next to the GLB, so you skip the conversion. The steps are in [how to turn a photo into a 3D model](/learn/how-to-make-a-3d-model-from-photos).
 
-easyrender gives you both files for every finished model. AR is coming soon, so you will be able to open the piece on your phone and see it in your room. Keep the real dimensions in the product text, since AR shows a model at the size stored in its file.
+easyrender gives you both files for every finished model. AR is included: open the piece on your phone and see it in your room. Keep the real dimensions in the product text, since AR shows a model at the size stored in its file.
 
 ## An example: an oak side table on an iPhone
 

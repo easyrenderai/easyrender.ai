@@ -618,7 +618,7 @@ body:has(.er-studio) {
     font-stretch: 87.5%;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--smoke);
+    color: var(--ash);
   }
   .stack:not(.is-in) .stack__hint {
     opacity: 0;

@@ -116,7 +116,7 @@ Los seis modelos de nuestro escaparate van de 14.590 triángulos en un jarrón d
 
 Un GLB se abre en Blender (Archivo, Importar, glTF 2.0) y en visores gratuitos del navegador, como el [Babylon.js Sandbox](https://sandbox.babylonjs.com/). En Blender, activa Estadísticas en las superposiciones del visor para ver los triángulos. Ábrelo una vez antes de usarlo en ningún sitio y gíralo despacio.
 
-easyrender te da los dos archivos con cada modelo terminado. El USDZ se convierte a partir del GLB en tu navegador al descargarlo, así que los dos siempre coinciden. La realidad aumentada llegará pronto, y los visores de RA colocan el modelo con el tamaño guardado en el archivo, así que deja las medidas reales en el anuncio.
+easyrender te da los dos archivos con cada modelo terminado. El USDZ se convierte a partir del GLB en tu navegador al descargarlo, así que los dos siempre coinciden. La realidad aumentada está incluida, y los visores de RA colocan el modelo con el tamaño guardado en el archivo, así que deja las medidas reales en el anuncio.
 
 Qué hay dentro de cada archivo lo explican [qué es un archivo GLB](/es/guias/archivo-glb) y [qué es un archivo USDZ](/es/guias/archivo-usdz).
 

@@ -94,7 +94,7 @@ Unser Fazit: Bearbeitest du Modelle, exportier aus Blender und prüf das Ergebni
 
 Startest du mit einem Foto, exportieren manche Bild-zu-3D-Werkzeuge die USDZ gleich neben der GLB, dann sparst du dir die Umwandlung. Die Schritte stehen in [3D-Modell aus Fotos erstellen](/de/ratgeber/3d-modell-aus-fotos-erstellen).
 
-easyrender liefert zu jedem fertigen Modell beide Dateien. AR kommt bald, dann kannst du das Stück am Handy öffnen und in deinem Raum sehen. Schreib die am echten Produkt gemessenen Maße in den Produkttext. Ein Modell aus einem Foto liefert keine verlässlichen Abmessungen.
+easyrender liefert zu jedem fertigen Modell beide Dateien. AR ist dabei: Du kannst das Stück am Handy öffnen und in deinem Raum sehen. Schreib die am echten Produkt gemessenen Maße in den Produkttext. Ein Modell aus einem Foto liefert keine verlässlichen Abmessungen.
 
 ## Ein Beispiel: ein Beistelltisch aus Eiche am iPhone
 
