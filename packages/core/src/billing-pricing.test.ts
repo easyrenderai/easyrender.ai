@@ -434,3 +434,31 @@ it('carries sanitized browser attribution into Stripe without letting it overwri
     at_gclid: 'Ad_Click_123',
   });
 });
+
+it('sends a pack bought from a build button back to that render, not to Credits', async () => {
+  await createCheckoutDetails('user', {
+    plan: 'payg',
+    credits: 500,
+    next: '/r/abc_123',
+    inline: true,
+    quality: 'high',
+  });
+  const { success_url, cancel_url } = state.session.mock.calls[0][0];
+  expect(success_url).toContain('/r/abc_123?purchase=success&session_id={CHECKOUT_SESSION_ID}');
+  expect(success_url).toContain('&quality=high');
+  expect(success_url).not.toContain('/credits');
+  expect(cancel_url).toContain('/r/abc_123?purchase=canceled&quality=high');
+});
+
+it('keeps Credits as the return for a normal purchase and for anything that is not a render', async () => {
+  await createCheckoutDetails('user', { plan: 'payg', credits: 500, next: '/r/abc_123' });
+  await createCheckoutDetails('user', {
+    plan: 'payg',
+    credits: 500,
+    next: '/views/set_1',
+    inline: true,
+  });
+  for (const [session] of state.session.mock.calls.slice(-2)) {
+    expect(session.success_url).toContain('/credits?status=success');
+  }
+});

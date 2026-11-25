@@ -1,6 +1,7 @@
 import { db } from '@easyrender/db';
 import {
   type ChargeCurrency,
+  isBuildQuality,
   isPlanId,
   isValidPaygCredits,
   PAYG,
@@ -181,6 +182,22 @@ export function checkoutReturnPath(value: unknown): string | null {
     : null;
 }
 
+/**
+ * Packs bought from a 3D build button come back to that render page, not to Credits, with the
+ * build quality the buyer had picked. Only a render route qualifies; anything else keeps Credits.
+ */
+export function checkoutInlineReturn(input: {
+  next?: unknown;
+  inline?: unknown;
+  quality?: unknown;
+}) {
+  const path = checkoutReturnPath(input.next);
+  if (input.inline !== true || !path?.startsWith('/r/')) return null;
+  const quality =
+    isBuildQuality(input.quality) && input.quality !== 'low' ? `&quality=${input.quality}` : '';
+  return { path, quality };
+}
+
 const devCheckoutUrl = (request: CheckoutRequest) =>
   request.plan === 'payg'
     ? `${config.appUrl()}/api/dev/checkout?plan=payg&credits=${request.credits}`
@@ -194,6 +211,8 @@ export async function createCheckoutDetails(
     expectedAmountCents?: unknown;
     expectedCurrency?: unknown;
     next?: unknown;
+    inline?: unknown;
+    quality?: unknown;
   },
   context: {
     anonId?: string | null;
@@ -213,7 +232,10 @@ export async function createCheckoutDetails(
     );
   const request = parseCheckout(input, variant);
   const next = checkoutReturnPath(input.next);
-  const returnQuery = next ? `&next=${encodeURIComponent(next)}` : '';
+  const inline = checkoutInlineReturn(input);
+  const returnQuery = next
+    ? `&next=${encodeURIComponent(next)}${inline ? `&inline=1${inline.quality}` : ''}`
+    : '';
   const attributionMetadata = checkoutAttributionMetadata(context.checkoutAttribution ?? {});
   let metadata: Stripe.MetadataParam = {
     userId,
@@ -297,10 +319,15 @@ export async function createCheckoutDetails(
     items: [{ item_id: request.plan, quantity: request.plan === 'payg' ? request.credits : 1 }],
   };
   const localeQuery = context.locale ? `&locale=${encodeURIComponent(context.locale)}` : '';
-  const urls = {
-    success_url: `${config.appUrl()}/credits?status=success&session_id={CHECKOUT_SESSION_ID}${returnQuery}${localeQuery}`,
-    cancel_url: `${config.appUrl()}/credits?status=canceled${returnQuery}${localeQuery}`,
-  };
+  const urls = inline
+    ? {
+        success_url: `${config.appUrl()}${inline.path}?purchase=success&session_id={CHECKOUT_SESSION_ID}${inline.quality}${localeQuery}`,
+        cancel_url: `${config.appUrl()}${inline.path}?purchase=canceled${inline.quality}${localeQuery}`,
+      }
+    : {
+        success_url: `${config.appUrl()}/credits?status=success&session_id={CHECKOUT_SESSION_ID}${returnQuery}${localeQuery}`,
+        cancel_url: `${config.appUrl()}/credits?status=canceled${returnQuery}${localeQuery}`,
+      };
 
   if (request.plan !== 'payg') {
     if (isActiveSubscription(user.subscriptionStatus)) {

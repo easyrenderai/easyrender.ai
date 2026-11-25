@@ -377,6 +377,12 @@
     "noPreview": "Nessuna anteprima",
     "signUpToRender": "Crea un account per continuare",
     "buyToRender": "Acquista crediti per creare il modello 3D",
+    "addCreditsToBuild": "Aggiungi crediti per creare",
+    "purchase": {
+      "confirmed": "{credits} crediti aggiunti.",
+      "pending": "Pagamento ricevuto. Aggiungiamo i tuoi crediti…",
+      "canceled": "Pagamento annullato. Non ti è stato addebitato nulla."
+    },
     "render3d": "Crea il modello 3D · {credits} crediti",
     "tryAnother": "Prova un’altra foto",
     "showInGallery": "Mostra nella galleria pubblica",

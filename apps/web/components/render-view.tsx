@@ -1,10 +1,16 @@
 'use client';
 
-import type { FirstModelOffer, RenderEditView, RenderView as View } from '@easyrender/core';
-import type { BuildQuality } from '@easyrender/harness/pricing';
+import type {
+  confirmedPurchase,
+  FirstModelOffer,
+  RenderEditView,
+  RenderView as View,
+} from '@easyrender/core';
+import type { BuildQuality, PricingVariant, topupPricing } from '@easyrender/harness/pricing';
 import { useQuery } from '@tanstack/react-query';
 import {
   Box,
+  CircleCheck,
   Download,
   Globe,
   Grid3x3,
@@ -21,6 +27,8 @@ import { useEffect, useState } from 'react';
 import { AngleSheet } from '@/components/angle-sheet';
 import { BuildQualityPicker } from '@/components/build-quality-picker';
 import { ModelView } from '@/components/model-view';
+import { PaygPicker } from '@/components/payg-picker';
+import { PurchaseConversion } from '@/components/purchase-conversion';
 import { DATE_FORMAT, RenderDetail } from '@/components/render-detail';
 import { RenderHistory } from '@/components/render-history';
 import { RenderJourneyStatus } from '@/components/render-journey-status';
@@ -57,6 +65,8 @@ const RUNNING = new Set(['drafting', 'rendering']);
 // Mirrors MAX_NOTE_LENGTH in the harness, which a client component cannot import (it pulls in sharp).
 const NOTE_MAX_LENGTH = 500;
 
+type Confirmation = NonNullable<Awaited<ReturnType<typeof confirmedPurchase>>>;
+
 export function RenderView({
   initial,
   edits,
@@ -67,6 +77,8 @@ export function RenderView({
   canExport = false,
   sampleDownload,
   initialQuality = 'low',
+  packs = null,
+  checkout = null,
 }: {
   initial: View;
   // The owner's history of this render, read on the server. A new step refreshes it.
@@ -80,6 +92,14 @@ export function RenderView({
   sampleDownload?: string;
   /** The quality picked in the prompt bar, shown selected on the build button. */
   initialQuality?: BuildQuality;
+  /** What the build button needs to open the credit packs in place. Without it, it links to Credits. */
+  packs?: { variant: PricingVariant; rate: ReturnType<typeof topupPricing> } | null;
+  /** The owner's return from buying those packs: the result is read from the database on the server. */
+  checkout?: {
+    status: 'success' | 'canceled';
+    sessionId: string | null;
+    confirmed: Confirmation | null;
+  } | null;
 }) {
   const t = useTranslations('Render');
   const locale = useLocale();
@@ -98,6 +118,7 @@ export function RenderView({
   const [issues, setIssues] = useState<SheetIssue[]>([]);
   const [isConfirmingCorrection, setIsConfirmingCorrection] = useState(false);
   const [isSavePanelOpen, setIsSavePanelOpen] = useState(false);
+  const [isPacksOpen, setIsPacksOpen] = useState(false);
   const correction = correctionNote(
     issues.map((issue) => t(`correction.instructions.${issue}`)),
     note,
@@ -535,9 +556,35 @@ export function RenderView({
               credits: format.number(owed),
             })}
           </p>
-          <Button size="lg" className="h-auto min-h-11 w-full whitespace-normal" asChild>
-            <Link href={`/credits?next=${next}`}>{t('buyToRender')}</Link>
-          </Button>
+          {packs ? (
+            <>
+              {isPacksOpen && (
+                <div id="build-packs" className="rounded-lg border p-3">
+                  <PaygPicker
+                    next={`/r/${render.id}`}
+                    inlineQuality={quality}
+                    pricingVariant={packs.variant}
+                    currency={packs.rate.currency}
+                    rate={packs.rate}
+                  />
+                </div>
+              )}
+              <Button
+                size="lg"
+                className="h-auto min-h-11 w-full whitespace-normal"
+                aria-expanded={isPacksOpen}
+                aria-controls="build-packs"
+                onClick={() => setIsPacksOpen((isOpen) => !isOpen)}
+              >
+                <Box />
+                {t('addCreditsToBuild')}
+              </Button>
+            </>
+          ) : (
+            <Button size="lg" className="h-auto min-h-11 w-full whitespace-normal" asChild>
+              <Link href={`/credits?next=${next}`}>{t('buyToRender')}</Link>
+            </Button>
+          )}
         </>
       ) : (
         <Button
@@ -608,6 +655,27 @@ export function RenderView({
     gate
   ) : owner ? (
     <>
+      {checkout?.sessionId && (
+        <PurchaseConversion
+          key={checkout.sessionId}
+          sessionId={checkout.sessionId}
+          initial={checkout.confirmed}
+        />
+      )}
+      {checkout && (checkout.sessionId || checkout.status === 'canceled') && (
+        <Alert>
+          {checkout.confirmed ? <CircleCheck /> : null}
+          <AlertDescription>
+            {checkout.status === 'canceled'
+              ? t('purchase.canceled')
+              : checkout.confirmed
+                ? t('purchase.confirmed', {
+                    credits: format.number(checkout.confirmed.issued_credits),
+                  })
+                : t('purchase.pending')}
+          </AlertDescription>
+        </Alert>
+      )}
       {render.status === 'preview_ready' &&
         (hasTrialError ? (
           <div className="space-y-2">

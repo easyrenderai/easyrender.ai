@@ -1,6 +1,7 @@
 import {
   AppError,
   canAccess,
+  confirmedPurchase,
   getBalance,
   getRender,
   isListed,
@@ -22,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import type { Locale } from '@/i18n/config';
 import { currentUser, resolveViewerActor } from '@/lib/actor';
 import { TABLE_EXAMPLE } from '@/lib/marketing-examples';
+import { currentTopupPricing, viewerPricing } from '@/lib/pricing';
 import { noindexMetadata } from '@/lib/seo/metadata';
 import { ROUTES } from '@/lib/seo/routes';
 import { absoluteUrl, SITE_NAME } from '@/lib/seo/site';
@@ -77,7 +79,7 @@ export async function generateMetadata({ params }: PageProps<'/r/[id]'>): Promis
 
 export default async function RenderPage({ params, searchParams }: PageProps<'/r/[id]'>) {
   const { id } = await params;
-  const { quality } = await searchParams;
+  const { quality, purchase, session_id: session } = await searchParams;
   const demo = findShowcase(id);
   if (demo) {
     const [t, format, user, locale] = await Promise.all([
@@ -149,8 +151,35 @@ export default async function RenderPage({ params, searchParams }: PageProps<'/r
   }
   // The history is the owner's to read; a failed read leaves the tab empty rather than the page broken.
   const edits = isOwner && actor.userId ? await listEdits(id, actor).catch(() => []) : [];
+  // Credits bought from the build button come back here. The result is read from the database, never
+  // from the query string, and only the owner sees it.
+  const checkout =
+    isOwner && actor.userId && (purchase === 'success' || purchase === 'canceled')
+      ? {
+          status: purchase === 'success' ? ('success' as const) : ('canceled' as const),
+          sessionId:
+            purchase === 'success' &&
+            typeof session === 'string' &&
+            /^cs_[A-Za-z0-9_-]{1,240}$/.test(session)
+              ? session
+              : null,
+        }
+      : null;
+  const confirmed =
+    checkout?.sessionId && actor.userId
+      ? await confirmedPurchase(actor.userId, checkout.sessionId).catch(() => null)
+      : null;
+  // The packs the build button opens when the balance is short. Without them it links to Credits.
+  const packs =
+    isOwner && actor.userId && render.status === 'preview_ready'
+      ? await Promise.all([viewerPricing(), currentTopupPricing()])
+          .then(([pricing, rate]) => ({ variant: pricing.variant, rate }))
+          .catch(() => null)
+      : null;
   return (
     <RenderView
+      packs={packs}
+      checkout={checkout ? { ...checkout, confirmed } : null}
       initial={initial}
       sampleDownload={isTableExample ? TABLE_EXAMPLE.model : undefined}
       edits={edits}
