@@ -1225,7 +1225,8 @@
       "generic": "We couldn’t continue. Try again.",
       "oauth": "Google sign-in did not finish. Try again or use your email.",
       "credentials": "The email or password is incorrect.",
-      "rateLimited": "Too many attempts. Wait a few minutes and try again."
+      "rateLimited": "Too many attempts. Wait a few minutes and try again.",
+      "botBlocked": "We couldn’t verify this browser. Reload the page and try again."
     },
     "google": "Continue with Google",
     "or": "or",
@@ -3459,7 +3460,8 @@
     "verifyEmail": "Verify your email address to use the free model offer.",
     "offerUnavailable": "The free model offer is no longer available for this preview. Check the options below.",
     "staleState": "This project changed. Refresh the page and try again.",
-    "rateLimit": "Too many requests. Wait a minute and try again."
+    "rateLimit": "Too many requests. Wait a minute and try again.",
+    "botBlocked": "We couldn’t verify this browser. Reload the page and try again."
   },
   "Viewer": {
     "metaTitle": "3D Viewer Online: open GLB, OBJ, FBX and STL files · Easy Render",

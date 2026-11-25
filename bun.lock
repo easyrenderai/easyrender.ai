@@ -29,6 +29,7 @@
         "@sentry/nextjs": "11.12.0",
         "@tanstack/react-query": "5.105.3",
         "better-auth": "1.7.14",
+        "botid": "^1.5.13",
         "class-variance-authority": "0.7.1",
         "clsx": "2.1.1",
         "geist": "1.9.2",
@@ -1008,6 +1009,8 @@
     "better-result": ["better-result@2.10.0", "", {}, "sha512-oQhh0y1qo2/ZKdAAEvHZAqKKiHOFU5k/bW96fE2ScgQOVkJRiHwB+nOS1SgFsYqRlxMDWvefXi9Q3px7QvgNDw=="],
 
     "body-parser": ["body-parser@2.4.0", "", { "dependencies": { "bytes": "^3.1.2", "content-type": "^2.1.0", "debug": "^4.4.3", "http-errors": "^2.0.1", "iconv-lite": "^0.7.3", "on-finished": "^2.4.1", "qs": "^6.16.1", "raw-body": "^3.0.2", "type-is": "^2.1.0" } }, "sha512-Ifk1KcLrxaGt1occQagQNFNNOqRt1LFuehEnHHzB8Z6cRgIxRU1TBaiIsUiCdA+gy5PL7Y1IX31DNKkRmxtXjQ=="],
+
+    "botid": ["botid@1.5.13", "", { "peerDependencies": { "next": "*", "react": "^18.0.0 || ^19.0.0" }, "optionalPeers": ["next", "react"] }, "sha512-bd1oGgunQXOXQOctgLm/XuJKji5E8EUJdHYQAHJhJPgFeBo/mLQMeEsokO9nbrjjOZsSoKZfGHRfM/VAux44GA=="],
 
     "bowser": ["bowser@2.15.0", "", {}, "sha512-xic6KSZglg/I4ymp45fdM4GWfYpBK79Fxd/TOvJktlaPgQqqDxvmGwOPZl2V0dyeS3Lj5c180bLhXF43iyAjZQ=="],
 

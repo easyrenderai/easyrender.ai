@@ -1225,7 +1225,8 @@
       "generic": "Die Anfrage ist fehlgeschlagen. Versuch es erneut.",
       "oauth": "Die Anmeldung mit Google wurde nicht abgeschlossen. Versuch es erneut oder nutze deine E-Mail-Adresse.",
       "credentials": "E-Mail-Adresse oder Passwort stimmen nicht.",
-      "rateLimited": "Zu viele Versuche. Warte ein paar Minuten und versuch es erneut."
+      "rateLimited": "Zu viele Versuche. Warte ein paar Minuten und versuch es erneut.",
+      "botBlocked": "Wir konnten diesen Browser nicht überprüfen. Lade die Seite neu und versuch es erneut."
     },
     "google": "Mit Google fortfahren",
     "or": "oder",
@@ -3082,7 +3083,8 @@
     "verifyEmail": "Bestätige deine E-Mail-Adresse, um das kostenlose Modell zu erhalten.",
     "offerUnavailable": "Das kostenlose Modell ist für diese Vorschau nicht mehr verfügbar. Unten siehst du deine Optionen.",
     "staleState": "Dieses Projekt hat sich geändert. Lade die Seite neu und versuche es erneut.",
-    "rateLimit": "Zu viele Anfragen. Warte eine Minute und versuche es erneut."
+    "rateLimit": "Zu viele Anfragen. Warte eine Minute und versuche es erneut.",
+    "botBlocked": "Wir konnten diesen Browser nicht überprüfen. Lade die Seite neu und versuch es erneut."
   },
   "Viewer": {
     "metaTitle": "3D-Viewer online: GLB-, OBJ-, FBX- und STL-Dateien öffnen · Easy Render",

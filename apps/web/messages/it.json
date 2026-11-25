@@ -1225,7 +1225,8 @@
       "generic": "Non è stato possibile continuare. Riprova.",
       "oauth": "L’accesso con Google non è stato completato. Riprova o usa la tua email.",
       "credentials": "L’email o la password non è corretta.",
-      "rateLimited": "Troppi tentativi. Aspetta qualche minuto e riprova."
+      "rateLimited": "Troppi tentativi. Aspetta qualche minuto e riprova.",
+      "botBlocked": "Non siamo riusciti a verificare questo browser. Ricarica la pagina e riprova."
     },
     "google": "Continua con Google",
     "or": "oppure",
@@ -3082,7 +3083,8 @@
     "verifyEmail": "Verifica il tuo indirizzo email per ottenere il modello gratuito.",
     "offerUnavailable": "L’offerta del modello gratuito non è più disponibile per questa anteprima. Controlla le opzioni qui sotto.",
     "staleState": "Il progetto è cambiato. Ricarica la pagina e riprova.",
-    "rateLimit": "Troppe richieste. Aspetta un minuto e riprova."
+    "rateLimit": "Troppe richieste. Aspetta un minuto e riprova.",
+    "botBlocked": "Non siamo riusciti a verificare questo browser. Ricarica la pagina e riprova."
   },
   "Viewer": {
     "metaTitle": "Visualizzatore 3D online: apri file GLB, OBJ, FBX e STL · Easy Render",
