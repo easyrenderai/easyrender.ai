@@ -8,13 +8,14 @@ a line here. Keep this map short.
 - Never commit secrets. Never paste one in chat, a PR or a memory file.
 - Credits and Stripe code paths follow [credits and pricing](context/credits-and-pricing.md).
 - Production-breaking mistakes: [CRITICAL-NEVER-DO](system/CRITICAL-NEVER-DO.md).
+- Every release is a patch bump until Vincent says otherwise: [release versioning](context/release-versioning.md).
 
 ## Task entry points
 
 - **Where things live:** [project structure](context/project-structure.md).
 - **Marketing pages and the edge cache (what a layout may never read):** [cached marketing pages](context/cached-marketing-pages.md).
 - **Money, credits, pricing, Stripe:** [credits and pricing](context/credits-and-pricing.md).
-- **Deploys, env vars, database:** [deploys and environments](context/deploys-and-environments.md). Shipping to prod: `RELEASING.md` (release based, merge does not deploy).
+- **Deploys, env vars, database:** [deploys and environments](context/deploys-and-environments.md). Shipping to prod: `RELEASING.md` (release based, merge does not deploy). Version numbers: [release versioning](context/release-versioning.md).
 - **React effects (useEffect ratchet, baseline, how to remove one):** [react effects](context/react-effects.md).
 - **UI work:** `DESIGN.md` at the repo root.
 - **Material realism (what stone, wood, metal can do):** [marble and stone](context/materials-marble-stone.md),
