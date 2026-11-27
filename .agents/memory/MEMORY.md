@@ -31,3 +31,10 @@ a line here. Keep this map short.
 - **Referral program (share link, cookie, payout rules):** [referrals](context/referrals.md).
 - **Issues, board, priority, status columns:** [project board](context/project-board.md).
 - **Sentry (tokens in links, trace lifecycle, shared options):** [sentry privacy](context/sentry-privacy.md).
+- **Bots, BotID, robots, Vercel firewall (agents are welcome, Expo caveat):** [bot protection](context/bot-protection.md).
+- **Mail (Google Workspace inbound, Resend sending, Route 53):** [email and domains](context/email-and-domains.md).
+- **Production outage alarm (AWS, not Sentry uptime):** [outage alarm](context/outage-alarm.md).
+- **Shopify credit packs and the Billing API decision:** [shopify billing](context/shopify-billing.md).
+- **UI copy (no hint or helper text, icons first):** [ui copy minimal](context/ui-copy-minimal.md).
+- **Agent chat (model choice, spec):** [agent chat model](context/agent-chat-model.md).
+- **Tests (Paid flow e2e traps, scratch Postgres):** [e2e paid flow](context/e2e-paid-flow.md), [scratch Postgres](context/scratch-postgres.md).
