@@ -50,10 +50,6 @@ export async function Pricing() {
   const { currentPricing } = await import('@/lib/pricing');
   const pricing = await currentPricing();
   const [t, locale] = await Promise.all([getTranslations('Landing.pricing'), getLocale()]);
-  const usd = (cents: number) =>
-    formatMoney(locale, cents / 100, pricing.currency, {
-      minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
-    });
   const pricingPath = isPublished('pricing', locale as Locale)
     ? ROUTES.pricing.paths[locale as Locale]
     : ROUTES.pricing.paths.en;
@@ -62,10 +58,7 @@ export async function Pricing() {
     <Section
       id="pricing"
       title={t('title')}
-      description={t('description', {
-        credits: RENDER_CREDITS,
-        price: usd(RENDER_CREDITS * pricing.creditPrice * 100),
-      })}
+      description={t('description', { credits: RENDER_CREDITS })}
       action={
         <Link className="link" href={pricingPath}>
           {t('seeAll')} <ArrowRight />
@@ -95,11 +88,10 @@ export async function faqItems(): Promise<FaqItem[]> {
   const { creditPrice, currency } = await currentPricing();
   const [t, locale] = await Promise.all([getTranslations('Landing.faq'), getLocale()]);
   const usd = (value: number) => formatMoney(locale, value, currency);
-  const price = usd(RENDER_CREDITS * creditPrice);
   const unit = usd(creditPrice);
   return FAQ_KEYS.map((key) => ({
     question: t(`items.${key}.q`),
-    answer: t(`items.${key}.a`, { credits: RENDER_CREDITS, price, unit }),
+    answer: t(`items.${key}.a`, { credits: RENDER_CREDITS, unit }),
   }));
 }
 

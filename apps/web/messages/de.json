@@ -152,7 +152,7 @@
   "Landing": {
     "pricing": {
       "title": "Du zahlst pro Modell. Credits verfallen nicht.",
-      "description": "Die Vorschau ist kostenlos. Ein fertiges 3D-Modell kostet {credits} Credits ({price}).",
+      "description": "Die Vorschau ist kostenlos. Ein fertiges 3D-Modell kostet {credits} Credits.",
       "seeAll": "Alle Preise ansehen",
       "bestValue": "Bester Preis",
       "payg": {
@@ -193,8 +193,7 @@
         "audience": "Für große Kataloge mit persönlicher Einführung."
       },
       "tryFree": "Kostenlose Vorschau testen",
-      "noCard": "Für die Vorschau brauchst du kein Konto und keine Kreditkarte.",
-      "perModel": "pro 3D-Modell"
+      "noCard": "Für die Vorschau brauchst du kein Konto und keine Kreditkarte."
     },
     "faq": {
       "title": "Häufige Fragen",
@@ -233,7 +232,7 @@
         },
         "cost": {
           "q": "Was kostet ein 3D-Modell?",
-          "a": "Die Vorschau ist kostenlos. Ein fertiges 3D-Modell kostet {credits} Credits. Bei {unit} pro Credit sind das {price}. Credits verfallen nicht. Alle Pakete findest du auf der Preisseite."
+          "a": "Die Vorschau ist kostenlos. Ein fertiges 3D-Modell kostet {credits} Credits. Ein Credit kostet {unit}. Credits verfallen nicht. Alle Pakete findest du auf der Preisseite."
         },
         "what": {
           "q": "Was ist easyrender?",
@@ -1044,7 +1043,7 @@
   "Credits": {
     "eyebrow": "Preise",
     "title": "Credits",
-    "description": "Die erste Vorschau ist kostenlos. Ein fertiges 3D-Modell kostet {credits} Credits ({price}). Credits verfallen nicht.",
+    "description": "Die erste Vorschau ist kostenlos. Ein fertiges 3D-Modell kostet {credits} Credits. Credits verfallen nicht.",
     "balance": "Du hast {credits} Credits.",
     "balancePro": "Du hast {credits} Credits und nutzt {plan}.",
     "signUpToBuy": "Konto erstellen und Credits kaufen",
@@ -1055,7 +1054,7 @@
     "bestValue": "Bestes Preis-Leistungs-Verhältnis",
     "payg": {
       "title": "Nach Bedarf",
-      "description": "Kaufe Credits nach Bedarf, ab {price}.",
+      "description": "Kaufe Credits nach Bedarf.",
       "note": "je Credit",
       "features": {
         "downloads": "GLB und USDZ herunterladen",
@@ -1106,7 +1105,7 @@
     "breadcrumb": "Preise",
     "eyebrow": "Preise",
     "title": "Kostenlose Vorschau. Du zahlst je 3D-Modell.",
-    "description": "Ein 3D-Modell zum Download kostet {credits} Credits ({price} beim Einzelkauf). Kaufe Credits nach Bedarf oder wähle Pro für einen günstigeren Preis je Credit. Credits verfallen nicht.",
+    "description": "Ein 3D-Modell zum Download kostet {credits} Credits. Kaufe Credits nach Bedarf oder wähle Pro für einen günstigeren Preis je Credit. Credits verfallen nicht.",
     "note": "Credits verfallen nie. Schlägt die Erstellung eines 3D-Modells fehl, werden die Credits erstattet.",
     "compare": {
       "title": "Tarife vergleichen",
@@ -1128,7 +1127,7 @@
       },
       "build": {
         "title": "Ein 3D-Modell kostet {credits} Credits",
-        "body": "Das sind {price}. Die Schaltfläche zeigt die Kosten vor dem Klick. Das Modell lädst du als GLB und USDZ herunter."
+        "body": "Die Schaltfläche zeigt die Kosten vor dem Klick. Das Modell lädst du als GLB und USDZ herunter."
       },
       "refund": {
         "title": "Fehlgeschlagene Modelle werden erstattet",
@@ -1140,7 +1139,7 @@
       "items": {
         "cost": {
           "q": "Wie viel kostet ein 3D-Modell?",
-          "a": "Vorschauen sind kostenlos. Ein fertiges 3D-Modell kostet {credits} Credits. Nach Verbrauch kostet ein Credit {unit}, ein Modell also {price}. Bei Pro ist jeder Credit günstiger."
+          "a": "Vorschauen sind kostenlos. Ein fertiges 3D-Modell kostet {credits} Credits. Nach Verbrauch kostet ein Credit {unit}. Bei Pro ist jeder Credit günstiger."
         },
         "freePreview": {
           "q": "Was enthält die kostenlose Vorschau?",
@@ -1173,7 +1172,6 @@
       }
     },
     "topUpTitle": "Credits aufladen",
-    "minimum": "Mindestkauf: {price} in Credits. Das reicht für {count} Standard-3D-Modelle.",
     "calculator": {
       "title": "Kosten für deinen 3D-Katalog schätzen",
       "count": "Anzahl der 3D-Modelle",

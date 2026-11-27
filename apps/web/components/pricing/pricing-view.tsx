@@ -44,7 +44,6 @@ export async function pricingFaqItems(locale: Locale) {
   const { plans, payg, creditPrice, currency } = pricing;
   const values = {
     credits: RENDER_CREDITS,
-    price: formatMoney(locale, RENDER_CREDITS * creditPrice, currency),
     unit: formatMoney(locale, creditPrice, currency),
     min: formatCount(locale, payg.min),
     minPrice: usd(payg.min * creditPrice * 100),
@@ -73,7 +72,6 @@ export async function PricingView({ locale }: { locale: Locale }) {
   const tPlans = await getTranslations({ locale, namespace: 'Landing.pricing' });
   const usd = dollars(locale, pricing.currency);
   const { plans, payg, creditPrice, currency } = pricing;
-  const price = formatMoney(locale, RENDER_CREDITS * creditPrice, currency);
   const perCredit = (value: number) =>
     formatMoney(locale, value, currency, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
 
@@ -101,7 +99,7 @@ export async function PricingView({ locale }: { locale: Locale }) {
     {
       key: 'build',
       title: t('how.build.title', { credits: RENDER_CREDITS }),
-      body: t('how.build.body', { price }),
+      body: t('how.build.body'),
     },
     { key: 'refund', title: t('how.refund.title'), body: t('how.refund.body') },
   ];
@@ -115,10 +113,7 @@ export async function PricingView({ locale }: { locale: Locale }) {
           {t('title')}
         </h1>
         <p className="text-lg text-muted-foreground text-pretty">
-          {t('description', { credits: RENDER_CREDITS, price })}
-        </p>
-        <p className="font-medium">
-          {t('minimum', { price: usd(payg.min * creditPrice * 100), count: rendersFor(payg.min) })}
+          {t('description', { credits: RENDER_CREDITS })}
         </p>
         <Button size="lg" asChild>
           <Link href={`${ROUTES.home.paths[locale]}#try`}>{tPlans('tryFree')}</Link>
