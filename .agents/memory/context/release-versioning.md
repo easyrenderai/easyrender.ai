@@ -1,4 +1,5 @@
 ---
+
 name: release-versioning
 description: Every release is a patch bump until Vincent says to bump minor or major
 type: feedback
