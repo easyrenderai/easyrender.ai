@@ -1,4 +1,5 @@
 ---
+
 name: email-and-domains
 description: How easyrender.ai mail is set up: Google Workspace for inbound, Resend for sending on a subdomain, Route 53 for DNS
 type: project

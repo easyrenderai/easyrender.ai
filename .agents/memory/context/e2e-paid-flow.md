@@ -1,4 +1,5 @@
 ---
+
 name: e2e-paid-flow
 description: How the Paid flow (e2e) Playwright job runs and the next dev traps that made it flaky
 type: reference

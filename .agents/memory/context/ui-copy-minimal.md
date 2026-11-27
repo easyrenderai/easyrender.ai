@@ -1,4 +1,5 @@
 ---
+
 name: ui-copy-minimal
 description: Do not add hint, helper or explanatory text to the UI; fix the behaviour or use an icon
 type: feedback

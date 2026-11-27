@@ -1,4 +1,5 @@
 ---
+
 name: agent-chat-model
 description: Which model powers the app's Agent chat, why, and where the spec lives
 type: project

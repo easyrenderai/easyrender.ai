@@ -1,4 +1,5 @@
 ---
+
 name: shopify-billing
 description: Why Shopify credit packs are bought inside the app through the Billing API, and what was left open
 type: project
