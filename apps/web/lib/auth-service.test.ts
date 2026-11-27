@@ -52,11 +52,14 @@ vi.mock('next/server', () => ({
   },
 }));
 
-beforeAll(() => {
+beforeAll(async () => {
   vi.stubEnv('BETTER_AUTH_URL', 'http://localhost:3100');
   vi.stubEnv('APP_URL', 'http://localhost:3100');
   vi.stubEnv('BETTER_AUTH_SECRET', 'only-for-local-auth-unit-tests-0123456789');
-});
+  // Load the auth module graph here, not inside the first test: a cold import on a busy CI runner
+  // took longer than the 5s test limit and failed that test (#400, #404 and the v0.5.3 release).
+  await import('@/lib/auth');
+}, 30_000);
 afterAll(() => vi.unstubAllEnvs());
 async function request(
   path: string,
