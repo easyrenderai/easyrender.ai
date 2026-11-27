@@ -1,0 +1,92 @@
+{
+  "id": "EREditorialDemo01",
+  "name": "EasyRender editorial demo - join and validate sample product media",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "c6d47503-1702-4d27-a535-92d9ea8c6a44",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const records = [\n  { sku: 'VASE-DEMO-01', version: 'v2', title: 'Ceramic vase' },\n  { sku: 'TABLE-DEMO-01', version: 'v3', title: 'Coffee table' },\n  { sku: 'CHAIR-DEMO-01', version: 'v3', title: 'Armchair' },\n];\nconst media = [\n  { sku: 'TABLE-DEMO-01', version: 'v3', asset: 'coffee-table', approved: true },\n  { sku: 'CHAIR-DEMO-01', version: 'v2', asset: 'armchair', approved: true },\n  { sku: 'VASE-DEMO-01', version: 'v2', asset: 'vase', approved: true },\n];\nconst key = row => JSON.stringify([row.sku, row.version]);\nconst mediaByKey = new Map(media.map(row => [key(row), row]));\nif (mediaByKey.size !== media.length) throw new Error('Duplicate media key');\nconst joined = records.map(row => ({ ...row, asset: mediaByKey.get(key(row)) }));\nconst held = joined.filter(row => !row.asset?.approved);\nif (held.length !== 1 || held[0].sku !== 'CHAIR-DEMO-01') throw new Error('Stale revision check failed');\nreturn joined.filter(row => row.asset?.approved).map(row => ({\n  json: {\n    sku: row.sku, source_version: row.version, title: row.title,\n    url: 'https://easyrender.ai/showcase/' + row.asset.asset + '.glb',\n    heldForReview: held.map(record => record.sku),\n  },\n}));"
+      },
+      "id": "bf653de1-5bcb-4f38-a4a6-0ff19bb07b01",
+      "name": "Join draft inputs by SKU and version",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "5ae4511e-62ff-43e9-996b-a68eeb9ab21a",
+      "name": "Download public sample GLB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const expected = $('Join draft inputs by SKU and version').all();\nconst mapped = [];\nif ($input.all().length !== expected.length) throw new Error('Incomplete media download');\nfor (let i = 0; i < $input.all().length; i++) {\n  const content = await this.helpers.getBinaryDataBuffer(i, 'data');\n  const item = $('Join draft inputs by SKU and version').itemMatching(i).json;\n  if (content.length < 20 || content.toString('ascii', 0, 4) !== 'glTF'\n    || content.readUInt32LE(4) !== 2 || content.readUInt32LE(8) !== content.length) {\n    throw new Error('Invalid GLB for ' + item.sku);\n  }\n  mapped.push({ json: { sku: item.sku, source_version: item.source_version, title: item.title,\n    model_url: item.url, glb_bytes: content.length, publication_status: 'draft',\n    heldForReview: item.heldForReview } });\n}\nreturn mapped;"
+      },
+      "id": "4681199a-f490-4e2a-a673-d43658f2cbad",
+      "name": "Verify GLB and prepare draft output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [780, 0]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Join draft inputs by SKU and version",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Join draft inputs by SKU and version": {
+      "main": [
+        [
+          {
+            "node": "Download public sample GLB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download public sample GLB": {
+      "main": [
+        [
+          {
+            "node": "Verify GLB and prepare draft output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}

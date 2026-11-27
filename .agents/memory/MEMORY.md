@@ -9,6 +9,7 @@ a line here. Keep this map short.
 - Credits and Stripe code paths follow [credits and pricing](context/credits-and-pricing.md).
 - Production-breaking mistakes: [CRITICAL-NEVER-DO](system/CRITICAL-NEVER-DO.md).
 - Every release is a patch bump until Vincent says otherwise: [release versioning](context/release-versioning.md).
+- Merge every draft PR (undraft, green, merge), never offer to close one: [draft pull requests](context/draft-pull-requests.md).
 
 ## Task entry points
 

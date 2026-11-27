@@ -1,0 +1,37 @@
+{
+  "n8n": "2.48.5",
+  "source": "Local CLI test against public showcase files",
+  "startedAt": "2026-11-18T16:58:19.501Z",
+  "mode": "cli",
+  "status": "success",
+  "draftOutputs": [
+    {
+      "sku": "VASE-DEMO-01",
+      "source_version": "v2",
+      "model_url": "https://easyrender.ai/showcase/vase.glb",
+      "glb_bytes": 400792,
+      "publication_status": "draft"
+    },
+    {
+      "sku": "TABLE-DEMO-01",
+      "source_version": "v3",
+      "model_url": "https://easyrender.ai/showcase/coffee-table.glb",
+      "glb_bytes": 326872,
+      "publication_status": "draft"
+    }
+  ],
+  "heldForReview": [
+    {
+      "sku": "CHAIR-DEMO-01",
+      "requestedVersion": "v3",
+      "mediaVersion": "v2"
+    }
+  ],
+  "tested": [
+    "SKU/version join with reordered inputs",
+    "HTTP downloads",
+    "GLB header and byte count",
+    "draft records"
+  ],
+  "skipped": ["AI generation", "paid operations", "store publication"]
+}
