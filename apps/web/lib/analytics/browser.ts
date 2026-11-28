@@ -8,6 +8,7 @@ import {
   sanitizeProperties,
   UTM_KEYS,
 } from '@easyrender/core/attribution';
+import type { ModelFeedbackReason } from '@easyrender/core/model-feedback-input';
 import { PRICING_FLAG, type PricingVariant } from '@easyrender/harness/pricing';
 import type { PostHog } from 'posthog-js';
 import { isBrowserBot } from '@/lib/bot';
@@ -436,6 +437,19 @@ export function captureBrowser(event: string, properties: Record<string, unknown
   return true;
 }
 export const articleMetrics = createEditorialMetrics(captureBrowser);
+
+// Explicit projection: never spread a feedback form (which contains private free text) into an event.
+export function captureModelFeedback(
+  renderId: string,
+  feedback: { rating: number; reasons: ModelFeedbackReason[]; comment: string },
+) {
+  return captureBrowser('model_feedback', {
+    model_id: renderId,
+    rating: feedback.rating,
+    reasons: feedback.reasons,
+    has_comment: feedback.comment.trim().length > 0,
+  });
+}
 let visiblePricing: PricingVariant | null = null;
 const pricingViews = new Set<string>();
 export function observePricing(variant: PricingVariant) {

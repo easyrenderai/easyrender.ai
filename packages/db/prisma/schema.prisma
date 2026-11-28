@@ -261,6 +261,7 @@ model Render {
   completedAt       DateTime?
   previewCompletedAt DateTime?
   edits             RenderEdit[]
+  feedback          ModelFeedback?
   // The library folder the owner filed this render in. Null is unfiled; deleting a folder unfiles.
   folderId          String?
   folder            LibraryFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
@@ -275,6 +276,17 @@ model Render {
   @@index([previewCompletedAt, id])
   // The recovery worker lists renders in flight, oldest first.
   @@index([status, updatedAt])
+}
+
+// One terminal feedback decision per model: a null rating means the owner dismissed it.
+// Free text is private product feedback, never part of the public RenderView or telemetry.
+model ModelFeedback {
+  renderId  String   @id
+  render    Render   @relation(fields: [renderId], references: [id], onDelete: Cascade)
+  rating    Int?
+  reasons   String[] @default([])
+  comment   String?  @db.VarChar(1000)
+  createdAt DateTime @default(now())
 }
 
 // A flat folder in a person's library. Names are unique per owner. Deleting a folder keeps its

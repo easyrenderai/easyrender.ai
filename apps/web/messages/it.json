@@ -3460,5 +3460,23 @@
     "charged": "{credits} crediti addebitati",
     "renderCount": "{total} render",
     "pageCount": "Pagina {page} di {pages}"
+  },
+  "ModelFeedback": {
+    "title": "Come è venuto il tuo modello 3D?",
+    "stars": "{rating} stelle su 5",
+    "whatFailed": "Cosa non ha funzionato? (facoltativo)",
+    "reasons": {
+      "shape": "Forma",
+      "texture": "Texture / colori",
+      "proportions": "Dimensioni / proporzioni",
+      "other": "Altro"
+    },
+    "comment": "Commento (facoltativo)",
+    "hint": "Non includere dati personali o di contatto.",
+    "submit": "Invia valutazione",
+    "saving": "Salvataggio…",
+    "thanks": "Grazie per la tua valutazione!",
+    "close": "Chiudi valutazione",
+    "error": "Impossibile salvare. Riprova."
   }
 }

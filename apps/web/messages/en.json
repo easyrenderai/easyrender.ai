@@ -3837,5 +3837,23 @@
     "charged": "{credits} credits charged",
     "renderCount": "{total} renders",
     "pageCount": "Page {page} of {pages}"
+  },
+  "ModelFeedback": {
+    "title": "How did your 3D model turn out?",
+    "stars": "{rating} out of 5 stars",
+    "whatFailed": "What went wrong? (optional)",
+    "reasons": {
+      "shape": "Shape",
+      "texture": "Texture / colors",
+      "proportions": "Size / proportions",
+      "other": "Other"
+    },
+    "comment": "Comment (optional)",
+    "hint": "Please leave out personal or contact details.",
+    "submit": "Send feedback",
+    "saving": "Saving…",
+    "thanks": "Thanks for your feedback!",
+    "close": "Close feedback",
+    "error": "Could not save. Please try again."
   }
 }

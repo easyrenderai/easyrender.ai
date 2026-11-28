@@ -31,6 +31,7 @@ export const CLIENT_NAMESPACES = [
   'Library',
   'LocaleSwitcher',
   'McpSetup',
+  'ModelFeedback',
   'PaygPicker',
   'Pricing.calculator',
   'ProductViews',

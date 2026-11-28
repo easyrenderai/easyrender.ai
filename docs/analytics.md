@@ -207,6 +207,44 @@ now assert no PostHog/GA collection, no GA config or cookies, and the denied bas
 
 ## Events and payment truth
 
+### Model feedback
+
+The authenticated owner's `/r/[id]` page shows an inline five-star rating below the finished
+3D viewer. Drafts, failed models, anonymous visitors and public-gallery viewers are excluded.
+Ratings 1–3 reveal optional reason chips (`shape`, `texture`, `proportions`, `other`); all ratings
+allow an optional comment of at most 1,000 characters. Only a successful explicit submission
+emits browser `model_feedback` through `captureBrowser`:
+
+| Property      | Meaning                                                   |
+| ------------- | --------------------------------------------------------- |
+| `model_id`    | The existing `Render.id` (also the render ID).            |
+| `rating`      | Integer from 1 to 5.                                      |
+| `reasons`     | Selected allowlisted reason codes; empty for ratings 4–5. |
+| `has_comment` | Whether trimmed free text was supplied.                   |
+
+The comment, account identity and contact information are never sent in this event. It uses the
+existing PostHog tool/consent gate, cookieless policy and sanitizer described above, with no new
+SDK, GA event or identity call. As with other browser product events, blocked/uninitialized
+analytics or closing the tab can prevent delivery; the database remains the source of truth.
+No event is emitted for a dismissal, failed save, reload or duplicate (`409 feedback_exists`).
+
+`POST /api/renders/[id]/feedback` delegates to framework-free core validation and persistence.
+It accepts `{ rating, reasons?, comment? }` or `{ dismissed: true }`, rejects unknown fields,
+and requires an authenticated owner and a ready model. The additive Prisma `ModelFeedback`
+table has `renderId` as its primary key and a cascading relation to `Render`; concurrent requests
+cannot create a second response. A null rating records dismissal, so both closure and submission
+stay remembered across sessions/devices. The page reads only a boolean; comments are absent
+from public render views and API receipts. Parameterized writes and generic failure messages
+keep submitted text out of application diagnostics. Sentry excludes feedback request events,
+traces and breadcrumbs so request bodies cannot export the comment. The table is created by the normal gated
+`prisma db push` release process; no data-loss override, backfill or new environment variable is
+needed. Rebuilding or editing the same render does not reset its feedback decision.
+
+Local coverage: core validation and Postgres integration tests exercise read-back, ownership,
+unfinished models and simultaneous submissions; route tests cover HTTP contracts; browser
+coverage exercises low/high ratings, optional details, keyboard control, retry, dismissal,
+reload, reduced motion and 375px/desktop layouts. Fixtures never call a paid render provider.
+
 Core transitions emit `preview_start`, `preview_ready` / `preview_failed`, `render_start`,
 `render_ready` / `render_failed`, `signup`, and `purchase`. Conditional database transitions
 allow only one terminal winner under polling/webhook races. The closed failure code is

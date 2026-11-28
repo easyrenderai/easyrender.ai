@@ -2,7 +2,7 @@
 
 import { Download, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { MaterialPanel } from '@/components/material-panel';
 import { ModelViewer } from '@/components/model-viewer';
 import { RenderNextSteps } from '@/components/render-next-steps';
@@ -45,6 +45,7 @@ export function ModelView({
   editableRenderId,
   nextStepsHref,
   isArEnabled = true,
+  feedback,
 }: {
   src: string;
   name: string;
@@ -57,6 +58,8 @@ export function ModelView({
   nextStepsHref?: string;
   /** Admin asset links require a browser session, which native AR apps cannot carry. */
   isArEnabled?: boolean;
+  /** Optional owner feedback, next to delivery and before the editing tools. */
+  feedback?: ReactNode;
 }) {
   const t = useTranslations('Render');
   // Set when the owner saves a size: the model is then loaded again at that size.
@@ -162,6 +165,7 @@ export function ModelView({
         />
       </div>
       {downloads}
+      {feedback}
       {editableRenderId && nextStepsHref ? (
         <Tabs defaultValue="materials" className="gap-4">
           <TabsList className="grid w-full grid-cols-3">

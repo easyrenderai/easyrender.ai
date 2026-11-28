@@ -3460,5 +3460,23 @@
     "charged": "{credits} Credits berechnet",
     "renderCount": "{total} Renderings",
     "pageCount": "Seite {page} von {pages}"
+  },
+  "ModelFeedback": {
+    "title": "Wie ist dein 3D-Modell geworden?",
+    "stars": "{rating} von 5 Sternen",
+    "whatFailed": "Was ist schiefgelaufen? (optional)",
+    "reasons": {
+      "shape": "Form",
+      "texture": "Textur / Farben",
+      "proportions": "Größe / Proportionen",
+      "other": "Sonstiges"
+    },
+    "comment": "Kommentar (optional)",
+    "hint": "Bitte keine persönlichen Daten oder Kontaktdaten angeben.",
+    "submit": "Feedback senden",
+    "saving": "Wird gespeichert…",
+    "thanks": "Danke für dein Feedback!",
+    "close": "Feedback schließen",
+    "error": "Speichern fehlgeschlagen. Bitte versuche es erneut."
   }
 }

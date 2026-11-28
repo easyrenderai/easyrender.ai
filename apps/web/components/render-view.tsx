@@ -26,6 +26,7 @@ import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { AngleSheet } from '@/components/angle-sheet';
 import { BuildQualityPicker } from '@/components/build-quality-picker';
+import { ModelFeedback } from '@/components/model-feedback';
 import { ModelView } from '@/components/model-view';
 import { PaygPicker } from '@/components/payg-picker';
 import { PurchaseConversion } from '@/components/purchase-conversion';
@@ -79,8 +80,10 @@ export function RenderView({
   initialQuality = 'low',
   packs = null,
   checkout = null,
+  hasFeedback = false,
 }: {
   initial: View;
+  hasFeedback?: boolean;
   // The owner's history of this render, read on the server. A new step refreshes it.
   edits: RenderEditView[];
   now: number;
@@ -323,6 +326,11 @@ export function RenderView({
         exportsUrl={owner && signedIn && canExport ? `${base}/exports` : null}
         editableRenderId={owner ? render.id : undefined}
         nextStepsHref={owner ? newHref : undefined}
+        feedback={
+          owner && signedIn && !hasFeedback ? (
+            <ModelFeedback key={render.id} renderId={render.id} />
+          ) : undefined
+        }
       />
     ) : owner && RUNNING.has(render.status) ? null : (
       <div className="flex aspect-square w-full flex-col items-center justify-center gap-3 rounded-xl border bg-muted/40 p-6 text-center text-muted-foreground sm:aspect-[4/3]">
