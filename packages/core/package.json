@@ -14,6 +14,7 @@
       "default": "./src/admin-analytics/helpers.ts"
     },
     "./attribution": "./src/attribution.ts",
+    "./model-feedback-input": "./src/model-feedback-input.ts",
     "./credit-gift-policy": "./src/credit-gift-policy.ts",
     "./pricing-context": "./src/pricing-context.ts",
     "./referral-code": "./src/referral-code.ts"

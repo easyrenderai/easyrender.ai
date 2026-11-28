@@ -24,6 +24,7 @@ const PRODUCT_EVENTS = [
   ['model_exported', { format: 'obj' }],
   ['model_exported', { format: 'usdz' }],
   ['model_download_requested', { format: 'glb' }],
+  ['model_feedback', { model_id: 'fixture', rating: 2, reasons: ['shape'], has_comment: true }],
   ['photo_selected', { source: 'home' }],
   ['api_key_created', {}],
   ['integration_key_verified', { channel: 'shared' }],
@@ -55,6 +56,21 @@ it('product events reach PostHog only while the client is allowed to capture, wi
     method: 'email',
     pricing_variant: 'control',
   });
+  api.captureModelFeedback('fixture', {
+    rating: 2,
+    reasons: ['shape'],
+    comment: 'private@example.invalid',
+  });
+  const feedback = sdk.capture.mock.calls.at(-1);
+  expect(feedback?.[0]).toBe('model_feedback');
+  expect(api.beforeSend({ properties: feedback?.[1] ?? {} }).properties).toMatchObject({
+    model_id: 'fixture',
+    rating: 2,
+    reasons: ['shape'],
+    has_comment: true,
+  });
+  expect(JSON.stringify(feedback)).not.toContain('private@example.invalid');
+  expect(feedback?.[1]).not.toHaveProperty('comment');
   expect(sdk.identify).not.toHaveBeenCalled();
   expect(sdk.init.mock.calls[0][1]).toMatchObject({
     person_profiles: 'never',
@@ -65,6 +81,7 @@ it('product events reach PostHog only while the client is allowed to capture, wi
   const calls = sdk.capture.mock.calls.length;
   await api.setBrowserTools(false, false, true);
   api.captureBrowser('api_key_created');
+  api.captureModelFeedback('fixture', { rating: 5, reasons: [], comment: '' });
   expect(sdk.capture).toHaveBeenCalledTimes(calls);
 });
 

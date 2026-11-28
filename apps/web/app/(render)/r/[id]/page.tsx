@@ -4,6 +4,7 @@ import {
   confirmedPurchase,
   getBalance,
   getRender,
+  hasModelFeedback,
   isListed,
   isModelExportEnabled,
   listEdits,
@@ -143,6 +144,8 @@ export default async function RenderPage({ params, searchParams }: PageProps<'/r
   });
   const balance = actor.userId ? await getBalance(actor.userId) : 0;
   const isOwner = canAccess(render, actor);
+  const hasFeedback =
+    actor.userId && render.userId === actor.userId ? await hasModelFeedback(id, actor) : true;
   const isTableExample = id === TABLE_EXAMPLE.id && isListed(render);
   const initial = toView(render);
   if (isTableExample && !isOwner) {
@@ -178,6 +181,7 @@ export default async function RenderPage({ params, searchParams }: PageProps<'/r
       : null;
   return (
     <RenderView
+      hasFeedback={hasFeedback}
       packs={packs}
       checkout={checkout ? { ...checkout, confirmed } : null}
       initial={initial}

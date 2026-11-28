@@ -3460,5 +3460,23 @@
     "charged": "{credits} crédits débités",
     "renderCount": "{total} rendus",
     "pageCount": "Page {page} sur {pages}"
+  },
+  "ModelFeedback": {
+    "title": "Que penses-tu de ton modèle 3D ?",
+    "stars": "{rating} étoiles sur 5",
+    "whatFailed": "Qu’est-ce qui n’a pas fonctionné ? (facultatif)",
+    "reasons": {
+      "shape": "Forme",
+      "texture": "Texture / couleurs",
+      "proportions": "Taille / proportions",
+      "other": "Autre"
+    },
+    "comment": "Commentaire (facultatif)",
+    "hint": "N’inclus pas de données personnelles ni de coordonnées.",
+    "submit": "Envoyer mon avis",
+    "saving": "Enregistrement…",
+    "thanks": "Merci pour ton avis !",
+    "close": "Fermer l’avis",
+    "error": "Impossible d’enregistrer. Réessaie."
   }
 }

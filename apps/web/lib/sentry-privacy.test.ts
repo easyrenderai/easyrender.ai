@@ -20,6 +20,7 @@ const PRIVATE_REQUESTS = [
   { path: `/api/email/verify-account?token=${TOKEN}`, name: 'GET /api/email/verify-account' },
   { path: `/api/auth/verify-email?token=${TOKEN}`, name: 'GET /api/auth/[...all]' },
   { path: `/api/auth/reset-password/${TOKEN}`, name: 'GET /api/auth/[...all]' },
+  { path: '/api/renders/fixture/feedback', name: 'POST /api/renders/[id]/feedback' },
 ];
 
 // Each init adds the SDK's process listeners; this suite starts it once per case.
