@@ -13,7 +13,6 @@
   "apps/web/i18n/config.ts": ["export INTL_LOCALE"],
   "apps/web/lib/actor.ts": ["export ANON_COOKIE"],
   "apps/web/lib/analytics/advertising.ts": ["export AD_TOUCH_TTL"],
-  "apps/web/lib/analytics/browser.ts": ["export browserPricingVariant"],
   "apps/web/lib/blog/images.ts": ["export BLOG_MODELS", "export DIAGRAM_PREFIX"],
   "apps/web/lib/blog/markdown.tsx": ["type FaqEntry", "type Media"],
   "apps/web/lib/blog/posts.ts": ["export DEFAULT_AUTHOR", "export MIN_INDEXABLE_POSTS"],

@@ -7,6 +7,8 @@ import { allowsAdvertisingMeasurement } from './consent';
 type Confirmation = NonNullable<Awaited<ReturnType<typeof confirmedPurchase>>>;
 const sdk = vi.hoisted(() => ({
   init: vi.fn(),
+  startSessionRecording: vi.fn(),
+  stopSessionRecording: vi.fn(),
   capture: vi.fn(),
   set_config: vi.fn(),
   reset: vi.fn(),

@@ -4,7 +4,12 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { GOOGLE_TAG_BOOTSTRAP } from '../google-tag';
 import { beforeSend } from './browser';
 
-const sdk = vi.hoisted(() => ({ init: vi.fn(), capture: vi.fn() }));
+const sdk = vi.hoisted(() => ({
+  init: vi.fn(),
+  startSessionRecording: vi.fn(),
+  stopSessionRecording: vi.fn(),
+  capture: vi.fn(),
+}));
 vi.mock('posthog-js', () => ({ default: sdk }));
 
 afterEach(() => {
