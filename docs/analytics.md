@@ -41,12 +41,18 @@ poll/reload sends, with memory-only fallback when storage is unavailable. Build 
 from **one** of the two compatible event names, never the sum of both.
 
 GA4 uses the Stripe Checkout session ID as `transaction_id` for one-off and initial subscription
-payments. `server_managed` suppresses browser Google measurement whenever a delivery or eligible
+payments. `server_managed` suppresses browser GA4 measurement whenever a delivery or eligible
 server checkout exists, including the paid-to-enqueue gap. Browser fallback purchases require
 advertising permission; existing server GA4 analytics-only measurement and Google revocation
-remain unchanged. Google Ads purchases continue through the configured **GA4 import**. The
-signup-only label in `google-tag.ts` is not a purchase destination; no second purchase label or
-website conversion is added.
+remain unchanged. Confirmed purchases also send the independent Google Ads website action
+**7920733389**, "Compra Easy Render (etiqueta web)", through
+`AW-18570382360/OC5ICM2Z88AdEJiYhpdF`. It requires current advertising permission and sends the
+verified paid amount in EUR and Stripe Checkout session ID as `transaction_id`. It still sends
+when GA4 is server-managed; a separate sessionStorage receipt deduplicates polling and reloads
+(memory-only fallback if storage is unavailable). The GA4 import **7901516561** remains secondary
+to avoid counting the same purchase twice in bidding goals. The new website action is also
+secondary for now; account goal settings are managed separately, not by this code. No enhanced
+conversions or email/user_data payload is added.
 
 Recovery can retrieve Stripe metadata after a missed enqueue. First subscription invoices can
 arrive before their Checkout Session links the invoice: attribution then waits for the checkout
@@ -74,8 +80,8 @@ local tests verify payloads and receipt behavior, not production report attribut
   deterministic signup event ID. Unknown signup method is `otro`; preview history, pricing
   assignments and aliases are not fabricated. Existing receipts are never replaced.
 - GA4 unwanted referrals must exactly match `accounts.google.com` and `checkout.stripe.com`.
-  The active Ads purchase goal is the GA4 import; the obsolete website-only conversion is
-  removed. These account settings are configured separately from application deployment.
+  The historical GA4-only purchase setup is superseded by the website action documented above.
+  Keep the GA4 import secondary; account settings are configured separately from deployment.
 
 Recent-event reconciliation and GA4 reports have different processing windows and consent
 coverage. An accepted delivery is not proof of Google Ads attribution; validate that separately

@@ -11,7 +11,7 @@ import {
 import { PRICING_FLAG, type PricingVariant } from '@easyrender/harness/pricing';
 import type { PostHog } from 'posthog-js';
 import { isBrowserBot } from '@/lib/bot';
-import { GOOGLE_ADS_SIGNUP_SEND_TO } from '@/lib/google-tag';
+import { GOOGLE_ADS_PURCHASE_SEND_TO, GOOGLE_ADS_SIGNUP_SEND_TO } from '@/lib/google-tag';
 import { isMailingTokenLocation } from '@/lib/mailing-privacy';
 import {
   AD_CLICK_KEYS,
@@ -170,7 +170,11 @@ export function gaEvent(
     page_referrer: googleUrl(document.referrer),
   });
 }
-function adsConversion(sendTo: string, identity: string) {
+export function adsConversion(
+  sendTo: string,
+  identity: string,
+  opts?: { value?: number; currency?: string; transactionId?: string },
+) {
   if (
     !isAdvertisingAllowed ||
     window.location.hostname !== 'easyrender.ai' ||
@@ -178,14 +182,18 @@ function adsConversion(sendTo: string, identity: string) {
     isMailingTokenLocation(window.location.href)
   )
     return;
-  const key = `ads:${sendTo}:${identity}`;
-  if (conversions.has(key)) return;
-  conversions.add(key);
+  const key = `ads:${sendTo}:${opts?.transactionId ?? identity}`;
+  if (opts?.transactionId ? hasPurchaseReceipt(key) : conversions.has(key)) return;
   window.gtag('event', 'conversion', {
     send_to: sendTo,
+    ...(opts?.value !== undefined ? { value: opts.value } : {}),
+    ...(opts?.currency !== undefined ? { currency: opts.currency } : {}),
+    ...(opts?.transactionId !== undefined ? { transaction_id: opts.transactionId } : {}),
     page_location: googlePageLocation(),
     page_referrer: googleUrl(document.referrer),
   });
+  if (opts?.transactionId) rememberPurchaseReceipt(key);
+  else conversions.add(key);
 }
 export function observeRender(render: { id: string; status: string; hasSheet: boolean }) {
   const previous = observedRenders.get(render.id);
@@ -632,7 +640,14 @@ export function reportPurchaseConversion(result: Confirmation) {
     );
     if (captured) rememberPurchaseReceipt(key);
   }
-  // Ads purchases are imported from GA4. No second website conversion/label is configured.
+  // This website Ads action is independent of the server-managed GA4 purchase/import.
+  if (allowsCheckoutAdvertising()) {
+    adsConversion(GOOGLE_ADS_PURCHASE_SEND_TO, result.transaction_id, {
+      value: result.value,
+      currency: result.currency,
+      transactionId: result.transaction_id,
+    });
+  }
   const gaKey = `ga:purchase:${result.transaction_id}`;
   if (
     result.server_managed ||
