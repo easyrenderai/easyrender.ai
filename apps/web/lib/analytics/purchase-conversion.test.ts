@@ -1,11 +1,14 @@
 import type { confirmedPurchase } from '@easyrender/core';
 import { classifyCountry, isToolAllowed } from '@easyrender/core/attribution';
 import { afterEach, expect, it, vi } from 'vitest';
+import { GOOGLE_ADS_PURCHASE_SEND_TO } from '../google-tag';
 import { allowsAdvertisingMeasurement } from './consent';
 
 type Confirmation = NonNullable<Awaited<ReturnType<typeof confirmedPurchase>>>;
 const sdk = vi.hoisted(() => ({
   init: vi.fn(),
+  startSessionRecording: vi.fn(),
+  stopSessionRecording: vi.fn(),
   capture: vi.fn(),
   set_config: vi.fn(),
   reset: vi.fn(),
@@ -194,7 +197,7 @@ it('retains the first landing and campaign through full navigation, using sessio
   expect(sdk.init.mock.calls.at(-1)?.[1].cookieless_mode).toBe('always');
 });
 
-it('closes PostHog and GA once across polling and reloads, using the verified event identity and paid time', async () => {
+it('closes PostHog, GA and Ads once across polling and reloads, using the verified event identity and paid time', async () => {
   for (let reload = 0; reload < 2; reload++) {
     const page = await browser({ accepted: true, advertising: true });
     page.api.reportPurchaseConversion(confirmation);
@@ -204,12 +207,11 @@ it('closes PostHog and GA once across polling and reloads, using the verified ev
         ([command, event]) => command === 'event' && event === 'purchase',
       ),
     ).toHaveLength(reload === 0 ? 1 : 0);
-    // The Ads purchase goal is the GA4 import; no duplicate website conversion.
     expect(
       page.gtag.mock.calls.filter(
         ([command, event]) => command === 'event' && event === 'conversion',
       ),
-    ).toHaveLength(0);
+    ).toHaveLength(reload === 0 ? 1 : 0);
     if (reload === 0) {
       const captured = sdk.capture.mock.calls.find(([event]) => event === 'purchase_completed');
       expect(captured).toEqual([
@@ -233,9 +235,19 @@ it('closes PostHog and GA once across polling and reloads, using the verified ev
   );
 });
 
-it('server_managed suppresses Google alone, never the verified PostHog confirmation', async () => {
+it('server_managed suppresses GA4 but still sends the verified Ads and PostHog purchase', async () => {
   const page = await browser({ accepted: true, advertising: true });
   page.api.reportPurchaseConversion({ ...confirmation, server_managed: true });
+  expect(page.gtag).toHaveBeenCalledWith(
+    'event',
+    'conversion',
+    expect.objectContaining({
+      send_to: GOOGLE_ADS_PURCHASE_SEND_TO,
+      value: 5,
+      currency: 'EUR',
+      transaction_id: 'cs_fixture',
+    }),
+  );
   expect(sdk.capture.mock.calls.filter(([event]) => event === 'purchase_completed')).toHaveLength(
     1,
   );
@@ -315,3 +327,42 @@ it('does not send Google checkout IDs if consent changes while gtag callbacks ar
   callbacks[1]('789');
   expect(await pending).toBeNull();
 });
+
+it('deduplicates Ads by transaction across identities and reloads, and keeps optional fields optional', async () => {
+  for (let reload = 0; reload < 2; reload++) {
+    const page = await browser({ accepted: true, advertising: true });
+    page.api.adsConversion(GOOGLE_ADS_PURCHASE_SEND_TO, 'first', {
+      value: 12.34,
+      currency: 'EUR',
+      transactionId: 'cs_amount',
+    });
+    page.api.adsConversion(GOOGLE_ADS_PURCHASE_SEND_TO, 'second', {
+      value: 12.34,
+      currency: 'EUR',
+      transactionId: 'cs_amount',
+    });
+    const events = page.gtag.mock.calls.filter(([c, e]) => c === 'event' && e === 'conversion');
+    expect(events).toHaveLength(reload === 0 ? 1 : 0);
+    if (reload === 0)
+      expect(events[0][2]).toMatchObject({
+        send_to: GOOGLE_ADS_PURCHASE_SEND_TO,
+        value: 12.34,
+        currency: 'EUR',
+        transaction_id: 'cs_amount',
+      });
+  }
+});
+it.each([false, true])(
+  'requires advertising permission for Ads purchase options (advertising=%s)',
+  async (advertising) => {
+    const page = await browser({ accepted: true, advertising });
+    page.api.adsConversion(GOOGLE_ADS_PURCHASE_SEND_TO, 'cs_consent', {
+      value: 5,
+      currency: 'EUR',
+      transactionId: 'cs_consent',
+    });
+    expect(
+      page.gtag.mock.calls.filter(([c, e]) => c === 'event' && e === 'conversion'),
+    ).toHaveLength(advertising ? 1 : 0);
+  },
+);

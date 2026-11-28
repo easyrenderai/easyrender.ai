@@ -57,3 +57,31 @@ it('the installed SDK supplies a real anonymous session only on the consented in
   consented?.reset(true);
   expect(consented?.get_distinct_id()).not.toBe(previous);
 });
+
+it('the installed memory-only SDK can enable and stop replay without persistent opt-in', () => {
+  const sdk = posthog.init(
+    'fixture-public-key',
+    {
+      persistence: 'memory',
+      disable_persistence: true,
+      disable_session_recording: true,
+      disable_external_dependency_loading: true,
+      advanced_disable_flags: true,
+      capture_pageview: false,
+      autocapture: false,
+      before_send: () => null,
+    },
+    'contract_replay',
+  );
+  expect(sdk?.sessionManager).toBeDefined();
+  const sessionId = sdk?.get_session_id();
+  sdk?.startSessionRecording();
+  expect(sdk?.config.disable_session_recording).toBe(false);
+  expect(sdk?.get_session_id()).toBe(sessionId);
+  expect(sdk?.config.persistence).toBe('memory');
+  expect(sdk?.config.disable_persistence).toBe(true);
+  // No DOM or remote config in this contract test: enabling is not proof of live recording.
+  expect(sdk?.sessionRecordingStarted()).toBe(false);
+  sdk?.stopSessionRecording();
+  expect(sdk?.config.disable_session_recording).toBe(true);
+});

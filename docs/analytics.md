@@ -13,8 +13,9 @@ PostHog's `always` cookieless mode returns `$posthog_cookieless` and no browser 
 That sentinel cannot join webhook events to a visitor. The browser therefore uses two named
 SDK instances: cookieless for the existing anonymous policy, and anonymous memory-only tracking
 when the existing regional analytics permission allows identifiers. Only the permitted instance
-can send. Neither stores SDK identifiers, creates person profiles, identifies accounts, or enables
-recordings. Withdrawal clears the consented in-memory identity. Events collected before a grant
+can send. Neither stores SDK identifiers, creates person profiles, or identifies accounts. Session
+replay is limited to an explicit analytics grant as described below. Withdrawal stops recording
+and clears the consented in-memory identity. Events collected before a grant
 remain cookieless; they cannot be retroactively joined to the consented checkout.
 
 First touch uses the existing `er_campaign` sessionStorage record only when analytics storage is
@@ -41,12 +42,18 @@ poll/reload sends, with memory-only fallback when storage is unavailable. Build 
 from **one** of the two compatible event names, never the sum of both.
 
 GA4 uses the Stripe Checkout session ID as `transaction_id` for one-off and initial subscription
-payments. `server_managed` suppresses browser Google measurement whenever a delivery or eligible
+payments. `server_managed` suppresses browser GA4 measurement whenever a delivery or eligible
 server checkout exists, including the paid-to-enqueue gap. Browser fallback purchases require
 advertising permission; existing server GA4 analytics-only measurement and Google revocation
-remain unchanged. Google Ads purchases continue through the configured **GA4 import**. The
-signup-only label in `google-tag.ts` is not a purchase destination; no second purchase label or
-website conversion is added.
+remain unchanged. Confirmed purchases also send the independent Google Ads website action
+**7920733389**, "Compra Easy Render (etiqueta web)", through
+`AW-18570382360/OC5ICM2Z88AdEJiYhpdF`. It requires current advertising permission and sends the
+verified paid amount in EUR and Stripe Checkout session ID as `transaction_id`. It still sends
+when GA4 is server-managed; a separate sessionStorage receipt deduplicates polling and reloads
+(memory-only fallback if storage is unavailable). The GA4 import **7901516561** remains secondary
+to avoid counting the same purchase twice in bidding goals. The new website action is also
+secondary for now; account goal settings are managed separately, not by this code. No enhanced
+conversions or email/user_data payload is added.
 
 Recovery can retrieve Stripe metadata after a missed enqueue. First subscription invoices can
 arrive before their Checkout Session links the invoice: attribution then waits for the checkout
@@ -58,6 +65,54 @@ Relevant SDK contracts: [cookieless tracking](https://posthog.com/docs/privacy/d
 [server session IDs](https://posthog.com/docs/data/sessions), and
 [event deduplication](https://posthog.com/docs/data/events). Ingestion deduplication is eventual;
 local tests verify payloads and receipt behavior, not production report attribution.
+
+## Consent-gated session replay
+
+Session replay is enabled only on `er_consented` after an explicit, current analytics acceptance,
+with identity permission resolved and GPC absent. Advertising permission is not required. The
+standard-region analytics default alone does **not** enable replay. `er_cookieless` always keeps
+`disable_session_recording: true` and never calls `startSessionRecording`.
+
+On the consented instance, `disable_session_recording` is false only when replay is permitted.
+`startSessionRecording()` also resumes it after re-acceptance or returning to an allowed route;
+it does not override remote sampling or project enablement. Withdrawal, disabling analytics,
+leaving the analytics component, or entering an excluded route calls `stopSessionRecording()`.
+The send guard drops queued `$snapshot` events when permission is absent. It changes state before
+stopping because the installed SDK can flush during teardown. We deliberately do not call the
+SDK's persistent opt-in/opt-out APIs, which can write their own consent record.
+
+`isMailingTokenLocation` excludes token links, including invites nested in `next`. Admin, account,
+checkout/billing, email, authentication and OAuth routes are also excluded (including locale
+prefixes). SDK history pageviews and React route changes recheck the URL; unmount cleanup stops
+the recorder on private pages. Snapshot sends recheck the current route and consent too.
+
+Local recorder configuration masks every input, DOM text (`maskTextSelector: '*'`) and string
+attribute. It blocks forms, file inputs, editable areas, mailto links, explicitly private/sensitive
+elements and media/iframes. This intentionally reduces replay visual fidelity to protect account
+details, email addresses and customer uploads. Console, request bodies/headers, canvas and JSON-LD
+capture are disabled. The recorder URL hook removes query strings/fragments, rejects excluded
+locations and drops network request payloads. Do not loosen these settings remotely or assume
+ordinary event sanitization masks rrweb snapshots.
+
+Verified against installed `posthog-js` **1.447.12** in `node_modules`: `sessionid.js` creates a
+session manager for memory persistence, but not for `cookieless_mode: 'always'`.
+`startSessionRecording()` sets `disable_session_recording: false`; `session-recording.js` waits
+for remote replay enablement before loading the recorder. Memory persistence does not write
+session/window IDs or park replay buffers in sessionStorage, so full document navigation starts
+a new recording session. SDK and lifecycle tests validate these contracts without contacting
+PostHog; they do not prove production ingestion or a playable production recording.
+
+CSP review: `apps/web/next.config.ts` currently defines only `frame-ancestors` policies for OAuth
+and Shopify. There is no `default-src`, `script-src`, `connect-src` or `worker-src` restriction in
+the repo, so no CSP change is needed. If a restrictive policy is added later, validate the EU
+PostHog ingestion/assets and recorder worker requirements (including `blob:` where used).
+
+**Privacy copy review required before release:** the existing `Analytics.posthog`, `Analytics.withdraw`
+and `Legal.privacy.sections.cookies.body` in all six `apps/web/messages/*.json` describe
+PostHog collection/withdrawal without disclosing consented session replay. They need factual
+review covering replay, masking, route exclusions and stopping on withdrawal. No public copy or
+legal claims are changed in this PR; this note is not a legal policy draft. The project setting
+for PostHog project 347125 was reported enabled by the requester, not changed by this PR.
 
 ## November 18 tracking corrections
 
@@ -74,8 +129,8 @@ local tests verify payloads and receipt behavior, not production report attribut
   deterministic signup event ID. Unknown signup method is `otro`; preview history, pricing
   assignments and aliases are not fabricated. Existing receipts are never replaced.
 - GA4 unwanted referrals must exactly match `accounts.google.com` and `checkout.stripe.com`.
-  The active Ads purchase goal is the GA4 import; the obsolete website-only conversion is
-  removed. These account settings are configured separately from application deployment.
+  The historical GA4-only purchase setup is superseded by the website action documented above.
+  Keep the GA4 import secondary; account settings are configured separately from deployment.
 
 Recent-event reconciliation and GA4 reports have different processing windows and consent
 coverage. An accepted delivery is not proof of Google Ads attribution; validate that separately

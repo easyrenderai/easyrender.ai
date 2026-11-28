@@ -5,7 +5,13 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useViewer } from '@/components/use-viewer';
-import { attribution, gaPageview, initializeGa, setBrowserTools } from '@/lib/analytics/browser';
+import {
+  attribution,
+  gaPageview,
+  initializeGa,
+  setBrowserTools,
+  stopBrowserSessionReplay,
+} from '@/lib/analytics/browser';
 import {
   allowsAdvertisingMeasurement,
   type ConsentChoice,
@@ -111,6 +117,7 @@ function EnabledAnalytics() {
       controller.abort();
       clearTimeout(timeout);
       window.removeEventListener('er-consent', changed);
+      stopBrowserSessionReplay();
     };
   }, []);
   // use-effect-audit: ignore loads or unloads the third-party analytics tools to match consent

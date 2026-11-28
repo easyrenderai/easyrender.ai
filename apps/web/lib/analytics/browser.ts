@@ -11,7 +11,7 @@ import {
 import { PRICING_FLAG, type PricingVariant } from '@easyrender/harness/pricing';
 import type { PostHog } from 'posthog-js';
 import { isBrowserBot } from '@/lib/bot';
-import { GOOGLE_ADS_SIGNUP_SEND_TO } from '@/lib/google-tag';
+import { GOOGLE_ADS_PURCHASE_SEND_TO, GOOGLE_ADS_SIGNUP_SEND_TO } from '@/lib/google-tag';
 import { isMailingTokenLocation } from '@/lib/mailing-privacy';
 import {
   AD_CLICK_KEYS,
@@ -37,6 +37,7 @@ let posthog: PostHog | null = null;
 let cookielessPosthog: PostHog | null = null;
 let consentedPosthog: PostHog | null = null;
 let isPosthogAllowed = false;
+let isSessionReplayEnabled = false;
 let isGaAllowed = false;
 let isAnalyticsIdentityAllowed = false;
 let hasPosthogIdentity = false;
@@ -123,6 +124,7 @@ function googlePageLocation() {
   return url.toString();
 }
 export function gaPageview() {
+  syncBrowserSessionReplay();
   if (!isGaAllowed || !gaId || !window.gtag || isMailingTokenLocation(window.location.href)) return;
   const page = googleUrl(window.location.href);
   if (lastGaPage === page) return;
@@ -170,7 +172,11 @@ export function gaEvent(
     page_referrer: googleUrl(document.referrer),
   });
 }
-function adsConversion(sendTo: string, identity: string) {
+export function adsConversion(
+  sendTo: string,
+  identity: string,
+  opts?: { value?: number; currency?: string; transactionId?: string },
+) {
   if (
     !isAdvertisingAllowed ||
     window.location.hostname !== 'easyrender.ai' ||
@@ -178,14 +184,18 @@ function adsConversion(sendTo: string, identity: string) {
     isMailingTokenLocation(window.location.href)
   )
     return;
-  const key = `ads:${sendTo}:${identity}`;
-  if (conversions.has(key)) return;
-  conversions.add(key);
+  const key = `ads:${sendTo}:${opts?.transactionId ?? identity}`;
+  if (opts?.transactionId ? hasPurchaseReceipt(key) : conversions.has(key)) return;
   window.gtag('event', 'conversion', {
     send_to: sendTo,
+    ...(opts?.value !== undefined ? { value: opts.value } : {}),
+    ...(opts?.currency !== undefined ? { currency: opts.currency } : {}),
+    ...(opts?.transactionId !== undefined ? { transaction_id: opts.transactionId } : {}),
     page_location: googlePageLocation(),
     page_referrer: googleUrl(document.referrer),
   });
+  if (opts?.transactionId) rememberPurchaseReceipt(key);
+  else conversions.add(key);
 }
 export function observeRender(render: { id: string; status: string; hasSheet: boolean }) {
   const previous = observedRenders.get(render.id);
@@ -215,8 +225,9 @@ export async function setBrowserTools(
       /* Storage unavailable. */
     }
   }
-  syncPosthogIdentity();
   isPosthogAllowed = allowPosthog;
+  if (!allowsSessionReplay()) stopBrowserSessionReplay();
+  syncPosthogIdentity();
   if (!allowPosthog) articleMetrics.clear();
   isGaAllowed = allowGa && Boolean(gaId);
   const wasAdvertisingAllowed = isAdvertisingAllowed;
@@ -345,7 +356,31 @@ export async function setBrowserTools(
         disable_persistence: true,
         save_campaign_params: false,
         autocapture: false,
-        disable_session_recording: true,
+        disable_session_recording: !allowsSessionReplay(),
+        enable_recording_console_log: false,
+        session_recording: {
+          maskAllInputs: true,
+          // Text and attributes can expose names/emails outside form controls too.
+          maskTextSelector: '*',
+          maskAllElementAttributes: true,
+          blockSelector:
+            'form, input[type="file"], [contenteditable], a[href^="mailto:"], [data-sensitive], [data-private], .ph-no-capture, iframe, img, video, canvas',
+          recordBody: false,
+          recordHeaders: false,
+          captureCanvas: { recordCanvas: false },
+          captureJsonLd: false,
+          inlineStylesheet: false,
+          // This hook also masks rrweb's page metadata, which bypasses analyticsUrl.
+          maskCapturedNetworkRequestFn: (request) =>
+            allowsSessionReplay() && !request.method && isReplayLocationAllowed(request.name)
+              ? {
+                  name: googleUrl(request.name),
+                  duration: request.duration,
+                  entryType: request.entryType,
+                  startTime: request.startTime,
+                }
+              : null,
+        },
         capture_pageview: 'history_change',
         capture_pageleave: false,
         // Only explicit page/landing events: avoid retaining a batch after consent is withdrawn.
@@ -355,13 +390,18 @@ export async function setBrowserTools(
         disable_surveys: true,
         enable_heatmaps: false,
         capture_exceptions: false,
-        before_send: (event) =>
-          event &&
-          isPosthogAllowed &&
-          hasIdentityPermission === allowsCheckoutIdentifiers() &&
-          !isMailingTokenLocation(window.location.href)
+        before_send: (event) => {
+          // Recheck on SDK history pageviews as well as React route changes.
+          if (!allowsSessionReplay()) stopBrowserSessionReplay();
+          return event &&
+            isPosthogAllowed &&
+            hasIdentityPermission === allowsCheckoutIdentifiers() &&
+            !isMailingTokenLocation(window.location.href) &&
+            (event.event !== '$snapshot' ||
+              (hasIdentityPermission && isSessionReplayEnabled && allowsSessionReplay()))
             ? beforeSend(event)
-            : null,
+            : null;
+        },
       },
       hasIdentityPermission ? 'er_consented' : 'er_cookieless',
     );
@@ -370,6 +410,7 @@ export async function setBrowserTools(
     else cookielessPosthog = instance;
     posthog = instance;
   }
+  syncBrowserSessionReplay();
   capturePricingView();
   articleMetrics.flush();
   if (!hasLanding) {
@@ -553,11 +594,48 @@ function allowsCheckoutAdvertising() {
   );
 }
 
+function isReplayLocationAllowed(value: string) {
+  if (isMailingTokenLocation(value)) return false;
+  try {
+    const path = new URL(value).pathname.replace(/^\/(en|es|de|fr|it|pt)(?=\/|$)/, '');
+    return !/^\/(admin|account|checkout|billing|email|sign-in|sign-up|oauth)(?:\/|$)/.test(path);
+  } catch {
+    return false;
+  }
+}
+function allowsSessionReplay() {
+  return (
+    isPosthogAllowed &&
+    allowsCheckoutIdentifiers() &&
+    // Regional defaults may allow analytics IDs, but replay always needs an explicit grant.
+    readConsent(document.cookie.match(/(?:^|;\s*)er_consent=([^;]+)/)?.[1]).accepted === true &&
+    isReplayLocationAllowed(window.location.href)
+  );
+}
+export function stopBrowserSessionReplay() {
+  if (!isSessionReplayEnabled) return;
+  // Flip the send guard before stop: the SDK may flush buffered snapshots during teardown.
+  isSessionReplayEnabled = false;
+  consentedPosthog?.stopSessionRecording();
+}
+function syncBrowserSessionReplay() {
+  if (!allowsSessionReplay()) {
+    stopBrowserSessionReplay();
+  } else if (consentedPosthog && !isSessionReplayEnabled) {
+    isSessionReplayEnabled = true;
+    // Memory persistence still has a session manager. Respect remote enablement/sampling.
+    consentedPosthog.startSessionRecording();
+  }
+}
+
 function syncPosthogIdentity() {
   const isAllowed = allowsCheckoutIdentifiers();
   if (hasPosthogIdentity !== isAllowed) {
     hasLanding = false;
-    if (!isAllowed) consentedPosthog?.reset(true);
+    if (!isAllowed) {
+      stopBrowserSessionReplay();
+      consentedPosthog?.reset(true);
+    }
     hasPosthogIdentity = isAllowed;
   }
   posthog = isAllowed ? consentedPosthog : cookielessPosthog;
@@ -632,7 +710,14 @@ export function reportPurchaseConversion(result: Confirmation) {
     );
     if (captured) rememberPurchaseReceipt(key);
   }
-  // Ads purchases are imported from GA4. No second website conversion/label is configured.
+  // This website Ads action is independent of the server-managed GA4 purchase/import.
+  if (allowsCheckoutAdvertising()) {
+    adsConversion(GOOGLE_ADS_PURCHASE_SEND_TO, result.transaction_id, {
+      value: result.value,
+      currency: result.currency,
+      transactionId: result.transaction_id,
+    });
+  }
   const gaKey = `ga:purchase:${result.transaction_id}`;
   if (
     result.server_managed ||
